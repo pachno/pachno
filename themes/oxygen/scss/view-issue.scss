@@ -1,13 +1,20 @@
 @import "variables";
+@import 'widgets/workflow-actions';
+@import 'components/issue-fields-list';
+@import 'components/issue-details';
+@import 'components/issue-title';
 
 .viewissue-container,
-.content-with-sidebar > div.viewissue-container {
+.content-with-sidebar > div:not(.sidebar):not(.fixed-position).viewissue-container {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   text-align: left;
   height: 100%;
   overflow: auto;
+  background-color: #FFF;
+  align-items: stretch;
+  z-index: 5;
 }
 
 .issue-state,
@@ -32,126 +39,182 @@
 }
 
 .viewissue-container {
-  .issue-card {
-    display: flex;
-    flex: 0 0 auto;
-    max-width: 1650px;
-    margin: 0 1rem;
-    flex-direction: row;
+  .top-search-filters-container {
+    padding: 0;
+    z-index: 10;
     box-sizing: border-box;
-    align-items: flex-start;
-    background: #FFF;
-    //box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    box-shadow: 0 1px 3px 0 rgba(27, 27, 36, .2);
-    border-radius: 4px;
-    padding: 10px;
-    z-index: 200;
+    box-shadow: none;
+    border-bottom: none;
+    flex: 0 0 auto;
 
-    .fields-list-container {
-      border: none;
+    .header-container {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      flex: 1 1 auto;
       padding: 0;
       margin: 0;
-      flex: 0 0 auto;
-      display: flex;
-      flex-direction: column;
-      opacity: 1;
-      transform-origin: top center;
-      transition: transform .25s ease-in-out, opacity .25s ease-in-out, height .25s ease-in-out;
-      height: auto;
+      box-sizing: border-box;
 
-      &.not-visible {
-        opacity: 0;
-        transform: scaleX(0);
-        height: 1px;
+      .toggle-favourite-container {
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 1em;
+
+        .tooltip.from-above {
+          top: 5em;
+          left: 1em;
+        }
       }
 
-      > .header {
-        border: none;
-        padding: 0;
-        flex: 0 0 auto;
+      @include issue-title();
+
+      .fields-header {
+        flex: 0 0 400px;
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
-        justify-content: stretch;
-        color: rgba(0, 0, 0, 0.6);
-        font-size: 1em;
+        align-items: center;
+        justify-content: flex-end;
+        border-left: 2px solid rgba(225, 225, 225, 0.7);
+        background-color: rgb(251, 251, 251);
+        //box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
+        box-sizing: border-box;
 
-        .icon {
-          flex: 0 0 24px;
-          display: flex;
-          flex-direction: column;
-          padding-top: .15em;
-          color: rgb(200, 200, 200);
-
-          .far,
-          .fas {
-            flex: 0 0 24px;
-            box-sizing: border-box;
-          }
-        }
-
-        .name {
-          flex: 1 1 auto;
-          padding: 0;
-          font-size: 1.3em;
-          line-height: 1em;
-          font-weight: $theme-font-weight-bold;
+        .issuetype-field {
+          margin: 0 0 0 auto;
         }
       }
 
-      .content {
-        flex: 1 1 auto;
-        margin-left: 24px;
-        font-size: 1.1em;
-        font-weight: $theme-font-weight-light;
-        margin-bottom: 2em;
+      .not-editable {
+        color: rgb(150, 150, 150);
+        margin: 0 0 0 1em;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        position: relative;
+
+        &.hidden {
+          display: none;
+        }
+
+        .fas, far {
+          margin-right: .35em;
+        }
       }
 
-      > ul {
-        list-style: none;
+      .created-times {
         display: flex;
         flex-direction: column;
-        align-items: stretch;
-        margin: 0;
-        padding: 0;
+        align-items: flex-end;
+        flex: 0 0 auto;
+        margin-right: 1rem;
+        font-size: .9em;
+        line-height: 1.3em;
+        color: rgba(0, 0, 0, .4);
 
-        li {
-          flex: 0 0 auto;
+        label {
+          text-transform: none;
+          color: rgba(0, 0, 0, .4);
+          font-weight: $theme-font-weight-regular;
+          cursor: default;
+        }
+      }
 
-          dl {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin: 0;
-            padding: 0;
+      .status-field > .status-badge {
+        font-size: 1.2em;
+        padding: .4em .8em;
+      }
 
-            dt {
-              flex: 0 0 auto;
-              display: block;
-              margin: 0;
-              padding: 0;
-            }
+      .vote-container {
+        flex: 0 0 auto;
+        padding: 0 .4em;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 1.1em;
+        font-size: 1rem;
 
-            dd {
-              flex: 0 0 auto;
-              display: block;
-              margin: 0;
-              padding: 0;
-            }
+        a,
+        a:hover {
+          border: none;
+          padding: .35em;
+          border-radius: 4px;
+        }
+
+        #vote_down_link {
+          color: #0c8990;
+
+          &:hover {
+            background-color: rgba(225, 225, 225, .25);
           }
+        }
+
+        #vote_up_link {
+          color: rgb(150, 150, 150);
+
+          &:hover {
+            background-color: rgba(225, 225, 225, .25);
+          }
+        }
+
+        .fas,
+        .far {
+          font-size: 2em;
+        }
+
+        .vote-count {
+          font-weight: $theme-font-weight-bold;
+          color: rgb(150, 150, 150);
         }
       }
     }
+  }
+
+  .issue-card {
+    display: flex;
+    flex: 1 1 auto;
+    margin: 0;
+    flex-direction: row;
+    box-sizing: border-box;
+    align-items: stretch;
+    box-shadow: none;
+    z-index: 5;
+
+    @include issue-fields-list-container();
 
     .issue-card-main {
       border: none;
       flex: 1 1 auto;
       margin: 0;
+      padding: 1em;
       overflow: visible;
       box-sizing: border-box;
       display: flex;
       height: 100%;
       flex-direction: column;
+
+      .messages-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        .message-box {
+          margin-left: 0;
+          margin-right: 0;
+          width: auto;
+          flex: 1 1 auto;
+
+          &.hidden {
+            display: none;
+          }
+
+          + .message-box {
+            margin-top: 1em;
+          }
+        }
+      }
 
       .card-header {
         flex: 0 0 auto;
@@ -161,107 +224,10 @@
         padding: 0;
         margin-bottom: 1.5em;
 
-        .workflow-actions-container {
-          flex: 1 1 auto;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: flex-end;
-          flex-wrap: wrap;
-
-          > ul {
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: flex-start;
-            align-content: flex-start;
-            justify-content: flex-end;
-            justify-items: flex-start;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-
-            > li {
-              position: relative;
-
-              &.workflow {
-                flex: 1 1 auto;
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                align-items: center;
-                justify-content: flex-end;
-
-                .tooltip-container {
-                  position: relative;
-                  margin-bottom: .35rem;
-
-                  & + .tooltip-container {
-                    margin-left: .35rem;
-                  }
-                }
-              }
-
-              .not-editable {
-                color: rgb(150, 150, 150);
-                margin: 0 1.5em .35em 0;
-                display: flex;
-                align-items: center;
-                height: 100%;
-                position: relative;
-
-                .fas, far {
-                  margin-right: .35em;
-                }
-              }
-            }
-
-            li + li {
-              margin-left: .35rem;
-            }
-          }
-        }
+        @include workflow-actions-container(flex-start);
       }
 
-      .issue-details {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-
-        .content {
-          font-size: 1.15em;
-
-          p + p {
-            margin-top: 1em;
-          }
-        }
-      }
-
-      .attached-items {
-        list-style: none;
-        padding: 0;
-        margin: 5px 0 0 0;
-
-        a.downloadlink,
-        a.downloadlink:hover {
-          display: inline-block;
-          font-size: 1em;
-          width: 303px;
-          vertical-align: middle;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          padding: 0 5px 0 0;
-          text-decoration: none;
-          border: none;
-
-          img {
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 5px;
-          }
-        }
-      }
+      @include issue-details();
 
       .fields-list {
         display: flex;
@@ -276,29 +242,38 @@
       }
     }
 
+    .issue-field {
+      display: flex;
+
+      &.hidden {
+        display: none;
+      }
+    }
+
     .issue-fields {
       flex: 0 0 400px;
-      margin: 1em 0 1em 1em;
-      padding: 0 1em;
+      margin: 0;
+      padding: .25em;
       display: flex;
-      border-left: 1px solid rgba(150, 150, 150, .3);
+      border-left: 2px solid $theme-border-color;
+      background-color: rgb(251, 251, 251);
+      //box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
       flex-direction: column;
-      height: calc(100% - 4em);
       box-sizing: border-box;
-      box-shadow: 4px 0 7px -8px rgba(0, 0, 0, .3) inset;
       border-radius: 0;
 
       .fields-list-container {
-        > .header {
+        &.hidden {
+          display: none;
 
-          .name {
+          &.force-visible {
             display: flex;
-            align-items: center;
-            font-weight: $theme-font-weight-regular;
-            text-transform: uppercase;
-            color: rgb(125, 125, 125);
+          }
+        }
+
+        > .header {
+          .name {
             font-size: 1.2em;
-            padding: 0 0 .5em 0;
           }
         }
 
@@ -306,86 +281,19 @@
           margin-top: 2em;
         }
       }
-    }
 
-    .fields-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
+      .userlink {
+        padding: 0;
+        flex: 1 1 auto;
+      }
 
-      > li {
-        display: flex;
-        align-items: center;
-        position: relative;
+      .fancy-dropdown-container {
+        flex: 1 1 auto;
+      }
 
-        .fancy-dropdown-container {
-          .fancy-dropdown {
-            background-color: transparent;
-
-            &:hover {
-              background-color: rgba(200, 200, 200, .1);
-            }
-
-            > label {
-              font-weight: $theme-font-weight-bold;
-              flex: 0 1 140px;
-              text-transform: none;
-              color: #141823;
-            }
-          }
-        }
-
-        > .label {
-          font-weight: $theme-font-weight-bold;
-          flex: 0 1 140px;
-          padding: 7px 12px;
-        }
-
-        > .value {
-          flex: 1 1 auto;
-          font-weight: $theme-font-weight-light;
-
-          .value-container {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            align-items: center;
-            justify-content: stretch;
-            border-radius: 4px;
-            border: 1px solid transparent;
-            transition: background-color .25s ease-in-out, border .25s ease-in-out;
-            padding: .35em 0;
-
-            &.dropper {
-              padding: .6em;
-
-              .dropdown-indicator {
-                opacity: 0;
-                color: rgb(100, 100, 100);
-                transition: opacity .25s ease-in-out;
-              }
-
-              &:hover,
-              &.active {
-                border-color: rgba(200, 200, 200, .3);
-
-                .dropdown-indicator {
-                  opacity: 1;
-                }
-              }
-            }
-
-            span {
-              flex: 1 1 auto;
-            }
-
-            .dropdown-indicator {
-              flex: 0 0 24;
-            }
-          }
-        }
+      .affected-list {
+        padding: 0 .25em .75em .75em;
+        box-sizing: border-box;
       }
     }
 
@@ -402,8 +310,6 @@
   }
 
   .comments {
-    width: calc(100% - 2rem);
-    max-width: 1650px;
-    margin: 0 1rem 3rem 1rem;
+    margin: 0 .35em 3em .35em;
   }
 }

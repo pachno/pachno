@@ -459,7 +459,7 @@
          */
         protected $_subscribers = null;
 
-        public function attachFile(File $file, $file_comment = '', $description = '')
+        public function attachFile(File $file, $timestamp = null)
         {
         }
 

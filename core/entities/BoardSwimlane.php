@@ -29,7 +29,7 @@
         /**
          * The identifiable objects for this swimlane
          *
-         * @var array|Identifiable
+         * @var Identifiable[]
          */
         protected $_identifiables;
 
@@ -58,6 +58,9 @@
         
         protected $_identifier_grouping;
 
+        /**
+         * @return Identifiable[]
+         */
         public function getIdentifiables()
         {
             return $this->_identifiables;
@@ -88,6 +91,64 @@
             }
 
             return false;
+        }
+
+        public function hasIssue(Issue $issue)
+        {
+            switch ($this->getIdentifierType()) {
+                case AgileBoard::SWIMLANES_ISSUES:
+                    $parent_issue_count = count($issue->getParentIssues());
+
+                    if (!$this->getIdentifierIssue() instanceof Issue) {
+                        return $parent_issue_count === 0;
+                    }
+
+                    if (!$parent_issue_count) {
+                        return false;
+                    }
+
+                    foreach ($issue->getParentIssues() as $parent_issue) {
+                        if ($parent_issue->getID() === $this->getIdentifierIssue()->getID()) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                    break;
+                case AgileBoard::SWIMLANES_GROUPING:
+                case AgileBoard::SWIMLANES_EXPEDITE:
+                    if (!$this->hasIdentifiables()) {
+                        if ($this->getIdentifierGrouping() == 'priority') {
+                            return !$issue->getPriority() instanceof Priority;
+                        } elseif ($this->getIdentifierGrouping() == 'category') {
+                            return !$issue->getCategory() instanceof Category;
+                        } elseif ($this->getIdentifierGrouping() == 'severity') {
+                            return !$issue->getSeverity() instanceof Severity;
+                        }
+                    }
+
+                    $issue_identifiable = null;
+                    if ($this->getIdentifierGrouping() == 'priority') {
+                        $issue_identifiable = $issue->getPriority();
+                    } elseif ($this->getIdentifierGrouping() == 'category') {
+                        $issue_identifiable = $issue->getCategory();
+                    } elseif ($this->getIdentifierGrouping() == 'severity') {
+                        $issue_identifiable = $issue->getSeverity();
+                    }
+
+                    if (!$issue_identifiable instanceof Datatype) {
+                        return false;
+                    }
+
+                    foreach ($this->getIdentifiables() as $identifiable) {
+                        if ($issue_identifiable->getID() === $identifiable->getId()) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                    break;
+            }
         }
 
         /**
@@ -127,10 +188,13 @@
                 $this->_search_object = new SavedSearch();
                 $this->_search_object->setFilter('project_id', SearchFilter::createFilter('project_id', ['o' => '=', 'v' => $this->getBoard()->getProject()->getID()]));
                 $this->_search_object->setFilter('milestone', SearchFilter::createFilter('milestone', ['o' => '=', 'v' => ($this->getMilestone() instanceof Milestone) ? $this->getMilestone()->getID() : 0]));
-//                $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => Issue::STATE_OPEN]));
+                if (!$this->getMilestone() instanceof Milestone) {
+                    $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => Issue::STATE_OPEN]));
+                }
+
                 $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => [Issue::STATE_CLOSED, Issue::STATE_OPEN]]));
                 $this->_search_object->setFilter('deleted', SearchFilter::createFilter('deleted', ['o' => '=', 'v' => false]));
-                $this->_search_object->setFilter('archived', SearchFilter::createFilter('archived', ['o' => '=', 'v' => false]));
+//                $this->_search_object->setFilter('archived', SearchFilter::createFilter('archived', ['o' => '=', 'v' => false]));
                 $this->_search_object->setFilter('issuetype', SearchFilter::createFilter('issuetype', ['o' => '!=', 'v' => $this->getBoard()->getEpicIssuetypeID()]));
                 if ($column_id === null) {
                     $this->_search_object->setFilter('status', SearchFilter::createFilter('status', ['o' => '=', 'v' => $this->getBoard()->getStatusIds()]));
@@ -230,6 +294,9 @@
                 'identifier_issue' => ($this->getIdentifierIssue() instanceof Issue) ? $this->getIdentifierIssue()->toJSON(false) : null,
                 'issues' => []
             ];
+            if (is_array($json['identifiables'])) {
+                $json['identifiables'] = array_values($json['identifiables']);
+            }
 
             foreach ($this->getIssues($column_id) as $issue) {
                 $json['issues'][] = $issue->toJSON(false);

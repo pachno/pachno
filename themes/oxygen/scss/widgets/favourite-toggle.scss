@@ -1,0 +1,32 @@
+.toggle-favourite {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+
+    .indicator { flex: 0 0 25px; box-sizing: border-box; display: none; font-size: 1.5em; }
+
+    &.submitting {
+        .indicator { display: inline-block; }
+        .subscribed, .unsubscribed { display: none; }
+    }
+
+    .subscribed,
+    .unsubscribed {
+        flex: 0 0 25px;
+        box-sizing: border-box;
+        display: inline-block;
+        font-size: 1.5em;
+    }
+
+    &:not(.submitting) {
+        &.starred {
+            .unsubscribed { display: none; }
+        }
+    }
+
+    &:not(.starred) {
+        .subscribed { display: none; }
+    }
+}

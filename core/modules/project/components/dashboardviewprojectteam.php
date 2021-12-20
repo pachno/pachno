@@ -25,11 +25,3 @@
         </div>
     </div>
 <?php endif; ?>
-<?php if ($pachno_user->canEditProjectDetails($project)): ?>
-    <div class="button-container">
-        <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary project-quick-edit">
-            <?= fa_image_tag('users', ['class' => 'icon']); ?>
-            <span><?= __('Set up project team'); ?></span>
-        </a>
-    </div>
-<?php endif; ?>

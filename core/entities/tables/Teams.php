@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\Query;
     use b2db\QueryColumnSort;
     use pachno\core\entities\Team;
     use pachno\core\framework;
@@ -23,7 +24,7 @@
      * @package pachno
      * @subpackage tables
      *
-     * @method Team selectById()
+     * @method Team selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="teams")
      * @Entity(class="\pachno\core\entities\Team")
@@ -31,17 +32,17 @@
     class Teams extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'teams';
+        public const B2DBNAME = 'teams';
 
-        const ID = 'teams.id';
+        public const ID = 'teams.id';
 
-        const SCOPE = 'teams.scope';
+        public const SCOPE = 'teams.scope';
 
-        const NAME = 'teams.name';
+        public const NAME = 'teams.name';
 
-        const ONDEMAND = 'teams.ondemand';
+        public const ONDEMAND = 'teams.ondemand';
 
         public function getAll()
         {
@@ -90,7 +91,7 @@
             return $this->count($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope_ondemand', [self::SCOPE, self::ONDEMAND]);
         }

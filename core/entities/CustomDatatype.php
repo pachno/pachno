@@ -16,38 +16,6 @@
     class CustomDatatype extends DatatypeBase
     {
 
-        const DROPDOWN_CHOICE_TEXT = 1;
-
-        const INPUT_TEXT = 2;
-
-        const INPUT_TEXTAREA_MAIN = 3;
-
-        const INPUT_TEXTAREA_SMALL = 4;
-
-        const RADIO_CHOICE = 5;
-
-        const RELEASES_CHOICE = 8;
-
-        const COMPONENTS_CHOICE = 10;
-
-        const EDITIONS_CHOICE = 12;
-
-        const STATUS_CHOICE = 13;
-
-        const USER_CHOICE = 14;
-
-        const TEAM_CHOICE = 15;
-
-        const CALCULATED_FIELD = 18;
-
-        const DATE_PICKER = 19;
-
-        const MILESTONE_CHOICE = 20;
-
-        const CLIENT_CHOICE = 21;
-
-        const DATETIME_PICKER = 22;
-
         protected static $_types = null;
 
         /**
@@ -87,7 +55,7 @@
         /**
          * Returns all custom types available
          *
-         * @return array
+         * @return CustomDatatype[]
          */
         public static function getAll()
         {
@@ -141,8 +109,8 @@
 
         public static function getInternalChoiceFieldsAsArray()
         {
-            return [self::RELEASES_CHOICE, self::COMPONENTS_CHOICE, self::MILESTONE_CHOICE,
-                self::EDITIONS_CHOICE, self::STATUS_CHOICE, self::USER_CHOICE, self::TEAM_CHOICE, self::CLIENT_CHOICE];
+            return [DatatypeBase::RELEASES_CHOICE, DatatypeBase::COMPONENTS_CHOICE, DatatypeBase::MILESTONE_CHOICE,
+                DatatypeBase::EDITIONS_CHOICE, DatatypeBase::STATUS_CHOICE, DatatypeBase::USER_CHOICE, DatatypeBase::TEAM_CHOICE, DatatypeBase::CLIENT_CHOICE];
         }
 
         /**
@@ -150,14 +118,14 @@
          *
          * @param B2DBrow $row [optional] A B2DBrow to use
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_description = $this->_description ?: $this->_name;
         }
 
         public function createNewOption($name, $value, $itemdata = null)
         {
-            if ($this->getType() == self::CALCULATED_FIELD) {
+            if ($this->getType() == DatatypeBase::CALCULATED_FIELD) {
                 // Only allow one option/formula for the calculated field
                 $opts = $this->getOptions();
                 foreach ($opts as $option) {
@@ -202,19 +170,19 @@
                     $this->_b2dbLazyLoad('_options');
                 } else {
                     switch ($this->getType()) {
-                        case self::RELEASES_CHOICE:
+                        case DatatypeBase::RELEASES_CHOICE:
                             $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getBuilds() : Builds::getTable()->selectAll();
                             break;
-                        case self::COMPONENTS_CHOICE:
+                        case DatatypeBase::COMPONENTS_CHOICE:
                             $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getComponents() : Components::getTable()->selectAll();
                             break;
-                        case self::EDITIONS_CHOICE:
+                        case DatatypeBase::EDITIONS_CHOICE:
                             $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getEditions() : Editions::getTable()->selectAll();
                             break;
-                        case self::MILESTONE_CHOICE:
+                        case DatatypeBase::MILESTONE_CHOICE:
                             $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getMilestonesForIssues() : Milestones::getTable()->selectAll();
                             break;
-                        case self::STATUS_CHOICE:
+                        case DatatypeBase::STATUS_CHOICE:
                             $this->_options = Status::getAll();
                             break;
                     }
@@ -229,9 +197,9 @@
 
         public static function getCustomChoiceFieldsAsArray()
         {
-            return [self::DROPDOWN_CHOICE_TEXT,
-                self::RADIO_CHOICE,
-                self::CALCULATED_FIELD
+            return [DatatypeBase::DROPDOWN_CHOICE_TEXT,
+                DatatypeBase::RADIO_CHOICE,
+                DatatypeBase::CALCULATED_FIELD
             ];
         }
 
@@ -256,22 +224,22 @@
         {
             $i18n = framework\Context::getI18n();
             $types = [];
-            $types[self::DROPDOWN_CHOICE_TEXT] = ['title' => __('Dropdown list of choices (multi-select)'), 'description' => $i18n->__('A dropdown list where the user can select one or more choices'), 'icon' => 'check-square'];
-            $types[self::RADIO_CHOICE] = ['title' => __('Dropdown list of choices'), 'description' => $i18n->__('A dropdown list where the user can select one of the available choices'), 'icon' => 'check-circle'];
-            $types[self::INPUT_TEXT] = ['title' => __('Simple text input'), 'description' => $i18n->__('A text input where the user can input a single line of text'), 'icon' => 'align-left'];
-            $types[self::INPUT_TEXTAREA_MAIN] = ['title' => __('Block of text input (main)'), 'description' => $i18n->__('A text input in the issue main view where the user can input a block of text'), 'icon' => 'align-left'];
-            $types[self::INPUT_TEXTAREA_SMALL] = ['title' => __('Block of text input (details)'), 'description' => $i18n->__('A text input in the issue details list sidebar where the user can input a block of text'), 'icon' => 'align-left'];
-            $types[self::RELEASES_CHOICE] = ['title' => __('List of releases'), 'description' => $i18n->__('A list of the available releases'), 'icon' => 'compact-disc'];
-            $types[self::COMPONENTS_CHOICE] = ['title' => __('List of components'), 'description' => $i18n->__('A list of the available components'), 'icon' => 'boxes'];
-            $types[self::EDITIONS_CHOICE] = ['title' => __('List of editions'), 'description' => $i18n->__('A list of the available editions'), 'icon' => 'box'];
-            $types[self::MILESTONE_CHOICE] = ['title' => __('List of milestones'), 'description' => $i18n->__('A list of the available milestones'), 'icon' => 'list-alt'];
-            $types[self::STATUS_CHOICE] = ['title' => __('Status selector'), 'description' => $i18n->__('Let the user choose from a list of the available statuses'), 'icon' => 'chart-pie'];
-            $types[self::DATE_PICKER] = ['title' => __('Date picker'), 'description' => $i18n->__('A date picker'), 'icon' => 'calendar-check'];
-            $types[self::DATETIME_PICKER] = ['title' => __('Date and time picker'), 'description' => $i18n->__('A date and time picker'), 'icon' => 'clock'];
-            $types[self::USER_CHOICE] = ['title' => __('User selector'), 'description' => $i18n->__('Find and pick a user'), 'icon' => 'user'];
-            $types[self::TEAM_CHOICE] = ['title' => __('Team selector'), 'description' => $i18n->__('Find and pick a team'), 'icon' => 'users'];
-            $types[self::CLIENT_CHOICE] = ['title' => __('Client selector'), 'description' => $i18n->__('Find and pick a client'), 'icon' => 'users'];
-            $types[self::CALCULATED_FIELD] = ['title' => __('Formula'), 'description' => $i18n->__('A field calculated from different values'), 'icon' => 'square-root-alt'];
+            $types[DatatypeBase::DROPDOWN_CHOICE_TEXT] = ['title' => __('Dropdown list of choices (multi-select)'), 'description' => $i18n->__('A dropdown list where the user can select one or more choices'), 'icon' => 'check-square'];
+            $types[DatatypeBase::RADIO_CHOICE] = ['title' => __('Dropdown list of choices'), 'description' => $i18n->__('A dropdown list where the user can select one of the available choices'), 'icon' => 'check-circle'];
+            $types[DatatypeBase::INPUT_TEXT] = ['title' => __('Simple text input'), 'description' => $i18n->__('A text input where the user can input a single line of text'), 'icon' => 'align-left'];
+            $types[DatatypeBase::INPUT_TEXTAREA_MAIN] = ['title' => __('Block of text input (main)'), 'description' => $i18n->__('A text input in the issue main view where the user can input a block of text'), 'icon' => 'align-left'];
+            $types[DatatypeBase::INPUT_TEXTAREA_SMALL] = ['title' => __('Block of text input (details)'), 'description' => $i18n->__('A text input in the issue details list sidebar where the user can input a block of text'), 'icon' => 'align-left'];
+            $types[DatatypeBase::RELEASES_CHOICE] = ['title' => __('List of releases'), 'description' => $i18n->__('A list of the available releases'), 'icon' => 'compact-disc'];
+            $types[DatatypeBase::COMPONENTS_CHOICE] = ['title' => __('List of components'), 'description' => $i18n->__('A list of the available components'), 'icon' => 'boxes'];
+            $types[DatatypeBase::EDITIONS_CHOICE] = ['title' => __('List of editions'), 'description' => $i18n->__('A list of the available editions'), 'icon' => 'box'];
+            $types[DatatypeBase::MILESTONE_CHOICE] = ['title' => __('List of milestones'), 'description' => $i18n->__('A list of the available milestones'), 'icon' => 'list-alt'];
+            $types[DatatypeBase::STATUS_CHOICE] = ['title' => __('Status selector'), 'description' => $i18n->__('Let the user choose from a list of the available statuses'), 'icon' => 'chart-pie'];
+            $types[DatatypeBase::DATE_PICKER] = ['title' => __('Date picker'), 'description' => $i18n->__('A date picker'), 'icon' => 'calendar-check'];
+            $types[DatatypeBase::DATETIME_PICKER] = ['title' => __('Date and time picker'), 'description' => $i18n->__('A date and time picker'), 'icon' => 'clock'];
+            $types[DatatypeBase::USER_CHOICE] = ['title' => __('User selector'), 'description' => $i18n->__('Find and pick a user'), 'icon' => 'user'];
+            $types[DatatypeBase::TEAM_CHOICE] = ['title' => __('Team selector'), 'description' => $i18n->__('Find and pick a team'), 'icon' => 'users'];
+            $types[DatatypeBase::CLIENT_CHOICE] = ['title' => __('Client selector'), 'description' => $i18n->__('Find and pick a client'), 'icon' => 'users'];
+            $types[DatatypeBase::CALCULATED_FIELD] = ['title' => __('Formula'), 'description' => $i18n->__('A field calculated from different values'), 'icon' => 'square-root-alt'];
 
             return $types;
 
@@ -284,8 +252,8 @@
 
         public static function getChoiceFieldsAsArray()
         {
-            return [self::DROPDOWN_CHOICE_TEXT, self::RADIO_CHOICE, self::RELEASES_CHOICE, self::COMPONENTS_CHOICE,
-                self::EDITIONS_CHOICE, self::STATUS_CHOICE, self::USER_CHOICE, self::TEAM_CHOICE, self::CLIENT_CHOICE, self::MILESTONE_CHOICE];
+            return [DatatypeBase::DROPDOWN_CHOICE_TEXT, DatatypeBase::RADIO_CHOICE, DatatypeBase::RELEASES_CHOICE, DatatypeBase::COMPONENTS_CHOICE,
+                DatatypeBase::EDITIONS_CHOICE, DatatypeBase::STATUS_CHOICE, DatatypeBase::USER_CHOICE, DatatypeBase::TEAM_CHOICE, DatatypeBase::CLIENT_CHOICE, DatatypeBase::MILESTONE_CHOICE];
         }
 
         /**
@@ -364,7 +332,7 @@
         public function isSearchable()
         {
             switch ($this->getType()) {
-                case self::CALCULATED_FIELD:
+                case DatatypeBase::CALCULATED_FIELD:
                     return false;
             }
 
@@ -379,7 +347,7 @@
         public function isEditable()
         {
             switch ($this->getType()) {
-                case self::CALCULATED_FIELD:
+                case DatatypeBase::CALCULATED_FIELD:
                     return false;
             }
 
@@ -407,7 +375,7 @@
             }
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -428,7 +396,7 @@
             }
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\CustomFieldOptions::getTable()->deleteCustomFieldOptions($this->getID());
             tables\IssueFields::getTable()->deleteByIssueFieldKey($this->getKey());

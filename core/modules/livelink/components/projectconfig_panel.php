@@ -3,8 +3,8 @@
 </div>
 <script>
     $(document).ready(() => {
-        var submitSetupStep = function(e) {
-            var form_id        = 'livelink_form',
+        const submitSetupStep = function(e) {
+            const form_id        = 'livelink_form',
                 $form          = $('#' + form_id),
                 $indicator     = $('#' + form_id + '_indicator'),
                 $submit_button = $('#' + form_id + '_button'),
@@ -13,7 +13,7 @@
             $indicator.show();
             e.preventDefault();
 
-            var submitStep = function () {
+            const submitStep = function () {
                 return new Promise(function (resolve, reject) {
                     $.ajax({
                         type: 'POST',
@@ -36,7 +36,7 @@
                     $('#livelink_address_container').addClass('verified');
                     $('#livelink_repository_url_input').prop('disabled', true);
                 }, function (details) {
-                    pachno_index_js.Helpers.Message.error(details.responseJSON.error);
+                    Pachno.UI.Message.error(details.responseJSON.error);
                 });
         };
 

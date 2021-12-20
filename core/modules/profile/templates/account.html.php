@@ -10,133 +10,104 @@
     $pachno_response->setTitle(__('Your account details'));
 
 ?>
-<?php if ($pachno_user->canChangePassword()): ?>
+<?php if (!$pachno_user->isGuest()): ?>
     <div class="fullpage_backdrop" id="change_password_div" style="<?php if (!$has_autopassword) echo 'display: none;'; ?>">
-        <div class="backdrop_box login_page login_popup">
-            <div class="backdrop_detail_header">
-                <span><?= __('Changing your password'); ?></span>
-                <a href="javascript:void(0);" class="closer" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
-            </div>
-            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_change_password'); ?>" data-simple-submit data-auto-close-container method="post" id="change_password_form">
-                <div class="backdrop_detail_content login_content">
-                    <div class="logindiv regular active" id="change_password_container">
-                        <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
-                            <?= \pachno\core\helpers\TextParser::parseText(Settings::get('changepw_message'), false, null, array('embedded' => true)); ?>
-                        <?php else: ?>
-                            <div class="article"><?= __('Enter your current password in the first box, then enter your new password twice (to prevent you from typing mistakes). Press the "%change_password" button to change your password.', array('%change_password' => __('Change password'))); ?></div>
-                            <ul class="login_formlist">
-                                <?php if (!$has_autopassword): ?>
-                                    <li>
-                                        <label for="current_password"><?= __('Current password'); ?></label>
-                                        <input type="password" name="current_password" id="current_password" value="">
-                                    </li>
-                                <?php else: ?>
-                                    <li style="display: none;">
-                                        <input type="hidden" name="current_password" id="current_password" value="<?= $autopassword; ?>">
-                                    </li>
-                                <?php endif; ?>
-                                <li>
-                                    <label for="new_password_1"><?= __('New password'); ?></label>
+        <div class="fullpage_backdrop_content">
+            <div class="backdrop_box medium">
+                <div class="backdrop_detail_header">
+                    <span><?= ($has_autopassword) ? __('Pick a password') : __('Changing your password'); ?></span>
+                    <?php if (!$has_autopassword): ?>
+                        <button class="closer" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('times'); ?></button>
+                    <?php endif; ?>
+                </div>
+                <div class="backdrop_detail_content">
+                    <div class="form-container">
+                        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_change_password'); ?>" data-simple-submit data-auto-close-container method="post" id="change_password_form">
+                            <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
+                                <div class="form-row">
+                                    <div class="helper-text">
+                                        <span><?= \pachno\core\helpers\TextParser::parseText(Settings::get('changepw_message'), false, null, array('embedded' => true)); ?></span>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="form-row">
+                                    <div class="helper-text">
+                                        <?php if ($has_autopassword): ?>
+                                            <span><?= __('To be able to log in later, you have to set a password. Enter your desired password twice (to prevent you from typing mistakes). Press the "%set_password" button to set your password.', array('%set_password' => __('Set password'))); ?></span>
+                                        <?php else: ?>
+                                            <span><?= __('Enter your new password twice (to prevent you from typing mistakes), then press the "%change_password" button to change your password.', array('%change_password' => __('Change password'))); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if ($has_autopassword): ?>
+                                        <div class="message-box type-warning">
+                                            <?= fa_image_tag('grin-beam-sweat', ['class' => 'icon large'], 'far'); ?>
+                                            <span class="message"><?= __('Remember to set a password before you continue, or you may be locked out of your account'); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="form-row" data-field="new_password_1">
+                                    <label for="new_password_1"><?= ($has_autopassword) ? __('Password') : __('New password'); ?></label>
                                     <input type="password" name="new_password_1" id="new_password_1" value="">
-                                </li>
-                                <li>
-                                    <label for="new_password_2"><?= __('New password (repeat it)'); ?></label>
+                                    <div class="error"></div>
+                                </div>
+                                <div class="form-row" data-field="new_password_2">
+                                    <label for="new_password_2"><?= ($has_autopassword) ? __('Password (repeated, to confirm)') : __('New password (repeated, to confirm)'); ?></label>
                                     <input type="password" name="new_password_2" id="new_password_2" value="">
-                                </li>
-                            </ul>
+                                    <div class="error"></div>
+                                </div>
+                            <?php endif; ?>
+                        <?php if (!Settings::isUsingExternalAuthenticationBackend()): ?>
+                            <div class="form-row submit-container">
+                                <button type="submit" class="button primary">
+                                    <span><?= ($has_autopassword) ? __('Set password') : __('Change password'); ?></span>
+                                    <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                                </button>
+                            </div>
                         <?php endif; ?>
+                        </form>
                     </div>
                 </div>
-                <?php if (!Settings::isUsingExternalAuthenticationBackend()): ?>
-                    <div class="backdrop_details_submit">
-                        <span class="explanation"></span>
-                        <div class="submit_container">
-                            <button type="submit" class="button"><?= image_tag('spinning_20.gif', array('id' => 'change_password_indicator', 'style' => 'display: none;')) . __('Change password'); ?></button>
-                        </div>
-                    </div>
-                <?php endif; ?>
-            </form>
+            </div>
         </div>
     </div>
 <?php endif; ?>
 <?php if ($pachno_user->isOpenIdLocked()): ?>
     <div class="fullpage_backdrop" id="pick_username_div" style="display: none;">
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_check_username'); ?>" method="post" id="check_username_form" data-simple-submit>
-            <div class="backdrop_box login_page login_popup">
+        <div class="fullpage_backdrop_content">
+            <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?= __('Picking a username'); ?></span>
                     <a href="javascript:void(0);" class="closer" onclick="$('#pick_username_div').toggle();"><?= fa_image_tag('times'); ?></a>
                 </div>
-                <div class="backdrop_detail_content login_content">
-                    <div class="logindiv regular active" id="add_application_password_container">
-                        <div class="article">
-                            <p><?= __('Since this account was created via an OpenID login, you will have to pick a username to be able to log in with a username or password. You can continue to use your account with your OpenID login, so this is only if you want to pick a username for your account.'); ?><p>
-                        </div>
-                        <ul class="account_popupform">
-                            <li>
+                <div class="backdrop_detail_content">
+                    <div class="form-container">
+                        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_check_username'); ?>" method="post" id="check_username_form" data-simple-submit data-update-container="#add_application_password_container">
+                            <div class="form-row">
+                                <div class="helper-text">
+                                    <span><?= __('Since this account was created via an OpenID login, you will have to pick a username to be able to log in with a username or password. You can continue to use your account with your OpenID login, so this is only if you want to pick a username for your account.'); ?><p>
+                                </div>
+                            </div>
+                            <div class="form-row" data-field="desired_username">
                                 <label for="username_pick"><?= __('Type desired username'); ?></label>
                                 <input type="text" name="desired_username" id="username_pick">
-                            </li>
-                            <li id="username_unavailable" style="display: none;">
-                                <?= __('This username is not available'); ?>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="backdrop_details_submit">
-                    <span class="explanation"><?= __('Click "%check_availability" to see if your desired username is available.', array('%check_availability' => __('Check availability'))); ?></span>
-                    <div class="submit_container">
-                        <button type="submit" class="button"><?= image_tag('spinning_20.gif', array('id' => 'pick_username_indicator', 'style' => 'display: none;')) . __('Check availability'); ?></button>
+                                <div class="error"></div>
+                            </div>
+                        </form>
+                        <div class="form-row">
+                            <div class="helper-text"><?= __('Click "%check_availability" to see if your desired username is available.', array('%check_availability' => __('Check availability'))); ?></div>
+                        </div>
+                        <div class="form-row submit-container">
+                            <button type="submit" class="button primary">
+                                <span><?= ('Check availability'); ?></span>
+                                <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 <?php endif; ?>
-<div class="fullpage_backdrop" id="add_application_password_div" style="display: none;">
-    <div class="backdrop_box login_page login_popup">
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_add_application_password'); ?>" onsubmit="Pachno.Main.Profile.addApplicationPassword('<?= make_url('account_add_application_password'); ?>'); return false;" method="post" id="add_application_password_form">
-            <div id="add_application_password_container">
-                <div class="backdrop_detail_header">
-                    <span><?= __('Add application-specific password'); ?></span>
-                    <a href="javascript:void(0);" class="closer" onclick="$('#add_application_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
-                </div>
-                <div class="backdrop_detail_content login_content">
-                    <div class="logindiv regular active">
-                        <div class="article"><?= __('Please enter the name of the application or computer which will be using this password. Examples include "Toms computer", "Work laptop", "My iPhone" and similar.'); ?></div>
-                        <ul class="account_popupform">
-                            <li>
-                                <label for="add_application_password_name"><?= __('Application name'); ?></label>
-                                <input type="text" name="name" id="add_application_password_name" value="">
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="backdrop_details_submit">
-                    <span class="explanation"></span>
-                    <div class="submit_container">
-                        <button type="submit" class="button"><?= image_tag('spinning_20.gif', array('id' => 'add_application_password_indicator', 'style' => 'display: none;')) . __('Add application password'); ?></button>
-                    </div>
-                </div>
-            </div>
-            <div id="add_application_password_response" style="display: none;">
-                <div class="backdrop_detail_header">
-                    <span><?= __('Application password generated'); ?></span>
-                </div>
-                <div class="backdrop_detail_content login_content">
-                    <div class="article"><?= __("Use this one-time password when authenticating with the application. Spaces don't matter, and you don't have to write it down."); ?></div>
-                    <div class="application_password_preview" id="application_password_preview"></div>
-                </div>
-                <div class="backdrop_details_submit">
-                    <span class="explanation"></span>
-                    <div class="submit_container">
-                        <a href="<?= make_url('profile_account'); ?>" class="button"><?= __('Done'); ?></a>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <div id="account_info_container">
     <?php if ($error): ?>
         <div class="message-box type-error">
@@ -307,11 +278,14 @@
                                                         <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
                                                         <span class="name value"><?= __('Use global setting - %lang', array('%lang' => Settings::getLanguage())); ?></span>
                                                     </label>
-                                                    <?php foreach ($languages as $lang_code => $lang_desc): ?>
-                                                        <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_<?= $lang_code; ?>" value="<?= $lang_code; ?>"<?php if ($pachno_user->getLanguage() == $lang_code): ?> checked<?php endif; ?>>
-                                                        <label class="list-item" for="profile_language_<?= $lang_code; ?>">
+                                                    <?php foreach ($languages as $language_code => $language): ?>
+                                                        <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_<?= $language_code; ?>" value="<?= $language_code; ?>"<?php if ($pachno_user->getLanguage() == $language_code): ?> checked<?php endif; ?> <?php if (!$language['available']) echo 'disabled'; ?>>
+                                                        <label class="list-item <?php if (!$language['available']) echo 'disabled'; ?>" for="profile_language_<?= $language_code; ?>">
                                                             <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
-                                                            <span class="name value"><?= $lang_desc; ?> <?php if (Settings::getLanguage() == $lang_code): ?> <?= __('(site default)'); endif;?></span>
+                                                            <span class="name value"><?= $language['language']; ?> <?php if (Settings::getLanguage() == $language_code): ?> <?= __('(site default)'); endif;?></span>
+                                                            <?php if (!$language['available']): ?>
+                                                                <span>(<?= __('Missing translations'); ?>)</span>
+                                                            <?php endif; ?>
                                                         </label>
                                                     <?php endforeach; ?>
                                                 </div>
@@ -339,7 +313,7 @@
                         <h5>
                             <?= fa_image_tag('exclamation-triangle', ['class' => 'icon']); ?>
                             <span><?= __('Two-factor authentication is not enabled'); ?></span>
-                            <button class="button primary" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>');"><?= __('Enable'); ?></button>
+                            <button class="button primary trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>"><?= __('Enable'); ?></button>
                         </h5>
                         <div class="helper-text"><?= __("Enabling two-factor authentication increases account security by requiring that you provide a one-time code every time you log in on a new device."); ?></div>
                     </div>
@@ -348,26 +322,9 @@
                             <h3><?= fa_image_tag('check', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is enabled'); ?></span></h3>
                             <span><?= __('A one-time code is required to log in on a new device'); ?></span>
                         </span>
-                        <button class="button secondary" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.trigger('template_trigger_disable_2fa', { url: '<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}) }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
+                        <button class="button secondary" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.trigger(Pachno.EVENTS.profile.twofactor.triggerDisable, { url: '<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}) }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
                     </div>
                     <div class="form-row separator"></div>
-                    <div class="form-row header">
-                        <h5>
-                            <?= fa_image_tag('key', ['class' => 'icon']); ?>
-                            <span><?= __('Passwords and keys'); ?></span>
-                            <span class="actions">
-                                <?php if ($pachno_user->canChangePassword() && !$pachno_user->isOpenIdLocked()): ?>
-                                    <button class="button secondary" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
-                                <?php elseif ($pachno_user->isOpenIdLocked()): ?>
-                                    <button class="button secondary" onclick="$('#pick_username_div').toggle();" id="pick_username_button"><?= fa_image_tag('user-tag', ['class' => 'icon']); ?><span><?= __('Pick a username'); ?></span></button>
-                                <?php else: ?>
-                                    <button class="button secondary" onclick="Pachno.UI.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
-                                <?php endif; ?>
-                                <button class="button secondary" onclick="$('#add_application_password_div').toggle();"><?= fa_image_tag('handshake', ['class' => 'icon'], 'far'); ?><span><?= __('Add application-specific password'); ?></span></button>
-                            </span>
-                        </h5>
-                        <div class="helper-text"><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></div>
-                    </div>
                     <div class="form-row">
                         <h4>
                             <?= fa_image_tag('rss', ['class' => 'icon']); ?>
@@ -376,17 +333,43 @@
                         </h4>
                         <div class="helper-text"><?= __('Automatically used as part of RSS feed URLs. Regenerating this key prevents your previous RSS feed links from working.'); ?></div>
                     </div>
-                    <?php foreach ($pachno_user->getApplicationPasswords() as $password): ?>
-                        <div class="form-row" id="application_password_<?= $password->getID(); ?>">
-                            <h4>
-                                <span><?= __('Application password: %password_name', array('%password_name' => $password->getName())); ?></span>
-                                <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Delete'); ?></button>
-                            </h4>
-                            <div class="helper-text"><?= __('Last used: %last_used_time, created at: %created_at_time', array('%last_used_time' => ($password->getLastUsedAt()) ? \pachno\core\framework\Context::getI18n()->formatTime($password->getLastUsedAt(), 20) : __('never used'), '%created_at_time' => \pachno\core\framework\Context::getI18n()->formatTime($password->getCreatedAt(), 20))); ?></div>
+                    <div class="form-row header">
+                        <h5>
+                            <?= fa_image_tag('key', ['class' => 'icon']); ?>
+                            <span><?= __('Passwords and keys'); ?></span>
+                            <span class="actions">
+                                <?php if (!$pachno_user->isGuest() && !$pachno_user->isOpenIdLocked()): ?>
+                                    <button class="button secondary" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
+                                <?php elseif ($pachno_user->isOpenIdLocked()): ?>
+                                    <button class="button secondary" onclick="$('#pick_username_div').toggle();" id="pick_username_button"><?= fa_image_tag('user-tag', ['class' => 'icon']); ?><span><?= __('Pick a username'); ?></span></button>
+                                <?php else: ?>
+                                    <button class="button secondary" onclick="Pachno.UI.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
+                                <?php endif; ?>
+                                <button class="button secondary trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'application-password']); ?>"><?= fa_image_tag('handshake', ['class' => 'icon'], 'far'); ?><span><?= __('Add application-specific password'); ?></span></button>
+                            </span>
+                        </h5>
+                        <div class="helper-text"><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></div>
+                    </div>
+                    <div class="flexible-table" id="application-passwords-container">
+                        <div class="row header">
+                            <div class="column header name-container"><?= __('Application password'); ?></div>
+                            <div class="column header"><?= __('Created at'); ?></div>
+                            <div class="column header"><?= __('Last used time'); ?></div>
+                            <div class="column header actions"></div>
                         </div>
-                    <?php endforeach; ?>
+                        <?php foreach ($pachno_user->getApplicationPasswords() as $password): ?>
+                            <div class="row" id="application_password_<?= $password->getID(); ?>" data-application-password data-id="<?= $password->getID(); ?>">
+                                <div class="column name-container"><?= $password->getName(); ?></div>
+                                <div class="column"><?= \pachno\core\framework\Context::getI18n()->formatTime($password->getCreatedAt(), 20); ?></div>
+                                <div class="column"><?= ($password->getLastUsedAt()) ? \pachno\core\framework\Context::getI18n()->formatTime($password->getLastUsedAt(), 20) : __('Never used'); ?></div>
+                                <div class="column actions">
+                                    <button class="button secondary danger" onclick="Pachno.UI.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function () { Pachno.trigger(Pachno.EVENTS.profile.applicationPasswords.triggerDelete, { url: '<?= make_url('profile_remove_application_password', ['id' => $password->getID()]); ?>', id: <?= $password->getId(); ?>}) }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Delete'); ?></button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-                </div>
+            </div>
             <div id="tab_notificationsettings_pane" data-tab-id="notificationsettings" style="display: none;" class="form-container">
                 <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account', ['mode' => 'settings']); ?>" method="post" id="profile_notificationsettings_form" data-simple-submit>
                     <div class="form-row">

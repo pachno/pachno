@@ -5,11 +5,19 @@
     use pachno\core\framework;
 
     /**
+     * @Routes(name_prefix="module_key_", url_prefix="/module_key")
+     *
      * Main controller for the module_key module
      */
     class Main extends framework\Action
     {
 
+        /**
+         * Module index page
+         *
+         * @Route(name="index", url="/")
+         * @param Request $request
+         */
         public function runIndex(framework\Request $request)
         {
         }

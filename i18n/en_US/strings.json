@@ -1,6 +1,44 @@
 {
+  "common": {
+    "mentions": {
+      "user_search_placeholder": "Start typing to search"
+    },
+    "editorjs": {
+      "tools": {
+        "code": "Code block (auto-detect language)",
+        "codeMirror": "Code block (specify language)",
+        "alert": {
+          "title": "Highlighted message",
+          "placeholder": "Enter a message here to highlight it"
+        }
+      }
+    }
+  },
   "agile": {
     "add_card": "Add card",
-    "add_card_here": "Add card here"
+    "add_card_here": "Add card",
+    "add_swimlane": "Add a swimlane"
+  },
+  "issue": {
+    "value_not_set": "Not determined",
+    "unknown_value": "Unknown",
+    "time_spent_none": "No time spent",
+    "time_estimated_none": "Not estimated",
+    "go_to_converted_issue": {
+      "title": "Go to the new issue?",
+      "message": "Do you want to navigate to the issue that you just converted?"
+    }
+  },
+  "roadmap": {
+    "percent_complete": "%percentage% completed"
+  },
+  "configuration": {
+    "update_available": {
+      "header": "Pachno %version is available",
+      "content": "An updated version of Pachno is available! Do you want to open the pach.no website to read more about version %version"
+    },
+    "up_to_date": {
+      "message": "Pachno is up to date"
+    }
   }
 }

@@ -2,13 +2,13 @@
 <html>
     <head>
         <style>
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
+            @import url('https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
 
             body, td, th {
                 padding: 0;
                 margin: 0;
                 background-color: #FFF;
-                font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
+                font-family: 'Fira Sans', 'Open Sans', sans-serif;
                 font-style: normal;
                 font-weight: normal;
                 text-align: left;
@@ -25,13 +25,14 @@
                 padding: 0;
             }
             h1.logo {
-                font-family: 'Lilita One', sans-serif;
+                font-family: 'DM Sans', sans-serif;
                 margin: 0;
                 padding: 10px;
-                background: #0C8990;
+                background: #00adc7;
                 color: #FFF;
-                font-weight: 400;
+                font-weight: 700;
                 font-size: 1.7rem;
+                letter-spacing: -1px;
                 border-radius: 2px 2px 0 0;
             }
             h1 span, h2 span, h3 span {
@@ -56,7 +57,7 @@
                 font-size: 1.2rem;
                 margin-top: .8rem;
             }
-            a { color: #0C8990; font-weight: 400; display: inline-block; padding: 1px; text-decoration: underline; }
+            a { color: #00adc7; font-weight: 400; display: inline-block; padding: 1px; text-decoration: underline; }
             input[type="text"], input[type="password"] { float: left; margin-right: 15px; }
             label { float: left; font-weight: 600; margin-right: 5px; display: block; width: 150px; }
             label span { font-weight: normal; color: #888; }
@@ -97,10 +98,13 @@
                             Please reinstall Pachno or file a bug report if you think this is an error.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_FILE_MISSING): ?>
                             To enable the upgrade mode, make sure the file <span class="command_box"><?= PACHNO_PATH; ?>upgrade</span> is present<br>
-                            Please see the upgrade instructions here: <a href='https://projects.pachno.com/pachno/docs/FAQ'>pachno.com &raquo; wiki &raquo; FAQ</a> for more information.
+                            Please see the <a href='https://projects.pach.no/pachno/docs/r/upgrade'>upgrade instructions</a> for more information.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_REQUIRED): ?>
                             You need to upgrade to this version of Pachno before you can continue.<br>
-                            Please see the upgrade instructions here: <a href='https://projects.pachno.com/pachno/docs/FAQ'>pachno.com &raquo; wiki &raquo; FAQ</a> for more information.
+                            Please see the <a href='https://projects.pach.no/pachno/docs/r/upgrade'>upgrade instructions</a> for more information.
+                        <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_NON_RESET_COMPOSER_JSON): ?>
+                            You need to reset modifications in <span class="command_box"><?= PACHNO_PATH; ?>composer.json</span> before you can continue.<br>
+                            Please see the <a href='https://projects.pach.no/pachno/docs/r/upgrade'>upgrade instructions</a> for more information.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::NO_B2DB_CONFIGURATION): ?>
                             The database configuration file <span class="command_box"><?= PACHNO_CONFIGURATION_PATH; ?>b2db.yml</span> could not be read.<br>
                             This file is generated during installation, so this error should not occur.<br>

@@ -36,23 +36,23 @@
     class Settings extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'settings';
+        public const B2DBNAME = 'settings';
 
-        const ID = 'settings.id';
+        public const ID = 'settings.id';
 
-        const SCOPE = 'settings.scope';
+        public const SCOPE = 'settings.scope';
 
-        const NAME = 'settings.name';
+        public const NAME = 'settings.name';
 
-        const MODULE = 'settings.module';
+        public const MODULE = 'settings.module';
 
-        const VALUE = 'settings.value';
+        public const VALUE = 'settings.value';
 
-        const UPDATED_AT = 'settings.updated_at';
+        public const UPDATED_AT = 'settings.updated_at';
 
-        const UID = 'settings.uid';
+        public const USER_ID = 'settings.uid';
 
         /**
          * @param $scope
@@ -63,7 +63,7 @@
         public function getSettingsForScope($scope, $uid = 0)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $uid);
+            $query->where(self::USER_ID, $uid);
 
             $criteria = new Criteria();
             $criteria->where(self::SCOPE, $scope);
@@ -86,7 +86,7 @@
             $query = $this->getQuery();
             $query->where(self::NAME, $name);
             $query->where(self::MODULE, $module);
-            $query->where(self::UID, $uid);
+            $query->where(self::USER_ID, $uid);
             $query->where(self::SCOPE, $scope);
 
             return $this->selectOne($query, 'none');
@@ -105,7 +105,7 @@
             $query->where(self::NAME, $name);
             $query->where(self::MODULE, $module);
             $query->where(self::SCOPE, $scope);
-            $query->indexBy(self::UID);
+            $query->indexBy(self::USER_ID);
 
             return $this->select($query, 'none');
         }
@@ -115,7 +115,7 @@
             $query = $this->getQuery();
             $query->where(self::NAME, $setting->getName());
             $query->where(self::MODULE, $setting->getModuleKey());
-            $query->where(self::UID, $setting->getUserId());
+            $query->where(self::USER_ID, $setting->getUserId());
             $query->where(self::SCOPE, $setting->getScopeId());
 
             if ($setting->getID()) {
@@ -140,7 +140,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::MODULE, $module_name);
-            $query->where(self::UID, 0, Criterion::GREATER_THAN);
+            $query->where(self::USER_ID, 0, Criterion::GREATER_THAN);
             if ($scope !== null) {
                 $query->where(self::SCOPE, $scope);
             }
@@ -153,12 +153,11 @@
 
             $settings = [];
             $settings[framework\Settings::SETTING_THEME_NAME] = 'oxygen';
-            $settings[framework\Settings::SETTING_REQUIRE_LOGIN] = false;
+            $settings[framework\Settings::SETTING_REQUIRE_LOGIN] = framework\Settings::LOGIN_REQUIRED_WRITE;
             $settings[framework\Settings::SETTING_DEFAULT_USER_IS_GUEST] = true;
             $settings[framework\Settings::SETTING_ALLOW_REGISTRATION] = true;
             $settings[framework\Settings::SETTING_RETURN_FROM_LOGIN] = 'referer';
             $settings[framework\Settings::SETTING_RETURN_FROM_LOGOUT] = 'home';
-            $settings[framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW] = true;
             $settings[framework\Settings::SETTING_ALLOW_USER_THEMES] = false;
             $settings[framework\Settings::SETTING_ENABLE_UPLOADS] = false;
             $settings[framework\Settings::SETTING_ENABLE_GRAVATARS] = true;
@@ -184,7 +183,7 @@
             $query = $this->getQuery();
             $query->where(self::NAME, $name);
             $query->where(self::MODULE, $module);
-            $query->where(self::UID, $uid);
+            $query->where(self::USER_ID, $uid);
             $query->where(self::SCOPE, $scope);
             $res = $this->rawSelectOne($query);
 
@@ -193,7 +192,7 @@
                 $query = $this->getQuery();
                 $query->where(self::NAME, $name);
                 $query->where(self::MODULE, $module);
-                $query->where(self::UID, $uid);
+                $query->where(self::USER_ID, $uid);
                 $query->where(self::SCOPE, $scope);
                 $query->where(self::ID, $theID, Criterion::NOT_EQUALS);
                 $res2 = $this->rawDelete($query);
@@ -201,7 +200,7 @@
                 $update = new Update();
                 $update->add(self::NAME, $name);
                 $update->add(self::MODULE, $module);
-                $update->add(self::UID, $uid);
+                $update->add(self::USER_ID, $uid);
                 $update->add(self::VALUE, $value);
                 $update->add(self::UPDATED_AT, time());
                 $this->rawUpdateById($update, $theID);
@@ -211,7 +210,7 @@
                 $insertion->add(self::MODULE, $module);
                 $insertion->add(self::VALUE, $value);
                 $insertion->add(self::SCOPE, $scope);
-                $insertion->add(self::UID, $uid);
+                $insertion->add(self::USER_ID, $uid);
                 $insertion->add(self::UPDATED_AT, time());
                 $this->rawInsert($insertion);
             }
@@ -248,9 +247,9 @@
             $this->rawUpdate($update, $query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
-            $this->addIndex('scope_uid', [self::SCOPE, self::UID]);
+            $this->addIndex('scope_uid', [self::SCOPE, self::USER_ID]);
         }
 
         public function setMaintenanceMode($value)

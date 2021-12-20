@@ -14,21 +14,10 @@
         <div class="top-search-filters-container" id="project_planning_action_strip">
             <div class="header">
                 <div class="name-container">
-                    <span class="project-name"><?= $board->getProject()->getName(); ?></span>
                     <span class="board-name"><?= $board->getName(); ?></span>
                 </div>
                 <div class="stripe-container">
                     <div class="stripe"></div>
-                </div>
-                <div class="fancy-tabs">
-                    <a class="tab" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
-                        <span class="icon"><?= fa_image_tag('stream'); ?></span>
-                        <span class="name"><span class="label-generic"><?= __('Planning'); ?></span><span class="label-scrum"><?= __('Backlog'); ?></span><span class="label-kanban"><?= __('Backlog'); ?></span></span>
-                    </a>
-                    <a class="tab selected" href="<?= make_url('agile_whiteboard', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
-                        <span class="icon"><?= fa_image_tag('columns'); ?></span>
-                        <span class="name"><?= __('Board view'); ?></span>
-                    </a>
                 </div>
             </div>
             <div class="search-and-filters-strip">
@@ -76,7 +65,7 @@
                 </div>
             </div>
         </div>
-        <div id="planning_whiteboard" class="whiteboard-columns-container <?php if (!count($board->getColumns())) echo 'initialized'; ?>" data-simplebar>
+        <div id="planning_whiteboard" class="whiteboard-columns-container <?php if (!count($board->getColumns())) echo 'initialized'; ?>">
             <div class="planning_indicator" id="whiteboard_indicator"><?= image_tag('spinning_30.gif'); ?></div>
             <div id="onboarding-no-milestones" class="onboarding hidden">
                 <div class="image-container">
@@ -238,11 +227,8 @@
     Pachno.on(Pachno.EVENTS.ready, function () {
         let board;
 
-        Pachno.fetch('<?= make_url('agile_whiteboard', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>?format=json', { method: 'GET' })
-            .then((json) => {
-                board = new Board(json.board);
-                window.currentBoard = board;
-            });
+        board = new Board(<?= json_encode($board->toJSON()); ?>);
+        window.currentBoard = board;
 
         $('body').on('click', 'input[name=selected_milestone]', function () {
             board.updateSelectedMilestone(true);

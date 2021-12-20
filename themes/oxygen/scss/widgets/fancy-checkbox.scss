@@ -14,12 +14,14 @@
   + .list-item {
     align-items: center;
 
+    span.unchecked,
     .fas.unchecked,
     .far.unchecked {
       display: inline-flex;
       //margin-right: .3em;
     }
 
+    span.checked,
     .fas.checked,
     .far.checked {
       display: none;
@@ -34,7 +36,7 @@
     .far,
     .fab {
       &:not(.icon) {
-        + span {
+        ~ span {
           margin-left: .3em;
         }
       }
@@ -68,15 +70,17 @@
 
   &:checked:not(:disabled):not(.submitting) {
     + label {
-      color: #88AB75;
+      color: $theme-secondary-color;
     }
 
     + .list-item:not(.toggler),
     + .list-item:not(.toggler):hover {
-      background-color: #0C8990;
+      background-color: $theme-secondary-color;
       color: #FFF;
 
-      .icon {
+      .name,
+      .icon,
+      .expander {
         color: #FFF;
       }
     }
@@ -85,19 +89,21 @@
       color: #141823;
 
       .icon {
-        color: #0C8990;
+        color: $theme-secondary-color;
       }
     }
 
     + label,
     + .list-item {
 
+      span.checked,
       .fas.checked,
       .far.checked {
         display: inline-block;
         //margin-right: .3em;
       }
 
+      span.unchecked,
       .fas.unchecked,
       .far.unchecked {
         display: none;
@@ -164,7 +170,7 @@
 
     &:checked {
       + label {
-        border-color: #88AB75;
+        border-color: $theme-secondary-color;
         .fas,
         .far {
           &:checked {
@@ -175,7 +181,7 @@
         &.empty {
           .fas,
           .far {
-            color: #88AB75;
+            color: $theme-secondary-color;
           }
         }
       }

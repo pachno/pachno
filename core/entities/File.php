@@ -14,7 +14,10 @@
     class File extends IdentifiableScoped
     {
 
-        const TYPE_PROJECT_ICON = 'project_icon';
+        public const TYPE_PROJECT_ICON = 'project_icon';
+        public const TYPE_ATTACHMENT = 'attachment';
+        public const TYPE_COVER = 'cover';
+        public const TYPE_DOWNLOAD = 'download';
 
         /**
          * @Column(type="string", length=200)
@@ -71,21 +74,6 @@
          */
         protected $_project_id;
 
-        public static function getByIssueID($issue_id)
-        {
-            return tables\IssueFiles::getTable()->getByIssueID($issue_id);
-        }
-
-        public static function countByIssueID($issue_id)
-        {
-            return tables\IssueFiles::getTable()->countByIssueID($issue_id);
-        }
-
-        public static function getByArticleID($article_id)
-        {
-            return ArticleFiles::getTable()->getByArticleID($article_id);
-        }
-
         /**
          * Returns the parent project
          *
@@ -115,6 +103,43 @@
             return $content_type;
         }
 
+        public function getIcon()
+        {
+            $filename = $this->getOriginalFilename();
+            if (!$filename || strpos($filename, '.') === false) {
+                return 'file';
+            }
+
+            $extension = strtolower(explode('.', $filename)[1]);
+            if (in_array($extension, ['php', 'cpp', 'h', 'java', 'js', 'tsx', 'jsp', 'pl', 'ts', 'jsx', 'htm', 'html', 'asp', 'rb', 'class', 'cmd', 'cxx', 'json', 'patch', 'xml', 'css', 'scss', 'yml', 'xlf'])) {
+                return 'file-code';
+            } elseif (in_array($extension, ['jpg', 'jpeg', 'bmp', 'png', 'webp', 'gif', 'img', 'svg'])) {
+                return 'file-image';
+            } elseif (in_array($extension, ['ppt', 'pptx', 'odp', 'odpt'])) {
+                return 'file-powerpoint';
+            } elseif (in_array($extension, ['doc', 'docx', 'odt', 'odtt', 'gddoc'])) {
+                return 'file-word';
+            } elseif (in_array($extension, ['xls', 'xlsx', 'ods', 'odst'])) {
+                return 'file-excel';
+            } elseif (in_array($extension, ['mpg', 'mp4', 'mpeg', 'avi', 'mov'])) {
+                return 'file-video';
+            } elseif (in_array($extension, ['txt', 'info', 'nfo', 'inf', 'ini', 'cfg', 'md', 'conf', 'log'])) {
+                return 'file-alt';
+            } elseif (in_array($extension, ['zip', 'rar', 'gz', 'tar', 'xz', 'jar', 'deb', 'rpm', 'appimage', 'flatpak'])) {
+                return 'file-archive';
+            } elseif (in_array($extension, ['exe', 'bat'])) {
+                return 'window-maximize';
+            } elseif (in_array($extension, ['wav', 'mp3', 'ogg'])) {
+                return 'file-audio';
+            } elseif ($extension === 'csv') {
+                return 'file-csv';
+            } elseif ($extension === 'pdf') {
+                return 'file-pdf';
+            }
+
+            return 'file';
+        }
+
         public function getContentType()
         {
             return $this->_content_type;
@@ -132,9 +157,12 @@
 
         public static function getImageContentTypes()
         {
-            return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif'];
+            return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif', 'image/svg', 'image/svg+xml'];
         }
 
+        /**
+         * @return User
+         */
         public function getUploadedBy()
         {
             return $this->_b2dbLazyLoad('_uid');
@@ -190,6 +218,8 @@
             $size = $this->getSize();
             if ($size > 1024 * 1024) {
                 return round(($size * 100 / (1024 * 1024)) / 100, 2) . 'MB';
+            } elseif ($size < 1024) {
+                return $size . 'B';
             } else {
                 return round(($size * 100 / 1024) / 100, 2) . 'KB';
             }
@@ -230,15 +260,15 @@
 
             foreach ($issue_ids as $issue_id) {
                 $issue = new Issue($issue_id);
-                if (!$issue->hasAccess())
-                    return false;
+                if ($issue->hasAccess())
+                    return true;
             }
 
             if ($this->getProject() instanceof Project) {
                 return $this->getProject()->hasAccess();
             }
 
-            return false;
+            return true;
 //            $event = Event::createNew('core', 'pachno\core\entities\File::hasAccess', $this);
 //            $event->setReturnValue(false);
 //            $event->triggerUntilProcessed();
@@ -246,7 +276,7 @@
 //            return $event->getReturnValue();
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             if ($this->doesFileExistOnDisk()) {
                 unlink($this->getFullpath());
@@ -289,7 +319,7 @@
             $this->_type = $type;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -309,7 +339,11 @@
         {
             return [
                 'id' => $this->getID(),
-                'url' => $this->getUrl(true)
+                'type' => $this->getType(),
+                'content_type' => $this->getContentType(),
+                'is_image' => $this->isImage(),
+                'icon' => $this->getIcon(),
+                'url' => $this->getUrl(false)
             ];
         }
 

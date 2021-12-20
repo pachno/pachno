@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\framework\Event;
 
     /**
@@ -27,23 +28,25 @@
     class Notification extends IdentifiableScoped
     {
 
-        const TYPE_ISSUE_CREATED = 'issue_created';
+        public const TYPE_ISSUE_CREATED = 'issue_created';
 
-        const TYPE_ISSUE_UPDATED = 'issue_updated';
+        public const TYPE_ISSUE_UPDATED = 'issue_updated';
 
-        const TYPE_ISSUE_COMMENTED = 'issue_commented';
+        public const TYPE_ISSUE_COMMENTED = 'issue_commented';
 
-        const TYPE_ISSUE_MENTIONED = 'issue_mentioned';
+        public const TYPE_ISSUE_MENTIONED = 'issue_mentioned';
 
-        const TYPE_ARTICLE_CREATED = 'article_created';
+        public const TYPE_ARTICLE_CREATED = 'article_created';
 
-        const TYPE_ARTICLE_UPDATED = 'article_updated';
+        public const TYPE_ARTICLE_UPDATED = 'article_updated';
 
-        const TYPE_ARTICLE_COMMENTED = 'article_commented';
+        public const TYPE_ARTICLE_COMMENTED = 'article_commented';
 
-        const TYPE_ARTICLE_MENTIONED = 'article_mentioned';
+        public const TYPE_ARTICLE_MENTIONED = 'article_mentioned';
 
-        const TYPE_COMMENT_MENTIONED = 'comment_mentioned';
+        public const TYPE_COMMENT_MENTIONED = 'comment_mentioned';
+
+        public const TYPE_COMMIT_COMMENTED = 'commit_commented';
 
         /**
          * @Column(type="integer", length=10)
@@ -166,14 +169,14 @@
                 case self::TYPE_ISSUE_CREATED:
                 case self::TYPE_ISSUE_UPDATED:
                 case self::TYPE_ISSUE_MENTIONED:
-                    $url = make_url('viewissue', ['project_key' => $this->getTarget()->getProject()->getKey(), 'issue_no' => $this->getTarget()->getFormattedIssueNo()], false);
+                    $url = $issue->getUrl(false);
                     break;
                 case self::TYPE_ISSUE_COMMENTED:
-                    $url = make_url('viewissue', ['project_key' => $this->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $this->getTarget()->getTarget()->getFormattedIssueNo()], false) . '#comment_' . $this->getTarget()->getID();
+                    $url = $this->getTarget()->getTarget()->getUrl(false) . '#comment_' . $this->getTarget()->getID();
                     break;
                 case self::TYPE_COMMENT_MENTIONED:
                     if ($this->getTarget()->getTargetType() == Comment::TYPE_ISSUE) {
-                        $url = make_url('viewissue', ['project_key' => $this->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $this->getTarget()->getTarget()->getFormattedIssueNo()], false) . '#comment_' . $this->getTarget()->getID();
+                        $url = $this->getTarget()->getTarget()->getUrl(false) . '#comment_' . $this->getTarget()->getID();
                     } else {
                         $url = make_url('publish_article', ['article_name' => $this->getTarget()->getTarget()->getName()], false) . '#comment_' . $this->getTarget()->getID();
                     }
@@ -223,7 +226,7 @@
                         case self::TYPE_ISSUE_UPDATED:
                         case self::TYPE_ISSUE_CREATED:
                         case self::TYPE_ISSUE_MENTIONED:
-                            $this->_target = Issue::getB2DBTable()->selectById((int)$this->_target_id);
+                            $this->_target = Issues::getTable()->selectById((int)$this->_target_id);
                             break;
                         case self::TYPE_ARTICLE_CREATED:
                         case self::TYPE_ARTICLE_UPDATED:
@@ -247,7 +250,7 @@
             $this->_target = $target;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -255,7 +258,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if (!$is_new) {
                 if ($this->isRead() && $this->getCreatedAt() < NOW - (86400 * 30)) {

@@ -35,23 +35,23 @@
     class WorkflowTransitionValidationRules extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'workflow_transition_validation_rules';
+        public const B2DBNAME = 'workflow_transition_validation_rules';
 
-        const ID = 'workflow_transition_validation_rules.id';
+        public const ID = 'workflow_transition_validation_rules.id';
 
-        const SCOPE = 'workflow_transition_validation_rules.scope';
+        public const SCOPE = 'workflow_transition_validation_rules.scope';
 
-        const RULE = 'workflow_transition_validation_rules.rule';
+        public const RULE = 'workflow_transition_validation_rules.rule';
 
-        const TRANSITION_ID = 'workflow_transition_validation_rules.transition_id';
+        public const TRANSITION_ID = 'workflow_transition_validation_rules.transition_id';
 
-        const WORKFLOW_ID = 'workflow_transition_validation_rules.workflow_id';
+        public const WORKFLOW_ID = 'workflow_transition_validation_rules.workflow_id';
 
-        const RULE_VALUE = 'workflow_transition_validation_rules.rule_value';
+        public const RULE_VALUE = 'workflow_transition_validation_rules.rule_value';
 
-        const PRE_OR_POST = 'workflow_transition_validation_rules.pre_or_post';
+        public const PRE_OR_POST = 'workflow_transition_validation_rules.pre_or_post';
 
         public function getByTransitionID($transition_id)
         {
@@ -69,7 +69,7 @@
             return $actions;
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope_transitionid', [self::SCOPE, self::TRANSITION_ID]);
         }

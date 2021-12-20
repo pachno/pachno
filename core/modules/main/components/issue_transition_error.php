@@ -1,7 +1,6 @@
 <?php echo __('The following actions could not be performed because of missing or invalid values: %list', array('%list' => '')); ?><br>
-<ul>
-  <?php foreach (\pachno\core\framework\Context::getMessageAndClear('issue_workflow_errors') as $error_field): ?>
-    <li><?php
+  <?php foreach ($errors as $error_field): ?>
+    <?php
 
       switch ($error_field)
       {
@@ -35,6 +34,12 @@
         case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
           echo __('Could not set issue priority because none was provided');
           break;
+        case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_SEVERITY:
+          echo __('Could not set issue severity because none was provided');
+          break;
+        case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_CATEGORY:
+          echo __('Could not set issue category because none was provided');
+          break;
         case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_REPRODUCABILITY:
           echo __('Could not set issue reproducability because none was provided');
           break;
@@ -49,6 +54,5 @@
           break;
       }
 
-      ?></li>
+      ?>
   <?php endforeach; ?>
-</ul>

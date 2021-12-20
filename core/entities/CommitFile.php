@@ -15,15 +15,15 @@
     class CommitFile extends common\IdentifiableScoped implements Diffable
     {
 
-        const ACTION_ADDED = 'A';
+        public const ACTION_ADDED = 'A';
 
-        const ACTION_UPDATED = 'U';
+        public const ACTION_UPDATED = 'U';
 
-        const ACTION_MODIFIED = 'M';
+        public const ACTION_MODIFIED = 'M';
 
-        const ACTION_DELETED = 'D';
+        public const ACTION_DELETED = 'D';
 
-        const ACTION_RENAMED = 'R';
+        public const ACTION_RENAMED = 'R';
 
         /**
          * File path

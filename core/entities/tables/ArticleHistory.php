@@ -19,32 +19,44 @@
     class ArticleHistory extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'articlehistory';
+        public const B2DBNAME = 'articlehistory';
 
-        const ID = 'articlehistory.id';
+        public const ID = 'articlehistory.id';
 
-        const ARTICLE_NAME = 'articlehistory.article_name';
+        public const ARTICLE_NAME = 'articlehistory.article_name';
 
-        const OLD_CONTENT = 'articlehistory.old_content';
+        public const OLD_CONTENT = 'articlehistory.old_content';
 
-        const NEW_CONTENT = 'articlehistory.new_content';
+        public const NEW_CONTENT = 'articlehistory.new_content';
 
-        const REASON = 'articlehistory.reason';
+        public const REASON = 'articlehistory.reason';
 
-        const REVISION = 'articlehistory.revision';
+        public const REVISION = 'articlehistory.revision';
 
-        const DATE = 'articlehistory.date';
+        public const DATE = 'articlehistory.date';
 
-        const AUTHOR = 'articlehistory.author';
+        public const AUTHOR = 'articlehistory.author';
 
-        const SCOPE = 'articlehistory.scope';
+        public const SCOPE = 'articlehistory.scope';
 
         public function deleteHistoryByArticle($article_name)
         {
             $query = $this->getQuery();
             $query->where(self::ARTICLE_NAME, $article_name);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $res = $this->rawDelete($query);
+        }
+
+        /**
+         * @param $article_id
+         * @return ArticleRevision
+         */
+        public function getLatestByArticleId($article_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_ID, $article_name);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawDelete($query);
         }
@@ -140,13 +152,13 @@
             $res = $this->rawSelect($query);
 
             if ($res) {
-                $retval = [];
+                $revisions = [];
                 while ($row = $res->getNextRow()) {
                     $author = ($row->get(self::AUTHOR)) ? new User($row->get(self::AUTHOR)) : null;
-                    $retval[$row->get(self::REVISION)] = ['old_content' => $row->get(self::OLD_CONTENT), 'new_content' => $row->get(self::NEW_CONTENT), 'date' => $row->get(self::DATE), 'author' => $author];
+                    $revisions[$row->get(self::REVISION)] = ['old_content' => $row->get(self::OLD_CONTENT), 'new_content' => $row->get(self::NEW_CONTENT), 'date' => $row->get(self::DATE), 'author' => $author];
                 }
 
-                return ($to_revision !== null) ? $retval : $retval[$from_revision];
+                return ($to_revision !== null) ? $revisions : $revisions[$from_revision];
             } else {
                 return null;
             }
@@ -326,7 +338,7 @@
             return $result;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::ARTICLE_NAME, 255);

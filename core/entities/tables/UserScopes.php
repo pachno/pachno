@@ -31,19 +31,19 @@
     class UserScopes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'userscopes';
+        public const B2DBNAME = 'userscopes';
 
-        const ID = 'userscopes.id';
+        public const ID = 'userscopes.id';
 
-        const SCOPE = 'userscopes.scope';
+        public const SCOPE = 'userscopes.scope';
 
-        const USER_ID = 'userscopes.user_id';
+        public const USER_ID = 'userscopes.user_id';
 
-        const GROUP_ID = 'userscopes.group_id';
+        public const GROUP_ID = 'userscopes.group_id';
 
-        const CONFIRMED = 'userscopes.confirmed';
+        public const CONFIRMED = 'userscopes.confirmed';
 
         protected $_scope_confirmed_cache = [];
 
@@ -237,7 +237,7 @@
             return $this->count($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addBoolean(self::CONFIRMED);
@@ -245,7 +245,7 @@
             parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable(), Groups::ID);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
             $this->addIndex('groupid_scope', [self::GROUP_ID, self::SCOPE]);

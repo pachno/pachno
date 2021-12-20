@@ -1,6 +1,6 @@
 <p><?= __('Use this page to set up the connection details for your LDAP or Active Directory server. It is highly recommended that you read the online help before use, as misconfiguration may prevent you from accessing configuration pages to rectify issues.'); ?></p>
 
-<p><b><?= link_tag('https://projects.pachno.com/pachno/docs/UserGuide%3AModules%3ALDAP', __('View the online documentation')); ?></b></p>
+<p><b><?= link_tag('https://projects.pach.no/pachno/docs/UserGuide%3AModules%3ALDAP', __('View the online documentation')); ?></b></p>
 
 <?php if ($noldap): ?>
     <div class="rounded_box red" style="margin-top: 5px">

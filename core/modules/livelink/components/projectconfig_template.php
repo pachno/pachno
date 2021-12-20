@@ -6,20 +6,18 @@
  */
 
 ?>
-<div class="form-container">
-    <div class="form-row header">
+<div class="form-container" data-tab-id="livelink" style="<?php if (!$module->hasConnectors()) echo ' display: none;'; ?>">
+    <div class="form-row">
         <h3>
-            <?= fa_image_tag('magic', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Import or link existing project(s)'); ?></span>
+            <?= fa_image_tag('code', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Import from or link with external services'); ?></span>
         </h3>
     </div>
-    <div class="message-box type-info">
+    <div class="helper-text">
         <div class="image-container"><?= image_tag('/unthemed/onboarding_livelink_intro_icon.png', [], true); ?></div>
-        <div class="message">
-            <span class="description">
-                <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
-            </span>
-        </div>
+        <span class="description">
+            <?= __('Import and/or link this project with an existing project or repository from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
+        </span>
     </div>
     <?php if (isset($connector)): ?>
         <ul class="livelink-import-list">
@@ -56,33 +54,26 @@
             <?php foreach ($module->getConnectorModules() as $connector_key => $connector_module): ?>
                 <li>
                     <span class="description"><?= fa_image_tag($connector_module->getConnector()->getLogo(), ['class' => 'connector_logo'], $connector_module->getConnector()->getLogoStyle()) . $connector_module->getConnector()->getProjectTemplateDescription(); ?></span>
-                    <button class="button secondary highlight" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-import_project', 'connector' => $connector_key, 'project_id' => $project->getID()]); ?>');"><?php echo __('Import / link'); ?></button>
+                    <button class="button secondary highlight trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-import_project', 'connector' => $connector_key, 'project_id' => $project->getID()]); ?>"><?php echo __('Import / link'); ?></button>
                 </li>
             <?php endforeach; ?>
         </ul>
     <?php else: ?>
-        <p class="livelink-intro">
-            <?= __('%pachno_live_link requires integration plugins. Download the integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_live_link' => link_tag('https://pachno.com/features/livelink', fa_image_tag('leaf') . 'Pachno Live Link', ['target' => '_blank']), '%pachno_com' => link_tag('https://pachno.com/register/self-hosted', fa_image_tag('globe') . ' pachno.com'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?>
-        </p>
+        <div class="message-box type-warning">
+            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+            <span class="message">
+                <span><?= __('%pachno_live_link requires integration plugins. Download integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_live_link' => link_tag('https://pach.no/features?feature=livelink', fa_image_tag('leaf') . 'Pachno Live Link', ['target' => '_blank']), '%pachno_com' => link_tag('https://pach.no/', fa_image_tag('globe') . ' pach.no'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?></span>
+            </span>
+        </div>
     <?php endif; ?>
 </div>
-<?php if (!$project->getID()): ?>
-    <fieldset class="livelink-separator">
-        <?php if (isset($connector)): ?>
-            <legend><?= __('Enter project details'); ?></legend>
-        <?php else: ?>
-            <legend><?= __('%import_with_livelink or create a project manually', array('%import_with_livelink' => '')); ?></legend>
-        <?php endif; ?>
-    </fieldset>
-<?php else: ?>
+<?php if ($project->getID()): ?>
     <script>
         $(document).ready(() => {
-            var removeProjectLivelink = function () {
-                ['#dialog_yes', '#dialog_no'].each(function (elm) {
-                    $(elm).addClass('disabled');
-                });
+            const removeProjectLivelink = function () {
+                Pachno.UI.Dialog.setSubmitting();
 
-                var submitRemoveLivelink = function () {
+                const submitRemoveLivelink = function () {
                     return new Promise(function (resolve, reject) {
                         $.ajax({
                             type: 'POST',
@@ -95,7 +86,7 @@
                     });
                 };
 
-                var loadLivelinkPartial = function () {
+                const loadLivelinkPartial = function () {
                     return new Promise(function (resolve, reject) {
                         $.ajax({
                             type: 'GET',
@@ -112,24 +103,18 @@
                     .then(loadLivelinkPartial)
                     .then(function (content) {
                         $('#tab_livelink_pane').html(content);
-                        ['#dialog_yes', '#dialog_no'].each(function (elm) {
-                            $(elm).removeClass('disabled');
-                        });
-                        pachno_index_js.Helpers.Dialog.dismiss();
+                        Pachno.UI.Dialog.dismiss();
                     })
                     .catch(function (error) {
-                        pachno_index_js.Helpers.Dialog.dismiss();
-                        pachno_index_js.Helpers.Message.error(error);
-                        ['#dialog_yes', '#dialog_no'].each(function (elm) {
-                            $(elm).removeClass('disabled');
-                        });
+                        Pachno.UI.Dialog.dismiss();
+                        Pachno.UI.Message.error(error);
                     })
             };
 
             $('#project_remove_livelink_button').off();
             $('#project_remove_livelink_button').on('click', function (e) {
                 e.preventDefault();
-                pachno_index_js.Helpers.Dialog.show('<?php echo __('Remove Pachno LiveLink?'); ?>', '<?php echo __('Are you sure you want to remove the LiveLink integration from this project? No issues or project details will be removed or affected by this, but you will no longer receive updates from the external repository.'); ?>', {yes: {click: removeProjectLivelink }, no: {click: pachno_index_js.Helpers.Dialog.dismiss}});
+                Pachno.UI.Dialog.show('<?php echo __('Remove Pachno LiveLink?'); ?>', '<?php echo __('Are you sure you want to remove the LiveLink integration from this project? No issues or project details will be removed or affected by this, but you will no longer receive updates from the external repository.'); ?>', {yes: {click: removeProjectLivelink }, no: {click: Pachno.UI.Dialog.dismiss}});
             });
         });
     </script>

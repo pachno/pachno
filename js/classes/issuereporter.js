@@ -1,8 +1,14 @@
 import UI from "../helpers/ui";
 
 class IssueReporter {
-    constructor() {
+    constructor(do_update) {
         this.setupListeners();
+        if (do_update === true) {
+            const $reportissueContainer = $('#reportissue_container');
+            $reportissueContainer.addClass('huge');
+            $reportissueContainer.removeClass('large');
+            this.updateFields();
+        }
     }
 
     updateFields() {
@@ -17,7 +23,7 @@ class IssueReporter {
 
             Pachno.fetch(url, {
                 loading: {indicator: '#report_issue_more_options_indicator'},
-                additional_params: 'issuetype_id=' + issue_type_id,
+                data: 'issuetype_id=' + issue_type_id,
             }).then(json => {
                 for (const fieldname of json.available_fields) {
                     let $field_container = $(`#${fieldname}_div`);

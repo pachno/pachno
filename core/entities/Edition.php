@@ -251,7 +251,7 @@
          */
         public function hasAccess()
         {
-            return ($this->getProject()->canSeeAllEditions() || framework\Context::getUser()->hasPermission('canseeedition', $this->getID()));
+            return (!$this->isLocked() || $this->getProject()->canSeeInternalEditions());
         }
 
         /**
@@ -310,15 +310,14 @@
             $this->_name = $name;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
-                framework\Context::setPermission("canseeedition", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
                 Event::createNew('core', 'Edition::createNew', $this)->trigger();
             }
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\EditionComponents::getTable()->deleteByEditionID($this->getID());
         }

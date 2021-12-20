@@ -1,7 +1,7 @@
 <div class="backdrop_box large" id="username_confirmation_popup">
     <div class="backdrop_detail_header">
         <span><?php echo __('Confirm username'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <h5><?php echo __('The selected username is available'); ?></h5>

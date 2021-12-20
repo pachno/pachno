@@ -5,13 +5,14 @@
   flex-direction: column;
   position: relative;
   text-align: left;
+  box-sizing: border-box;
 
   .fancy-dropdown {
     display: flex;
     align-items: center;
     position: relative;
     padding: 5px 0 5px 10px;
-    font-size: .95rem;
+    font-size: 1em;
     vertical-align: middle;
     border: none;
     transition: background-color 0.25s ease-in-out, box-shadow .25s ease-in-out;
@@ -81,19 +82,28 @@
       font-size: .9em;
       text-transform: uppercase;
       margin-right: .5em;
+
+      .locked {
+        display: none;
+      }
     }
 
-    > .value {
+    > .value,
+    > .name {
       flex: 1 1 auto;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      max-width: 250px;
+      max-width: 350px;
       min-width: 100px;
       font-weight: $theme-font-weight-light;
+
+      &.no-value {
+        color: #C8C8C8;
+      }
     }
 
-    &.no-value > .value {
+    &:not(.locked).no-value > .value {
       color: #C8C8C8;
     }
 
@@ -218,5 +228,21 @@
       }
     }
   }
+}
 
+.form-row.locked {
+  .fancy-dropdown {
+    &,
+    &:hover {
+      //border: 2px solid $theme-primary-color;
+    }
+
+    label,
+    .label {
+      .locked {
+        display: inline-block;
+        margin-left: .35em;
+      }
+    }
+  }
 }

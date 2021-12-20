@@ -27,7 +27,7 @@
 <div id="tab_mailing_pane"<?php if ($selected_tab != 'mailing'): ?> style="display: none;"<?php endif; ?>>
     <div class="project_save_container">
         <span class="content">
-            <?php echo __('Pachno can check email accounts and create issues from incoming emails. Set up a new account here, and check the %online_documentation for more information.', array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/IncomingEmail', '<b>'.__('online documentation').'</b>'))); ?>
+            <?php echo __('Pachno can check email accounts and create issues from incoming emails. Set up a new account here, and check the %online_documentation for more information.', array('%online_documentation' => link_tag('https://projects.pach.no/pachno/docs/IncomingEmail', '<b>'.__('online documentation').'</b>'))); ?>
         </span>
         <div class="button" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'mailing_editincomingemailaccount', 'project_id' => $project->getId())); ?>');"><?php echo __('Add new account'); ?></div>
     </div>

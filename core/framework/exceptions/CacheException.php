@@ -13,9 +13,9 @@
     class CacheException extends Exception
     {
 
-        const NO_FOLDER = 1;
+        public const NO_FOLDER = 1;
 
-        const NOT_WRITABLE = 2;
+        public const NOT_WRITABLE = 2;
 
     }
 

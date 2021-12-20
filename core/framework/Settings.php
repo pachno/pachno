@@ -20,258 +20,257 @@
     final class Settings
     {
 
-        const ACCESS_READ = 1;
+        public const ACCESS_READ = 1;
 
-        const ACCESS_FULL = 2;
+        public const ACCESS_FULL = 2;
 
-        const CONFIGURATION_SECTION_WORKFLOW = 1;
+        public const CONFIGURATION_SECTION_WORKFLOW = 1;
 
-        const CONFIGURATION_SECTION_WORKFLOW_SCHEMES = 9;
+        public const CONFIGURATION_SECTION_WORKFLOW_SCHEMES = 9;
 
-        const CONFIGURATION_SECTION_USERS = 2;
+        public const CONFIGURATION_SECTION_USERS = 2;
 
-        const CONFIGURATION_SECTION_TEAMS = 22;
+        public const CONFIGURATION_SECTION_TEAMS = 22;
 
-        const CONFIGURATION_SECTION_CLIENTS = 23;
+        public const CONFIGURATION_SECTION_CLIENTS = 23;
 
-        const CONFIGURATION_SECTION_UPLOADS = 3;
+        public const CONFIGURATION_SECTION_UPLOADS = 3;
 
-        const CONFIGURATION_SECTION_ISSUEFIELDS = 4;
+        public const CONFIGURATION_SECTION_MAILING = 'mailing';
 
-        const CONFIGURATION_SECTION_PERMISSIONS = 5;
+        public const CONFIGURATION_SECTION_ISSUEFIELDS = 4;
 
-        const CONFIGURATION_SECTION_ISSUETYPES = 6;
+        public const CONFIGURATION_SECTION_PERMISSIONS = 5;
 
-        const CONFIGURATION_SECTION_ISSUETYPE_SCHEMES = 8;
+        public const CONFIGURATION_SECTION_ISSUETYPES = 6;
 
-        const CONFIGURATION_SECTION_ROLES = 7;
+        public const CONFIGURATION_SECTION_ISSUETYPE_SCHEMES = 8;
 
-        const CONFIGURATION_SECTION_PROJECTS = 10;
+        public const CONFIGURATION_SECTION_ROLES = 7;
 
-        const CONFIGURATION_SECTION_SETTINGS = 12;
+        public const CONFIGURATION_SECTION_PROJECTS = 10;
 
-        const CONFIGURATION_SECTION_SCOPES = 14;
+        public const CONFIGURATION_SECTION_SETTINGS = 12;
 
-        const CONFIGURATION_SECTION_MODULES = 15;
+        public const CONFIGURATION_SECTION_SCOPES = 14;
 
-        const CONFIGURATION_SECTION_IMPORT = 16;
+        public const CONFIGURATION_SECTION_MODULES = 15;
 
-        const CONFIGURATION_SECTION_AUTHENTICATION = 17;
+        public const CONFIGURATION_SECTION_IMPORT = 16;
 
-        const CONFIGURATION_SECTION_THEMES = 18;
+        public const CONFIGURATION_SECTION_AUTHENTICATION = 17;
 
-        const APPEARANCE_HEADER_THEME = 0;
+        public const CONFIGURATION_SECTION_THEMES = 18;
 
-        const APPEARANCE_HEADER_CUSTOM = 1;
+        public const APPEARANCE_HEADER_THEME = 0;
 
-        const APPEARANCE_FAVICON_THEME = 0;
+        public const APPEARANCE_HEADER_CUSTOM = 1;
 
-        const APPEARANCE_FAVICON_CUSTOM = 1;
+        public const APPEARANCE_FAVICON_THEME = 0;
 
-        const SYNTAX_HIHGLIGHTING_FANCY_NUMBERS = 1;
+        public const APPEARANCE_FAVICON_CUSTOM = 1;
 
-        const SYNTAX_HIHGLIGHTING_NORMAL_NUMBERS = 2;
+        public const INFOBOX_PREFIX = 'hide_infobox_';
 
-        const SYNTAX_HIHGLIGHTING_NO_NUMBERS = 3;
+        public const TOGGLE_PREFIX = 'toggle_';
 
-        const INFOBOX_PREFIX = 'hide_infobox_';
+        public const SYNTAX_MW = 1;
 
-        const TOGGLE_PREFIX = 'toggle_';
+        public const SYNTAX_MD = 2;
 
-        const SYNTAX_MW = 1;
+        public const SYNTAX_PT = 3;
 
-        const SYNTAX_MD = 2;
+        public const SYNTAX_EDITOR_JS = 4;
 
-        const SYNTAX_PT = 3;
+        public const LOGIN_REQUIRED_NONE = 0;
 
-        const SYNTAX_EDITOR_JS = 4;
+        public const LOGIN_REQUIRED_WRITE = 1;
 
-        const SETTING_ADMIN_GROUP = 'admingroup';
+        public const LOGIN_REQUIRED_READ = 2;
 
-        const SETTING_ALLOW_REGISTRATION = 'allowreg';
+        public const SETTING_ADMIN_GROUP = 'admingroup';
 
-        const SETTING_ALLOW_USER_THEMES = 'userthemes';
+        public const SETTING_ALLOW_REGISTRATION = 'allowreg';
 
-        const SETTING_AWAYSTATE = 'awaystate';
+        public const SETTING_ALLOW_USER_THEMES = 'userthemes';
 
-        const SETTING_DEFAULT_CHARSET = 'charset';
+        public const SETTING_AWAYSTATE = 'awaystate';
 
-        const SETTING_DEFAULT_COMMENT_SYNTAX = 'comment_syntax';
+        public const SETTING_DEFAULT_CHARSET = 'charset';
 
-        const SETTING_DEFAULT_ISSUE_SYNTAX = 'issue_syntax';
+        public const SETTING_DEFAULT_COMMENT_SYNTAX = 'comment_syntax';
 
-        const SETTING_DEFAULT_LANGUAGE = 'language';
+        public const SETTING_DEFAULT_ISSUE_SYNTAX = 'issue_syntax';
 
-        const SETTING_DEFAULT_USER_IS_GUEST = 'defaultisguest';
+        public const SETTING_DEFAULT_LANGUAGE = 'language';
 
-        const SETTING_DEFAULT_USER_ID = 'defaultuserid';
+        public const SETTING_DEFAULT_USER_IS_GUEST = 'defaultisguest';
 
-        const SETTING_MULTI_TEAM_WORKFLOW_SCHEME = 'multi_team_workflow_scheme';
+        public const SETTING_DEFAULT_USER_ID = 'defaultuserid';
 
-        const SETTING_BALANCED_WORKFLOW_SCHEME = 'balanced_workflow_scheme';
+        public const SETTING_MULTI_TEAM_WORKFLOW_SCHEME = 'multi_team_workflow_scheme';
 
-        const SETTING_SIMPLE_WORKFLOW_SCHEME = 'simple_workflow_scheme';
+        public const SETTING_BALANCED_WORKFLOW_SCHEME = 'balanced_workflow_scheme';
 
-        const SETTING_FULL_RANGE_ISSUETYPE_SCHEME = 'full_range_issuetype_scheme';
+        public const SETTING_SIMPLE_WORKFLOW_SCHEME = 'simple_workflow_scheme';
 
-        const SETTING_BALANCED_ISSUETYPE_SCHEME = 'balanced_issuetype_scheme';
+        public const SETTING_FULL_RANGE_ISSUETYPE_SCHEME = 'full_range_issuetype_scheme';
 
-        const SETTING_BALANCED_AGILE_ISSUETYPE_SCHEME = 'balanced_agile_issuetype_scheme';
+        public const SETTING_BALANCED_ISSUETYPE_SCHEME = 'balanced_issuetype_scheme';
 
-        const SETTING_SIMPLE_ISSUETYPE_SCHEME = 'simple_issuetype_scheme';
+        public const SETTING_BALANCED_AGILE_ISSUETYPE_SCHEME = 'balanced_agile_issuetype_scheme';
 
-        const SETTING_ENABLE_UPLOADS = 'enable_uploads';
+        public const SETTING_SIMPLE_ISSUETYPE_SCHEME = 'simple_issuetype_scheme';
 
-        const SETTING_ENABLE_GRAVATARS = 'enable_gravatars';
+        public const SETTING_ENABLE_UPLOADS = 'enable_uploads';
 
-        const SETTING_FAVICON_TYPE = 'icon_fav';
+        public const SETTING_ENABLE_GRAVATARS = 'enable_gravatars';
 
-        const SETTING_FAVICON_ID = 'icon_fav_id';
+        public const SETTING_FAVICON_TYPE = 'icon_fav';
 
-        const SETTING_GUEST_GROUP = 'guestgroup';
+        public const SETTING_FAVICON_ID = 'icon_fav_id';
 
-        const SETTING_HEADER_ICON_TYPE = 'icon_header';
+        public const SETTING_GUEST_GROUP = 'guestgroup';
 
-        const SETTING_HEADER_ICON_ID = 'icon_header_id';
+        public const SETTING_HEADER_ICON_TYPE = 'icon_header';
 
-        const SETTING_HEADER_LINK = 'header_link';
+        public const SETTING_HEADER_ICON_ID = 'icon_header_id';
 
-        const SETTING_IS_SINGLE_PROJECT_TRACKER = 'singleprojecttracker';
+        public const SETTING_HEADER_LINK = 'header_link';
 
-        const SETTING_KEEP_COMMENT_TRAIL_CLEAN = 'cleancomments';
+        public const SETTING_NOTIFICATION_POLL_INTERVAL = 'notificationpollinterval';
 
-        const SETTING_LICENSE_ID = 'license_identifier';
+        public const SETTING_OFFLINESTATE = 'offlinestate';
 
-        const SETTING_NOTIFICATION_POLL_INTERVAL = 'notificationpollinterval';
+        public const SETTING_ONLINESTATE = 'onlinestate';
 
-        const SETTING_OFFLINESTATE = 'offlinestate';
+        public const SETTING_REGISTRATION_DOMAIN_WHITELIST = 'limit_registration';
 
-        const SETTING_ONLINESTATE = 'onlinestate';
+        public const SETTING_REQUIRE_LOGIN = 'requirelogin';
 
-        const SETTING_REGISTRATION_DOMAIN_WHITELIST = 'limit_registration';
+        public const SETTING_ELEVATED_LOGIN_DISABLED = 'elevatedlogindisabled';
 
-        const SETTING_REQUIRE_LOGIN = 'requirelogin';
+        public const SETTING_RETURN_FROM_LOGIN = 'returnfromlogin';
 
-        const SETTING_ELEVATED_LOGIN_DISABLED = 'elevatedlogindisabled';
+        public const SETTING_RETURN_FROM_LOGOUT = 'returnfromlogout';
 
-        const SETTING_RETURN_FROM_LOGIN = 'returnfromlogin';
+        public const SETTING_SALT = 'salt';
 
-        const SETTING_RETURN_FROM_LOGOUT = 'returnfromlogout';
+        public const SETTING_SERVER_TIMEZONE = 'server_timezone';
 
-        const SETTING_SALT = 'salt';
+        public const SETTING_SITE_NAME = 'b2_name';
 
-        const SETTING_SERVER_TIMEZONE = 'server_timezone';
+        public const SETTING_SITE_NAME_HTML = 'pachno_header_name_html';
 
-        const SETTING_SHOW_PROJECTS_OVERVIEW = 'showprojectsoverview';
+        public const SETTING_THEME_NAME = 'theme_name';
 
-        const SETTING_SITE_NAME = 'b2_name';
+        public const SETTING_UPLOAD_EXTENSIONS_LIST = 'upload_extensions_list';
 
-        const SETTING_SITE_NAME_HTML = 'pachno_header_name_html';
+        public const SETTING_UPLOAD_LOCAL_PATH = 'upload_localpath';
 
-        const SETTING_THEME_NAME = 'theme_name';
+        public const SETTING_UPLOAD_MAX_FILE_SIZE = 'upload_max_file_size';
 
-        const SETTING_UPLOAD_EXTENSIONS_LIST = 'upload_extensions_list';
+        public const SETTING_UPLOAD_RESTRICTION_MODE = 'upload_restriction_mode';
 
-        const SETTING_UPLOAD_LOCAL_PATH = 'upload_localpath';
+        public const SETTING_UPLOAD_STORAGE = 'upload_storage';
 
-        const SETTING_UPLOAD_MAX_FILE_SIZE = 'upload_max_file_size';
+        public const SETTING_UPLOAD_ALLOW_IMAGE_CACHING = 'upload_allow_image_caching';
 
-        const SETTING_UPLOAD_RESTRICTION_MODE = 'upload_restriction_mode';
+        public const SETTING_UPLOAD_DELIVERY_USE_XSEND = 'upload_delivery_use_xsend';
 
-        const SETTING_UPLOAD_STORAGE = 'upload_storage';
+        public const SETTING_ISSUETYPE_BUG_REPORT = 'issuetype_bug_report';
 
-        const SETTING_UPLOAD_ALLOW_IMAGE_CACHING = 'upload_allow_image_caching';
+        public const SETTING_ISSUETYPE_FEATURE_REQUEST = 'issuetype_feature_request';
 
-        const SETTING_UPLOAD_DELIVERY_USE_XSEND = 'upload_delivery_use_xsend';
+        public const SETTING_ISSUETYPE_ENHANCEMENT = 'issuetype_enhancement';
 
-        const SETTING_ISSUETYPE_BUG_REPORT = 'issuetype_bug_report';
+        public const SETTING_ISSUETYPE_TASK = 'issuetype_task';
 
-        const SETTING_ISSUETYPE_FEATURE_REQUEST = 'issuetype_feature_request';
+        public const SETTING_ISSUETYPE_USER_STORY = 'issuetype_user_story';
 
-        const SETTING_ISSUETYPE_ENHANCEMENT = 'issuetype_enhancement';
+        public const SETTING_ISSUETYPE_EPIC = 'issuetype_epic';
 
-        const SETTING_ISSUETYPE_TASK = 'issuetype_task';
+        public const SETTING_ISSUETYPE_IDEA = 'issuetype_idea';
 
-        const SETTING_ISSUETYPE_USER_STORY = 'issuetype_user_story';
+        public const SETTING_USER_COMMENT_ORDER = 'comment_order';
 
-        const SETTING_ISSUETYPE_EPIC = 'issuetype_epic';
+        public const SETTING_USER_DISPLAYNAME_FORMAT = 'user_displayname_format';
 
-        const SETTING_ISSUETYPE_IDEA = 'issuetype_idea';
+        public const SETTING_USER_GROUP = 'defaultgroup';
 
-        const SETTING_USER_COMMENT_ORDER = 'comment_order';
+        public const SETTING_USER_TIMEZONE = 'timezone';
 
-        const SETTING_USER_DISPLAYNAME_FORMAT = 'user_displayname_format';
+        public const SETTING_USER_KEYBOARD_NAVIGATION = 'keyboard_navigation';
 
-        const SETTING_USER_GROUP = 'defaultgroup';
+        public const SETTING_USER_LANGUAGE = 'language';
 
-        const SETTING_USER_TIMEZONE = 'timezone';
+        public const SETTING_USER_ACTIVATION_KEY = 'activation_key';
 
-        const SETTING_USER_KEYBOARD_NAVIGATION = 'keyboard_navigation';
+        public const SETTING_USER_NOTIFICATION_TIMEOUT = 'notifications_timeout';
 
-        const SETTING_USER_LANGUAGE = 'language';
+        public const SETTING_USER_DESKTOP_NOTIFICATIONS_NEW_TAB = 'desktop_notifications_new_tab';
 
-        const SETTING_USER_ACTIVATION_KEY = 'activation_key';
+        public const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES = 'subscribe_posted_updated_commented_issues';
 
-        const SETTING_USER_NOTIFICATION_TIMEOUT = 'notifications_timeout';
+        public const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES = 'subscribe_created_updated_commented_articles';
 
-        const SETTING_USER_DESKTOP_NOTIFICATIONS_NEW_TAB = 'desktop_notifications_new_tab';
+        public const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS = 'subscribe_new_issues_project';
 
-        const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES = 'subscribe_posted_updated_commented_issues';
+        public const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'subscribe_new_issues_project_category';
 
-        const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES = 'subscribe_created_updated_commented_articles';
+        public const SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS = 'subscribe_new_articles_project';
 
-        const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS = 'subscribe_new_issues_project';
+        public const SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES = 'subscribe_assigned_issues';
 
-        const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'subscribe_new_issues_project_category';
+        public const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
 
-        const SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS = 'subscribe_new_articles_project';
+        public const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
 
-        const SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES = 'subscribe_assigned_issues';
+        public const SETTINGS_USER_NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
 
-        const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
+        public const SETTINGS_USER_NOTIFY_ITEM_ONCE = 'notify_issue_once';
 
-        const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
+        public const SETTINGS_USER_NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
 
-        const SETTINGS_USER_NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
+        public const SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
 
-        const SETTINGS_USER_NOTIFY_ITEM_ONCE = 'notify_issue_once';
+        public const SETTINGS_USER_NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussion';
 
-        const SETTINGS_USER_NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
+        public const SETTINGS_USER_NOTIFY_UPDATED_SELF = 'notify_updated_self';
 
-        const SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
+        public const SETTINGS_USER_NOTIFY_MENTIONED = 'notify_mentioned';
 
-        const SETTINGS_USER_NOTIFY_UPDATED_SELF = 'notify_updated_self';
+        public const SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS = 'notify_grouped_notifications';
 
-        const SETTINGS_USER_NOTIFY_MENTIONED = 'notify_mentioned';
+        public const SETTINGS_USER_NOTIFY_ONLY_IN_BOX_WHEN_ACTIVE = 'notify_only_in_box_when_active';
 
-        const SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS = 'notify_grouped_notifications';
+        public const SETTING_AUTH_BACKEND = 'auth_backend';
 
-        const SETTINGS_USER_NOTIFY_ONLY_IN_BOX_WHEN_ACTIVE = 'notify_only_in_box_when_active';
+        public const SETTING_MAINTENANCE_MODE = 'offline';
 
-        const SETTING_AUTH_BACKEND = 'auth_backend';
+        public const SETTING_MAINTENANCE_MESSAGE = 'offline_msg';
 
-        const SETTING_MAINTENANCE_MODE = 'offline';
+        public const SETTING_ICONSET = 'iconset';
 
-        const SETTING_MAINTENANCE_MESSAGE = 'offline_msg';
+        public const SETTING_ENABLE_SCOPES = 'enable_scopes';
 
-        const SETTING_ICONSET = 'iconset';
+        public const USER_RSS_KEY = 'rsskey';
 
-        const SETTING_ENABLE_SCOPES = 'enable_scopes';
+        public const USER_DISPLAYNAME_FORMAT_REALNAME = 1;
 
-        const USER_RSS_KEY = 'rsskey';
+        public const USER_DISPLAYNAME_FORMAT_BUDDY = 0;
 
-        const USER_DISPLAYNAME_FORMAT_REALNAME = 1;
+        protected static $_ver_mj = 1;
 
-        const USER_DISPLAYNAME_FORMAT_BUDDY = 0;
+        protected static $_ver_mn = 0;
 
-        protected static $_ver_mj = 0;
+        protected static $_ver_rev = 2;
 
-        protected static $_ver_mn = 6;
+        protected static $_ver_name = "Amethyst";
 
-        protected static $_ver_rev = 0;
-
-        protected static $_ver_name = "-dev";
-
+        /**
+         * @var Scope
+         */
         protected static $_defaultscope;
 
         /**
@@ -352,7 +351,7 @@
          * @param string $name The settings key / name of the setting to store
          * @param mixed $value The value to store
          * @param string $module The name / key of the module storing the setting
-         * @param int $scope A scope id (or 0 to apply to all scopes)
+         * @param int|Scope $scope A scope id (or 0 to apply to all scopes)
          * @param int $uid A user id to save settings for
          *
          * @throws Exception
@@ -403,11 +402,16 @@
 
         public static function getVersion($with_codename = false, $with_revision = true)
         {
-            $retvar = self::$_ver_mj . '.' . self::$_ver_mn;
-            if ($with_revision) $retvar .= (is_numeric(self::$_ver_rev)) ? '.' . self::$_ver_rev : self::$_ver_rev;
-            if ($with_codename) $retvar .= ' ("' . self::$_ver_name . '")';
+            $version_string = self::$_ver_mj . '.' . self::$_ver_mn;
+            if ($with_revision) $version_string .= (is_numeric(self::$_ver_rev)) ? '.' . self::$_ver_rev : self::$_ver_rev;
+            if ($with_codename) $version_string .= ' ("' . self::$_ver_name . '")';
 
-            return $retvar;
+            return $version_string;
+        }
+
+        public static function getVersionName()
+        {
+            return self::$_ver_name;
         }
 
         public static function hasUserSetting($user_id, $name, $module = 'core', $scope = 0)
@@ -422,7 +426,7 @@
 
         public static function get($name, $module = 'core', $scope = null, $uid = 0, $return_object = false)
         {
-            if (Context::isInstallmode() && !Context::getScope() instanceof Scope) {
+            if (!Context::isReadySetup() && !Context::getScope() instanceof Scope) {
                 return null;
             }
             if ($scope instanceof Scope) {
@@ -528,7 +532,7 @@
             $query->where(tables\Settings::NAME, $name);
             $query->where(tables\Settings::MODULE, $module);
             $query->where(tables\Settings::SCOPE, $scope);
-            $query->where(tables\Settings::UID, $uid);
+            $query->where(tables\Settings::USER_ID, $uid);
 
             tables\Settings::getTable()->rawDelete($query);
             unset(self::$_settings[$module][$name][$uid]);
@@ -592,7 +596,7 @@
 
         public static function getHeaderIconURL()
         {
-            return (self::isUsingCustomHeaderIcon()) ? Context::getRouting()->generate('showfile', ['id' => self::getHeaderIconID()]) : '/logo_white_192.png';
+            return (self::isUsingCustomHeaderIcon()) ? Context::getRouting()->generate('showfile', ['id' => self::getHeaderIconID()]) : '/logo_192.png';
         }
 
         public static function isUsingCustomHeaderIcon()
@@ -612,7 +616,7 @@
 
         public static function getFaviconURL()
         {
-            return (self::isUsingCustomFavicon()) ? Context::getRouting()->generate('showfile', ['id' => self::getFaviconID()]) : '/favicon.png';
+            return (self::isUsingCustomFavicon()) ? Context::getRouting()->generate('showfile', ['id' => self::getFaviconID()]) : '/favicon_inverted.png';
         }
 
         public static function isUsingCustomFavicon()
@@ -641,16 +645,6 @@
         public static function isHeaderHtmlFormattingAllowed()
         {
             return (bool)self::get(self::SETTING_SITE_NAME_HTML);
-        }
-
-        public static function isFrontpageProjectListVisible()
-        {
-            return (bool)self::get(self::SETTING_SHOW_PROJECTS_OVERVIEW);
-        }
-
-        public static function isSingleProjectTracker()
-        {
-            return (bool)self::get(self::SETTING_IS_SINGLE_PROJECT_TRACKER);
         }
 
         public static function getThemeName()
@@ -690,7 +684,7 @@
 
         public static function isLoginRequired()
         {
-            return (bool)self::get(self::SETTING_REQUIRE_LOGIN);
+            return (int) self::get(self::SETTING_REQUIRE_LOGIN);
         }
 
         public static function isElevatedLoginRequired()
@@ -719,7 +713,7 @@
 
         public static function getDefaultUserID()
         {
-            return (int)self::get(self::SETTING_DEFAULT_USER_ID);
+            return (int) self::get(self::SETTING_DEFAULT_USER_ID);
         }
 
         public static function allowRegistration()
@@ -1114,10 +1108,10 @@
                 'users' => [],
                 'projects' => [],
                 'issues_workflow' => [],
-                self::CONFIGURATION_SECTION_MODULES => []
+                //self::CONFIGURATION_SECTION_MODULES => []
             ];
 
-            if (Context::getScope()->getID() == 1) {
+            if (Context::getScope()->isDefault()) {
                 $config_sections['general'][self::CONFIGURATION_SECTION_SCOPES] = ['route' => 'configure_scopes', 'description' => $i18n->__('Scopes'), 'fa_style' => 'fas', 'fa_icon' => 'clone', 'details' => $i18n->__('Scopes are self-contained Pachno environments. Configure them here.')];
             }
 
@@ -1126,14 +1120,15 @@
             if (Context::getScope()->isUploadsEnabled()) {
                 $config_sections['general'][self::CONFIGURATION_SECTION_UPLOADS] = ['route' => 'configure_files', 'description' => $i18n->__('Uploads and attachments'), 'fa_style' => 'fas', 'fa_icon' => 'upload', 'details' => $i18n->__('All settings related to file uploads are controlled from this section.')];
             }
+            $config_sections['general'][self::CONFIGURATION_SECTION_MAILING] = ['route' => ['configure_module', ['config_module' => 'mailing']], 'description' => Context::geti18n()->__(Context::getModule('mailing')->getConfigTitle()), 'icon' => Context::getModule('mailing')->getName(), 'details' => Context::geti18n()->__(Context::getModule('mailing')->getConfigDescription()), 'module' => Context::getModule('mailing')->getName(), 'fa_style' => Context::getModule('mailing')->getFontAwesomeStyle(), 'fa_icon' => Context::getModule('mailing')->getFontAwesomeIcon()];
 
             $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
 
-            $config_sections['security'][self::CONFIGURATION_SECTION_AUTHENTICATION] = ['route' => 'configure_authentication', 'description' => $i18n->__('Authentication'), 'fa_style' => 'fas', 'fa_icon' => 'lock', 'details' => $i18n->__('Configure the authentication method in this section')];
+            $config_sections['security'][self::CONFIGURATION_SECTION_AUTHENTICATION] = ['route' => 'configure_authentication', 'disabled' => true, 'description' => $i18n->__('Authentication'), 'fa_style' => 'fas', 'fa_icon' => 'lock', 'details' => $i18n->__('Configure the authentication method in this section')];
             $config_sections['security'][self::CONFIGURATION_SECTION_ROLES] = ['route' => 'configure_roles', 'description' => $i18n->__('Roles'), 'fa_style' => 'fas', 'fa_icon' => 'user-tie', 'details' => $i18n->__('Configure roles in this section')];
 
             $config_sections['projects'][self::CONFIGURATION_SECTION_PROJECTS] = ['route' => 'configure_projects', 'description' => $i18n->__('Projects'), 'fa_style' => 'fas', 'fa_icon' => 'code', 'details' => $i18n->__('Set up all projects in this configuration section.')];
-            $config_sections['projects'][self::CONFIGURATION_SECTION_IMPORT] = ['route' => 'import_home', 'description' => $i18n->__('Import data'), 'fa_style' => 'fas', 'fa_icon' => 'download', 'details' => $i18n->__('Import data from CSV files and other sources.')];
+            //$config_sections['projects'][self::CONFIGURATION_SECTION_IMPORT] = ['route' => 'import_home', 'disabled' => true, 'description' => $i18n->__('Import data'), 'fa_style' => 'fas', 'fa_icon' => 'download', 'details' => $i18n->__('Import data from CSV files and other sources.')];
             if (tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope() > 1) {
                 $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_ISSUETYPES] = ['route' => 'configure_issuetypes', 'fa_style' => 'fas', 'fa_icon' => 'copy', 'description' => $i18n->__('Issue types'), 'details' => $i18n->__('Manage issue types and configure issue fields for each issue type here')];
                 $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES] = ['route' => 'configure_issuetypes_schemes', 'fa_style' => 'fas', 'fa_icon' => 'copy', 'description' => $i18n->__('Issue type schemes'), 'details' => $i18n->__('Manage issue types and configure issue fields for each issue type here')];
@@ -1144,10 +1139,12 @@
             $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_WORKFLOW] = ['route' => 'configure_workflows', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow'), 'details' => $i18n->__('Set up and edit workflow configuration from this section')];
             $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_WORKFLOW_SCHEMES] = ['route' => 'configure_workflow_schemes', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow schemes'), 'details' => $i18n->__('Set up and edit workflow configuration from this section')];
             $config_sections['users'][self::CONFIGURATION_SECTION_USERS] = ['route' => 'configure_users', 'description' => $i18n->__('Users and groups'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create, edit and manage users from this section')];
-            $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'description' => $i18n->__('Teams and clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
+            $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'description' => $i18n->__('User teams'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage teams from this section.')];
+            $config_sections['users'][self::CONFIGURATION_SECTION_CLIENTS] = ['route' => 'configure_clients', 'description' => $i18n->__('Clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
+
             foreach (Context::getAllModules() as $modules) {
                 foreach ($modules as $module) {
-                    if ($module->hasConfigSettings() && ($module instanceof CoreModule || $module->isEnabled())) {
+                    if ($module->hasConfigSettings() && !$module instanceof CoreModule && $module->isEnabled()) {
                         $module_array = ['route' => ['configure_module', ['config_module' => $module->getName()]], 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName()];
                         if ($module->hasFontAwesomeIcon()) {
                             $module_array['fa_icon'] = $module->getFontAwesomeIcon();
@@ -1162,14 +1159,14 @@
             return $config_sections;
         }
 
-        public static function getAccessLevel($section, $module = 'core')
+        public static function getConfigurationAccessLevel()
         {
-            return (Context::getUser()->canSaveConfiguration($section, $module)) ? self::ACCESS_FULL : self::ACCESS_READ;
+            return (Context::getUser()->canSaveConfiguration()) ? self::ACCESS_FULL : self::ACCESS_READ;
         }
 
         public static function isStable(): bool
         {
-            return true;
+            return false;
         }
 
     }

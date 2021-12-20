@@ -5,22 +5,6 @@
   color: #1aaa55;
   margin-right: .35em;
 }
-.livelink-banner {
-  border: 1px solid rgba(200, 200, 200, .3);
-  padding: 10px;
-  margin-bottom: 15px;
-  background-color: rgba(225, 225, 225, .2);
-}
-.livelink-banner .button, .livelink_connector_accounts .button {
-  padding: 5px 8px;
-  font-size: 1em;
-}
-.livelink-header {
-  text-transform: uppercase;
-  font-weight: $theme-font-weight-bold;
-  margin: 0;
-  padding: 0;
-}
 .livelink-intro {
   font-size: 1.1em;
 }
@@ -35,7 +19,7 @@
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
-  margin: 0 10px;
+  margin: 1.5em 0 0 0;
   align-items: stretch;
 }
 .livelink_connector_accounts li .connector_logo,
@@ -154,7 +138,10 @@
 }
 .livelink_integration_settings .integrations_list .explanation {
   padding: 5px;
-  display: block;
+
+  &.disabled {
+    color: #CCC;
+  }
 }
 .step-form .visible-step {
   display: none;
@@ -177,4 +164,433 @@
 .livelink_project_badge .fab,
 .livelink_project_badge .far {
   margin-right: .35em;
+}
+
+.content-with-sidebar {
+  > div:not(.sidebar):not(.fixed-position).commit-navigation-container {
+    align-items: stretch;
+  }
+}
+
+#commit-list-with-filters-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  align-content: stretch;
+  flex: 1 1 auto;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.commit-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  flex: 1 1 auto;
+
+  &.hidden {
+    display: none;
+  }
+
+  .indicator-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    color: $theme-text-color-lighter;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .commit-details-list {
+    .fields-list {
+      .value {
+        &.list {
+          .branch-badge {
+            margin: 0;
+
+            + .branch-badge {
+              margin: .5em 0 0 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.commit-files-summary {
+  font-weight: $theme-font-weight-regular;
+  padding: .15em;
+  margin-left: auto;
+  color: #888;
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+
+  .summary {
+    margin-left: 7px;
+
+    .num_changes {
+      font-weight: $theme-font-weight-regular;
+      color: rgba(78, 129, 171, 0.7);
+    }
+
+    .num_files {
+      font-weight: $theme-font-weight-regular;
+    }
+  }
+
+  .fas {
+    font-size: 1.2em;
+    color: #aaa;
+  }
+}
+
+.commits-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  flex-direction: column;
+  justify-content: stretch;
+  flex: 1 1 auto;
+
+  .list-mode {
+
+    .list-item {
+      &.commit {
+        &,
+        &:hover {
+          .avatar-container {
+            position: relative;
+            border-radius: 100%;
+            border: 2px solid rgb(255, 255, 255);
+            overflow: hidden;
+            width: 2.5em;
+            height: 2.5em;
+            background: #FFF;
+            box-shadow: 0 -3px 6px -6px rgba(0, 0, 0, 0.36);
+            display: flex;
+
+            img {
+              width: 100%;
+            }
+          }
+
+          .name {
+            .title {
+              font-size: 1.1em;
+            }
+
+            .description {
+              color: $theme-text-color-lighter;
+            }
+          }
+
+          .item {
+            &.commit-sha {
+              font-family: $theme-font-family-mono;
+            }
+
+            &.not-imported {
+              background-color: $theme-color-warning;
+
+              .icon {
+                padding: .25em .3em;
+                font-size: .9em;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.list-mode {
+  .files-list {
+    .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container) {
+      &:hover {
+        background-color: transparent;
+      }
+
+      .name {
+        padding: .2em 0;
+      }
+
+      .icon:not(.issuetype-icon) {
+        &,
+        &:hover {
+          padding: .35em 0;
+          flex: 0 0 20px;
+        }
+      }
+
+      &.expandable {
+        .name {
+          padding: .2em 0;
+          color: $theme-text-color;
+        }
+
+        .expander.icon {
+          flex: 0 0 20px;
+          color: $theme-text-color;
+        }
+
+        .icon {
+          color: $theme-primary-color;
+        }
+
+        &.expanded:not(button) {
+          .expander {
+            transform: rotate(90deg);
+            padding: 0;
+            color: $theme-text-color;
+          }
+
+          + .submenu {
+            padding: 0 0 0 1em;
+
+            .list-item {
+              &:not(.expandable) {
+                padding-left: 1.75em;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.commit-message {
+  font-family: $theme-font-family-mono;
+  font-size: 1.1em;
+  padding: 1em;
+}
+
+.trigger-show-commit {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.commit-sha {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 3px;
+  background-color: rgba(225, 225, 225, .3);
+  border: 1px solid rgba(225, 225, 225, .3);
+  padding: .25em .5em;
+  font-family: $theme-font-family-mono;
+}
+
+.content-with-sidebar {
+  > div:not(.sidebar):not(.fixed-position) {
+    &.commit-summary-container {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+}
+
+.status-badge {
+  &.branch-badge {
+    background-color: $theme-primary-color;
+    color: #FFF;
+    display: flex;
+    flex-direction: row;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-start;
+
+    .icon {
+      margin-right: .2em;
+    }
+
+    + .branch-badge {
+      margin-left: .25em;
+    }
+  }
+}
+
+.commit-files {
+  .file-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    margin: 1em 1em 1.75em 1em;
+    border: 1px solid rgba(200, 200, 200, 0.3);
+    background: #fff;
+    border-radius: 5px;
+    overflow: auto;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+
+    &.seen {
+      margin-bottom: 0;
+
+      .diffs {
+        display: none;
+      }
+    }
+
+    .filename {
+      padding: 10px;
+      background-color: rgba(225, 225, 225, 0.2);
+      font-family: $theme-font-family-mono;
+      font-size: 0.9em;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+
+      .added-badge {
+        display: inline-block;
+        margin-left: 3px;
+        font-weight: $theme-font-weight-regular;
+        padding: 3px 5px;
+        background-color: rgba(185, 225, 185, 0.4);
+        border: 1px solid rgba(100, 100, 100, 0.3);
+        border-radius: 3px;
+      }
+    }
+
+    &.action_D .filename {
+      text-decoration: line-through;
+    }
+
+    &:not(.action_R) .filename {
+      border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+    }
+
+  }
+
+  .file-anchor:target + .file-preview {
+    border: 2px solid rgba(78, 129, 171, 0.7);
+  }
+
+  .far,
+  .fas {
+    margin-right: 5px;
+  }
+
+  .actions-container {
+    margin-left: auto;
+  }
+
+  .diffs .diff-header {
+    white-space: nowrap;
+    font-family: $theme-font-family-mono;
+    padding: 5px;
+    background-color: rgba(199, 212, 224, 0.7);
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 0.8em;
+  }
+
+  .diffs .diff-preview {
+    width: 100%;
+    overflow: auto;
+    list-style: none;
+    margin: 0;
+    table-layout: auto;
+    white-space: nowrap;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .diffs .diff-preview td.text pre::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 3px;
+  }
+
+  .diffs .diff-preview td {
+    font-family: $theme-font-family-mono;
+    font-size: 0.9em;
+  }
+
+  .diffs .diff-preview td.line-number {
+    color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .diffs .diff-preview td.text {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+
+  .diffs .message-box {
+    margin: 0;
+    border: none;
+    width: auto;
+  }
+
+  .diffs .diff-preview pre {
+    padding: 2px;
+    margin: 0;
+    overflow: visible;
+    width: auto;
+  }
+
+  .diffs .diff-preview td.text pre {
+    padding-left: 16px;
+  }
+
+  .diffs .diff-preview td.line-number pre {
+    padding: 2px 8px;
+  }
+
+  .diffs .diff-preview .add pre {
+    background-color: rgba(100, 225, 100, 0.25);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .diffs .diff-preview .add td.text pre::before {
+    content: "+";
+  }
+
+  .diffs .diff-preview .remove pre {
+    background-color: rgba(225, 100, 100, 0.25);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .diffs .diff-preview .remove td.text pre::before {
+    content: "-";
+  }
+}
+
+#commit-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1em;
+}
+
+.commits-paginator {
+  padding: 2em 0;
 }

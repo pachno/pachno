@@ -1,5 +1,13 @@
 <?php
 
-    if ($pachno_user->hasProjectPageAccess('project_planning', $project) || $pachno_user->hasProjectPageAccess('project_only_planning', $project)) {
+    use pachno\core\entities\Permission;
+    use pachno\core\entities\tables\Permissions;
+
+    /**
+     * @var \pachno\core\entities\User $pachno_user
+     * @var \pachno\core\entities\Project $project
+     */
+
+    if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_BOARDS, $project)) {
         echo link_tag(make_url('agile_index', array('project_key' => $project->getKey())), fa_image_tag('chalkboard').'<span>'.__('Boards').'</span>', array('class' => 'button secondary'));
     }

@@ -20,7 +20,7 @@ echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" ?>
         </image>
 <?php foreach ($recent_activities as $timestamp => $activities): ?>
 <?php foreach ($activities as $activity): ?>
-<?php if (array_key_exists('target_type', $activity) && $activity['target_type'] == 1 && ($issue = \pachno\core\entities\Issue::getB2DBTable()->selectById($activity['target'])) && $issue instanceof \pachno\core\entities\Issue): ?>
+<?php if (array_key_exists('target_type', $activity) && $activity['target_type'] == 1 && ($issue = \pachno\core\entities\tables\Issues::getTable()->selectById($activity['target'])) && $issue instanceof \pachno\core\entities\Issue): ?>
 <?php if ($issue->isDeleted()): continue; endif; ?>
         <item>
             <title><![CDATA[
@@ -100,7 +100,7 @@ echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" ?>
                 ?>: <?php echo $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle(); ?>]]></title>
             <description><![CDATA[<?php echo strip_tags($issue->getDescription()); ?>]]></description>
             <pubDate><?php echo \pachno\core\framework\Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?></pubDate>
-            <link><?php echo make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey()), false); ?></link>
+            <link><?php echo $issue->getUrl(false); ?></link>
             <guid isPermaLink="false"><?php echo sha1($timestamp.$activity['text']); ?></guid>
         </item>
         

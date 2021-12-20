@@ -1,19 +1,19 @@
 import UI from "../helpers/ui";
-import Issue from "./issue";
+import Pachno from "./pachno";
 import $ from "jquery";
-
 
 class Milestone {
     constructor(json) {
         this.id = json.id;
-        this.is_closed = json.closed;
+        this.is_closed = json.closed == 1;
         this.is_sprint = json.is_sprint;
         this.name = json.name;
         this.starting_date = json.starting_date;
         this.scheduled_date = json.scheduled_date;
-        this.percentage_complete = json.percentage_complete;
+        this.percent_complete = json.percent_complete;
         this.issues_count = json.issues_count;
         this.url = json.url;
+        this.backdrop_url = json.backdrop_url;
         /**
          * @type {Issue[]}
          */
@@ -28,12 +28,19 @@ class Milestone {
         let html = `
 <div class="milestone-container ${classes.join(',')}" data-milestone-id="${this.id}">
     <div class="milestone milestone-card">
-        <div class="header">
+        <div class="header trigger-backdrop" data-url="${this.backdrop_url}">
             <span class="name">${this.name}</span>
             <span class="info">
                 <span class="info-item">${UI.fa_image_tag('file-alt', {}, 'far')}&nbsp;${this.issues_count}</span>
-                <span class="icon expander">${UI.fa_image_tag('spinner', {classes: 'fa-spin indicator'}, 'far')}${UI.fa_image_tag('chevron-down')}</span>
+                <span class="icon indicator">${UI.fa_image_tag('spinner', {classes: 'fa-spin'})}</span>
+                <span class="icon expander">${UI.fa_image_tag('chevron-down')}</span>
             </span>
+            <div class="percent-container">
+                <span class="percent-header">${Pachno.T.roadmap.percent_complete.replace('%percentage', this.percent_complete)}</span>
+                <span class="percent_unfilled">
+                    <span class="percent_filled" style="width: ${this.percent_complete}%;"></span>
+                </span>
+            </div>
         </div>
         <div class="issues"></div>
     </div>
@@ -46,7 +53,7 @@ class Milestone {
 
     addIssues(issues) {
         for (const issue_json of issues) {
-            this.issues.push(new Issue(issue_json));
+            this.issues.push(Pachno.addIssue(issue_json));
         }
     }
 
@@ -55,9 +62,13 @@ class Milestone {
     }
 
     fetchIssues() {
+        const $milestone_card = this.element.find('.milestone-card');
+        $milestone_card.addClass('loading');
+
         Pachno.fetch(this.url, { method: 'GET' })
             .then((json) => {
                 this.addIssues(json.milestone.issues);
+                $milestone_card.removeClass('loading');
                 this.verifyIssues();
             });
     }
@@ -69,6 +80,8 @@ class Milestone {
             }
 
             this.element.find('.issues').append(issue.element);
+            issue.element.removeClass('whiteboard-issue');
+            issue.element.addClass('milestone-issue');
             issue.processed = true;
         }
     }

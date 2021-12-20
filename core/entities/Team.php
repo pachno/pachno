@@ -2,10 +2,13 @@
 
     namespace pachno\core\entities;
 
+    use b2db\Saveable;
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\common\Permissible;
     use pachno\core\entities\tables\Teams;
     use pachno\core\framework;
+    use pachno\core\framework\Context;
 
     /**
      * Team class
@@ -27,7 +30,7 @@
      *
      * @Table(name="\pachno\core\entities\tables\Teams")
      */
-    class Team extends IdentifiableScoped
+    class Team extends IdentifiableScoped implements Permissible
     {
 
         protected static $_teams = null;
@@ -59,7 +62,24 @@
          */
         protected $_dashboards = null;
 
+        /**
+         * Team lead user
+         *
+         * @var User
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\User")
+         */
+        protected $_team_lead_user_id = null;
+
         protected $_associated_projects = null;
+
+        /**
+         * @var Permission[]
+         * @Relates(class="\pachno\core\entities\Permission", collection=true, foreign_column="tid")
+         */
+        protected $_permissions = null;
+
+        protected $_permission_keys;
 
         public static function doesTeamNameExist($team_name)
         {
@@ -115,7 +135,7 @@
             return self::$_num_teams;
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return "" . $this->_name;
         }
@@ -143,7 +163,7 @@
             if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
-            tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), $this->getID());
+            tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), [$this->getID()]);
         }
 
         /**
@@ -195,6 +215,10 @@
                 foreach ($project_ids as $project_id) {
                     $this->_associated_projects[$project_id] = Project::getB2DBTable()->selectById($project_id);
                 }
+                $assigned_projects = tables\Projects::getTable()->getByTeamID($this->getID());
+                foreach ($assigned_projects as $project) {
+                    $this->_associated_projects[$project->getID()] = $project;
+                }
             }
 
             return $this->_associated_projects;
@@ -212,7 +236,7 @@
 
         public function hasAccess()
         {
-            return (bool)(framework\Context::getUser()->hasPageAccess('teamlist') || framework\Context::getUser()->isMemberOfTeam($this));
+            return (bool) framework\Context::getUser()->isMemberOfTeam($this);
         }
 
         /**
@@ -299,9 +323,79 @@
             return $this->_members;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\TeamMembers::getTable()->removeUsersFromTeam($this->getID());
+        }
+
+        public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
+        {
+            if ($scope === null) {
+                $scope = Context::getScope();
+            }
+
+            $permission = new Permission();
+            $permission->setTeam($this);
+            $permission->setModuleName($module);
+            $permission->setTargetId($target_id);
+            $permission->setScope($scope);
+            $permission->setPermissionName($permission_name);
+            $permission->save();
+        }
+
+        protected function _populatePermissions()
+        {
+            if ($this->_permissions === null) {
+                $this->_permissions = $this->_b2dbLazyload('_permissions');
+                $this->_permission_keys = [];
+
+                foreach ($this->_permissions as $permission) {
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = true;
+                }
+            }
+        }
+
+        public function hasPermission($permission_name, $target_id = 0, $module = 'core'): bool
+        {
+            $permissions = $this->getPermissions();
+
+            return array_key_exists($module . '_' . $permission_name . '_' . $target_id, $permissions);
+        }
+
+        /**
+         * Returns all permissions assigned to this role
+         *
+         * @return Permission[]
+         */
+        public function getPermissions(): array
+        {
+            $this->_populatePermissions();
+
+            return $this->_permission_keys;
+        }
+
+        /**
+         * Removes permission from the role.
+         *
+         * @param string $permission_name
+         * @param string $module
+         */
+        public function removePermission($permission_name, $target_id = 0, $module = 'core')
+        {
+            tables\Permissions::getTable()->removeTeamPermission($this->getID(), $permission_name, $module, $target_id);
+        }
+
+        public function getTeamLead(): ?User
+        {
+            return $this->_b2dbLazyLoad('_team_lead_user_id');
+        }
+
+        /**
+         * @param User|null $user
+         */
+        public function setTeamLead(User $user = null)
+        {
+            $this->_team_lead_user_id = $user;
         }
 
     }

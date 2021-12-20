@@ -68,7 +68,7 @@
             $this->_branch_id = $branch;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {

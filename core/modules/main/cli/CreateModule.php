@@ -61,6 +61,8 @@
                 $this_module_path = PACHNO_MODULES_PATH . $module_key . DS;
                 mkdir(PACHNO_MODULES_PATH . $module_key);
                 $this->cliEcho('modules' . DS . "{$module_key}\n");
+                mkdir($this_module_path . 'components');
+                $this->cliEcho('modules' . DS . $module_key . DS . "components\n");
                 mkdir($this_module_path . 'controllers');
                 $this->cliEcho('modules' . DS . $module_key . DS . "controllers\n");
                 mkdir($this_module_path . 'configuration');

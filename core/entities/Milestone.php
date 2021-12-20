@@ -5,6 +5,7 @@
     use b2db\Row;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\common\Timeable;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\LogItems;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
@@ -27,22 +28,20 @@
      * @package pachno
      * @subpackage main
      *
-     * @method static Milestones getB2DBTable Returns an instance of the associated table object
-     *
      * @Table(name="\pachno\core\entities\tables\Milestones")
      */
     class Milestone extends IdentifiableScoped
     {
 
-        const TYPE_REGULAR = 1;
+        public const TYPE_REGULAR = 1;
 
-        const TYPE_SCRUMSPRINT = 2;
+        public const TYPE_SCRUMSPRINT = 2;
 
-        const PERCENTAGE_TYPE_REGULAR = 1;
+        public const PERCENTAGE_TYPE_REGULAR = 1;
 
-        const PERCENTAGE_TYPE_SCRUMSPRINT = 2;
+        public const PERCENTAGE_TYPE_SCRUMSPRINT = 2;
 
-        const PERCENTAGE_TYPE_PERCENT_COMPLETED = 3;
+        public const PERCENTAGE_TYPE_PERCENT_COMPLETED = 3;
 
         /**
          * This milestone's project
@@ -199,7 +198,7 @@
 
         public static function doesIDExist($id)
         {
-            return (bool)static::getB2DBTable()->doesIDExist($id);
+            return (bool) Milestones::getTable()->doesIDExist($id);
         }
 
         public static function getPercentageTypes()
@@ -307,7 +306,7 @@
                         $this->_points['estimated'] += $res->get('estimated_points');
                         $this->_points['spent'] += $res->get('spent_points');
                         $this->_hours['estimated'] += $res->get('estimated_hours');
-                        $this->_hours['spent'] += round($res->get('spent_hours') / 100, 2);
+                        $this->_hours['spent'] += $res->get('spent_hours');
                         $this->_minutes['estimated'] += $res->get('estimated_minutes');
                         $this->_minutes['spent'] += $res->get('spent_minutes');
                     }
@@ -618,7 +617,7 @@
          */
         public function hasAccess()
         {
-            return ($this->getProject()->canSeeAllMilestones() || Context::getUser()->hasPermission('canseemilestone', $this->getID()));
+            return ($this->isVisibleRoadmap() || $this->getProject()->canSeeInternalMilestones());
         }
 
         /**
@@ -654,9 +653,6 @@
                 $spent_times = tables\IssueSpentTimes::getTable()->getSpentTimesByDateAndIssueIDs($this->getStartingDate(), $this->getScheduledDate(), $issues);
 
                 $burndown = [];
-                foreach ($spent_times['hours'] as $key => $val) {
-                    $spent_times['hours'][$key] = round($spent_times['hours'][$key] / 100, 2);
-                }
                 $total_estimations_hours = array_sum($estimations['hours']);
                 if (array_sum($spent_times['hours']) > $total_estimations_hours) $total_estimations_hours = array_sum($spent_times['hours']);
                 $prev_key = null;
@@ -665,7 +661,6 @@
                         $total_estimations_hours -= $spent_times['hours'][$prev_key];
                     } else {
                         if (isset($spent_times['hours_spent_before'])) {
-                            $spent_times['hours_spent_before'] = round($spent_times['hours_spent_before'] / 100, 2);
                             $total_estimations_hours -= $spent_times['hours_spent_before'];
                         }
                     }
@@ -853,17 +848,19 @@
         {
             $this->_visible_issues = $visible;
         }
+        
 
         public function setOrder($order)
         {
             $this->_sort_order = $order;
         }
 
-        public function toJSON($detailed = true)
+        public function toJSON($detailed = false)
         {
             $returnJSON = [
                 'id' => $this->getID(),
                 'url' => Context::getRouting()->generate('project_milestone', ['project_key' => $this->getProject()->getKey(), 'milestone_id' => $this->getID()]),
+                'backdrop_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $this->getProject()->getID(), 'milestone_id' => $this->getID()]),
                 'name' => $this->getName(),
                 'closed' => $this->getClosed(),
                 'reached' => $this->isReached(),
@@ -880,11 +877,18 @@
                 'reached_date' => $this->getReachedDate(),
                 'percent_complete' => $this->getPercentComplete(),
                 'percentage_type' => $this->getPercentageType(),
+                'virtual_percentage' => Issues::getTable()->getMilestoneDistributionDetails($this->getID()),
                 'issues_count' => $this->countIssues(),
                 'issues_count_open' => $this->countOpenIssues(),
                 'issues_count_closed' => $this->countClosedIssues(),
             ];
 
+            if (count($returnJSON['virtual_percentage']['details'])) {
+                $statuses = Status::getAll();
+                foreach ($returnJSON['virtual_percentage']['details'] as $index => $item) {
+                    $returnJSON['virtual_percentage']['details'][$index]['status'] = $statuses[$item['id']]->toJSON();
+                }
+            }
 
             if ($detailed) {
                 $returnJSON['issues'] = [];
@@ -1048,11 +1052,11 @@
          */
         public function getPercentComplete($allowed_status_ids = [])
         {
-            switch ($this->getPercentageType()) {
-                case self::PERCENTAGE_TYPE_REGULAR:
+            switch ($this->getType()) {
+                case self::TYPE_REGULAR:
                     $pct = $this->getProject()->getClosedPercentageByMilestone($this->getID(), $allowed_status_ids);
                     break;
-                case self::PERCENTAGE_TYPE_SCRUMSPRINT:
+                case self::TYPE_SCRUMSPRINT:
                     if ($this->getPointsEstimated() > 0) {
                         $multiplier = 100 / $this->getPointsEstimated($allowed_status_ids);
                         $pct = $this->getPointsSpent($allowed_status_ids) * $multiplier;
@@ -1129,12 +1133,12 @@
             return 'fas';
         }
 
-        protected function _construct(Row $row, $foreign_key = null)
+        protected function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_reached = ($this->_reacheddate > 0);
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -1147,10 +1151,9 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
-                Context::setPermission("canseemilestone", $this->getID(), "core", 0, Context::getUser()->getGroup()->getID(), 0, true);
                 Event::createNew('core', 'Milestone::_postSave', $this)->trigger();
             }
 
@@ -1200,7 +1203,7 @@
         /**
          * Delete this milestone
          */
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\Issues::getTable()->clearMilestone($this->getID());
         }

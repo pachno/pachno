@@ -56,9 +56,9 @@
                     $failed_messages = 0;
                     try {
                         foreach ($messages as $message_id => $message) {
-                            $retval = $mailing->getMailer()->send($message);
+                            $result = $mailing->getMailer()->send($message);
                             $processed_messages[] = $message_id;
-                            if (!$retval) $failed_messages++;
+                            if (!$result) $failed_messages++;
                         }
                     } catch (Exception $e) {
                         throw $e;

@@ -32,27 +32,27 @@
     class Components extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'components';
+        public const B2DBNAME = 'components';
 
-        const ID = 'components.id';
+        public const ID = 'components.id';
 
-        const SCOPE = 'components.scope';
+        public const SCOPE = 'components.scope';
 
-        const NAME = 'components.name';
+        public const NAME = 'components.name';
 
-        const VERSION_MAJOR = 'components.version_major';
+        public const VERSION_MAJOR = 'components.version_major';
 
-        const VERSION_MINOR = 'components.version_minor';
+        public const VERSION_MINOR = 'components.version_minor';
 
-        const VERSION_REVISION = 'components.version_revision';
+        public const VERSION_REVISION = 'components.version_revision';
 
-        const PROJECT = 'components.project';
+        public const PROJECT = 'components.project';
 
-        const LEAD_BY = 'components.leader';
+        public const LEAD_BY = 'components.leader';
 
-        const LEAD_TYPE = 'components.leader_type';
+        public const LEAD_TYPE = 'components.leader_type';
 
         public function preloadComponents($component_ids)
         {
@@ -84,7 +84,7 @@
             return $this->select($query);
         }
 
-        public function selectAll()
+        public function selectAll(): array
         {
             $query = $this->getQuery();
 

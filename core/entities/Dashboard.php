@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\DashboardViews;
     use pachno\core\framework;
 
     /**
@@ -26,13 +27,13 @@
     class Dashboard extends IdentifiableScoped
     {
 
-        const TYPE_USER = 1;
+        public const TYPE_USER = 1;
 
-        const TYPE_PROJECT = 2;
+        public const TYPE_PROJECT = 2;
 
-        const TYPE_TEAM = 3;
+        public const TYPE_TEAM = 3;
 
-        const TYPE_CLIENT = 4;
+        public const TYPE_CLIENT = 4;
 
         /**
          * The name of the object
@@ -82,7 +83,6 @@
          * Dashboard views
          *
          * @var DashboardView[]
-         * @Relates(class="\pachno\core\entities\DashboardView", collection=true, foreign_column="dashboard_id", orderby="sort_order")
          */
         protected $_dashboard_views = null;
 
@@ -116,11 +116,15 @@
 
         public function countViews()
         {
-            if (is_array($this->_dashboard_views)) {
-                return count($this->_dashboard_views);
-            }
+            $this->_populateViews();
+            return count($this->_dashboard_views);
+        }
 
-            return $this->_b2dbLazyCount('_dashboard_views');
+        protected function _populateViews()
+        {
+            if (!is_array($this->_dashboard_views)) {
+                $this->_dashboard_views = DashboardViews::getTable()->getByDashboardIdScoped($this->getID());
+            }
         }
 
         /**
@@ -128,7 +132,9 @@
          */
         public function getViews()
         {
-            return $this->_b2dbLazyLoad('_dashboard_views');
+            $this->_populateViews();
+
+            return $this->_dashboard_views;
         }
 
         public function getName()
@@ -170,7 +176,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 switch ($this->getType()) {
@@ -181,6 +187,13 @@
                         $dv_issues->setType(DashboardView::VIEW_PROJECTS);
                         $dv_issues->setDetail(0);
                         $dv_issues->save();
+
+                        $dv_timers = new DashboardView();
+                        $dv_timers->setDashboard($this);
+                        $dv_timers->setColumn(2);
+                        $dv_timers->setType(DashboardView::VIEW_TIMERS);
+                        $dv_timers->setDetail(0);
+                        $dv_timers->save();
 
                         $dv_logged = new DashboardView();
                         $dv_logged->setDashboard($this);

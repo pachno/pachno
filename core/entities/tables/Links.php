@@ -22,25 +22,25 @@
     class Links extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'links';
+        public const B2DBNAME = 'links';
 
-        const ID = 'links.id';
+        public const ID = 'links.id';
 
-        const UID = 'links.uid';
+        public const UID = 'links.uid';
 
-        const URL = 'links.url';
+        public const URL = 'links.url';
 
-        const LINK_ORDER = 'links.link_order';
+        public const LINK_ORDER = 'links.link_order';
 
-        const DESCRIPTION = 'links.description';
+        public const DESCRIPTION = 'links.description';
 
-        const TARGET_TYPE = 'links.target_type';
+        public const TARGET_TYPE = 'links.target_type';
 
-        const TARGET_ID = 'links.target_id';
+        public const TARGET_ID = 'links.target_id';
 
-        const SCOPE = 'links.scope';
+        public const SCOPE = 'links.scope';
 
         public function getNextOrder($target_type, $target_id, $scope = null)
         {
@@ -148,21 +148,12 @@
             framework\Context::getCache()->clearCacheKeys([framework\Cache::KEY_MAIN_MENU_LINKS]);
         }
 
-        public function loadFixtures(Scope $scope)
-        {
-            $scope_id = $scope->getID();
-
-            $this->addMainMenuLink('https://pachno.com', 'Pachno homepage', 1, $scope_id);
-            $this->addMainMenuLink(null, null, 2, $scope_id);
-            $this->addMainMenuLink('https://projects.pachno.com', 'Online issue tracker', 4, $scope_id);
-        }
-
         public function addMainMenuLink($url = null, $description = null, $link_order = null, $scope = null)
         {
             return $this->addLink('main_menu', 0, $url, $description, $link_order, $scope);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('targettype_targetid_scope', [self::TARGET_TYPE, self::TARGET_ID, self::SCOPE]);
         }

@@ -1,0 +1,41 @@
+@import "../variables";
+
+.count-badge {
+  font-weight: $theme-font-weight-regular;
+  font-size: 0.8em;
+  color: rgba(50, 50, 50, 0.6);
+  margin-left: 5px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  padding: 3px 6px;
+  background-color: rgba(200, 200, 200, .3);
+
+  &.type-info {
+    background-color: $theme-color-info;
+    color: #FFF;
+  }
+
+  span:first-child {
+    margin-right: 5px;
+  }
+
+  + span {
+    margin-left: .35em;
+  }
+
+  .indicator {
+    display: none;
+  }
+
+  &.submitting {
+    > span:not(.indicator) {
+      display: none;
+    }
+
+    .indicator {
+      display: inline-block;
+    }
+  }
+}

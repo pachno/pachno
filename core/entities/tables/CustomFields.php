@@ -27,23 +27,23 @@
     class CustomFields extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'customfields';
+        public const B2DBNAME = 'customfields';
 
-        const ID = 'customfields.id';
+        public const ID = 'customfields.id';
 
-        const FIELD_NAME = 'customfields.name';
+        public const FIELD_NAME = 'customfields.name';
 
-        const FIELD_DESCRIPTION = 'customfields.description';
+        public const FIELD_DESCRIPTION = 'customfields.description';
 
-        const FIELD_INSTRUCTIONS = 'customfields.instructions';
+        public const FIELD_INSTRUCTIONS = 'customfields.instructions';
 
-        const FIELD_KEY = 'customfields.key';
+        public const FIELD_KEY = 'customfields.key';
 
-        const FIELD_TYPE = 'customfields.itemtype';
+        public const FIELD_TYPE = 'customfields.itemtype';
 
-        const SCOPE = 'customfields.scope';
+        public const SCOPE = 'customfields.scope';
 
         public function getAll()
         {

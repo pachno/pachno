@@ -36,21 +36,29 @@
 <div class="form-row">
     <div class="fancy-dropdown-container">
         <div class="fancy-dropdown">
-            <label for="requirelogin"><?= __('Allow anonymous access'); ?></label>
+            <label for="requirelogin"><?= __('Allow guest user access'); ?></label>
             <span class="value"></span>
             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
             <div class="dropdown-container list-mode">
-                <input type="radio" name="<?= Settings::SETTING_REQUIRE_LOGIN; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_no" value=0<?php if (!Settings::isLoginRequired()): ?> checked<?php endif; ?>>
-                <label class="list-item multiline" for="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_no">
-                    <?= fa_image_tag('check-square', ['class' => 'checked icon'], 'far') . fa_image_tag('square', ['class' => 'unchecked icon'], 'far'); ?>
+                <input type="radio" name="<?= Settings::SETTING_REQUIRE_LOGIN; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_<?= Settings::LOGIN_REQUIRED_NONE; ?>" value="<?= Settings::LOGIN_REQUIRED_NONE; ?>" <?php if (Settings::isLoginRequired() == Settings::LOGIN_REQUIRED_NONE): ?> checked<?php endif; ?>>
+                <label class="list-item multiline" for="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_<?= Settings::LOGIN_REQUIRED_NONE; ?>">
+                    <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
                     <span class="name">
-                        <span class="title value"><?= __('Yes'); ?></span>
-                        <span class="additional_information"><?= __('Allow anonymous users to access content based on project visibility settings'); ?></span>
+                        <span class="title value"><?= __('Yes, read + write'); ?></span>
+                        <span class="additional_information"><?= __('Allow guest users to access content - including posting issues and comments - based on project visibility settings'); ?></span>
                     </span>
                 </label>
-                <input type="radio" name="<?= Settings::SETTING_REQUIRE_LOGIN; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_yes" value=1<?php if (Settings::isLoginRequired()): ?> checked<?php endif; ?>>
-                <label class="list-item multiline" for="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_yes">
-                    <?= fa_image_tag('check-square', ['class' => 'checked icon'], 'far') . fa_image_tag('square', ['class' => 'unchecked icon'], 'far'); ?>
+                <input type="radio" name="<?= Settings::SETTING_REQUIRE_LOGIN; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_<?= Settings::LOGIN_REQUIRED_WRITE; ?>" value="<?= Settings::LOGIN_REQUIRED_WRITE; ?>" <?php if (Settings::isLoginRequired() == Settings::LOGIN_REQUIRED_WRITE): ?> checked<?php endif; ?>>
+                <label class="list-item multiline" for="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_<?= Settings::LOGIN_REQUIRED_WRITE; ?>">
+                    <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
+                    <span class="name">
+                        <span class="title value"><?= __('Yes, read only'); ?></span>
+                        <span class="additional_information"><?= __('Allow guest users read-only access to content based on project visibility settings'); ?></span>
+                    </span>
+                </label>
+                <input type="radio" name="<?= Settings::SETTING_REQUIRE_LOGIN; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_<?= Settings::LOGIN_REQUIRED_READ; ?>" value="<?= Settings::LOGIN_REQUIRED_READ; ?>" <?php if (Settings::isLoginRequired() == Settings::LOGIN_REQUIRED_READ): ?> checked<?php endif; ?>>
+                <label class="list-item multiline" for="<?= Settings::SETTING_REQUIRE_LOGIN; ?>_<?= Settings::LOGIN_REQUIRED_READ; ?>">
+                    <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
                     <span class="name">
                         <span class="title value"><?= __('No'); ?></span>
                         <span class="additional_information"><?= __('A valid user account is required to access any content'); ?></span>

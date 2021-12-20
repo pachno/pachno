@@ -9,8 +9,10 @@
     use pachno\core\entities\Datatype;
     use pachno\core\entities\Group;
     use pachno\core\entities\Module;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\Scope;
+    use pachno\core\entities\tables\Modules;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\User;
@@ -38,9 +40,9 @@
     class Context
     {
 
-        const INTERNAL_MODULES = 'internal_modules';
+        public const INTERNAL_MODULES = 'internal_modules';
 
-        const EXTERNAL_MODULES = 'external_modules';
+        public const EXTERNAL_MODULES = 'external_modules';
 
         protected static $_debug_mode = true;
 
@@ -62,7 +64,7 @@
         /**
          * The current user
          *
-         * @var User
+         * @var ?User
          */
         protected static $_user;
 
@@ -254,9 +256,7 @@
 
             if (self::isCLI()) {
                 self::cliError($exception->getMessage(), $exception);
-            }
-
-            if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
+            } elseif (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
                 self::getResponse()->ajaxResponseText(404, $exception->getMessage());
             } else {
                 self::getResponse()->cleanBuffer();
@@ -339,7 +339,7 @@
          *
          * @return Scope
          */
-        public static function getScope()
+        public static function getScope(): ?Scope
         {
             return self::$_scope;
         }
@@ -388,15 +388,21 @@
 
                 return true;
             } catch (Exception $e) {
-                if (self::isCLI()) {
-                    Logging::log("Couldn't set up default scope.", 'main', Logging::LEVEL_FATAL);
-                    throw new Exception("Could not load default scope. Error message was: " . $e->getMessage());
-                } elseif (!self::isInstallmode()) {
-                    Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}", 'main', Logging::LEVEL_FATAL);
-                    Logging::log($e->getMessage(), 'main', Logging::LEVEL_FATAL);
-                    throw new Exception("Could not load scope. This is usually because the scopes table doesn't have a scope for this hostname");
+                if (self::isReadySetup()) {
+                    if (self::isCLI()) {
+                        Logging::log("Couldn't set up default scope.", 'main', Logging::LEVEL_FATAL);
+                        throw new Exception("Could not load default scope. Error message was: " . $e->getMessage());
+                    } else {
+                        Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}", 'main', Logging::LEVEL_FATAL);
+                        Logging::log($e->getMessage(), 'main', Logging::LEVEL_FATAL);
+                        throw new Exception("Could not load scope. This is usually because the scopes table doesn't have a scope for this hostname");
+                    }
                 } else {
-                    Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}, but we're in installmode so continuing anyway");
+                    if (self::isCLI()) {
+                        Logging::log("Couldn't find a scope but we're in installmode so continuing anyway");
+                    } else {
+                        Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}, but we're in installmode so continuing anyway");
+                    }
                 }
             }
         }
@@ -742,149 +748,90 @@
             if (self::$_available_permissions === null) {
                 Logging::log("Loading and caching permissions tree");
                 $i18n = self::getI18n();
-                self::$_available_permissions = ['user' => [], 'general' => [], 'project' => []];
+                self::$_available_permissions = ['user' => [], 'project' => []];
 
-                self::$_available_permissions['user']['canseegroupissues'] = ['description' => $i18n->__('Can see issues reported by users in the same group'), 'mode' => 'permissive'];
-                self::$_available_permissions['configuration']['cansaveconfig'] = ['description' => $i18n->__('Can access the configuration page and edit all configuration'), 'details' => []];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Settings" configuration page'), 'target_id' => 12]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Settings" configuration page'), 'target_id' => 12]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Permissions" configuration page'), 'target_id' => 5]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Permissions" configuration page'), 'target_id' => 5]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Uploads" configuration page'), 'target_id' => 3]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Uploads" configuration page'), 'target_id' => 3]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Scopes" configuration page'), 'target_id' => 14]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Scopes" configuration page'), 'target_id' => 14]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Import" configuration page'), 'target_id' => 16]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Import" configuration page'), 'target_id' => 16]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Projects" configuration page'), 'target_id' => 10]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Projects" configuration page'), 'target_id' => 10]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Issue types" configuration page'), 'target_id' => 6]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Issue types" configuration page'), 'target_id' => 6]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Issue fields" configuration page'), 'target_id' => 4]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Issue fields" configuration page'), 'target_id' => 4]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Users, teams and groups" configuration page'), 'target_id' => 2]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Users, teams and groups" configuration page'), 'target_id' => 2]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Modules" and any module configuration page'), 'target_id' => 15]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Modules" configuration page and any modules'), 'target_id' => 15]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Themes" configuration page and any themes'), 'target_id' => 19]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Themes" configuration page and any themes'), 'target_id' => 19]];
-                self::$_available_permissions['general']['canfindissuesandsavesearches'] = ['description' => $i18n->__('Can search for issues and create saved searches'), 'details' => []];
-                self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['canfindissues'] = ['description' => $i18n->__('Can search for issues')];
-                self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['cancreatepublicsearches'] = ['description' => $i18n->__('Can create saved searches that are public')];
-                self::$_available_permissions['general']['caneditmainmenu'] = ['description' => $i18n->__('Can edit main menu')];
-                self::$_available_permissions['pages']['page_home_access'] = ['description' => $i18n->__('Can access the frontpage')];
-                self::$_available_permissions['pages']['page_dashboard_access'] = ['description' => $i18n->__('Can access the user dashboard')];
-                self::$_available_permissions['pages']['page_search_access'] = ['description' => $i18n->__('Can access the search page')];
-                self::$_available_permissions['pages']['page_about_access'] = ['description' => $i18n->__('Can access the "About" page')];
-                self::$_available_permissions['pages']['page_account_access'] = ['description' => $i18n->__('Can access the "My account" page'), 'details' => []];
-                self::$_available_permissions['pages']['page_account_access']['details']['canchangepassword'] = ['description' => $i18n->__('Can change own password'), 'mode' => 'permissive'];
-                self::$_available_permissions['pages']['page_teamlist_access'] = ['description' => $i18n->__('Can see list of teams in header menu')];
-                self::$_available_permissions['pages']['page_clientlist_access'] = ['description' => $i18n->__('Can access all clients')];
-                self::$_available_permissions['project']['canseeallissues'] = ['description' => $i18n->__('Can see issues reported by other users'), 'mode' => 'permissive'];
-                self::$_available_permissions['project']['canseeproject'] = ['description' => $i18n->__('Has access to the project'), 'details' => []];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy'] = ['description' => $i18n->__('Can see complete project hierarchy')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojecteditions'] = ['description' => $i18n->__('Can see all editions')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectcomponents'] = ['description' => $i18n->__('Can see all components')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectbuilds'] = ['description' => $i18n->__('Can see all releases')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectmilestones'] = ['description' => $i18n->__('Can see all milestones')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access'] = ['description' => $i18n->__('Can access all project pages'), 'details' => []];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_dashboard_access'] = ['description' => $i18n->__('Can access the project dashboard')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_planning_access'] = ['description' => $i18n->__('Can access the project agile pages without planning page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_only_planning_access'] = ['description' => $i18n->__('Can access the project planning pages')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_scrum_access'] = ['description' => $i18n->__('Can access the project scrum page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_issues_access'] = ['description' => $i18n->__('Can access the project issues search page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_roadmap_access'] = ['description' => $i18n->__('Can access the project roadmap page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_team_access'] = ['description' => $i18n->__('Can access the project team page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_statistics_access'] = ['description' => $i18n->__('Can access the project statistics page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_timeline_access'] = ['description' => $i18n->__('Can access the project timeline page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_commits_access'] = ['description' => $i18n->__('Can access the project commits page')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseetimespent'] = ['description' => $i18n->__('Can see time spent on issues')];
-                self::$_available_permissions['project']['canmanageproject'] = ['description' => $i18n->__('Can manage the project')];
-                self::$_available_permissions['project']['canmanageproject']['details']['caneditprojectdetails'] = ['description' => $i18n->__('Can edit project details and settings')];
-                self::$_available_permissions['project']['canmanageproject']['details']['canaddscrumsprints'] = ['description' => $i18n->__('Can manage milestones and/or sprints')];
-                self::$_available_permissions['project']['canmanageproject']['details']['canmanageprojectreleases'] = ['description' => $i18n->__('Can manage project releases, editions and components')];
-                self::$_available_permissions['project']['cancreateissues'] = ['description' => $i18n->__('Can create new issues')];
-                self::$_available_permissions['project']['canlockandeditlockedissues'] = ['description' => $i18n->__('Can change issue access policy')];
-                self::$_available_permissions['edition']['canseeedition'] = ['description' => $i18n->__('Can see this edition')];
-                self::$_available_permissions['component']['canseecomponent'] = ['description' => $i18n->__('Can see this component')];
-                self::$_available_permissions['build']['canseebuild'] = ['description' => $i18n->__('Can see this release')];
-                self::$_available_permissions['milestone']['canseemilestone'] = ['description' => $i18n->__('Can see this milestone')];
+                self::$_available_permissions['user'][Permission::PERMISSION_ACCESS_GROUP_ISSUES] = ['description' => $i18n->__('Can see issues reported by users in the same group'), 'mode' => 'permissive'];
+                self::$_available_permissions['user'][Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION] = ['description' => $i18n->__('Can edit documentation not linked to a project')];
+                self::$_available_permissions['user'][Permission::PERMISSION_CREATE_PROJECTS] = ['description' => $i18n->__('Can create projects')];
+                self::$_available_permissions['configuration'][Permission::PERMISSION_SAVE_CONFIGURATION] = ['description' => $i18n->__('Can access the configuration page and edit all configuration'), 'details' => []];
+                self::$_available_permissions['configuration'][Permission::PERMISSION_SAVE_CONFIGURATION]['details'][Permission::PERMISSION_ACCESS_CONFIGURATION] = ['description' => $i18n->__('Can access the configuration page and view all configuration'), 'details' => []];
+                self::$_available_permissions['pages'][Permission::PERMISSION_PAGE_ACCESS_DASHBOARD] = ['description' => $i18n->__('Can access the personal dashboard')];
+                self::$_available_permissions['pages'][Permission::PERMISSION_PAGE_ACCESS_PROJECT_LIST] = ['description' => $i18n->__('Can access the project list')];
+                self::$_available_permissions['pages'][Permission::PERMISSION_PAGE_ACCESS_ACCOUNT] = ['description' => $i18n->__('Can access the "Account details" page')];
+                self::$_available_permissions['pages'][Permission::PERMISSION_PAGE_ACCESS_SEARCH] = ['description' => $i18n->__('Can access the global issue search page')];
+                self::$_available_permissions['pages'][Permission::PERMISSION_PAGE_ACCESS_DOCUMENTATION] = ['description' => $i18n->__('Can access documentation not linked to a project')];
+
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS] = ['description' => $i18n->__('Has normal read access to the project'), 'details' => []];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD] = ['description' => $i18n->__('Can access the project dashboard and team overview')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_BOARDS] = ['description' => $i18n->__('Can access project boards')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_RELEASES] = ['description' => $i18n->__('Can access project releases and roadmap')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_ISSUES] = ['description' => $i18n->__('Can access issue search and issue pages')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION] = ['description' => $i18n->__('Can access the project documentation, including comments')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_CODE] = ['description' => $i18n->__('Can access project code and discussions')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_TIME_LOGGING] = ['description' => $i18n->__('Can see time spent on issues')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_ACCESS]['details'][Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES] = ['description' => $i18n->__('Can see issues reported by other users')];
+
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_DEVELOPER] = ['description' => $i18n->__('Can discuss, approve and update code'), 'details' => []];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_DEVELOPER]['details'][Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE] = ['description' => $i18n->__('Can discuss code and commits'), 'details' => []];
+
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION] = ['description' => $i18n->__('Can create new documentation pages, edit existing documentation and add comments'), 'details' => []];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION]['details'][Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_OWN] = ['description' => $i18n->__('Can create new documentation pages but not edit documentation created by others')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION]['details'][Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
+
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS] = ['description' => $i18n->__('Has access to internal and restricted project resources'), 'details' => []];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS] = ['description' => $i18n->__('Has access to internal editions')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS] = ['description' => $i18n->__('Has access to internal components')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS] = ['description' => $i18n->__('Has access to internal releases')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES] = ['description' => $i18n->__('Has access to internal milestones')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_COMMENTS] = ['description' => $i18n->__('Has access to internal comments')];
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_ISSUES] = ['description' => $i18n->__('Can access restricted issues')];
+
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT] = ['description' => $i18n->__('Has access to manage the project')];
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT]['details'][Permission::PERMISSION_MANAGE_PROJECT_DETAILS] = ['description' => $i18n->__('Can edit project details and settings')];
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT]['details'][Permission::PERMISSION_MANAGE_PROJECT_BOARDS] = ['description' => $i18n->__('Can create public boards')];
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT]['details'][Permission::PERMISSION_MANAGE_PROJECT_SAVED_SEARCHES] = ['description' => $i18n->__('Can create public saved searches')];
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT]['details'][Permission::PERMISSION_MANAGE_PROJECT_RELEASES] = ['description' => $i18n->__('Can manage project releases')];
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT]['details'][Permission::PERMISSION_MANAGE_PROJECT_LOCK_ISSUES] = ['description' => $i18n->__('Can restrict access to specific issues')];
+                self::$_available_permissions['project'][Permission::PERMISSION_MANAGE_PROJECT]['details'][Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION] = ['description' => $i18n->__('Can moderate documentation and comments')];
+
+                self::$_available_permissions['project'][Permission::PERMISSION_PROJECT_CREATE_ISSUES] = ['description' => $i18n->__('Can create new issues')];
+
+                // TODO: change to project setting that says who can vote for issues: users with access can vote for issues or only devs
+//                self::$_available_permissions['issues']['canvoteforissues'] = ['description' => $i18n->__('Can vote for issues')];
 
                 $arr = [
-                    '' => $i18n->__('For issues reported by anyone: edit any issue details, close and delete issues'),
-                    'own' => $i18n->__('For own issues only: edit any issue details, close and delete issues')
+                    Permission::PERMISSION_OWN_SUFFIX => $i18n->__('For own issues only: edit issue details, triage, close and delete issues'),
+                    '' => $i18n->__('For issues reported by anyone: edit issue details, triage, close and delete issues'),
                 ];
                 foreach ($arr as $suffix => $description) {
-                    self::$_available_permissions['issues']['caneditissue' . $suffix] = ['description' => $description, 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix] = ['description' => $i18n->__('Can edit title, description and reproduction steps'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuetitle' . $suffix] = ['description' => $i18n->__('Can edit title')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuedescription' . $suffix] = ['description' => $i18n->__('Can edit description')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuereproduction_steps' . $suffix] = ['description' => $i18n->__('Can edit steps to reproduce')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canvoteforissues' . $suffix] = ['description' => $i18n->__('Can vote for issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueposted_by' . $suffix] = ['description' => $i18n->__('Can edit issue poster')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueowned_by' . $suffix] = ['description' => $i18n->__('Can edit owner')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueassigned_to' . $suffix] = ['description' => $i18n->__('Can edit assignee')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuestatus' . $suffix] = ['description' => $i18n->__('Can edit status')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecategory' . $suffix] = ['description' => $i18n->__('Can edit category')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepriority' . $suffix] = ['description' => $i18n->__('Can edit priority')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueseverity' . $suffix] = ['description' => $i18n->__('Can edit severity')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuereproducability' . $suffix] = ['description' => $i18n->__('Can edit reproducability')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueresolution' . $suffix] = ['description' => $i18n->__('Can edit resolution')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueestimated_time' . $suffix] = ['description' => $i18n->__('Can set estimate')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuespent_time' . $suffix] = ['description' => $i18n->__('Can spend time working on issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepercent_complete' . $suffix] = ['description' => $i18n->__('Can edit percent complete')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuemilestone' . $suffix] = ['description' => $i18n->__('Can set milestone')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecolor' . $suffix] = ['description' => $i18n->__('Can edit planning color')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueuserpain' . $suffix] = ['description' => $i18n->__('Can edit user pain')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix] = ['description' => $i18n->__('Can add/remove extra information (edition, component, release, links and files) and link issues'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddbuilds' . $suffix] = ['description' => $i18n->__('Can add and remove affected releases / versions')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddcomponents' . $suffix] = ['description' => $i18n->__('Can add and remove affected components')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddeditions' . $suffix] = ['description' => $i18n->__('Can add and remove affected editions')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddlinkstoissues' . $suffix] = ['description' => $i18n->__('Can add and remove links')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddfilestoissues' . $suffix] = ['description' => $i18n->__('Can add and remove attachments')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddrelatedissues' . $suffix] = ['description' => $i18n->__('Can add and remove related issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix] = ['description' => $i18n->__('Can transition issue')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['candeleteissues' . $suffix] = ['description' => $i18n->__('Can delete issue')];
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix] = ['description' => $description, 'details' => []];
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_BASIC . $suffix] = ['description' => $i18n->__('Can edit title, description and reproduction steps')];
+
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_TRIAGE . $suffix] = ['description' => $i18n->__('Can triage issues (edit category, priority, severity, reproducability, estimates)')];
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_TRANSITION . $suffix] = ['description' => $i18n->__('Can apply workflow actions (edit status, resolution, milestone, percent completed)')];
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_TIME_TRACKING . $suffix] = ['description' => $i18n->__('Can log time spent working on issues')];
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL . $suffix] = ['description' => $i18n->__('Can add/remove extra information (links and attachments)')];
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_COMMENTS . $suffix] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
+
+                    if (!$suffix) {
+                        self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES]['details'][Permission::PERMISSION_EDIT_ISSUES_PEOPLE] = ['description' => $i18n->__('Can edit people involved in the issue (poster, assignee, owner)')];
+                        self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES]['details'][Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS] = ['description' => $i18n->__('Can moderate comments')];
+                        self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES]['details'][Permission::PERMISSION_EDIT_ISSUES_DELETE] = ['description' => $i18n->__('Can delete issue')];
+                    }
                 }
 
                 foreach ($arr as $suffix => $description) {
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix] = [
-                        'description' => $i18n->__('Can edit custom fields for issues'),
+                    self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permission::PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS . $suffix] = [
+                        'description' => $i18n->__('Can edit any custom fields'),
                         'details' => []
                     ];
                 }
 
                 foreach (CustomDatatype::getAll() as $cdf) {
                     foreach ($arr as $suffix => $description) {
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix]['details']['caneditissuecustomfields' . $cdf->getKey() . $suffix] = ['description' => $i18n->__('Can change custom field "%field_name"', ['%field_name' => $i18n->__($cdf->getDescription())])];
-                    }
-
-                    // Set permissions for custom option types
-                    if ($cdf->hasCustomOptions()) {
-                        $options = $cdf->getOptions();
-                        foreach ($options as $option) {
-                            foreach ($arr as $suffix => $description) {
-                                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['set_datatype_' . $option->getID() . $suffix] = ['description' => $i18n->__('Can change issue field to "%option_name"', ['%option_name' => $i18n->__($option->getValue())])];
-                            }
-                        }
+                        self::$_available_permissions['issues'][Permission::PERMISSION_EDIT_ISSUES . $suffix]['details']['caneditissuecustomfields' . $suffix]['details']['caneditissuecustomfields' . $cdf->getKey() . $suffix] = ['description' => $i18n->__('Can change custom field "%field_name"', ['%field_name' => $i18n->__($cdf->getDescription())])];
                     }
                 }
-
-                foreach (Datatype::getTypes() as $type => $class) {
-                    foreach ($arr as $suffix => $description) {
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['set_datatype_' . $type . $suffix] = ['description' => $i18n->__('Can change field "%type_name"', ['%type_name' => $i18n->__($type)])];
-                    }
-                }
-
-                self::$_available_permissions['issues']['canpostseeandeditallcomments'] = ['description' => $i18n->__('Can see all comments (including non-public), post new, edit and delete all comments'), 'details' => []];
-                self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['canseenonpubliccomments'] = ['description' => $i18n->__('Can see all comments including hidden')];
-                self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['caneditcomments'] = ['description' => $i18n->__('Can edit all comments')];
-                self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['candeletecomments'] = ['description' => $i18n->__('Can delete any comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments'] = ['description' => $i18n->__('Can see public comments, post new, edit own and delete own comments'), 'details' => []];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['canviewcomments'] = ['description' => $i18n->__('Can see public comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['canpostcomments'] = ['description' => $i18n->__('Can post comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['caneditcommentsown'] = ['description' => $i18n->__('Can edit own comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['candeletecommentsown'] = ['description' => $i18n->__('Can delete own comments')];
 
                 foreach (self::$_available_permissions as $category => $permissions) {
                     self::addPermissionsPath($permissions, $category);
@@ -951,7 +898,7 @@
                             if (!array_key_exists($row->get(Permissions::TARGET_ID), self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)])) {
                                 self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)] = [];
                             }
-                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = ['uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID)];
+                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = ['uid' => $row->get(Permissions::USER_ID), 'gid' => $row->get(Permissions::GROUP_ID), 'tid' => $row->get(Permissions::TEAM_ID), 'client_id' => $row->get(Permissions::CLIENT_ID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID)];
                         }
                     }
                     Logging::log('done (starting to cache access permissions)');
@@ -983,24 +930,20 @@
             if (self::isInstallmode())
                 return;
 
-            if (self::isUpgrademode()) {
-                self::$_modules = Module::getB2DBTable()->getAllNames();
-
-                return;
-            }
-
             Logging::log('getting modules from database');
-            self::$_modules = Module::getB2DBTable()->getAll();
+            self::$_modules = Modules::getTable()->getAll();
             Logging::log('done (setting up module objects)');
 
-            Logging::log('initializing modules');
-            if (!empty(self::$_modules)) {
-                foreach (self::$_modules as $module) {
-                    $module->initialize();
+            if (!self::isUpgrademode()) {
+                Logging::log('initializing modules');
+                if (!empty(self::$_modules)) {
+                    foreach (self::$_modules as $module) {
+                        $module->initialize();
+                    }
+                    Logging::log('done (initializing modules)');
+                } else {
+                    Logging::log('no modules found');
                 }
-                Logging::log('done (initializing modules)');
-            } else {
-                Logging::log('no modules found');
             }
             Logging::log('...done (loading modules)');
         }
@@ -1073,10 +1016,13 @@
                 if (is_dir(PACHNO_MODULES_PATH . $module_name) && file_exists(PACHNO_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php')) {
                     if (self::isModuleLoaded($module_name))
                         continue;
-                    $module_class = "\\pachno\\modules\\{$module_name}\\" . ucfirst($module_name);
-                    if (class_exists($module_class)) {
-                        $modules[$module_name] = new $module_class();
-                    }
+
+                    try {
+                        $module_class = "\\pachno\\modules\\{$module_name}\\" . ucfirst($module_name);
+                        if (class_exists($module_class)) {
+                            $modules[$module_name] = new $module_class();
+                        }
+                    } catch (\Exception $e) {}
                 }
             }
 
@@ -1102,17 +1048,17 @@
             $query->where(Permissions::PERMISSION_TYPE, $type);
 
             if (($uid + $tid + $gid) == 0 && !$all) {
-                $query->where(Permissions::UID, $uid);
-                $query->where(Permissions::TID, $tid);
-                $query->where(Permissions::GID, $gid);
+                $query->where(Permissions::USER_ID, $uid);
+                $query->where(Permissions::TEAM_ID, $tid);
+                $query->where(Permissions::GROUP_ID, $gid);
             } else {
                 switch (true) {
                     case ($uid != 0):
-                        $query->where(Permissions::UID, $uid);
+                        $query->where(Permissions::USER_ID, $uid);
                     case ($tid != 0):
-                        $query->where(Permissions::TID, $tid);
+                        $query->where(Permissions::TEAM_ID, $tid);
                     case ($gid != 0):
-                        $query->where(Permissions::GID, $gid);
+                        $query->where(Permissions::GROUP_ID, $gid);
                 }
             }
             if ($target_id !== null) {
@@ -1123,7 +1069,7 @@
 
             if ($res = Permissions::getTable()->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $permissions[] = ['p_type' => $row->get(Permissions::PERMISSION_TYPE), 'target_id' => $row->get(Permissions::TARGET_ID), 'allowed' => $row->get(Permissions::ALLOWED), 'uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'id' => $row->get(Permissions::ID)];
+                    $permissions[] = ['p_type' => $row->get(Permissions::PERMISSION_TYPE), 'target_id' => $row->get(Permissions::TARGET_ID), 'allowed' => $row->get(Permissions::ALLOWED), 'uid' => $row->get(Permissions::USER_ID), 'gid' => $row->get(Permissions::GROUP_ID), 'tid' => $row->get(Permissions::TEAM_ID), 'id' => $row->get(Permissions::ID)];
                 }
             }
 
@@ -1155,26 +1101,34 @@
         /**
          * Save a permission setting
          *
-         * @param string $permission_type The permission type
+         * @param string $permission_name The permission type
          * @param mixed $target_id The target id
          * @param string $module The name of the module for which the permission is valid
-         * @param integer $uid The user id for which the permission is valid, 0 for none
-         * @param integer $gid The group id for which the permission is valid, 0 for none
-         * @param integer $tid The team id for which the permission is valid, 0 for none
-         * @param boolean $allowed Allowed or not
+         * @param integer $user_id The user id for which the permission is valid, 0 for none
+         * @param integer $group_id The group id for which the permission is valid, 0 for none
+         * @param integer $team_id The team id for which the permission is valid, 0 for none
          * @param integer $scope [optional] A specified scope if not the default
          */
-        public static function setPermission($permission_type, $target_id, $module, $uid, $gid, $tid, $allowed, $scope = null, $role_id = null)
+        public static function setPermission($permission_name, $target_id, $module, $user_id, $group_id, $team_id, $scope = null, $role_id = 0)
         {
             if ($scope === null)
                 $scope = self::getScope()->getID();
 
-            if ($role_id === null) {
-                self::removePermission($permission_type, $target_id, $module, $uid, $gid, $tid, false, $scope, 0);
+            if (!$role_id) {
+                self::removePermission($permission_name, $target_id, $module, $user_id, $group_id, $team_id, false, $scope, 0);
             }
-            Permissions::getTable()->setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id);
-            self::clearPermissionsCache();
+            $permission = new Permission();
+            $permission->setGroupId($group_id);
+            $permission->setUserId($user_id);
+            $permission->setTeamId($team_id);
+            $permission->setRoleId($role_id);
+            $permission->setModuleName($module);
+            $permission->setTargetId($target_id);
+            $permission->setScope($scope);
+            $permission->setPermissionName($permission_name);
+            $permission->save();
 
+            self::clearPermissionsCache();
             self::cacheAllPermissions();
         }
 
@@ -1184,18 +1138,18 @@
          * @param string $permission_type The permission type
          * @param mixed $target_id The target id
          * @param string $module The name of the module for which the permission is valid
-         * @param integer $uid The user id for which the permission is valid, 0 for none
-         * @param integer $gid The group id for which the permission is valid, 0 for none
-         * @param integer $tid The team id for which the permission is valid, 0 for none
+         * @param integer $user_id The user id for which the permission is valid, 0 for none
+         * @param integer $group_id The group id for which the permission is valid, 0 for none
+         * @param integer $team_id The team id for which the permission is valid, 0 for none
          * @param boolean $recache Whether to recache after clearing this permission
          * @param integer $scope A specified scope if not the default
          */
-        public static function removePermission($permission_type, $target_id, $module, $uid, $gid, $tid, $recache = true, $scope = null, $role_id = null)
+        public static function removePermission($permission_type, $target_id, $module, $user_id, $group_id, $team_id, $recache = true, $scope = null, $role_id = null)
         {
             if ($scope === null)
                 $scope = self::getScope()->getID();
 
-            Permissions::getTable()->removeSavedPermission($uid, $gid, $tid, $module, $permission_type, $target_id, $scope, $role_id);
+            Permissions::getTable()->removeSavedPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope, $role_id);
             self::clearPermissionsCache();
 
             if ($recache)
@@ -1225,9 +1179,15 @@
                             return $permission['allowed'];
                     }
                 }
+                if ($type == 'client') {
+                    foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
+                        if ($permission['client_id'] == $id && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0)))
+                            return $permission['allowed'];
+                    }
+                }
                 if ($type == 'everyone') {
                     foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
-                        if ($permission['uid'] + $permission['gid'] + $permission['tid'] == 0 && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0))) {
+                        if ($permission['uid'] + $permission['gid'] + $permission['tid'] + $permission['client_id'] == 0 && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0))) {
                             return $permission['allowed'];
                         }
                     }
@@ -1258,37 +1218,34 @@
 
                 if (in_array($permission_key, array_keys(self::$_available_permissions)) || (array_key_exists('details', $permission_info) && is_array($permission_info['details']) && count($permission_info['details']))) {
                     $p_info = (in_array($permission_key, array_keys(self::$_available_permissions))) ? $permission_info : $permission_info['details'];
-                    $retval = self::getPermissionDetails($permission, $p_info, $module_name);
-                    if ($retval)
-                        return $retval;
+                    $permissionDetails = self::getPermissionDetails($permission, $p_info, $module_name);
+                    if ($permissionDetails)
+                        return $permissionDetails;
                 }
             }
         }
 
-        public static function permissionCheck($module, $permission, $target_id, $uid, $gid, $team_ids)
+        public static function permissionCheck($module, $permission, $target_id, $uid, $gid, $team_ids, $client_ids)
         {
-            $key = 'config';
-
             foreach (self::$_available_permission_paths as $permission_key => $permissions) {
-                if ($permission_key == 'config')
-                    continue;
-
                 if (array_key_exists($permission, $permissions)) {
                     $key = $permission_key;
                     break;
                 }
             }
 
-            if ($key != 'config') {
-                foreach (self::$_available_permission_paths[$key][$permission] as $parent_permission) {
-                    $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids);
-                    if ($value !== null) {
-                        return $value;
-                    }
+            if (!isset($key)) {
+                throw new \Exception('Invalid permission key when trying to check permission for "' . $permission . '"');
+            }
+
+            foreach (self::$_available_permission_paths[$key][$permission] as $parent_permission) {
+                $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids, $client_ids);
+                if ($value !== null) {
+                    return $value;
                 }
             }
 
-            return self::checkPermission($module, $permission, $target_id, $uid, $gid, $team_ids);
+            return self::checkPermission($module, $permission, $target_id, $uid, $gid, $team_ids, $client_ids);
         }
 
         /**
@@ -1307,7 +1264,7 @@
          * @see User::hasPermission() For description of module name, permission type, target ID.
          *
          */
-        public static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids)
+        protected static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids, $client_ids)
         {
             // Default is that no permission was found/matched against user
             // specifier.
@@ -1342,9 +1299,10 @@
                         // user specifier (uid, gid, or one of team IDs), or if the
                         // permission should be applied to all users.
                         if (($uid != 0 && $uid == $permission['uid']) ||
-                            (count($team_ids) != 0 && in_array($permission['tid'], $team_ids)) ||
                             ($gid != 0 && $gid == $permission['gid']) ||
-                            ($permission['uid'] == 0 && $permission['gid'] == 0 && $permission['tid'] == 0)) {
+                            (!$permission['uid'] && !$permission['gid'] && !$permission['tid'] && !$permission['client_id']) ||
+                            (count($team_ids) != 0 && in_array($permission['tid'], $team_ids)) ||
+                            (count($client_ids) != 0 && in_array($permission['client_id'], $client_ids))) {
                             // Calculate the permissions weight, and apply its
                             // result (allow/deny) if it outweighs the previously
                             // matched permission.
@@ -1386,10 +1344,10 @@
          *
          * The weight of the above three items is also proportional to each other,
          * that is the specificity of target ID brings more weight than specific
-         * uid/gid/tid, which in turns weights more than specific rule result
+         * uid/gid/tid/client_id, which in turns weights more than specific rule result
          * (allowed/denied).
          *
-         * @param permission array An array defining permission. Must include the following keys: uid (user ID), gid (group ID), tid (team ID), and allowed (true/false).
+         * @param permission array An array defining permission. Must include the following keys: uid (user ID), gid (group ID), tid (team ID), client_id (client ID), and allowed (true/false).
          * @param target_id mixed Either a non-negative integer or string designating target to which the permission applies. 0 means global target.
          *
          * @return integer A non-negative integer denoting weight of permission.
@@ -1403,6 +1361,7 @@
                 'specific_target_id' => 1000,
                 'specific_uid' => 750,
                 'specific_tid' => 500,
+                'specific_client_id' => 500,
                 'specific_gid' => 250,
                 'allow_false' => 50,
                 'allow_true' => 0,
@@ -1421,6 +1380,8 @@
                 $weight += $weight_bases['specific_uid'];
             } elseif ($permission['tid'] != 0) {
                 $weight += $weight_bases['specific_tid'];
+            } elseif ($permission['client_id'] != 0) {
+                $weight += $weight_bases['specific_client_id'];
             } elseif ($permission['gid'] != 0) {
                 $weight += $weight_bases['specific_gid'];
             }
@@ -1507,9 +1468,9 @@
         /**
          * Return the currently selected project if any, or null
          *
-         * @return Project
+         * @return ?Project
          */
-        public static function getCurrentProject()
+        public static function getCurrentProject(): ?Project
         {
             return self::$_selected_project;
         }
@@ -1517,9 +1478,9 @@
         /**
          * Return whether current project is set
          *
-         * @return boolean
+         * @return bool
          */
-        public static function isProjectContext()
+        public static function isProjectContext(): bool
         {
             return (bool)(self::getCurrentProject() instanceof Project);
         }
@@ -1527,9 +1488,10 @@
         /**
          * Retrieve the message and clear it
          *
-         * @return string
+         * @param string $key The key of the message to retrieve
+         * @return ?string
          */
-        public static function getMessageAndClear($key)
+        public static function getMessageAndClear(string $key): ?string
         {
             if ($message = self::getMessage($key)) {
                 self::clearMessage($key);
@@ -1543,11 +1505,10 @@
         /**
          * Retrieve a message passed on from the previous request
          *
-         * @param string $key A message identifier
-         *
-         * @return string
+         * @param string $key The key of the message to retrieve
+         * @return ?string
          */
-        public static function getMessage($key)
+        public static function getMessage(string $key): ?string
         {
             return (self::hasMessage($key)) ? self::$_messages[$key] : null;
         }
@@ -1555,9 +1516,10 @@
         /**
          * Whether or not there is a message in the next request
          *
-         * @return boolean
+         * @param string $key The key of the message to retrieve
+         * @return bool
          */
-        public static function hasMessage($key)
+        public static function hasMessage(string $key): bool
         {
             self::_setupMessages();
 
@@ -1592,8 +1554,8 @@
             set_error_handler([self::class, 'errorHandler']);
             error_reporting(E_ALL | E_NOTICE | E_STRICT);
 
-            if (PHP_VERSION_ID < 70100)
-                die('This software requires PHP 7.1.0 or newer. Please upgrade to a newer version of php to use Pachno.');
+            if (PHP_VERSION_ID < 70400)
+                die('This software requires PHP 7.4.0 or newer. Please upgrade to a newer version of php to use Pachno.');
 
             gc_enable();
             date_default_timezone_set('UTC');
@@ -1620,7 +1582,7 @@
                 // point. Permissions also must be cached at this point,
                 // and not together with self::initializeUser since i18n
                 // system must be initialised beforehand.
-                if (!self::isInstallmode())
+                if (self::isReadySetup())
                     self::_cacheAvailablePermissions();
             }
         }
@@ -1667,12 +1629,13 @@
                 if (!self::isCLI() && !ini_get('session.auto_start'))
                     self::initializeSession();
 
-                Logging::log('Loading B2DB');
+                Logging::log('Loading b2db');
 
-                if (array_key_exists('b2db', self::$_configuration))
+                if (array_key_exists('b2db', self::$_configuration)) {
                     Core::initialize(self::$_configuration['b2db'], self::getCache());
-                else
+                } else {
                     Core::initialize([], self::getCache());
+                }
 
                 if (self::isReadySetup() && !Core::isInitialized()) {
                     throw new exceptions\ConfigurationException("Pachno seems installed, but B2DB isn't configured.", exceptions\ConfigurationException::NO_B2DB_CONFIGURATION);
@@ -1680,10 +1643,12 @@
 
                 Logging::log('...done (Initializing B2DB)');
 
-                if (Core::isInitialized() && self::isReadySetup()) {
+                if (Core::isInitialized() && !self::isInstallmode()) {
                     Logging::log('Database connection details found, connecting');
                     Core::doConnect();
                     Logging::log('...done (Database connection details found, connecting)');
+                } else {
+                    Logging::log('Not initializing database connection since we are in install mode');
                 }
 
                 Logging::log('...done');
@@ -1699,7 +1664,7 @@
                 Logging::log('done (loading scope)');
 
                 self::loadInternalModules();
-                if (!self::isInstallmode()) {
+                if (self::isReadySetup()) {
                     self::setupCoreListeners();
                     self::loadModules();
                 }
@@ -1730,7 +1695,7 @@
             if (!is_readable(PACHNO_PATH . 'installed')) {
                 self::$_installmode = true;
             } elseif (is_readable(PACHNO_PATH . 'upgrade')) {
-                self::$_installmode = true;
+                self::$_installmode = false;
                 self::$_upgrademode = true;
                 self::getCache()->disable();
             } else {
@@ -1769,7 +1734,7 @@
                 }
             }
 
-            if (!self::isReadySetup() || !$configuration) {
+            if (!self::isInstallmode() || !isset($configuration) || !$configuration) {
                 Logging::log('Loading configuration from files', 'core');
                 $config_filename = PACHNO_CONFIGURATION_PATH . "settings.yml";
                 $b2db_filename = PACHNO_CONFIGURATION_PATH . "b2db.yml";
@@ -1838,7 +1803,9 @@
             foreach (self::$_internal_module_paths as $modulename) {
                 $classname = "\\pachno\\core\\modules\\{$modulename}\\" . ucfirst($modulename);
                 self::$_internal_modules[$modulename] = new $classname($modulename);
-                self::$_internal_modules[$modulename]->initialize();
+                if (self::isReadySetup()) {
+                    self::$_internal_modules[$modulename]->initialize();
+                }
             }
 
             Logging::log('...done (loading internal modules)');
@@ -1854,8 +1821,6 @@
         protected static function setupI18n()
         {
             Logging::log('Initializing i18n');
-//        if (true || !self::isCLI())
-//        {
             $language = (self::$_user instanceof User) ? self::$_user->getLanguage() : Settings::getLanguage();
 
             if (self::$_user instanceof User && self::$_user->getLanguage() == 'sys') {
@@ -1876,7 +1841,7 @@
         {
             Logging::log('Dispatching');
             try {
-                if (($route = self::getRouting()->getRouteFromUrl(self::getRequest()->getParameter('url', null, false))) || self::isInstallmode()) {
+                if (($route = self::getRouting()->getRouteFromUrl(self::getRequest()->getParameter('url', '', false))) || self::isInstallmode()) {
 
                     if (self::isUpgrademode()) {
                         $route = new Route('installation_upgrade', 'installation', 'upgrade');
@@ -1899,8 +1864,9 @@
                 self::$_current_controller_method = $controllerMethod;
                 self::$_current_controller_module = $moduleName;
 
-                if (!self::isInstallmode())
+                if (self::isReadySetup()) {
                     self::initializeUser();
+                }
 
                 self::setupI18n();
 
@@ -1909,8 +1875,9 @@
                 // point. Permissions also must be cached at this point,
                 // and not together with self::initializeUser since i18n
                 // system must be initialised beforehand.
-                if (!self::isInstallmode())
+                if (self::isReadySetup()) {
                     self::_cacheAvailablePermissions();
+                }
 
                 if (self::$_redirect_login == 'login') {
 
@@ -1953,11 +1920,6 @@
                     return true;
                 }
 
-            } catch (TemplateNotFoundException $e) {
-                Core::closeDBLink();
-                //header("HTTP/1.0 404 Not Found", true, 404);
-                throw $e;
-
             } catch (ActionNotFoundException $e) {
                 Core::closeDBLink();
                 header("HTTP/1.0 404 Not Found", true, 404);
@@ -1981,9 +1943,9 @@
                 self::getResponse()->setHttpStatus(403);
                 $message = $e->getMessage();
 
-                if (self::getRequest()->isResponseFormatAccepted('application/json', false)) {
+                if (!self::isCLI() && self::getRequest()->isResponseFormatAccepted('application/json', false)) {
                     self::getResponse()->setContentType('application/json');
-                    $message = json_encode(['message' => $message]);
+                    $message = json_encode(['message' => $message], JSON_THROW_ON_ERROR);
                 }
 
                 self::getResponse()->renderHeaders();
@@ -1991,7 +1953,6 @@
 
             } catch (Exception $e) {
                 Core::closeDBLink();
-                //header("HTTP/1.0 404 Not Found", true, 404);
                 throw $e;
             }
         }
@@ -2162,7 +2123,7 @@
                     Logging::log('Running main pre-execute action');
                     // Running any overridden preExecute() method defined for that module
                     // or the default empty one provided by \pachno\core\framework\Action
-                    if ($pre_action_retval = self::$_current_controller_object->preExecute(self::getRequest(), self::$_current_controller_method)) {
+                    if ($pre_action_result = self::$_current_controller_object->preExecute(self::getRequest(), self::$_current_controller_method)) {
                         $content = ob_get_clean();
                         Logging::log('preexecute method returned something, skipping further action');
                         if (self::$_debug_mode)
@@ -2196,7 +2157,12 @@
                             //session_write_close();
                         }
                     }
-                    if ($action_output && self::getResponse()->getHttpStatus() == 200) {
+
+                    if ($action_output instanceof RenderedOutput) {
+                        $content = $action_output;
+                        $other_content = ob_get_clean();
+                        Logging::log('...done');
+                    } elseif ($action_output && self::getResponse()->getHttpStatus() == 200) {
                         // If the action returns *any* output, we're done, and collect the
                         // output to a variable to be outputted in context later
                         $content = ob_get_clean();
@@ -2279,7 +2245,7 @@
                     ob_flush();
                 } else {
                     // Render header template if any, and store the output in a variable
-                    if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
+                    if (!$content instanceof RenderedOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
                         Logging::log('decorating with header');
                         if (!file_exists(self::getResponse()->getHeaderDecoration())) {
                             throw new exceptions\TemplateNotFoundException('Can not find header decoration: ' . self::getResponse()->getHeaderDecoration());
@@ -2295,7 +2261,7 @@
                     Logging::log('...done (rendering content)');
 
                     // Render footer template if any
-                    if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
+                    if (!$content instanceof RenderedOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
                         Logging::log('decorating with footer');
                         if (!file_exists(self::getResponse()->getFooterDecoration())) {
                             throw new exceptions\TemplateNotFoundException('Can not find footer decoration: ' . self::getResponse()->getFooterDecoration());
@@ -2339,7 +2305,7 @@
             if ($token == self::getRequest()->getParameter('csrf_token'))
                 return true;
 
-            $message = self::getI18n()->__('An authentication error occured. Please reload your page and try again');
+            $message = self::getI18n()->__('An authentication error occurred. Please reload your page and try again');
             throw new exceptions\CSRFFailureException($message);
         }
 
@@ -2418,10 +2384,10 @@
                     self::getResponse()->addStylesheet(self::getRouting()->generate('asset_css', ['theme_name' => $theme, 'css' => "{$module_name}.css"]));
                 }
                 if (file_exists($themepath . 'js' . DS . "theme.js")) {
-                    self::getResponse()->addJavascript(self::getRouting()->generate('asset_js', ['theme_name' => $theme, 'js' => "theme.js"], false));
+                    //self::getResponse()->addJavascript(self::getRouting()->generate('asset_js', ['theme_name' => $theme, 'js' => "theme.js"], false));
                 }
                 if (file_exists($basepath . 'js' . DS . "{$module_name}.js")) {
-                    self::getResponse()->addJavascript(self::getRouting()->generate('asset_js_unthemed', ['js' => "{$module_name}.js"]));
+                    //self::getResponse()->addJavascript(self::getRouting()->generate('asset_js_unthemed', ['js' => "{$module_name}.js"]));
                 }
             }
 
@@ -2477,10 +2443,20 @@
             return !empty(self::$_configuration['core']['minified_assets']);
         }
 
+        public static function getBaseOnlineUrl(): string
+        {
+            return self::$_configuration['core']['base_pachno_url'];
+        }
+
+        public static function getOnlineVerifySsl(): bool
+        {
+            return self::$_configuration['core']['pachno_ssl_verify'] ?? true;
+        }
+
         /**
          * Retrieves information about the latest available version from the official website.
          *
-         * @return array
+         * @return array|null
          *
          *   null, if latest available version information could not be
          *   retrieved due to errors, otherwise an array describing the
@@ -2507,20 +2483,17 @@
 
             // Set-up client and retrieve version information.
             $client = new \GuzzleHttp\Client([
-                'base_uri' => 'https://pachno.com/',
-                'http_errors' => false]);
-            $response = $client->request('GET', '/updatecheck.php');
+                'base_uri' => self::getBaseOnlineUrl(),
+                'verify' => self::getOnlineVerifySsl(),
+                'http_errors' => false
+            ]);
+            $response = $client->request('GET', '/version.json');
 
             // Verify status code.
             if ($response->getStatusCode() == 200) {
                 // Decode response.
-                $info = json_decode($response->getBody());
-
-                // Cache value if response was decoded and necessary
-                // information was read from it.
-                if (is_object($info) && isset($info->maj, $info->min, $info->rev, $info->nicever)) {
-                    self::$_latest_available_version = $info;
-                }
+                $info = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+                self::$_latest_available_version = $info;
             }
 
             return self::$_latest_available_version;
@@ -2539,16 +2512,7 @@
          */
         public static function isUpdateAvailable($version)
         {
-            $update_available = false;
-
-            // Check if we are out of date.
-            if ($version->maj > Settings::getMajorVer()) {
-                $update_available = true;
-            } elseif ($version->min > Settings::getMinorVer() && ($version->maj == Settings::getMajorVer())) {
-                $update_available = true;
-            } elseif ($version->rev > Settings::getRevision() && ($version->maj == Settings::getMajorVer()) && ($version->min == Settings::getMinorVer())) {
-                $update_available = true;
-            }
+            $update_available = version_compare($version, Settings::getVersion());
 
             return $update_available;
         }

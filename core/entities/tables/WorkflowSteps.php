@@ -32,25 +32,25 @@
     class WorkflowSteps extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'workflow_steps';
+        public const B2DBNAME = 'workflow_steps';
 
-        const ID = 'workflow_steps.id';
+        public const ID = 'workflow_steps.id';
 
-        const SCOPE = 'workflow_steps.scope';
+        public const SCOPE = 'workflow_steps.scope';
 
-        const NAME = 'workflow_steps.name';
+        public const NAME = 'workflow_steps.name';
 
-        const STATUS_ID = 'workflow_steps.status_id';
+        public const STATUS_ID = 'workflow_steps.status_id';
 
-        const WORKFLOW_ID = 'workflow_steps.workflow_id';
+        public const WORKFLOW_ID = 'workflow_steps.workflow_id';
 
-        const CLOSED = 'workflow_steps.closed';
+        public const CLOSED = 'workflow_steps.closed';
 
-        const DESCRIPTION = 'workflow_steps.description';
+        public const DESCRIPTION = 'workflow_steps.description';
 
-        const EDITABLE = 'workflow_steps.editable';
+        public const EDITABLE = 'workflow_steps.editable';
 
         public function loadFixtures(Scope $scope)
         {

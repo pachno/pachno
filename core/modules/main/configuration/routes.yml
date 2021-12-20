@@ -5,27 +5,6 @@ home:
     parameters: [ ]
     csrf_enabled: false
 
-save_menu_order:
-    route: /menu/:target_type/:target_id
-    module: main
-    action: saveMenuOrder
-    parameters: [ ]
-    csrf_enabled: false
-
-attach_link:
-    route: /attach/link/to/:target_type/:target_id
-    module: main
-    action: attachLink
-    parameters: [ ]
-    csrf_enabled: false
-
-remove_link:
-    route: /upload/remove/link/:link_id/from/other/:target_type/:target_id
-    module: main
-    action: removeLink
-    parameters: [ ]
-    csrf_enabled: false
-
 client_dashboard:
     route: /clients/:client_id
     module: main
@@ -152,22 +131,6 @@ update_attachments:
     parameters: [ ]
     csrf_enabled: false
 
-issue_upload:
-    route: /upload/to/issue/:issue_id
-    module: main
-    action: upload
-    parameters:
-      mode: issue
-    csrf_enabled: false
-
-article_upload:
-    route: /upload/to/article/:article_name
-    module: main
-    action: upload
-    parameters:
-      mode: article
-    csrf_enabled: false
-
 showfile:
     route: /files/show/:id
     module: main
@@ -184,22 +147,6 @@ downloadfile:
       mode: download
     csrf_enabled: false
 
-issue_upload_status:
-    route: /upload/get/status/for/issue/:issue_id
-    module: main
-    action: getUploadStatus
-    parameters:
-      mode: issue
-    csrf_enabled: false
-
-article_upload_status:
-    route: /upload/get/status/for/article/:article_name
-    module: main
-    action: getUploadStatus
-    parameters:
-      mode: article
-    csrf_enabled: false
-
 issue_detach_file:
     route: /upload/detach/file/:file_id/from/issue/:issue_id
     module: main
@@ -209,11 +156,19 @@ issue_detach_file:
     csrf_enabled: false
 
 article_detach_file:
-    route: /upload/detach/file/:file_id/from/article/:article_name
+    route: /upload/detach/file/:file_id/from/article/:article_id
     module: main
     action: detachFile
     parameters:
       mode: article
+    csrf_enabled: false
+
+build_detach_file:
+    route: /upload/detach/file/:file_id/from/build/:build_id
+    module: main
+    action: detachFile
+    parameters:
+      mode: build
     csrf_enabled: false
 
 issue_attach_link:
@@ -237,40 +192,12 @@ issue_remove_link:
     parameters: [ ]
     csrf_enabled: false
 
-upload_status:
-    route: /upload/get/status/for/:mode
-    module: main
-    action: getUploadStatus
-    parameters: [ ]
-    csrf_enabled: false
-
-upload:
-    route: /upload/:mode
-    module: main
-    action: upload
-    parameters: [ ]
-    csrf_enabled: false
-
 upload_file:
     route: /uploadfile
     module: main
     action: uploadFile
     parameters: [ ]
     csrf_enabled: false
-
-account_add_application_password:
-    route: '/account/add/password/*'
-    module: main
-    action: accountAddPassword
-    parameters: [ ]
-    csrf_enabled: true
-
-account_remove_application_password:
-    route: /account/remove/password/:id/:csrf_token
-    module: main
-    action: accountRemovePassword
-    parameters: [ ]
-    csrf_enabled: true
 
 account_regenerate_rss_key:
     route: /account/regenerate/rsskey/:csrf_token
@@ -280,10 +207,11 @@ account_regenerate_rss_key:
     csrf_enabled: true
 
 account_change_password:
-    route: '/account/change/password/*'
+    route: '/account/change/password/:csrf_token'
     module: main
     action: accountChangePassword
     parameters: [ ]
+    methods: ['POST']
     csrf_enabled: true
 
 account_check_username:
@@ -396,13 +324,6 @@ viewissue_relate_issues:
       format: json
     csrf_enabled: false
 
-viewissue_remove_related_issue:
-    route: /:project_key/issues/:issue_id/remove/related/issue/:related_issue_id
-    module: main
-    action: removeRelatedIssue
-    parameters: [ ]
-    csrf_enabled: false
-
 viewissue_find_duplicated_issue:
     route: /:project_key/find_issues/:issue_id/duplicated
     module: main
@@ -425,13 +346,6 @@ viewissue_related_issues:
     parameters: [ ]
     csrf_enabled: false
 
-deleteissue:
-    route: /:project_key/issues/:issue_id/delete
-    module: main
-    action: deleteIssue
-    parameters: [ ]
-    csrf_enabled: false
-
 lock_issue:
     route: /lock/issue/:issue_id
     module: main
@@ -446,38 +360,10 @@ unlock_issue:
     parameters: [ ]
     csrf_enabled: false
 
-block:
-    route: /:project_key/issues/:issue_id/block
-    module: main
-    action: markAsBlocker
-    parameters: [ ]
-    csrf_enabled: false
-
-unblock:
-    route: /:project_key/issues/:issue_id/unblock
-    module: main
-    action: markAsNotBlocker
-    parameters: [ ]
-    csrf_enabled: false
-
 issue_gettempfieldvalue:
     route: '/get/temp/value/for/:field/*'
     module: main
     action: issueGetTempFieldValue
-    parameters: [ ]
-    csrf_enabled: false
-
-issue_setfield:
-    route: '/:project_key/issues/:issue_id/set/field'
-    module: main
-    action: issueSetField
-    parameters: [ ]
-    csrf_enabled: true
-
-issue_edittimespent:
-    route: /:project_key/issues/:issue_id/timespent/:entry_id
-    module: main
-    action: issueEditTimeSpent
     parameters: [ ]
     csrf_enabled: false
 
@@ -518,11 +404,11 @@ toggle_favourite_issue:
     csrf_enabled: false
 
 project_reportissue:
-    route: '/:project_key/issues/new/*'
+    route: '/:project_key/:csrf_token/issues/new'
     module: main
     action: reportIssue
     parameters: [ ]
-    csrf_enabled: false
+    csrf_enabled: true
 
 issue_log:
     route: /:project_key/issuelog/:issue_id
@@ -567,5 +453,5 @@ viewissue:
     module: project
     action: viewIssue
     parameters: [ ]
-    methods: ['GET']
+    methods: ['GET', 'DELETE']
     csrf_enabled: false

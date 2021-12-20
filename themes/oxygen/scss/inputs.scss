@@ -10,6 +10,7 @@ input, select, textarea, .input {
   vertical-align: middle;
   font-weight: $theme-font-weight-regular;
   background-color: #FFF;
+  flex: 1 1 auto;
 }
 
 input[type="text"],
@@ -35,6 +36,7 @@ input[type="search"]:focus,
 input[type="password"]:focus,
 input[type="url"]:focus, select:focus {
   border-bottom-color: #0C8990;
+  outline: none;
 }
 
 input[type="image"] {
@@ -105,4 +107,8 @@ input.shaded,
   &:focus {
     border-bottom-color: transparent;
   }
+}
+
+input[type=file] {
+  display: none;
 }

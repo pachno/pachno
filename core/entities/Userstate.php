@@ -61,15 +61,6 @@
          */
         protected $_is_absent = false;
 
-        public static function getAll()
-        {
-            if (self::$_userstates === null) {
-                self::$_userstates = self::getB2DBTable()->getAll();
-            }
-
-            return self::$_userstates;
-        }
-
         public static function loadFixtures(Scope $scope)
         {
             $available = new Userstate();

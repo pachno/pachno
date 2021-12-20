@@ -3,6 +3,7 @@
     namespace pachno\core\modules\livelink\cli;
 
     use Exception;
+    use pachno\core\entities\LivelinkImport;
     use pachno\core\entities\tables\LivelinkImports;
     use pachno\core\framework\cli\Command;
     use pachno\core\framework\Context;
@@ -30,11 +31,8 @@
 
         public function do_execute()
         {
-            /* Prepare variables */
             try {
-//                Commits::getTable()->create();
-//                Branches::getTable()->create();
-                $imports = LivelinkImports::getTable()->getPending();
+                $imports = LivelinkImports::getTable()->getAndReservePending();
                 Mailing::getModule()->temporarilyDisable();
 
                 $current = 0;
@@ -56,6 +54,7 @@
                     }
 
                     $import->setCompletedAt(NOW);
+                    $import->setStatus(LivelinkImport::STATUS_IMPORTED);
                     $import->save();
                 }
 
@@ -63,6 +62,7 @@
             } catch (Exception $e) {
                 if (isset($import)) {
                     $import->setCompletedAt(NOW);
+                    $import->setStatus(LivelinkImport::STATUS_IMPORTED_ERROR);
                     $import->save();
                 }
 

@@ -23,17 +23,11 @@
 
         public function toJSON($detailed = true)
         {
-            return [
-                'id' => $this->getID(),
-                'name' => $this->getName(),
-                'key' => $this->getKey(),
-                'itemdata' => $this->getItemdata(),
-                'itemtype' => $this->_itemtype,
-                'builtin' => $this->isBuiltin(),
-                'sort_order' => $this->getOrder(),
-                'color' => $this->getColor(),
-                'text_color' => $this->getTextColor()
-            ];
+            $json = parent::toJSON($detailed);
+            $json['color'] = $this->getColor();
+            $json['text_color'] = $this->getTextColor();
+
+            return $json;
         }
 
         /**

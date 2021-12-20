@@ -2,15 +2,20 @@
 
     namespace pachno\core\modules\livelink;
 
+    use pachno\core\entities\Comment;
+    use pachno\core\entities\Commit;
     use pachno\core\entities\CommitFileDiff;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\Branches;
     use pachno\core\framework;
+    use pachno\core\helpers\Pagination;
 
     /**
      * actions for the livelink module
      *
      * @property Project $project
+     * @property Commit $commit
+     * @property Pagination $pagination
      * @property CommitFileDiff $diff
      */
     class Components extends framework\ActionComponent
@@ -82,6 +87,11 @@
         public function componentMenustripLinks()
         {
             $this->selected_project = framework\Context::getCurrentProject();
+        }
+
+        public function componentProjectCommit()
+        {
+            $this->comment_count = Comment::countComments($this->commit->getID(), Comment::TYPE_COMMIT);
         }
 
     }

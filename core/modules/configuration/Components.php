@@ -7,7 +7,23 @@
     use pachno\core\entities;
     use pachno\core\framework;
     use pachno\core\framework\I18n;
+    use pachno\core\entities\tables;
 
+    /**
+     * Class Components
+     *
+     * @property ?entities\User[] $users
+     * @property ?entities\User $email_user
+     * @property ?string $find_by
+     * @property ?entities\Client $client
+     * @property ?entities\Team $team
+     * @property ?entities\Role $role
+     * @property ?string[] $icons
+     * @property ?string $members_url
+     * @property ?string $form_url
+     *
+     * @package pachno\core\modules\configuration
+     */
     class Components extends framework\ActionComponent
     {
 
@@ -16,56 +32,78 @@
             $this->icons = entities\Issuetype::getIcons();
         }
 
-        public function componentModulebox()
+        public function componentModule()
         {
-            $this->is_default_scope = (isset($this->is_default_scope)) ? $this->is_default_scope : framework\Context::getScope()->isDefault();
         }
 
         public function componentOnlineModules()
         {
-            try {
-                $client = new Net_Http_Client();
-                $client->get('https://pachno.com/addons.json');
-                $json_modules = json_decode($client->getBody());
-            } catch (Exception $e) {
-            }
-
             $modules = [];
-            if (isset($json_modules) && isset($json_modules->featured)) {
-                foreach ($json_modules->featured as $key => $module) {
-                    if (!framework\Context::isModuleLoaded($module->key))
+            try {
+                $client = new \GuzzleHttp\Client([
+                    'base_uri' => framework\Context::getBaseOnlineUrl(),
+                    'verify' => framework\Context::getOnlineVerifySsl(),
+                    'http_errors' => false
+                ]);
+                $response = $client->request('GET', '/modules/index.json');
+                $json_modules = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+                if (isset($json_modules) && isset($json_modules['featured'])) {
+                    foreach ($json_modules['featured'] as $key => $module) {
                         $modules[] = $module;
+                    }
                 }
+            } catch (Exception $e) {
             }
 
             $this->modules = $modules;
         }
 
-        public function componentOnlineThemes()
+        public function componentEditClient()
         {
-            try {
-                $client = new Net_Http_Client();
-                $client->get('https://pachno.com/themes.json');
-                $json_themes = json_decode($client->getBody());
-            } catch (Exception $e) {
-            }
-
-            $themes = [];
-            $existing_themes = framework\Context::getThemes();
-            if (isset($json_themes) && isset($json_themes->featured)) {
-                foreach ($json_themes->featured as $key => $theme) {
-                    if (!array_key_exists($theme->key, $existing_themes))
-                        $themes[] = $theme;
-                }
-            }
-
-            $this->themes = $themes;
+            $this->members_url = $this->getRouting()->generate('configure_client_members', ['client_id' => $this->client->getID()]);
+            $this->form_url = ($this->client->getID()) ? $this->getRouting()->generate('configure_client', ['client_id' => $this->client->getID()]) : $this->getRouting()->generate('configure_clients');
         }
 
-        public function componentTheme()
+        public function componentEditTeam()
         {
-            $this->enabled = (framework\Settings::getThemeName() == $this->theme['key']);
-            $this->is_default_scope = framework\Context::getScope()->isDefault();
+            $this->members_url = $this->getRouting()->generate('configure_team_members', ['team_id' => $this->team->getID()]);
+            $this->form_url = ($this->team->getID()) ? $this->getRouting()->generate('configure_team', ['team_id' => $this->team->getID()]) : $this->getRouting()->generate('configure_teams');
+        }
+
+        public function componentEditRole()
+        {
+            $this->form_url = ($this->role->getID()) ? $this->getRouting()->generate('configure_role', ['role_id' => $this->role->getID()]) : $this->getRouting()->generate('configure_roles');
+        }
+
+        public function componentFindClientMembers()
+        {
+            $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
+
+            if (filter_var($this->find_by, FILTER_VALIDATE_EMAIL) == $this->find_by) {
+                $email = $this->find_by;
+            }
+
+            if (isset($email) && !count($this->users)) {
+                $email_user = new entities\User();
+                $email_user->setEmail($email);
+                $this->email_user = $email_user;
+            }
+        }
+
+        public function componentFindTeamMembers()
+        {
+            $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
+
+            if (filter_var($this->find_by, FILTER_VALIDATE_EMAIL) == $this->find_by) {
+                $email = $this->find_by;
+            }
+
+            if (isset($email) && !count($this->users)) {
+                $email_user = new entities\User();
+                $email_user->setEmail($email);
+                $this->email_user = $email_user;
+            }
         }
 
         public function componentLanguageSettings()
@@ -133,12 +171,12 @@
             $this->showitems = false;
             $this->iscustom = false;
             $types = entities\Datatype::getTypes();
-            $this->access_level = framework\Settings::getAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
+            $this->access_level = framework\Settings::getConfigurationAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
 
             if (array_key_exists($this->type, $types)) {
                 $this->items = call_user_func([$types[$this->type], 'getAll']);
                 $this->showitems = true;
-            } elseif (!in_array($this->type, entities\DatatypeBase::getAvailableFields(true))) {
+            } elseif (!array_key_exists($this->type, entities\DatatypeBase::getAvailableFields(true))) {
                 $customtype = entities\CustomDatatype::getByKey($this->type);
                 $this->showitems = $customtype->hasCustomOptions();
                 $this->iscustom = true;
@@ -161,7 +199,7 @@
 
         public function componentIssueTypeSchemeOptions()
         {
-            $this->builtin_fields = entities\Datatype::getAvailableFields(true);
+            $this->builtin_fields = array_keys(entities\DatatypeBase::getAvailableFields(true));
             $this->custom_fields = entities\CustomDatatype::getAll();
             $this->visible_fields = $this->scheme->getVisibleFieldsForIssuetype($this->issue_type);
         }

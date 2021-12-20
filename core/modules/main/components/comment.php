@@ -1,3 +1,11 @@
+<?php
+
+    /**
+     * @var \pachno\core\entities\Comment $comment
+     * @var \pachno\core\entities\User $pachno_user
+     */
+
+?>
 <?php if ($comment->isReply()): ?>
     <div class="comment-container reply <?php if (!$comment->isPublic()): ?> private_comment<?php endif; ?> syntax_<?= \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()); ?>" id="comment_<?= $comment->getID(); ?>">
         <div id="comment_view_<?= $comment->getID(); ?>" class="comment">
@@ -22,10 +30,10 @@
                     <div class="tools action-buttons">
                         <a class="action-button" href="#comment_<?= $comment->getID(); ?>"><?= fa_image_tag('link'); ?></a>
                         <?php if ($comment->canUserEdit($pachno_user)): ?>
-                            <a class="action-button" href="javascript:void(0)" onclick="$$('.comment-editor').each(function (elm) { elm.removeClass('active'); });$('#comment_edit_<?= $comment->getID(); ?>').addClass('active');"><?= fa_image_tag('edit'); ?></a>
+                            <a class="action-button" href="javascript:void(0)" onclick="$('.comment-editor').removeClass('active');$('#comment_edit_<?= $comment->getID(); ?>').addClass('active');"><?= fa_image_tag('edit'); ?></a>
                         <?php endif; ?>
                         <?php if ($comment->canUserDelete($pachno_user)): ?>
-                            <?= javascript_link_tag(fa_image_tag('trash-alt'), ['class' => 'action-button', 'onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this comment?')."', '".__('Please confirm that you want to delete this comment.')."', {yes: {click: function() {Pachno.Main.Comment.remove('".make_url('comment_delete', ['comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName(), 'comment_id' => $comment->getID()])."', ".$comment->getID().", '".$comment_count_div."'); }}, no: { click: Pachno.UI.Dialog.dismiss }});"]); ?>
+                            <?= javascript_link_tag(fa_image_tag('trash-alt'), ['class' => 'action-button', 'onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this comment?')."', '".__('Please confirm that you want to delete this comment.')."', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.comment.remove, { url: '".make_url('comment_delete', ['comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName(), 'comment_id' => $comment->getID()])."', comment_id: ".$comment->getID().", count_element: '".$comment_count_div."'}); }}, no: { click: Pachno.UI.Dialog.dismiss }});"]); ?>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>

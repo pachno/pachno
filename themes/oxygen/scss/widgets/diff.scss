@@ -1,0 +1,26 @@
+@import "../variables";
+
+.diff-summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 0 0 auto;
+  font-weight: $theme-font-weight-regular;
+  padding: .25em .6em;
+  border-radius: 4px;
+  background-color: rgba(225, 225, 225, .3);
+
+  .lines-removed {
+    color: #c44;
+  }
+
+  .lines-added {
+    color: #4a4;
+  }
+
+  .lines-removed + .lines-added {
+    margin-left: .75em;
+  }
+}
+
+

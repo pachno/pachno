@@ -11,6 +11,7 @@
 
   .configuration-content {
     flex: 1 1 auto;
+    width: 100%;
 
     &.centered {
       //margin: 15px 0;
@@ -21,6 +22,11 @@
       //padding: 15px;
       //overflow-x: auto;
       //max-height: calc(100% - 30px);
+    }
+
+    .top-search-filters-container {
+      background: transparent;
+      border-bottom: none;
     }
   }
 
@@ -45,6 +51,7 @@
     input[type=search],
     input[type=url],
     input[type=email],
+    input[type=password],
     input[type=text] {
       font-size: 1.1em;
       border-radius: 4px;
@@ -173,7 +180,7 @@
           background-color: rgba(150, 150, 150, 0.1);
         }
 
-        &.outofdate {
+        &.outdated {
           background-color: rgba(177, 143, 210, 0.1);
           display: none;
         }
@@ -200,77 +207,20 @@
   }
 }
 
-.available_plugins_container .plugin.installed {
-  opacity: 0.5;
-}
-
-.plugins-list .plugin-actions .button.update-button {
-  display: none;
-}
-
-.plugin.theme .enable-button, .plugin.theme.enabled .button-more-actions {
-  display: none;
-}
-
-.plugin.theme.disabled .enable-button {
-  display: inline-block;
-}
-
-.plugins-list .plugin.can-update .plugin-actions .button.update-button {
-  display: inline-block;
-}
-
-.plugins-list .plugin > h1 {
-  margin: 0;
-  padding: 0;
-  font-size: 1.3em;
-  color: #888;
-  text-transform: uppercase;
-}
-
-.plugins-list .plugin .description {
-  padding: 5px 0;
-  margin-top: 10px;
-  font-size: 1.1em;
-}
-
-.plugin-website-link {
-  display: block;
-  margin: 15px 0 0 0;
-  text-align: right;
-  clear: both;
-}
-
-.available_plugins_container .plugin .status-badge {
-  display: none;
-}
-
-.available_plugins_container .plugin.installed .status-badge {
-  display: block;
-}
-
-.available_plugins_container .plugin.installed .plugin-actions .button {
-  display: none;
-}
-
 .rating {
-  background: repeat-x top left;
-  display: block;
-  width: 80px;
-  height: 16px;
-  padding: 0;
-  margin: 5px 0 0 0;
-  position: relative;
-}
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  color: lightgrey;
 
-.rating .score {
-  display: block;
-  height: 16px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0;
-  margin: 0;
+  .score {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    color: goldenrod;
+  }
 }
 
 .configurable-components-list {
@@ -394,6 +344,14 @@
       }
     }
 
+    &.actions-container {
+      padding: .75em;
+    }
+
+    .rating {
+      margin: 0 .75em .75em .75em;
+    }
+
     > .icon {
       flex: 0 0 36px;
       box-sizing: border-box;
@@ -462,6 +420,7 @@
 
       .description {
         color: rgba(0, 0, 0, .4);
+        font-weight: $theme-font-weight-light;
       }
     }
 
@@ -469,9 +428,14 @@
     > .information {
       flex: 0 0 auto;
       min-width: 50px;
+      max-width: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-end;
+    }
+
+    .description {
+      padding: .75em;
     }
   }
 }
@@ -532,12 +496,58 @@
   }
 }
 
-.configurable-component.module {
-  .name {
-    .title {
-      font-size: 1.4em;
-      text-transform: uppercase;
-      font-weight: $theme-font-weight-regular;
+.modules-list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  padding: 1em 0;
+}
+
+.plugins-list {
+  > .indicator {
+    display: flex;
+    flex: 1 1 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 3.68em;
+    font-size: 1.9em;
+  }
+
+  .configurable-component.module {
+    max-width: 350px;
+    font-size: 1em;
+
+    .name {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: 1.1em;
+      padding: .75em;
+    }
+
+    + .module {
+      margin-left: .5em;
+    }
+
+    .installed-status {
+      display: none;
+    }
+
+    &.installed {
+      .installed-status {
+        display: inline-flex;
+      }
+
+      button.trigger-install-module {
+        display: none;
+      }
+    }
+
+    &.out-of-date {
+      .plugin_status.outofdate {
+        display: inline-block;
+      }
     }
   }
 }
@@ -596,235 +606,3 @@
 .tab_content {
   padding-top: 5px;
 }
-
-.tab_header {
-  padding-top: 10px;
-  font-weight: $theme-font-weight-regular;
-  border-bottom: 1px solid #DDD;
-}
-
-/* permissions configuration styling */
-.permissions_popup th {
-  background-color: transparent;
-  color: #888;
-  text-transform: uppercase;
-  font-weight: $theme-font-weight-regular;
-  padding: 15px 2px 5px 2px;
-}
-
-.permissions_popup thead:first-child th {
-  padding-top: 5px;
-}
-
-.config_permissions {
-  font-size: 0.9em;
-}
-
-.config_permissions .faded_out.smaller {
-  font-size: 0.7em;
-  padding-left: 10px;
-}
-
-.config_permissions .permission_list .tab_pane {
-  border: 1px solid #AAA;
-  border-top: 0;
-  padding: 10px;
-}
-
-.config_permissions .permission_list .tab_pane p {
-  margin-bottom: 15px;
-}
-
-.permission_list ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  width: 715px;
-}
-
-.permission_list ul li {
-  margin: 0;
-  padding: 0;
-  font-weight: $theme-font-weight-regular;
-  clear: both;
-  background-color: transparent;
-}
-
-.permission_list ul li:hover {
-  background-color: #FaFaFa;
-}
-
-.permission_list ul li a {
-  display: block;
-  padding: 2px 0 2px 0;
-}
-
-.permission_list ul li a.permission_description {
-  display: block;
-  width: 670px;
-}
-
-.permission_list ul li a:hover {
-  border: 0;
-}
-
-.permission_list ul li .content a {
-  display: inline;
-}
-
-.permission_list ul li ul {
-  margin: 5px 10px 20px 10px;
-  width: 665px;
-}
-
-.permission_list ul li ul li {
-  font-size: 0.95em;
-}
-
-.permission_list ul li ul li:hover {
-  background-color: #F1F1F1;
-}
-
-.permission_list ul li ul li a.permission_description {
-  display: block;
-  width: 580px;
-}
-
-.permission_list ul li ul li ul {
-  margin: 10px 10px 15px 10px;
-  width: 635px;
-}
-
-.permission_list ul li ul li ul li {
-  font-size: 0.9em;
-}
-
-.permission_list ul li ul li ul li:hover {
-  background-color: #E8E8E8;
-}
-
-.permission_list ul li ul li ul li ul li:hover {
-  background-color: #dfdfdf;
-}
-
-.permission_list ul li ul li ul li a.permission_description {
-  display: block;
-  width: 540px;
-}
-
-.permissions_warning {
-  background-color: rgba(255, 111, 85, 0.3);
-  border: 1px solid rgba(121, 35, 35, 0.4);
-  padding: 10px;
-  font-size: 1em;
-  font-weight: $theme-font-weight-regular;
-  display: block;
-  margin: 10px 0 10px 0;
-  color: rgb(183, 24, 24);
-  border-radius: 3px;
-}
-
-.permissions_warning strong {
-  display: block;
-  font-weight: $theme-font-weight-bold;
-  text-transform: uppercase;
-}
-
-/* end permissions */
-
-/* configure users / teams / groups styling */
-#create_group_form label, #create_team_form label, #create_client_form label {
-}
-
-#create_group_form input[type="text"], #create_team_form input[type="text"], #create_client_form input[type="text"] {
-  width: 200px;
-}
-
-#create_group_form input[type="submit"], #create_team_form input[type="submit"], #create_client_form input[type="submit"] {
-  font-size: 0.9em;
-}
-
-.groupbox_header, .teambox_header, .clientbox_header {
-  font-weight: $theme-font-weight-regular;
-}
-
-.groupbox_membercount, .teambox_membercount, .clientbox_membercount {
-  font-weight: $theme-font-weight-regular;
-  font-size: 0.8em;
-  color: #888;
-}
-
-#users_results {
-  position: relative;
-}
-
-#users_more_actions_container {
-  float: right;
-}
-
-#tab_users_pane > strong {
-  font-weight: $theme-font-weight-regular;
-  display: block;
-}
-
-#users_more_actions_container .more_actions_dropdown li.separator {
-  height: 1px;
-}
-
-.finduser_container #findusers {
-  width: 300px;
-}
-
-.finduser_container input[type=submit], .finduser_container input[type=submit]:hover {
-  font-size: 1em;
-}
-
-.finduser_container label {
-  padding: 0 0 0 3px;
-  margin: 0 0 5px 0;
-}
-
-.teamlist_container {
-  display: inline-block;
-  width: 200px;
-}
-
-.teamlist_container input {
-  float: left;
-  margin-right: 2px;
-}
-
-.teamlist_container label {
-  font-weight: $theme-font-weight-regular;
-  font-size: 0.9em;
-}
-
-#adduser_div .createuser_submit_container {
-  padding: 10px;
-  text-align: right;
-}
-
-#adduser_div .createuser_submit_container input {
-  padding: 3px 6px !important;
-  font-size: 1.1em;
-}
-
-.collection_user_list li {
-  padding: 3px;
-}
-
-.collection_user_list li:hover {
-  background-color: rgba(255, 255, 255, 0.7);
-}
-
-/* end users / teams / groups */
-
-#project_table .config_header {
-  font-size: 0.9em;
-}
-
-/* workflow styling */
-
-/* end workflow styling */
-
-/* end config styling */

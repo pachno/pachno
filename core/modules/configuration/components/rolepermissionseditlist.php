@@ -1,3 +1,10 @@
+<?php
+
+    /**
+     * @var \pachno\core\entities\Role $role
+     */
+
+?>
 <?php if (count($permissions_list) > 0): ?>
     <?php foreach ($permissions_list as $permission_key => $permission): ?>
         <?php $is_checked = $role->hasPermission($permission_key, $module, $target_id); ?>

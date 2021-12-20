@@ -6,6 +6,7 @@
     use InvalidArgumentException;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\QaLeadable;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Projects;
     use pachno\core\framework;
     use pachno\core\framework\Settings;
@@ -26,8 +27,6 @@
      *
      * @package pachno
      * @subpackage main
-     *
-     * @method static tables\Projects getB2DBTable()
      *
      * @Table(name="\pachno\core\entities\tables\Projects")
      */
@@ -237,6 +236,7 @@
 
         /**
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\ProjectAssignedUsers")
+         * @var User[]
          */
         protected $_assigned_users;
 
@@ -423,7 +423,7 @@
          */
         protected $_dashboards = null;
 
-        protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours', 5 => 'minutes'];
+        protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours'];
 
         public static function getValidSubprojects(Project $project)
         {
@@ -505,6 +505,18 @@
             ];
         }
 
+        public static function getDefaultPermissions()
+        {
+            return [
+                Permission::PERMISSION_PROJECT_ACCESS,
+                Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION,
+                Permission::PERMISSION_PROJECT_INTERNAL_ACCESS,
+                Permission::PERMISSION_MANAGE_PROJECT,
+                'caneditissue',
+                'canvoteforissue'
+            ];
+        }
+
         /**
          * Whether or not the current or target user can access the project
          *
@@ -519,9 +531,17 @@
             $user = ($target_user === null) ? framework\Context::getUser() : $target_user;
 
             if ($this->getOwner() instanceof User && $this->getOwner()->getID() == $user->getID()) return true;
-            if ($this->getLeader() instanceof User && $this->getLeader()->getID() == $user->getID()) return true;
+            if ($this->getLeaderID() == $user->getID()) return true;
+            if ($this->getQaResponsibleID() == $user->getID()) return true;
 
-            return $user->hasPermission('canseeproject', $this->getID());
+            return $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_BOARDS, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_RELEASES, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_TIME_LOGGING, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, $this->getID());
         }
 
         /**
@@ -570,7 +590,7 @@
         protected function _populateChildren()
         {
             if ($this->_children === null) {
-                $this->_children = self::getB2DBTable()->getByParentID($this->getID());
+                $this->_children = Projects::getTable()->getByParentID($this->getID());
             }
 
             return $this->_children;
@@ -639,16 +659,15 @@
 
             $final = [];
             foreach (self::$_projects as $project) {
-                if ($archived === null && !$project->hasParent()) {
+                if ($project->hasParent())
+                    continue;
+
+                if ($archived === null) {
                     $final[] = $project;
-                } elseif ($archived === true) {
-                    if ($project->isArchived()) {
-                        $final[] = $project;
-                    }
-                } elseif ($archived === false) {
-                    if (!$project->hasParent() && !$project->isArchived()) {
-                        $final[] = $project;
-                    }
+                } elseif ($archived === true && $project->isArchived()) {
+                    $final[] = $project;
+                } elseif ($archived === false && !$project->isArchived()) {
+                    $final[] = $project;
                 }
             }
 
@@ -680,13 +699,58 @@
             $this->_archived = $archived;
         }
 
+        public function isPrivate(User $user)
+        {
+            if ($this->getOwner() instanceof Team || ($this->getOwner() instanceof User && $this->getOwner()->getID() != $user->getID())) {
+                return false;
+            }
+
+            if ($this->getQaResponsible() instanceof Team || ($this->getQaResponsible() instanceof User && $this->getQaResponsible()->getID() != $user->getID())) {
+                return false;
+            }
+
+            if ($this->getLeader() instanceof Team || ($this->getLeader() instanceof User && $this->getLeader()->getID() != $user->getID())) {
+                return false;
+            }
+
+            foreach ($this->getAssignedUsers() as $assigned_user) {
+                if ($assigned_user->getID() != $user->getID()) {
+                    return false;
+                }
+            }
+
+            $user_group = Settings::getDefaultGroup();
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_BOARDS, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION, $this->getID())) {
+                return false;
+            }
+
+            return true;
+        }
+
         public static function getProjectsCount()
         {
             if (self::$_num_projects === null) {
                 if (self::$_projects !== null)
                     self::$_num_projects = count(self::$_projects);
                 else
-                    self::$_num_projects = self::getB2DBTable()->countProjects();
+                    self::$_num_projects = Projects::getTable()->countProjects();
             }
 
             return self::$_num_projects;
@@ -834,13 +898,13 @@
          */
         static function getByPrefix($prefix)
         {
-            return self::getB2DBTable()->getByPrefix($prefix);
+            return Projects::getTable()->getByPrefix($prefix);
         }
 
         public static function listen_pachno_core_entities_File_hasAccess(framework\Event $event)
         {
             $file = $event->getSubject();
-            $projects = self::getB2DBTable()->getByFileID($file->getID());
+            $projects = Projects::getTable()->getByFileID($file->getID());
             foreach ($projects as $project) {
                 if ($project->hasAccess()) {
                     $event->setReturnValue(true);
@@ -1179,6 +1243,25 @@
             framework\Context::removeAllPermissionsForCombination($user_id, 0, $team_id, $this->getID());
         }
 
+        public function isAssigned(Identifiable $assignee)
+        {
+            if ($assignee instanceof User) {
+                $user_id = $assignee->getID();
+                foreach ($this->getAssignedUsers() as $user) {
+                    if ($user->getID() == $user_id)
+                        return true;
+                }
+            } else {
+                $team_id = $assignee->getID();
+                foreach ($this->getAssignedTeams() as $team) {
+                    if ($team->getID() == $team_id)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public function getAssignedUsers()
         {
             $this->_populateAssignedUsers();
@@ -1238,7 +1321,7 @@
                     // (i.e. wiki article permissions).
                     $target_id = $role_permission->getExpandedTargetIDForProject($this);
                     tables\Permissions::getTable()->removeSavedPermission($user_id, 0, $team_id, $role_permission->getModule(), $role_permission->getPermission(), $target_id, framework\Context::getScope()->getID(), $role_id);
-                    framework\Context::setPermission($role_permission->getPermission(), $target_id, $role_permission->getModule(), $user_id, 0, $team_id, true, null, $role_id);
+                    framework\Context::setPermission($role_permission->getPermission(), $target_id, $role_permission->getModule(), $user_id, 0, $team_id, null, $role_id);
                 }
             }
         }
@@ -1547,7 +1630,7 @@
         /**
          * Return an array specifying visibility, requirement and choices for fields in issues
          *
-         * @param integer $issue_type
+         * @param integer|Issuetype $issue_type
          * @param boolean $reportable [optional] Whether to only include fields that can be reported
          * @param boolean $prefix_values [optional] Whether to prefix keys for values of fields that can be reported
          *
@@ -1557,10 +1640,10 @@
         {
             $issue_type = (is_object($issue_type)) ? $issue_type->getID() : $issue_type;
             if (!isset($this->_fieldsarrays[$issue_type][(int)$reportable])) {
-                $retval = [];
+                $fields = [];
                 $res = tables\IssueFields::getTable()->getBySchemeIDandIssuetypeID($this->getIssuetypeScheme()->getID(), $issue_type);
                 if ($res) {
-                    $builtin_types = Datatype::getAvailableFields(true);
+                    $builtin_types = array_keys(DatatypeBase::getAvailableFields(true));
                     while ($row = $res->getNextRow()) {
                         if (!$reportable || (bool)$row->get(tables\IssueFields::REPORTABLE) == true) {
                             if ($reportable) {
@@ -1568,109 +1651,109 @@
                                 elseif (!in_array($row->get(tables\IssueFields::FIELD_KEY), $builtin_types) && (!$this->fieldPermissionCheck($row->get(tables\IssueFields::FIELD_KEY), true) && !($row->get(tables\IssueFields::REQUIRED) && $reportable))) continue;
                             }
                             $field_key = $row->get(tables\IssueFields::FIELD_KEY);
-                            $retval[$field_key] = ['required' => (bool)$row->get(tables\IssueFields::REQUIRED), 'additional' => (bool)$row->get(tables\IssueFields::ADDITIONAL)];
+                            $fields[$field_key] = ['required' => (bool)$row->get(tables\IssueFields::REQUIRED), 'additional' => (bool)$row->get(tables\IssueFields::ADDITIONAL)];
                             if (!in_array($field_key, $builtin_types)) {
-                                $retval[$field_key]['custom'] = true;
+                                $fields[$field_key]['custom'] = true;
                                 $custom_type = CustomDatatype::getByKey($field_key);
                                 if ($custom_type instanceof CustomDatatype) {
-                                    $retval[$field_key]['custom_type'] = $custom_type->getType();
+                                    $fields[$field_key]['custom_type'] = $custom_type->getType();
                                 } else {
-                                    unset($retval[$field_key]);
+                                    unset($fields[$field_key]);
                                 }
                             }
                         }
                     }
-                    if (array_key_exists('user_pain', $retval)) {
-                        $retval['pain_bug_type'] = ['required' => $retval['user_pain']['required']];
-                        $retval['pain_likelihood'] = ['required' => $retval['user_pain']['required']];
-                        $retval['pain_effect'] = ['required' => $retval['user_pain']['required']];
+                    if (array_key_exists('user_pain', $fields)) {
+                        $fields['pain_bug_type'] = ['required' => $fields['user_pain']['required']];
+                        $fields['pain_likelihood'] = ['required' => $fields['user_pain']['required']];
+                        $fields['pain_effect'] = ['required' => $fields['user_pain']['required']];
                     }
 
                     if ($reportable) {
                         // 'v' is just a dummy prefix.
                         $key_prefix = $prefix_values ? 'v' : '';
 
-                        foreach ($retval as $key => $return_details) {
-                            if ($key == 'edition' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::EDITIONS_CHOICE) {
-                                $retval[$key]['values'] = [];
-                                $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
+                        foreach ($fields as $key => $return_details) {
+                            if ($key == 'edition' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::EDITIONS_CHOICE) {
+                                $fields[$key]['values'] = [];
+                                $fields[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getEditions() as $edition) {
-                                    $retval[$key]['values'][$key_prefix . $edition->getID()] = $edition->getName();
+                                    $fields[$key]['values'][$key_prefix . $edition->getID()] = $edition->getName();
                                 }
-                                if (!$this->isEditionsEnabled() || empty($retval[$key]['values'])) {
-                                    if (!$retval[$key]['required']) {
-                                        unset($retval[$key]);
+                                if (!$this->isEditionsEnabled() || empty($fields[$key]['values'])) {
+                                    if (!$fields[$key]['required']) {
+                                        unset($fields[$key]);
                                     } else {
-                                        unset($retval[$key]['values']);
+                                        unset($fields[$key]['values']);
                                     }
                                 }
-                                if (array_key_exists($key, $retval) && array_key_exists('values', $retval[$key])) {
-                                    asort($retval[$key]['values'], SORT_STRING);
+                                if (array_key_exists($key, $fields) && array_key_exists('values', $fields[$key])) {
+                                    asort($fields[$key]['values'], SORT_STRING);
                                 }
-                            } elseif ($key == 'status' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::STATUS_CHOICE) {
-                                $retval[$key]['values'] = [];
+                            } elseif ($key == 'status' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::STATUS_CHOICE) {
+                                $fields[$key]['values'] = [];
                                 foreach (Status::getAll() as $status) {
-                                    $retval[$key]['values'][$key_prefix . $status->getID()] = $status->getName();
+                                    $fields[$key]['values'][$key_prefix . $status->getID()] = $status->getName();
                                 }
-                                if (empty($retval[$key]['values'])) {
-                                    if (!$retval[$key]['required']) {
-                                        unset($retval[$key]);
+                                if (empty($fields[$key]['values'])) {
+                                    if (!$fields[$key]['required']) {
+                                        unset($fields[$key]);
                                     } else {
-                                        unset($retval[$key]['values']);
+                                        unset($fields[$key]['values']);
                                     }
                                 }
-                                if (array_key_exists($key, $retval) && array_key_exists('values', $retval[$key])) {
-                                    asort($retval[$key]['values'], SORT_STRING);
+                                if (array_key_exists($key, $fields) && array_key_exists('values', $fields[$key])) {
+                                    asort($fields[$key]['values'], SORT_STRING);
                                 }
-                            } elseif ($key == 'component' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::COMPONENTS_CHOICE) {
-                                $retval[$key]['values'] = [];
-                                $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
+                            } elseif ($key == 'component' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::COMPONENTS_CHOICE) {
+                                $fields[$key]['values'] = [];
+                                $fields[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getComponents() as $component) {
-                                    $retval[$key]['values'][$key_prefix . $component->getID()] = $component->getName();
+                                    $fields[$key]['values'][$key_prefix . $component->getID()] = $component->getName();
                                 }
-                                if (!$this->isComponentsEnabled() || empty($retval[$key]['values'])) {
-                                    if (!$retval[$key]['required']) {
-                                        unset($retval[$key]);
+                                if (!$this->isComponentsEnabled() || empty($fields[$key]['values'])) {
+                                    if (!$fields[$key]['required']) {
+                                        unset($fields[$key]);
                                     } else {
-                                        unset($retval[$key]['values']);
+                                        unset($fields[$key]['values']);
                                     }
                                 }
-                                if (array_key_exists($key, $retval) && array_key_exists('values', $retval[$key])) {
-                                    asort($retval[$key]['values'], SORT_STRING);
+                                if (array_key_exists($key, $fields) && array_key_exists('values', $fields[$key])) {
+                                    asort($fields[$key]['values'], SORT_STRING);
                                 }
-                            } elseif ($key == 'build' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::RELEASES_CHOICE) {
-                                $retval[$key]['values'] = [];
-                                $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
+                            } elseif ($key == 'build' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::RELEASES_CHOICE) {
+                                $fields[$key]['values'] = [];
+                                $fields[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getActiveBuilds() as $build) {
-                                    $retval[$key]['values'][$key_prefix . $build->getID()] = $build->getName() . ' (' . $build->getVersion() . ')';
+                                    $fields[$key]['values'][$key_prefix . $build->getID()] = $build->getName() . ' (' . $build->getVersion() . ')';
                                 }
-                                arsort($retval[$key]['values']);
-                                if (!$this->isBuildsEnabled() || empty($retval[$key]['values'])) {
-                                    if (!$retval[$key]['required']) {
-                                        unset($retval[$key]);
+                                arsort($fields[$key]['values']);
+                                if (!$this->isBuildsEnabled() || empty($fields[$key]['values'])) {
+                                    if (!$fields[$key]['required']) {
+                                        unset($fields[$key]);
                                     } else {
-                                        unset($retval[$key]['values']);
+                                        unset($fields[$key]['values']);
                                     }
                                 }
                             } elseif ($key == 'milestone') {
-                                $retval[$key]['values'] = [];
-                                $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
+                                $fields[$key]['values'] = [];
+                                $fields[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getOpenMilestones() as $milestone) {
                                     if (!$milestone->hasAccess()) continue;
-                                    $retval[$key]['values'][$key_prefix . $milestone->getID()] = $milestone->getName();
+                                    $fields[$key]['values'][$key_prefix . $milestone->getID()] = $milestone->getName();
                                 }
-                                if (empty($retval[$key]['values'])) {
-                                    if (!$retval[$key]['required']) {
-                                        unset($retval[$key]);
+                                if (empty($fields[$key]['values'])) {
+                                    if (!$fields[$key]['required']) {
+                                        unset($fields[$key]);
                                     } else {
-                                        unset($retval[$key]['values']);
+                                        unset($fields[$key]['values']);
                                     }
                                 }
                             }
                         }
                     }
                 }
-                $this->_fieldsarrays[$issue_type][(int)$reportable] = $retval;
+                $this->_fieldsarrays[$issue_type][(int)$reportable] = $fields;
             }
 
             return $this->_fieldsarrays[$issue_type][(int)$reportable];
@@ -1679,15 +1762,15 @@
         public function fieldPermissionCheck($field, $custom = false)
         {
             if ($custom) {
-                return (bool)($this->permissionCheck('caneditissuecustomfields' . $field) || $this->permissionCheck('caneditissuecustomfields'));
+                return (bool)$this->permissionCheck('caneditissuecustomfields');
             } elseif (in_array($field, ['title', 'shortname', 'description', 'reproduction_steps'])) {
-                return (bool)($this->permissionCheck('caneditissue' . $field) || $this->permissionCheck('caneditissuebasic') || $this->permissionCheck('cancreateissues') || $this->permissionCheck('cancreateandeditissues'));
+                return (bool)($this->permissionCheck('caneditissuebasic') || $this->permissionCheck('cancreateissues') || $this->permissionCheck('cancreateandeditissues'));
             } elseif (in_array($field, ['builds', 'editions', 'components', 'links', 'files'])) {
-                return (bool)($this->permissionCheck('canadd' . $field) || $this->permissionCheck('canaddextrainformationtoissues'));
+                return (bool)($this->permissionCheck('canaddextrainformationtoissues'));
             } elseif (in_array($field, ['user_pain', 'pain_bug_type', 'pain_likelihood', 'pain_effect'])) {
                 return (bool)($this->permissionCheck('caneditissueuserpain') || $this->permissionCheck('caneditissue'));
             } else {
-                return (bool)($this->permissionCheck('caneditissue' . $field) || $this->permissionCheck('caneditissue'));
+                return (bool)($this->permissionCheck('caneditissue'));
             }
         }
 
@@ -1696,20 +1779,15 @@
          * check if the permission is explicitly set
          *
          * @param string $key The permission key to check for
-         * @param boolean $explicit (optional) Whether to make sure the permission is explicitly set
          *
          * @return boolean
          */
-        public function permissionCheck($key, $explicit = false)
+        public function permissionCheck($key)
         {
-            $retval = framework\Context::getUser()->hasPermission($key, $this->getID(), 'core');
-            if ($explicit) {
-                $retval = ($retval !== null) ? $retval : framework\Context::getUser()->hasPermission($key, 0, 'core');
-            } else {
-                $retval = ($retval !== null) ? $retval : framework\Context::getUser()->hasPermission($key);
-            }
+            $allowed = framework\Context::getUser()->hasPermission($key, $this->getID());
+            $allowed = $allowed ?? framework\Context::getUser()->hasPermission($key);
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -1763,7 +1841,7 @@
         {
             $builds = $this->getBuilds();
             foreach ($builds as $id => $build) {
-                if ($build->isLocked()) unset($builds[$id]);
+                if ($build->isInternal()) unset($builds[$id]);
             }
 
             return $builds;
@@ -1782,7 +1860,7 @@
         /**
          * Return an array specifying visibility, requirement and choices for fields in the "View issue" page
          *
-         * @param integer $issue_type
+         * @param integer|Issuetype $issue_type
          *
          * @return array
          */
@@ -2107,7 +2185,7 @@
             if (!$includeTextareas) {
                 unset($fields['description'], $fields['reproduction_steps']);
                 foreach ($fields as $key => $field) {
-                    if (in_array($field['type'], [CustomDatatype::INPUT_TEXTAREA_MAIN, CustomDatatype::INPUT_TEXTAREA_SMALL])) {
+                    if (in_array($field['type'], [DatatypeBase::INPUT_TEXTAREA_MAIN, DatatypeBase::INPUT_TEXTAREA_SMALL])) {
                         unset($fields[$key]);
                     }
                 }
@@ -2120,46 +2198,34 @@
             return $fields;
         }
 
-        public function canSeeAllEditions()
+        public function canSeeInternalEditions()
         {
-            return (bool)$this->_dualPermissionsCheck('canseeprojecthierarchy', 'canseeallprojecteditions');
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS);
         }
 
-        protected function _dualPermissionsCheck($permission_1, $permission_2, $fallback = null)
+        public function canSeeInternalComponents()
         {
-            $retval = $this->permissionCheck($permission_1);
-            $retval = ($retval === null) ? $this->permissionCheck($permission_2) : $retval;
-
-            if ($retval !== null) {
-                return $retval;
-            } else {
-                return ($fallback !== null) ? $fallback : framework\Settings::isPermissive();
-            }
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS);
         }
 
-        public function canSeeAllComponents()
+        public function canSeeInternalBuilds()
         {
-            return (bool)$this->_dualPermissionsCheck('canseeprojecthierarchy', 'canseeallprojectcomponents');
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS);
         }
 
-        public function canSeeAllBuilds()
+        public function canSeeInternalMilestones()
         {
-            return (bool)$this->_dualPermissionsCheck('canseeprojecthierarchy', 'canseeallprojectbuilds');
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES);
         }
 
-        public function canSeeAllMilestones()
+        public function canSeeTimeLogging()
         {
-            return (bool)$this->_dualPermissionsCheck('canseeprojecthierarchy', 'canseeallprojectmilestones');
-        }
-
-        public function canSeeTimeSpent()
-        {
-            return (bool)$this->permissionCheck('canseetimespent');
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_ACCESS_TIME_LOGGING);
         }
 
         public function canVoteOnIssues()
         {
-            return (bool)$this->permissionCheck('canvoteforissues');
+            return !framework\Context::getUser()->isGuest();
         }
 
         public function getParentID()
@@ -2806,7 +2872,7 @@
          *
          * @param boolean $is_new
          */
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             $key = $this->getKey();
@@ -2835,7 +2901,7 @@
             return null;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 self::$_num_projects = null;
@@ -2845,18 +2911,11 @@
                 $dashboard->setProject($this);
                 $dashboard->save();
 
-                framework\Context::setPermission("canseeproject", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canseeprojecthierarchy", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canmanageproject", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("page_project_allpages_access", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canvoteforissues", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canseetimespent", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canlockandeditlockedissues", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("cancreateandeditissues", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("caneditissue", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("caneditissuecustomfields", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canaddextrainformationtoissues", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
-                framework\Context::setPermission("canpostseeandeditallcomments", $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0, true);
+                $default_permissions = self::getDefaultPermissions();
+
+                foreach ($default_permissions as $permission) {
+                    framework\Context::setPermission($permission, $this->getID(), "core", framework\Context::getUser()->getID(), 0, 0);
+                }
 
                 framework\Event::createNew('core', 'pachno\core\entities\Project::_postSave', $this)->trigger();
             }

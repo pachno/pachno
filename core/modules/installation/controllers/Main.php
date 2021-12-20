@@ -5,6 +5,7 @@
     use b2db\AnnotationSet;
     use b2db\Core;
     use Exception;
+    use pachno\core\entities\Module;
     use pachno\core\entities\Scope;
     use pachno\core\entities\tables\Users;
     use pachno\core\framework;
@@ -15,6 +16,33 @@
     use Spyc;
     use const PACHNO_CONFIGURATION_PATH;
 
+    /**
+     *
+     * @property bool $all_well
+     * @property bool $base_folder_perm_ok
+     * @property bool $cache_folder_perm_ok
+     * @property bool $pachno_folder_perm_ok
+     * @property bool $b2db_param_file_ok
+     * @property bool $b2db_param_folder_ok
+     * @property bool $pdo_ok
+     * @property bool $mysql_ok
+     * @property bool $pgsql_ok
+     * @property bool $gd_ok
+     * @property bool $mb_ok
+     * @property bool $php_ok
+     * @property bool $pcre_ok
+     * @property bool $dom_ok
+     * @property bool $docblock_ok
+     * @property bool $upgrade_available
+     * @property bool $upgrade_complete
+     * @property bool $permissions_ok
+     * @property string $php_ver
+     * @property string $current_version
+     * @property string $pcre_ver
+     * @property string $error
+     *
+     * @package pachno\core\modules\installation\controllers
+     */
     class Main extends framework\Action
     {
 
@@ -29,8 +57,8 @@
         public static function createCacheFolder()
         {
             $dir = __DIR__ . '/../../../cache';
-            if (!file_exists($dir)) {
-                mkdir($dir);
+            if (!file_exists($dir) && !mkdir($dir) && !is_dir($dir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
             }
         }
 
@@ -56,15 +84,14 @@
          * Runs the installation action
          *
          * @param framework\Request $request The request object
-         *
-         * @return null
          */
         public function runInstallIntro(framework\Request $request)
         {
             $this->getResponse()->setDecoration(framework\Response::DECORATE_NONE);
 
-            if (($step = $request['step']) && $step >= 1 && $step <= 6) {
+            if (($step = (int) $request['step']) && $step >= 1 && $step <= 6) {
                 if ($step >= 5) {
+                    Core::doConnect();
                     $scope = new Scope(1);
                     framework\Context::setScope($scope);
                 }
@@ -319,6 +346,7 @@
                 framework\Context::reinitializeI18n('en_US');
 
                 framework\Logging::log('Loading fixtures for default scope');
+                Core::doConnect();
                 $scope = new Scope();
                 $scope->addHostname('*');
                 $scope->setName('The default scope');
@@ -359,6 +387,9 @@
         public function runInstallStep5(framework\Request $request)
         {
             try {
+                foreach (['publish', 'mailing'] as $module) {
+                    Module::installModule($module);
+                }
                 $password = trim($request['password']);
                 if ($password !== trim($request['password_repeat']))
                     throw new Exception("Passwords don't match");
@@ -401,32 +432,23 @@
 
         public function runUpgrade(framework\Request $request)
         {
-            list ($this->current_version, $this->upgrade_available) = framework\Settings::getUpgradeStatus();
+            if (!framework\Context::isUpgrademode()) {
+                return $this->forward($this->getRouting()->generate('home'));
+            }
 
-            $this->upgrade_complete = false;
-            $this->adminusername = UsersTable::getTable()->getAdminUsername();
-            $this->requires_password_reset = !in_array($this->current_version, ['4.2.0', '4.2.1']);
-            try {
-                if ($this->upgrade_available) {
-                    $this->permissions_ok = false;
-                    if (is_writable(PACHNO_PATH . 'installed') && is_writable(PACHNO_PATH . 'upgrade')) {
-                        $this->permissions_ok = true;
-                    }
+            [$this->current_version, $this->upgrade_available] = framework\Settings::getUpgradeStatus();
+            $this->permissions_ok = is_writable(PACHNO_PATH . 'installed');
+
+            if ($this->upgrade_available && $request->isPost())
+            {
+                $upgrader = new Upgrade();
+                $this->upgrade_complete = $upgrader->upgrade($request);
+
+                if ($this->upgrade_complete)
+                {
+                    $this->current_version = framework\Settings::getVersion(false, false);
+                    $this->upgrade_available = false;
                 }
-
-                if ($this->upgrade_available && $request->isPost()) {
-                    $upgrader = new Upgrade();
-                    $this->upgrade_complete = $upgrader->upgrade($request);
-
-                    if ($this->upgrade_complete) {
-                        $this->current_version = framework\Settings::getVersion(false, false);
-                        $this->upgrade_available = false;
-                    }
-                } elseif ($this->upgrade_complete) {
-                    $this->forward(framework\Context::getRouting()->generate('home'));
-                }
-            } catch (Exception $e) {
-                $this->error = $e->getMessage();
             }
         }
 

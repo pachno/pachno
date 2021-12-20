@@ -40,14 +40,9 @@
 
                 $admin_user = $this->getProvidedArgument('scope_admin');
                 if ($admin_user) {
-                    $user = entities\tables\Users::getTable()->selectById($admin_user);
-                    if ($user instanceof entities\User) {
-                        $this->cliEcho("Adding user {$admin_user} to scope\n");
-                        $admin_group_id = (int)framework\Settings::get(framework\Settings::SETTING_ADMIN_GROUP, 'core', $scope->getID());
-                        tables\UserScopes::getTable()->addUserToScope($user->getID(), $scope->getID(), $admin_group_id, true);
-                    } else {
-                        $this->cliEcho("Could not add user {$admin_user} to scope (username not found)\n");
-                    }
+                    $this->cliEcho("Adding user {$admin_user} to scope\n");
+                    $admin_group_id = (int)framework\Settings::get(framework\Settings::SETTING_ADMIN_GROUP, 'core', $scope->getID());
+                    tables\UserScopes::getTable()->addUserToScope($admin_user, $scope->getID(), $admin_group_id, true);
                 }
                 if ($this->getProvidedArgument('remove_admin', 'no') == 'yes') {
                     $this->cliEcho("Removing administrator user from scope\n");

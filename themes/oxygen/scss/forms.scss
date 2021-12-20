@@ -5,7 +5,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  font-size: 1rem;
+  font-size: .85rem;
   flex: 1 1 100%;
 
   &.hidden {
@@ -27,10 +27,15 @@
       transition: opacity .25s ease-in-out;
     }
 
+    &.hidden {
+      display: none;
+    }
+
     &.submitting {
       &.form-row,
       .form-row {
         > input[type=text].invisible,
+        > input[type=password].invisible,
         > input[type=email].invisible,
         > input[type=search].invisible,
         > input[type=url].invisible,
@@ -67,6 +72,47 @@
     &.hidden {
       display: none;
     }
+
+    &.centered {
+      align-items: center;
+      justify-content: center;
+    }
+
+    &.aligned {
+      .column {
+        + .column {
+          .form-row {
+            justify-content: center;
+
+            label {
+              text-align: center;
+              justify-content: center;
+            }
+
+            .helper-text {
+              text-align: center;
+              justify-content: center;
+            }
+          }
+        }
+
+        &:last-child {
+          .form-row {
+            justify-content: flex-end;
+
+            label {
+              text-align: end;
+              justify-content: flex-end;
+            }
+
+            .helper-text {
+              text-align: end;
+              justify-content: flex-end;
+            }
+          }
+        }
+      }
+    }
   }
 
   > .column,
@@ -82,6 +128,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
+    align-content: flex-start;
     justify-content: flex-start;
 
     &.large {
@@ -95,6 +142,16 @@
 
     &.small {
       flex: 0 1 35%;
+
+      + .column:not(.small) {
+        max-width: none;
+      }
+    }
+
+    &.auto {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: none;
 
       + .column:not(.small) {
         max-width: none;
@@ -132,6 +189,10 @@
 
     &.hidden {
       display: none;
+
+      &.locked {
+        display: flex;
+      }
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -165,6 +226,7 @@
       justify-content: center;
 
       input[type=text],
+      input[type=password],
       input[type=email],
       input[type=search],
       input[type=url],
@@ -179,8 +241,13 @@
       }
     }
 
+    &.captcha {
+      padding: 2em;
+    }
+
     &.unified {
       > input[type=text],
+      > input[type=password],
       > input[type=search],
       > input[type=email],
       > input[type=url],
@@ -231,15 +298,29 @@
 
       > textarea,
       > input[type=text],
+      > input[type=password],
       > input[type=email],
       > input[type=search],
       > input[type=url],
       > input[type=password],
       > .input {
         border-color: $theme-text-color-error;
-        background-color: rgba(214, 34, 70, 2);
+        background-color: rgba(214, 34, 70, .2);
       }
 
+    }
+
+    .explanation {
+      flex: 1 1 100%;
+      color: $theme-text-color;
+      padding: .35em 0;
+      display: flex;
+    }
+
+    &.disabled {
+      .explanation {
+        color: #DDD;
+      }
     }
 
     .helper-text {
@@ -253,6 +334,18 @@
       .far,
       .fas {
         margin-right: .35rem;
+      }
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+
+      label {
+        margin-right: 1.2em;
       }
     }
 
@@ -314,6 +407,18 @@
         + span {
           margin-left: .35rem;
         }
+
+        &.required-indicator {
+          display: none;
+        }
+      }
+
+      &.required {
+        font-weight: $theme-font-weight-heavy;
+
+        .required-indicator {
+          display: inline-flex;
+        }
       }
 
       a,
@@ -324,101 +429,6 @@
       .icon {
         flex: 0 0 24px;
         margin-right: .5em;
-      }
-    }
-
-    > textarea,
-    > input[type=text],
-    > input[type=search],
-    > input[type=url],
-    > input[type=password],
-    > input[type=email],
-    > .input {
-      flex: 1 1 100%;
-      padding: .2em;
-      font-size: 1em;
-      box-sizing: border-box;
-      font-weight: $theme-font-weight-light;
-
-      &.invisible {
-        background-color: transparent;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        padding: .35rem;
-        flex: 1 1 auto;
-
-        &.title {
-          font-weight: $theme-font-weight-regular;
-        }
-
-        &.inline {
-          flex: 0 0 auto;
-        }
-
-        + label {
-          opacity: 0;
-          transform: translateY(-100%);
-          margin-bottom: -1.8em;
-        }
-
-        &:hover {
-          border: 1px solid transparent;
-          background-color: rgba(0, 0, 0, .05);
-          cursor: pointer;
-        }
-
-        &:focus {
-          background: #FFF;
-          border-color: $theme-primary;
-
-          &.with-label {
-            padding-bottom: 2rem;
-          }
-
-          &:hover {
-            cursor: text;
-          }
-
-          + label {
-            display: none;
-          }
-        }
-      }
-
-      &.name-input-enhance {
-        font-size: 1.25em;
-        padding: .5em .2em;
-        font-weight: $theme-font-weight-regular;
-
-        &:not(.invisible) {
-          border-bottom-width: 2px;
-        }
-      }
-
-      &.code-input-6 {
-        max-width: 10rem;
-      }
-
-      &.number,
-      &.prefix-and-key,
-      &:not(.invisible).number {
-        width: 10rem;
-        flex: 0 0 auto;
-
-        &.small {
-          width: 5rem;
-        }
-      }
-
-      &.medium,
-      &:not(.invisible).medium {
-        width: 20rem;
-        flex: 0 0 auto;
-      }
-
-      &:focus + label,
-      &:active + label {
-        color: $theme-primary;
       }
     }
 
@@ -456,6 +466,7 @@
 
         & + textarea,
         & + input[type=text],
+        & + input[type=password],
         & + input[type=url],
         & + input[type=password] {
           flex: 1 1 calc(100% - 55px);
@@ -511,5 +522,130 @@
       }
     }
   }
+}
 
+fieldset {
+  border: 0;
+  border-top: 1px solid rgba(200, 200, 200, .8);
+  padding: .5em 8em;
+  max-width: 80%;
+  margin: .5em auto 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  legend {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    span {
+      padding: 0 2em;
+    }
+  }
+}
+
+textarea,
+input[type=text],
+input[type=password],
+input[type=search],
+input[type=url],
+input[type=password],
+input[type=email],
+.input {
+  flex: 1 1 100%;
+  padding: .65em .15em .25em .15em;
+  font-size: 1.1em;
+  box-sizing: border-box;
+  font-weight: $theme-font-weight-light;
+
+  &.invisible {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: .35rem;
+    flex: 1 1 auto;
+
+    &.title {
+      font-weight: $theme-font-weight-regular;
+    }
+
+    &.inline {
+      flex: 0 0 auto;
+    }
+
+    + label {
+      opacity: 0;
+      transform: translateY(-100%);
+      margin-bottom: -1.8em;
+    }
+
+    &:hover {
+      border: 1px solid transparent;
+      background-color: rgba(0, 0, 0, .05);
+      cursor: pointer;
+    }
+
+    &:focus {
+      background: #FFF;
+      border-color: $theme-primary;
+
+      &.with-label {
+        padding-bottom: 2rem;
+      }
+
+      &:hover {
+        cursor: text;
+      }
+
+      + label {
+        display: none;
+      }
+    }
+  }
+
+  &.name-input-enhance {
+    font-size: 1.4em;
+    padding: .5em .3em;
+    font-weight: $theme-font-weight-regular;
+
+    &:not(.invisible) {
+      border-bottom-width: 2px;
+    }
+  }
+
+  &.code-input-6 {
+    max-width: 10rem;
+  }
+
+  &.number,
+  &.prefix-and-key,
+  &:not(.invisible).number {
+    width: 10rem;
+    flex: 0 0 auto;
+
+    &.small {
+      width: 5rem;
+    }
+  }
+
+  &.version {
+    width: 3em;
+    flex: 0 0 auto;
+    min-width: 3em;
+  }
+
+  &.medium,
+  &:not(.invisible).medium {
+    width: 20rem;
+    flex: 0 0 auto;
+  }
+
+  &:focus + label,
+  &:active + label {
+    color: $theme-primary;
+  }
 }

@@ -1,0 +1,10 @@
+parameters:
+  level: 6
+  paths:
+    - core
+    - tests
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+  scanFiles:
+    - core/lib/common.inc.php
+    - core/lib/ui.inc.php

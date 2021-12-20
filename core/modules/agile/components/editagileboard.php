@@ -8,8 +8,13 @@
 ?>
 <div class="backdrop_box large edit_agileboard">
     <div class="backdrop_detail_header">
-        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('angle-double-right'); ?></a>
+        <?php if ($board->getID()): ?>
+            <?= fa_image_tag('angle-double-right', ['class' => 'icon closer']); ?>
+        <?php endif; ?>
         <span><?php echo ($board->getId()) ? __('Edit board') : __('Create board'); ?></span>
+        <?php if (!$board->getID()): ?>
+            <?= fa_image_tag('times', ['class' => 'icon closer']); ?>
+        <?php endif; ?>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
@@ -47,7 +52,7 @@
                                     <span class="name">
                                         <span class="title value"><?php echo __('Generic planning board'); ?></span>
                                         <span class="description">
-                                            <?php echo __('Just a generic planning board for planning upcoming milestones.'); ?>
+                                            <?php echo __('A generic planning board for planning and categorizing work.'); ?>
                                         </span>
                                     </span>
                                 </label>
@@ -57,7 +62,7 @@
                                     <span class="name">
                                         <span class="title value"><?php echo __('Scrum board'); ?></span>
                                         <span class="description">
-                                            <?php echo __('Board tailored for scrum-style workflows, card view as scrum stories with estimates.'); ?>
+                                            <?php echo __('A board tailored for scrum/scrum-like workflows - with story cards, stories, epics and estimates'); ?>
                                         </span>
                                     </span>
                                 </label>
@@ -67,7 +72,7 @@
                                     <span class="name">
                                         <span class="title value"><?php echo __('Kanban board'); ?></span>
                                         <span class="description">
-                                            <?php echo __('Kanban board with workload limits and powerful plan mode.'); ?>
+                                            <?php echo __('A Kanban-style board with workload limits.'); ?>
                                         </span>
                                     </span>
                                 </label>
@@ -132,10 +137,13 @@
                                         <span class="value"></span>
                                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                         <div class="dropdown-container list-mode">
+                                            <input type="radio" value="0" name="epic_issuetype_id" id="epic_issuetype_id_0" class="fancy-checkbox" <?php if (!$board->getEpicIssuetypeID()) echo 'checked'; ?>>
+                                            <label for="epic_issuetype_id_0" class="list-item">
+                                                <span class="name value"><?php echo __("Don't use epics"); ?></span>
+                                            </label>
                                             <?php foreach ($issuetypes as $issuetype): ?>
                                                 <input type="radio" value="<?php echo $issuetype->getID(); ?>" name="epic_issuetype_id" id="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="fancy-checkbox" <?php if ($board->getEpicIssuetypeID() == $issuetype->getID()) echo 'checked'; ?>>
                                                 <label for="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="list-item">
-                                                    <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                                     <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                                     <span class="name value"><?php echo __($issuetype->getName()); ?></span>
                                                 </label>
@@ -212,6 +220,7 @@
                     </div>
                     <div class="row container" id="agileboard-swimlane-details-container">
                         <div class="form-row" id="agileboard_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_container" style="<?php if (!$board->usesSwimlanes() || $board->getSwimlaneType() != AgileBoard::SWIMLANES_ISSUES) echo 'display: none;'; ?>">
+                            <input type="hidden" name="swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_identifier" value="<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>">
                             <div class="helper-text"><span><?php echo __('The whiteboard will have separate swimlanes for all issues that is of a certain type. Specify which issuetype qualifies as a swimlane.'); ?></span></div>
                             <div class="fancy-dropdown-container from-bottom">
                                 <div class="fancy-dropdown" data-default-label="<?php echo __('Choose one or more issue types'); ?>">
@@ -220,8 +229,8 @@
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
                                         <?php foreach ($issuetypes as $issuetype): ?>
-                                            <input type="checkbox" class="fancy-checkbox" name="swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_details[issuetype][<?= $issuetype->getId(); ?>]" value="<?= $issuetype->getId(); ?>" id="filter_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_issuetype_<?= $issuetype->getId(); ?>" <?php if ($board->hasSwimlaneFieldValue($issuetype->getID())) echo ' checked'; ?>>
-                                            <label for="filter_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_issuetype_<?= $issuetype->getId(); ?>" class="list-item">
+                                            <input type="checkbox" class="fancy-checkbox" name="swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_details[<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>][<?= $issuetype->getId(); ?>]" value="<?= $issuetype->getId(); ?>" id="filter_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>_<?= $issuetype->getId(); ?>" <?php if ($board->hasSwimlaneFieldValue($issuetype->getID())) echo ' checked'; ?>>
+                                            <label for="filter_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>_<?= $issuetype->getId(); ?>" class="list-item">
                                                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                                 <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                                 <span class="name value"><?php echo __($issuetype->getName()); ?></span>
@@ -343,7 +352,7 @@
                             <div id="issue_field_container" class="list-mode">
                                 <div class="header"><?php echo __('Select issue field(s)'); ?></div>
                                 <?php foreach ($issuefields as $issuefield): ?>
-                                    <input type="checkbox" class="fancy-checkbox" value="<?php echo $issuefield->getKey(); ?>" name="issue_field_details[issuetype][<?php echo $issuefield->getKey(); ?>]" id="agileboard_issuefield_value_<?php echo $issuefield->getKey(); ?>" <?php if ($board->hasIssueFieldValue($issuefield->getKey())) echo 'checked'; ?>>
+                                    <input type="checkbox" class="fancy-checkbox" value="<?php echo $issuefield->getKey(); ?>" name="issue_field_details[<?php echo $issuefield->getKey(); ?>]" id="agileboard_issuefield_value_<?php echo $issuefield->getKey(); ?>" <?php if ($board->hasIssueFieldValue($issuefield->getKey())) echo 'checked'; ?>>
                                     <label for="agileboard_issuefield_value_<?php echo $issuefield->getKey(); ?>">
                                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name"><?php echo __($issuefield->getName()); ?></span>

@@ -20,13 +20,7 @@
         </div>
         <div class="helper-text">
             <?= __("There are no milestones scheduled yet"); ?><br>
-            <?= __('A great roadmap starts with a great plany'); ?>
+            <?= __('A great roadmap starts with a great plan'); ?>
         </div>
     </div>
 <?php endif; ?>
-<div class="button-container">
-    <a href="<?= make_url('project_roadmap', ['project_key' => $project->getKey()]); ?>" class="button secondary project-quick-edit">
-        <?= fa_image_tag('tasks', ['class' => 'icon']); ?>
-        <span><?= __('Open project roadmap'); ?></span>
-    </a>
-</div>

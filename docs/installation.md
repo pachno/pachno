@@ -7,7 +7,9 @@ Apache, nginx, IIS, Wamp or similar with url rewriting configured. For specific 
 (...missing an example? Feel free to contribute your own!)
 
 ## 1: Download and install dependencies
-Pachno uses Composer for php dependencies and npm for development dependencies.
+Pachno uses Composer for php dependencies and npm for development dependencies. 
+If you don't plan to do any Pachno development, you don't need to install npm.
+
 Download and install Composer into the main `pachno` directory (or a location of your choice) from http://getcomposer.org
 If you want to change CSS or javascript, or other kind of development, you should download and install [NPM](https://nodejs.org).
 

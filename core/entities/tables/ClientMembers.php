@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
     use pachno\core\framework;
 
@@ -26,27 +27,27 @@
     class ClientMembers extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'clientmembers';
+        public const B2DBNAME = 'clientmembers';
 
-        const ID = 'clientmembers.id';
+        public const ID = 'clientmembers.id';
 
-        const SCOPE = 'clientmembers.scope';
+        public const SCOPE = 'clientmembers.scope';
 
-        const UID = 'clientmembers.uid';
+        public const USER_ID = 'clientmembers.uid';
 
-        const CID = 'clientmembers.cid';
+        public const CLIENT_ID = 'clientmembers.cid';
 
         public function getUIDsForClientID($client_id)
         {
             $query = $this->getQuery();
-            $query->where(self::CID, $client_id);
+            $query->where(self::CLIENT_ID, $client_id);
 
             $uids = [];
             if ($res = $this->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $uids[$row->get(self::UID)] = $row->get(self::UID);
+                    $uids[$row->get(self::USER_ID)] = $row->get(self::USER_ID);
                 }
             }
 
@@ -56,14 +57,14 @@
         public function clearClientsByUserID($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
             $res = $this->rawDelete($query);
         }
 
         public function getNumberOfMembersByClientID($client_id)
         {
             $query = $this->getQuery();
-            $query->where(self::CID, $client_id);
+            $query->where(self::CLIENT_ID, $client_id);
             $count = $this->count($query);
 
             return $count;
@@ -72,18 +73,18 @@
         public function cloneClientMemberships($cloned_client_id, $new_client_id)
         {
             $query = $this->getQuery();
-            $query->where(self::CID, $cloned_client_id);
+            $query->where(self::CLIENT_ID, $cloned_client_id);
             $memberships_to_add = [];
             if ($res = $this->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $memberships_to_add[] = $row->get(self::UID);
+                    $memberships_to_add[] = $row->get(self::USER_ID);
                 }
             }
 
             foreach ($memberships_to_add as $uid) {
                 $insertion = new Insertion();
-                $insertion->add(self::UID, $uid);
-                $insertion->add(self::CID, $new_client_id);
+                $insertion->add(self::USER_ID, $uid);
+                $insertion->add(self::CLIENT_ID, $new_client_id);
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 $this->rawInsert($insertion);
             }
@@ -92,7 +93,7 @@
         public function getClientIDsForUserID($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
 
             return $this->rawSelect($query);
         }
@@ -101,17 +102,20 @@
         {
             $insertion = new Insertion();
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-            $insertion->add(self::CID, $client_id);
-            $insertion->add(self::UID, $user_id);
+            $insertion->add(self::CLIENT_ID, $client_id);
+            $insertion->add(self::USER_ID, $user_id);
             $this->rawInsert($insertion);
         }
 
         public function removeUserFromClient($user_id, $client_id)
         {
+            if (empty($client_id)) {
+                return;
+            }
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::CID, $client_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::CLIENT_ID, $client_id, Criterion::IN);
+            $query->where(self::USER_ID, $user_id);
             $this->rawDelete($query);
         }
 
@@ -119,15 +123,15 @@
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::CID, $client_id);
+            $query->where(self::CLIENT_ID, $client_id);
             $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable());
-            parent::addForeignKeyColumn(self::CID, Clients::getTable());
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable());
+            parent::addForeignKeyColumn(self::CLIENT_ID, Clients::getTable());
         }
 
     }

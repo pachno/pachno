@@ -3,10 +3,12 @@
     namespace pachno\core\modules\publish;
 
     use pachno\core\entities\Article;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\ArticleFiles;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Links;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\UserArticles;
     use pachno\core\entities\User;
     use pachno\core\framework;
@@ -27,13 +29,7 @@
     class Publish extends CoreModule
     {
 
-        const VERSION = '2.0';
-
-        const PERMISSION_READ_ARTICLE = 'readarticle';
-
-        const PERMISSION_EDIT_ARTICLE = 'editarticle';
-
-        const PERMISSION_DELETE_ARTICLE = 'deletearticle';
+        public const VERSION = '2.0';
 
         protected $_longname = 'Wiki';
 
@@ -43,7 +39,12 @@
 
         protected $_module_config_description = 'Set up the Wiki module from this section';
 
-        protected $_has_config_settings = true;
+        protected $_has_config_settings = false;
+
+        /**
+         * @var Article
+         */
+        protected $_current_article;
 
         public static function getArticleLink($article_name, $project = null, $mode = 'show', $legacy_name = false)
         {
@@ -58,6 +59,16 @@
             }
 
             return $article->getLink($mode);
+        }
+
+        public function setCurrentArticle(Article $article)
+        {
+            $this->_current_article = $article;
+        }
+
+        public function getCurrentArticle(): ?Article
+        {
+            return $this->_current_article;
         }
 
         public function postConfigSettings(Request $request)
@@ -136,28 +147,9 @@
             framework\ActionComponent::includeComponent('publish/projectlinks', ['project' => $event->getSubject()]);
         }
 
-        public function getPermissionDetails($permission)
-        {
-            $permissions = $this->_getPermissionslist();
-            if (array_key_exists($permission, $permissions)) {
-                return $permissions[$permission];
-            }
-        }
-
         protected function _getPermissionslist()
         {
-            $permissions = [];
-            $permissions['editwikimenu'] = ['description' => framework\Context::getI18n()->__('Can edit the wiki lefthand menu'), 'permission' => 'editwikimenu'];
-            $permissions[self::PERMISSION_READ_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => self::PERMISSION_READ_ARTICLE];
-            $permissions[self::PERMISSION_EDIT_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => self::PERMISSION_EDIT_ARTICLE];
-            $permissions[self::PERMISSION_DELETE_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => self::PERMISSION_DELETE_ARTICLE];
-
-            return $permissions;
-        }
-
-        public function listen_rolePermissionsEdit(Event $event)
-        {
-            framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_id%']);
+            return [];
         }
 
         public function getMenuTitle($project_context = null)
@@ -177,7 +169,7 @@
                 }
             }
 
-            return ($project_context) ? $i18n->__('Project wiki') : $i18n->__('Wiki');
+            return $i18n->__('Documentation');
         }
 
         public function listen_fileHasAccess(Event $event)
@@ -186,7 +178,7 @@
 
             foreach ($article_ids as $article_id) {
                 $article = new Article($article_id);
-                if ($article->canRead()) {
+                if ($article->hasAccess()) {
                     $event->setProcessed();
                     $event->setReturnValue(true);
                     break;
@@ -195,18 +187,73 @@
         }
 
         /**
+         * Header "Publish" page names
+         *
+         * @Listener(module="core", identifier="project/templates/projectheader::pagename")
+         *
+         * @param Event $event
+         */
+        public function dashboardProjectHeaderPagename(Event $event)
+        {
+            switch (framework\Context::getRouting()->getCurrentRoute()->getModuleName()) {
+                case 'publish':
+                    $event->setReturnValue(framework\Context::getI18n()->__('Documentation'));
+                    $event->setProcessed(true);
+                    break;
+            }
+        }
+
+        /**
+         * Header selected tab listener
+         *
+         * @Listener(module="core", identifier="header_menu::selectedTab")
+         *
+         * @param Event $event
+         */
+        public function headerMenuSelectedTab(Event $event)
+        {
+            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish') {
+                $event->setReturnValue('publish');
+                $event->setProcessed();
+            }
+        }
+
+        /**
          * Header wiki menu and search dropdown / list
          *
-         * @Listener(module="core", identifier="templates/headermainmenu::projectmenulinks")
+         * @Listener(module="core", identifier="header_menu_entries")
+         *
+         * @param Event $event
+         */
+        public function listen_HeaderMenuLink(Event $event)
+        {
+            framework\ActionComponent::includeComponent('publish/headermenulink');
+        }
+
+        /**
+         * Header wiki menu and search dropdown / list
+         *
+         * @Listener(module="core", identifier="project_header_sections")
+         *
+         * @param Event $event
+         */
+        public function listen_ProjectHeaderSections(Event $event)
+        {
+            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish') {
+                framework\ActionComponent::includeComponent('publish/headeractions');
+            }
+        }
+
+        /**
+         * Header wiki menu and search dropdown / list
+         *
+         * @Listener(module="core", identifier="templates/header::projectmenulinks")
          *
          * @param Event $event
          */
         public function listen_MenustripLinks(Event $event)
         {
-            $article = Articles::getTable()->getArticleByName('Main Page', $event->getSubject());
-            if (!$article instanceof Article) {
-                return;
-            }
+            $article = Articles::getTable()->getOrCreateMainPage($event->getSubject());
 
             if ($event->getSubject() instanceof Project) {
                 $project_url = framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $event->getSubject()->getKey(), 'article_id' => $article->getId(), 'article_name' => 'Main Page']);
@@ -215,19 +262,60 @@
             }
 
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
-            $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $article->getProject());
-            framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles]);
+            $top_level_articles = Articles::getTable()->getSidebarArticles(false, $article->getProject());
+            $top_level_categories = Articles::getTable()->getSidebarArticles(true, $article->getProject());
+            $overview_article = $article;
+            usort($top_level_articles, '\pachno\core\entities\Article::sortArticleChildren');
+            usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
+            framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles, 'top_level_categories' => $top_level_categories, 'overview_article' => $overview_article]);
+        }
+
+        /**
+         * Listen to header menu strip
+         *
+         * @Listener(module="core", identifier="header_menu_strip")
+         *
+         * @param Event $event
+         */
+        public function listenerMainMenustrip(Event $event)
+        {
+            $route = $event->getSubject();
+
+            if (!$route instanceof framework\routing\Route)
+                return;
+
+            if ($route->getModuleName() == 'publish') {
+                $component = framework\Action::returnComponentHTML('publish/mainmenustrip');
+                $event->setReturnValue($component);
+                $event->setProcessed();
+            }
+        }
+
+        /**
+         * @param null $project
+         * @param null $scope
+         *
+         * @return Article
+         */
+        public function createMainPageArticle($project = null, $scope = null): Article
+        {
+            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
+            if ($project instanceof Project) {
+                $data = file_get_contents($fixtures_path . 'project.json');
+                $content = str_replace('%projectname', $project->getName(), $data);
+            } else {
+                $content = file_get_contents($fixtures_path . 'main.json');
+            }
+
+            return Article::createNew("Main Page", $content, $scope, ['noauthor' => true], $project);
         }
 
         public function listen_createNewProject(Event $event)
         {
-            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
-            $data = file_get_contents($fixtures_path . 'project.json');
-            Article::createNew("Main Page", str_replace('%projectname', $event->getSubject()->getName(), $data), null, ['noauthor' => true], $event->getSubject());
-
-            framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
-            framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
-            framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
+            $this->createMainPageArticle($event->getSubject());
+//
+//            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+//            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
         }
 
         public function getTabKey()
@@ -237,47 +325,29 @@
 
         public function canUserReadArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article, self::PERMISSION_READ_ARTICLE);
+            return $this->_checkArticlePermissions($article, Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION);
         }
 
         protected function _checkArticlePermissions(Article $article, $permission_name)
         {
             $user = framework\Context::getUser();
-            switch ($this->getSetting('free_edit')) {
-                case 1:
-                    $permissive = !$user->isGuest();
-                    break;
-                case 2:
-                    $permissive = true;
-                    break;
-                case 0:
-                default:
-                    $permissive = false;
-                    break;
-            }
-            $retval = $user->hasPermission($permission_name, $article->getID(), 'publish');
-            if ($retval !== null) {
-                return $retval;
-            }
-            $retval = $user->hasPermission($permission_name, 'project_' . $article->getProject()->getID(), 'publish');
-            if ($retval !== null) {
-                return $retval;
+            $target_id = ($article->getProject() instanceof Project) ? $article->getProject()->getID() : 0;
+
+            $allowed = $user->hasPermission($permission_name, $target_id);
+            if ($target_id) {
+                $allowed = $allowed ?? $user->hasPermission($permission_name, 0);
             }
 
-            $permissive = ($permission_name == self::PERMISSION_READ_ARTICLE) ? false : $permissive;
-            $retval = $user->hasPermission($permission_name, 0, 'publish');
-
-            return ($retval !== null) ? $retval : $permissive;
+            return $allowed ?? false;
         }
 
         public function canUserEditArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article, self::PERMISSION_EDIT_ARTICLE);
-        }
+            if ($article->getAuthorID() == framework\Context::getUser()->getID()) {
+                return true;
+            }
 
-        public function canUserDeleteArticle(Article $article)
-        {
-            return $this->_checkArticlePermissions($article, self::PERMISSION_DELETE_ARTICLE);
+            return $this->_checkArticlePermissions($article, Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION);
         }
 
         public function listen_quicksearchDropdownFirstItems(Event $event)
@@ -436,9 +506,6 @@
 
         protected function _addAvailablePermissions()
         {
-            $this->addAvailablePermission(self::PERMISSION_READ_ARTICLE, 'Read all articles');
-            $this->addAvailablePermission(self::PERMISSION_EDIT_ARTICLE, 'Edit all articles');
-            $this->addAvailablePermission(self::PERMISSION_DELETE_ARTICLE, 'Delete any articles');
         }
 
         protected function _addListeners()
@@ -456,7 +523,6 @@
             Event::listen('core', 'upload', [$this, 'listen_upload']);
             Event::listen('core', 'quicksearch_dropdown_firstitems', [$this, 'listen_quicksearchDropdownFirstItems']);
             Event::listen('core', 'quicksearch_dropdown_founditems', [$this, 'listen_quicksearchDropdownFoundItems']);
-            Event::listen('core', 'rolepermissionsedit', [$this, 'listen_rolePermissionsEdit']);
         }
 
         public function isWikiTabsEnabled()
@@ -466,25 +532,18 @@
 
         protected function _install($scope)
         {
-            framework\Context::setPermission('article_management', 0, 'publish', 0, 1, 0, true, $scope);
-            $this->saveSetting('allow_camelcase_links', 1, 0, $scope);
-            $this->saveSetting('require_change_reason', 0, 0, $scope);
-
-//            framework\Context::getRouting()->addRoute('publish_article', '/wiki/:article_name', 'publish', 'showArticle');
-//            TextParser::addRegex('/(?<![\!|\"|\[|\>|\/\:])\b[A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', array($this, 'getArticleLinkTag'));
-//            TextParser::addRegex('/(?<!")\![A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', array($this, 'stripExclamationMark'));
+            $admin_group_id = framework\Settings::getAdminGroup()->getID();
+//            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         protected function _loadFixtures($scope)
         {
+            $admin_group_id = framework\Settings::getAdminGroup()->getID();
             $this->loadFixturesArticles($scope);
 
-            Links::getTable()->addLink('wiki', 0, 'Main Page', 'Wiki Frontpage', 1, $scope);
-            Links::getTable()->addLink('wiki', 0, 'WikiFormatting', 'Formatting help', 2, $scope);
-            Links::getTable()->addLink('wiki', 0, 'Category:Help', 'Help topics', 3, $scope);
-            framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
-            framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
-            framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         public function loadFixturesArticles($scope, $overwrite = true)
@@ -497,6 +556,34 @@
         }
 
         /**
+         * @Listener(module="core", identifier="get_backdrop_partial")
+         * @param Event $event
+         */
+        public function listenGetBackdropPartial(Event $event)
+        {
+            $request = $event->getParameter('request');
+
+            switch ($request['key']) {
+                case 'publish_edit_redirect_article':
+                    $event->setReturnValue('publish/editredirectarticle');
+                    if ($article_id = $request->getParameter('article_id')) {
+                        $article = Articles::getTable()->selectById($article_id);
+                    } else {
+                        $article = new Article();
+                        if ($request['project_id']) {
+                            $article->setProject($request['project_id']);
+                        }
+                        if ($request['redirect_article_id']) {
+                            $article->setRedirectArticle($request['redirect_article_id']);
+                        }
+                    }
+                    $event->addToReturnList($article, 'article');
+                    $event->setProcessed(true);
+                    break;
+            }
+        }
+
+        /**
          * @param Project $project
          * @param bool $overwrite
          * @param null $scope
@@ -504,26 +591,26 @@
         public function loadArticles($project = null, $overwrite = true, $scope = null)
         {
             $scope = $scope ?? framework\Context::getScope()->getID();
+            $this->createMainPageArticle(null, $scope);
 
-            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
-            $_path_handle = opendir($fixtures_path);
-            while ($original_article_name = readdir($_path_handle)) {
-                if (mb_strpos($original_article_name, '.') === false) {
-                    $imported = false;
-                    if (framework\Context::isCLI()) {
-                        Command::cli_echo('Saving ' . urldecode($original_article_name) . "\n");
-                    }
-                    if ($overwrite) {
-                        Articles::getTable()->deleteArticleByName(urldecode($original_article_name));
-                    }
-                    if (Articles::getTable()->getArticleByName(urldecode($original_article_name)) === null) {
-                        $content = file_get_contents($fixtures_path . $original_article_name);
-                        Article::createNew(urldecode($original_article_name), $content, $scope, ['overwrite' => $overwrite, 'noauthor' => true]);
-                        $imported = true;
-                    }
-                    Event::createNew('publish', 'fixture_article_loaded', urldecode($original_article_name), ['imported' => $imported])->trigger();
-                }
-            }
+//            $_path_handle = opendir($fixtures_path);
+//            while ($original_article_name = readdir($_path_handle)) {
+//                if (mb_strpos($original_article_name, '.') === false) {
+//                    $imported = false;
+//                    if (framework\Context::isCLI()) {
+//                        Command::cli_echo('Saving ' . urldecode($original_article_name) . "\n");
+//                    }
+//                    if ($overwrite) {
+//                        Articles::getTable()->deleteArticleByName(urldecode($original_article_name));
+//                    }
+//                    if (Articles::getTable()->getArticleByName(urldecode($original_article_name)) === null) {
+//                        $content = file_get_contents($fixtures_path . $original_article_name);
+//                        Article::createNew(urldecode($original_article_name), $content, $scope, ['overwrite' => $overwrite, 'noauthor' => true]);
+//                        $imported = true;
+//                    }
+//                    Event::createNew('publish', 'fixture_article_loaded', urldecode($original_article_name), ['imported' => $imported])->trigger();
+//                }
+//            }
         }
 
     }

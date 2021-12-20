@@ -4,8 +4,12 @@
 
     use Exception;
     use pachno\core\entities;
+    use pachno\core\entities\AgileBoard;
     use pachno\core\entities\Comment;
+    use pachno\core\entities\Issue;
+    use pachno\core\entities\Issuetype;
     use pachno\core\entities\tables;
+    use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\framework\interfaces\AuthenticationProvider;
@@ -23,6 +27,8 @@
      * @property entities\Project $project
      * @property entities\WorkflowTransition $transition
      * @property entities\LogItem $item
+     * @property entities\IssueSpentTime $entry
+     * @property entities\IssueSpentTime[] $timers
      *
      */
     class Components extends framework\ActionComponent
@@ -66,6 +72,7 @@
 
             }
             $this->show_avatar = (isset($this->show_avatar)) ? $this->show_avatar : true;
+            $this->show_name = (isset($this->show_name)) ? $this->show_name : true;
             framework\Logging::log('done (user dropdown component)');
         }
 
@@ -74,7 +81,7 @@
             try {
                 if (!$this->client instanceof entities\Client) {
                     framework\Logging::log('loading user object in dropdown');
-                    $this->client = entities\Client::getB2DBTable()->selectById($this->client);
+                    $this->client = tables\Clients::getTable()->selectById($this->client);
                     framework\Logging::log('done (loading user object in dropdown)');
                 }
                 $this->clientusers = $this->client->getMembers();
@@ -91,7 +98,7 @@
                 $this->team = (isset($this->team)) ? $this->team : null;
                 if (!$this->team instanceof entities\Team) {
                     framework\Logging::log('loading team object in dropdown');
-                    $this->team = entities\Team::getB2DBTable()->selectById($this->team);
+                    $this->team = tables\Teams::getTable()->selectById($this->team);
                     framework\Logging::log('done (loading team object in dropdown)');
                 }
             } catch (Exception $e) {
@@ -105,9 +112,7 @@
             $this->include_teams = (isset($this->include_teams)) ? $this->include_teams : false;
             $this->include_clients = (isset($this->include_clients)) ? $this->include_clients : false;
             $this->include_users = (isset($this->include_users)) ? $this->include_users : true;
-            $this->callback = (isset($this->callback)) ? $this->callback : null;
             $this->allow_clear = (isset($this->allow_clear)) ? $this->allow_clear : true;
-            $this->use_form = (isset($this->use_form)) ? $this->use_form : true;
         }
 
         public function componentIdentifiableselectorresults()
@@ -132,42 +137,42 @@
             if ($this->issue instanceof entities\Issue) {
                 $this->project = $this->issue->getProject();
                 $this->statuses = ($this->project->useStrictWorkflowMode()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
-                $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
-                $fields_list = [];
-                $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('Clear the category'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditCategory()) {
+                $fields_list = [];
+                $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('No category selected'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
+
+                if ($this->issue->canEditCategory()) {
                     $fields_list['category']['choices'] = entities\Category::getAll();
                 }
 
-                $fields_list['resolution'] = ['title' => $i18n->__('Resolution'), 'choices' => [], 'visible' => $this->issue->isResolutionVisible(), 'value' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('Clear the resolution'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', ['%clear_the_resolution' => ''])];
+                $fields_list['resolution'] = ['title' => $i18n->__('Resolution'), 'choices' => [], 'visible' => $this->issue->isResolutionVisible(), 'value' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('No resolution selected'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', ['%clear_the_resolution' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditResolution()) {
+                if ($this->issue->canEditResolution()) {
                     $fields_list['resolution']['choices'] = entities\Resolution::getAll();
                 }
 
                 $has_priority = $this->issue->getPriority() instanceof entities\Priority;
-                $fields_list['priority'] = ['title' => $i18n->__('Priority'), 'choices' => [], 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'value' => (($has_priority) ? $this->issue->getPriority()->getId() : 0), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('Clear the priority'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', ['%clear_the_priority' => ''])];
+                $fields_list['priority'] = ['title' => $i18n->__('Priority'), 'choices' => [], 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'value' => (($has_priority) ? $this->issue->getPriority()->getId() : 0), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('No priority selected'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', ['%clear_the_priority' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditPriority()) {
+                if ($this->issue->canEditPriority()) {
                     $fields_list['priority']['choices'] = entities\Priority::getAll();
                 }
 
-                $fields_list['reproducability'] = ['title' => $i18n->__('Reproducability'), 'choices' => [], 'visible' => $this->issue->isReproducabilityVisible(), 'value' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('Clear the reproducability'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', ['%clear_the_reproducability' => ''])];
+                $fields_list['reproducability'] = ['title' => $i18n->__('Reproducability'), 'choices' => [], 'visible' => $this->issue->isReproducabilityVisible(), 'value' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('No reproducability selected'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', ['%clear_the_reproducability' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditReproducability()) {
+                if ($this->issue->canEditReproducability()) {
                     $fields_list['reproducability']['choices'] = entities\Reproducability::getAll();
                 }
 
-                $fields_list['severity'] = ['title' => $i18n->__('Severity'), 'choices' => [], 'visible' => $this->issue->isSeverityVisible(), 'value' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('Clear the severity'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', ['%clear_the_severity' => ''])];
+                $fields_list['severity'] = ['title' => $i18n->__('Severity'), 'choices' => [], 'visible' => $this->issue->isSeverityVisible(), 'value' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('No severity selected'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', ['%clear_the_severity' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditSeverity()) {
+                if ($this->issue->canEditSeverity()) {
                     $fields_list['severity']['choices'] = entities\Severity::getAll();
                 }
 
                 $fields_list['milestone'] = ['title' => $i18n->__('Targetted for'), 'fa_icon' => 'list-alt', 'fa_style' => 'far', 'choices' => [], 'visible' => $this->issue->isMilestoneVisible(), 'value' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->issue->getMilestone()->getId() : 0), 'icon' => true, 'icon_name' => 'icon_milestones.png', 'change_tip' => $i18n->__('Click to change which milestone this issue is targetted for'), 'change_header' => $i18n->__('Set issue target / milestone'), 'clear' => $i18n->__('Set as not targetted'), 'select' => $i18n->__('%set_as_not_targetted or click to set a new target milestone', ['%set_as_not_targetted' => '']), 'url' => true, 'current_url' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->getRouting()->generate('project_roadmap', ['project_key' => $this->issue->getProject()->getKey()]) . '#roadmap_milestone_' . $this->issue->getMilestone()->getID() : '')];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditMilestone()) {
+                if ($this->issue->canEditMilestone()) {
                     $fields_list['milestone']['choices'] = $this->project->getMilestonesForIssues();
                 }
 
@@ -183,7 +188,7 @@
                         'clear' => $i18n->__('Clear this field'),
                         'select' => $i18n->__('%clear_this_field or click to set a new value', ['%clear_this_field' => ''])];
 
-                    if ($customdatatype->getType() == entities\CustomDatatype::CALCULATED_FIELD) {
+                    if ($customdatatype->getType() == entities\DatatypeBase::CALCULATED_FIELD) {
                         $result = $this->issue->getCustomField($key);
                         $customfields_list[$key]['value'] = $result;
                     } elseif ($customdatatype->hasCustomOptions()) {
@@ -201,7 +206,7 @@
                 $this->editions = ($this->issue->getProject()->isEditionsEnabled()) ? $this->issue->getEditions() : [];
                 $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : [];
                 $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : [];
-                $this->affected_count = count($this->editions) + count($this->components) + count($this->builds);
+                $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
             } else {
                 $fields_list = [];
                 $fields_list['category'] = ['choices' => entities\Category::getAll()];
@@ -280,7 +285,7 @@
         public function componentAttachedfile()
         {
             if ($this->mode == 'issue' && !isset($this->issue)) {
-                $this->issue = entities\Issue::getB2DBTable()->selectById($this->issue_id);
+                $this->issue = tables\Issues::getTable()->selectById($this->issue_id);
             } elseif ($this->mode == 'article' && !isset($this->article)) {
                 $this->article = entities\Article::getByName($this->article_name);
             }
@@ -289,22 +294,63 @@
 
         public function componentUpdateissueproperties()
         {
-            $this->issue = $this->issue ?: null;
+            $this->issue = $this->issue ?? null;
             $this->setupVariables();
+            if (isset($this->board) && $this->board instanceof AgileBoard) {
+                if ($this->board->usesSwimlanes()) {
+                    switch ($this->board->getSwimlaneType()) {
+                        case entities\AgileBoard::SWIMLANES_ISSUES:
+                            foreach ($this->board->getMilestoneSwimlanes($this->milestone) as $swimlane) {
+                                if ($swimlane->getIdentifier() != $this->swimlane_identifier)
+                                    continue;
+
+                                $this->parent_issue = $swimlane->getIdentifierIssue();
+                            }
+                            break;
+                        case entities\AgileBoard::SWIMLANES_EXPEDITE:
+                        case entities\AgileBoard::SWIMLANES_GROUPING:
+                            foreach ($this->board->getMilestoneSwimlanes($this->milestone) as $swimlane) {
+                                if ($swimlane->getIdentifier() != $this->swimlane_identifier)
+                                    continue;
+
+                                if ($swimlane->getIdentifierGrouping() == 'priority') {
+                                    $this->selected_priorities = ($swimlane->hasIdentifiables()) ? $swimlane->getIdentifiables() : null;
+                                } elseif ($swimlane->getIdentifierGrouping() == 'severity') {
+                                    $this->selected_severities = ($swimlane->hasIdentifiables()) ? $swimlane->getIdentifiables() : null;
+                                } elseif ($swimlane->getIdentifierGrouping() == 'category') {
+                                    $this->selected_categories = ($swimlane->hasIdentifiables()) ? $swimlane->getIdentifiables() : null;
+                                }
+                            }
+                            break;
+                        default:
+                            throw new Exception('Woops');
+                    }
+                }
+            }
+
+            if (isset($this->interactive) && $this->interactive && $this->issue instanceof Issue) {
+                $this->form_url = $this->getRouting()->generate('transition_issues', array('project_key' => $this->project->getKey(), 'transition_id' => $this->transition->getID()));
+                $this->form_id = "workflow_transition_form";
+            } elseif ($this->issue instanceof Issue) {
+                $this->form_url = $this->getRouting()->generate('transition_issue', array('project_key' => $this->project->getKey(), 'issue_id' => $this->issue->getID(), 'transition_id' => $this->transition->getID()));
+                $this->form_id = "workflow_transition_{$this->transition->getID()}_form";
+            } else {
+                $this->form_url = $this->getRouting()->generate('transition_issues', array('project_key' => $this->project->getKey(), 'transition_id' => $this->transition->getID()));
+                $this->form_id = "bulk_workflow_transition_form";
+            }
+
         }
 
         public function componentNotifications()
         {
-            $this->filter_first_notification = !is_null($this->first_notification_id) && is_numeric($this->first_notification_id);
-            $notifications = $this->getUser()->getNotifications($this->first_notification_id, $this->last_notification_id);
-            if ($this->filter_first_notification) {
-                $this->notifications = $notifications;
-            } else {
-                $this->notifications = count($notifications) ? array_slice($notifications, 0, 25) : [];
-            }
+            $this->notifications = $this->getUser()->getNotifications();
             $this->num_unread = $this->getUser()->getNumberOfUnreadNotifications();
             $this->num_read = $this->getUser()->getNumberOfReadNotifications();
-            $this->desktop_notifications_new_tab = $this->getUser()->isDesktopNotificationsNewTabEnabled();
+        }
+
+        public function componentTimers()
+        {
+            $this->timers = $this->getUser()->getTimers();
         }
 
         public function componentNotification_text()
@@ -346,7 +392,7 @@
         {
             if ($this->comment->getTargetType() == Comment::TYPE_ISSUE) {
                 try {
-                    $this->issue = entities\Issue::getB2DBTable()->selectById($this->comment->getTargetID());
+                    $this->issue = tables\Issues::getTable()->selectById($this->comment->getTargetID());
                 } catch (Exception $e) {
                 }
             }
@@ -361,9 +407,16 @@
             $this->count = count($this->editions) + count($this->components) + count($this->builds);
         }
 
-        public function componentRelatedissues()
+        public function componentRelatedissue()
         {
-            $this->child_issues = $this->issue->getChildIssues();
+            $this->backdrop = $this->backdrop ?? false;
+            $this->link_url = ($this->backdrop) ? 'javascript:void(0);' : $this->issue->getUrl();
+            $this->link_data = ($this->backdrop) ? 'data-url="' . $this->issue->getCardUrl() . '"' : '';
+        }
+
+        public function componentIssueDetails()
+        {
+            $this->backdrop = $this->backdrop ?? false;
         }
 
         public function componentDuplicateissues()
@@ -389,8 +442,19 @@
 
         public function componentDashboardConfig()
         {
+            $this->dashboard = tables\Dashboards::getTable()->selectById($this->dashboard_id);
             $this->views = entities\DashboardView::getAvailableViews($this->target_type);
-            $this->dashboardViews = entities\DashboardView::getViews($this->tid, $this->target_type);
+        }
+
+        public function componentReportIssueContainer()
+        {
+            if (isset($this->board) && $this->board instanceof AgileBoard && isset($this->selected_issuetype) && $this->selected_issuetype instanceof Issuetype && $this->board->isIssuetypeSwimlaneIdentifier($this->selected_issuetype)) {
+                $this->title = $this->getI18n()->__('Add swimlane');
+            } elseif (isset($this->parent_issue) && $this->parent_issue instanceof Issue) {
+                $this->title = $this->getI18n()->__('Add card');
+            } else {
+                $this->title = $this->getI18n()->__('Add an issue');
+            }
         }
 
         public function componentReportIssue()
@@ -408,32 +472,36 @@
 
         protected function _setupReportIssueProperties()
         {
-            $this->locked_issuetype = $this->locked_issuetype ?: null;
-            $this->selected_issuetype = $this->selected_issuetype ?: null;
-            $this->selected_edition = $this->selected_edition ?: null;
-            $this->selected_build = $this->selected_build ?: null;
-            $this->selected_milestone = $this->selected_milestone ?: null;
-            $this->parent_issue = $this->parent_issue ?: null;
-            $this->selected_component = $this->selected_component ?: null;
-            $this->selected_category = $this->selected_category ?: null;
-            $this->selected_status = $this->selected_status ?: null;
-            $this->selected_resolution = $this->selected_resolution ?: null;
-            $this->selected_priority = $this->selected_priority ?: null;
-            $this->selected_reproducability = $this->selected_reproducability ?: null;
-            $this->selected_severity = $this->selected_severity ?: null;
-            $this->selected_estimated_time = $this->selected_estimated_time ?: null;
-            $this->selected_spent_time = $this->selected_spent_time ?: null;
-            $this->selected_percent_complete = $this->selected_percent_complete ?: null;
-            $this->selected_pain_bug_type = $this->selected_pain_bug_type ?: null;
-            $this->selected_pain_likelihood = $this->selected_pain_likelihood ?: null;
-            $this->selected_pain_effect = $this->selected_pain_effect ?: null;
-            $selected_customdatatype = $this->selected_customdatatype ?: [];
+            $this->locked_issuetype = $this->locked_issuetype ?? null;
+            $this->selected_issuetype = $this->selected_issuetype ?? null;
+            $this->selected_edition = $this->selected_edition ?? null;
+            $this->selected_build = $this->selected_build ?? null;
+            $this->selected_milestone = $this->selected_milestone ?? null;
+            $this->selected_statuses = $this->selected_statuses ?? null;
+            $this->parent_issue = $this->parent_issue ?? null;
+            $this->selected_component = $this->selected_component ?? null;
+            $this->selected_category = $this->selected_category ?? null;
+            $this->selected_categories = $this->selected_categories ?? null;
+            $this->selected_status = $this->selected_status ?? null;
+            $this->selected_resolution = $this->selected_resolution ?? null;
+            $this->selected_priority = $this->selected_priority ?? null;
+            $this->selected_priorities = $this->selected_priorities ?? null;
+            $this->selected_reproducability = $this->selected_reproducability ?? null;
+            $this->selected_severity = $this->selected_severity ?? null;
+            $this->selected_severities = $this->selected_severities ?? null;
+            $this->selected_estimated_time = $this->selected_estimated_time ?? null;
+            $this->selected_spent_time = $this->selected_spent_time ?? null;
+            $this->selected_percent_complete = $this->selected_percent_complete ?? null;
+            $this->selected_pain_bug_type = $this->selected_pain_bug_type ?? null;
+            $this->selected_pain_likelihood = $this->selected_pain_likelihood ?? null;
+            $this->selected_pain_effect = $this->selected_pain_effect ?? null;
+            $selected_customdatatype = $this->selected_customdatatype ?? [];
             foreach (entities\CustomDatatype::getAll() as $customdatatype) {
                 $selected_customdatatype[$customdatatype->getKey()] = isset($selected_customdatatype[$customdatatype->getKey()]) ? $selected_customdatatype[$customdatatype->getKey()] : null;
             }
             $this->selected_customdatatype = $selected_customdatatype;
-            $this->issuetype_id = $this->issuetype_id ?: null;
-            $this->issue = $this->issue ?: null;
+            $this->issuetype_id = $this->issuetype_id ?? null;
+            $this->issue = $this->issue ?? null;
             $this->categories = entities\Category::getAll();
             $this->severities = entities\Severity::getAll();
             $this->priorities = entities\Priority::getAll();
@@ -442,19 +510,6 @@
             $this->statuses = entities\Status::getAll();
             $this->milestones = framework\Context::getCurrentProject()->getMilestonesForIssues();
             $this->al_items = [];
-        }
-
-        public function componentIssuePermissions()
-        {
-            $al_items = $this->issue->getAccessList();
-
-            foreach ($al_items as $k => $item) {
-                if ($item['target'] instanceof entities\User && $item['target']->getID() == $this->getUser()->getID()) {
-                    unset($al_items[$k]);
-                }
-            }
-
-            $this->al_items = $al_items;
         }
 
         public function componentIssueSubscribers()
@@ -470,6 +525,11 @@
         public function componentDashboardViewRecentComments()
         {
             $this->comments = entities\Comment::getRecentCommentsByAuthor($this->getUser()->getID());
+        }
+
+        public function componentDashboardViewTimers()
+        {
+            $this->timers = $this->getUser()->getTimers();
         }
 
         public function componentDashboardViewLoggedActions()
@@ -496,25 +556,12 @@
 
         public function componentIssueEstimator()
         {
-            $times = [];
-            switch ($this->field) {
-                case 'estimated_time':
-                    $times['months'] = $this->issue->getEstimatedMonths();
-                    $times['weeks'] = $this->issue->getEstimatedWeeks();
-                    $times['days'] = $this->issue->getEstimatedDays();
-                    $times['hours'] = $this->issue->getEstimatedHours();
-                    $times['minutes'] = $this->issue->getEstimatedMinutes();
-                    $this->points = $this->issue->getEstimatedPoints();
-                    break;
-                case 'spent_time';
-                    $times['months'] = 0;
-                    $times['weeks'] = 0;
-                    $times['days'] = 0;
-                    $times['hours'] = 0;
-                    $times['minutes'] = 0;
-                    $this->points = 0;
-                    break;
-            }
+            $times['months'] = $this->issue->getEstimatedMonths();
+            $times['weeks'] = $this->issue->getEstimatedWeeks();
+            $times['days'] = $this->issue->getEstimatedDays();
+            $times['hours'] = $this->issue->getEstimatedHours();
+            $times['minutes'] = $this->issue->getEstimatedMinutes();
+            $this->points = $this->issue->getEstimatedPoints();
             $this->times = $times;
             $this->project_key = $this->issue->getProject()->getKey();
             $this->issue_id = $this->issue->getID();
@@ -523,7 +570,7 @@
         public function componentAddDashboardView()
         {
             $request = framework\Context::getRequest();
-            $this->dashboard = entities\Dashboard::getB2DBTable()->selectById($request['dashboard_id']);
+            $this->dashboard = tables\Dashboards::getTable()->selectById($request['dashboard_id']);
             $this->column = $request['column'];
             $this->views = entities\DashboardView::getAvailableViews($this->dashboard->getType());
             $this->savedsearches = tables\SavedSearches::getTable()->getAllSavedSearchesByUserIDAndPossiblyProjectID(framework\Context::getUser()->getID(), ($this->dashboard->getProject() instanceof entities\Project) ? $this->dashboard->getProject()->getID() : 0);
@@ -533,21 +580,16 @@
         public function componentProjectList()
         {
             $url_options = ['project_state' => 'active', 'list_mode' => $this->list_mode];
-            $partial_options = ['key' => 'project_config'];
 
             if ($this->list_mode == 'team') {
                 $url_options['team_id'] = $this->team_id;
-                $partial_options['assignee_type'] = 'team';
-                $partial_options['assignee_id'] = $this->team_id;
             } elseif ($this->list_mode == 'client') {
                 $url_options['client_id'] = $this->client_id;
             }
 
             $this->active_url = $this->getRouting()->generate('project_list', $url_options);
             $url_options['project_state'] = 'archived';
-            $this->partial_options = $partial_options;
             $this->archived_url = $this->getRouting()->generate('project_list', $url_options);
-            $this->show_project_config_link = $this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable();
         }
 
         public function componentMenuLink()
@@ -562,7 +604,13 @@
             $this->base_id = $this->area_id ?? $this->area_name;
             $this->invisible = $this->invisible ?? false;
             $this->mentionable = isset($this->target_type) && isset($this->target_id);
-            $this->markuppable = ($this->syntaxClass == Settings::getSyntaxClass(Settings::SYNTAX_MD));
+            $this->markuppable = $this->markuppable ?? ($this->syntaxClass == Settings::getSyntaxClass(Settings::SYNTAX_MD));
+        }
+
+        public function componentEditSpentTimeEntry()
+        {
+            $this->entry = $this->entry ?? new entities\IssueSpentTime();
+            $this->url = $this->getRouting()->generate('issue_edittimespent', ['project_key' => $this->issue->getProject()->getKey(), 'issue_id' => $this->issue->getID(), 'entry_id' => $this->entry->getId()]);
         }
 
     }

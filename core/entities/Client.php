@@ -2,9 +2,12 @@
 
     namespace pachno\core\entities;
 
+    use b2db\Saveable;
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\common\Permissible;
     use pachno\core\framework;
+    use pachno\core\framework\Context;
 
     /**
      * Client class
@@ -24,9 +27,12 @@
      *
      * @Table(name="\pachno\core\entities\tables\Clients")
      */
-    class Client extends IdentifiableScoped
+    class Client extends IdentifiableScoped implements Permissible
     {
 
+        /**
+         * @var Client[]
+         */
         protected static $_clients = null;
 
         protected $_members = null;
@@ -34,7 +40,7 @@
         protected $_num_members = null;
 
         /**
-         * The name of the object
+         * The name of the client
          *
          * @var string
          * @Column(type="string", length=200)
@@ -44,7 +50,7 @@
         /**
          * Email of client
          *
-         * @param string
+         * @var string
          * @Column(type="string", length=200)
          */
         protected $_email = null;
@@ -52,7 +58,7 @@
         /**
          * Telephone number of client
          *
-         * @param integer
+         * @var integer
          * @Column(type="string", length=200)
          */
         protected $_telephone = null;
@@ -60,7 +66,7 @@
         /**
          * URL for client website
          *
-         * @param string
+         * @var string
          * @Column(type="string", length=200)
          */
         protected $_website = null;
@@ -68,10 +74,28 @@
         /**
          * Fax number of client
          *
-         * @param integer
+         * @var integer
          * @Column(type="string", length=200)
          */
         protected $_fax = null;
+
+        /**
+         * Client external contact user
+         *
+         * @var User
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\User")
+         */
+        protected $_external_contact_user_id = null;
+
+        /**
+         * Client internal contact user
+         *
+         * @var User
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\User")
+         */
+        protected $_internal_contact_user_id = null;
 
         /**
          * List of client's dashboards
@@ -81,7 +105,15 @@
          */
         protected $_dashboards = null;
 
-        public static function doesClientNameExist($client_name)
+        /**
+         * @var Permission[]
+         * @Relates(class="\pachno\core\entities\Permission", collection=true, foreign_column="client_id")
+         */
+        protected $_permissions = null;
+
+        protected $_permission_keys;
+
+        public static function doesClientNameExist($client_name): bool
         {
             return tables\Clients::getTable()->doesClientNameExist($client_name);
         }
@@ -89,7 +121,7 @@
         /**
          * @return Client[]
          */
-        public static function getAll()
+        public static function getAll(): array
         {
             if (self::$_clients === null) {
                 self::$_clients = tables\Clients::getTable()->getAll();
@@ -103,7 +135,7 @@
 
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return "" . $this->_name;
         }
@@ -223,7 +255,7 @@
             if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
-            tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), $this->getID());
+            tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), [$this->getID()]);
         }
 
         public function getNumberOfMembers()
@@ -239,7 +271,7 @@
 
         public function hasAccess()
         {
-            return (bool)(framework\Context::getUser()->hasPageAccess('clientlist') || framework\Context::getUser()->isMemberOfClient($this));
+            return (bool) framework\Context::getUser()->isMemberOfClient($this);
         }
 
         /**
@@ -295,9 +327,89 @@
             return [$active_projects, $archived_projects];
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\ClientMembers::getTable()->removeUsersFromClient($this->getID());
+        }
+
+        public function getExternalContact(): ?User
+        {
+            return $this->_b2dbLazyLoad('_external_contact_user_id');
+        }
+
+        /**
+         * @param User|null $user
+         */
+        public function setExternalContact(User $user = null)
+        {
+            $this->_external_contact_user_id = $user;
+        }
+
+        public function getInternalContact(): ?User
+        {
+            return $this->_b2dbLazyLoad('_internal_contact_user_id');
+        }
+
+        public function setInternalContact(User $user = null)
+        {
+            $this->_internal_contact_user_id = $user;
+        }
+
+        public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
+        {
+            if ($scope === null) {
+                $scope = Context::getScope();
+            }
+
+            $permission = new Permission();
+            $permission->setClient($this);
+            $permission->setModuleName($module);
+            $permission->setTargetId($target_id);
+            $permission->setScope($scope);
+            $permission->setPermissionName($permission_name);
+            $permission->save();
+        }
+
+        protected function _populatePermissions()
+        {
+            if ($this->_permissions === null) {
+                $this->_permissions = $this->_b2dbLazyload('_permissions');
+                $this->_permission_keys = [];
+
+                foreach ($this->_permissions as $permission) {
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = true;
+                }
+            }
+        }
+
+        public function hasPermission($permission_name, $target_id = 0, $module = 'core'): bool
+        {
+            $permissions = $this->getPermissions();
+
+            return array_key_exists($module . '_' . $permission_name . '_' . $target_id, $permissions);
+        }
+
+        /**
+         * Returns all permissions assigned to this role
+         *
+         * @return Permission[]
+         */
+        public function getPermissions(): array
+        {
+            $this->_populatePermissions();
+
+            return $this->_permission_keys;
+        }
+
+        /**
+         * Removes permission from the role.
+         *
+         * @param string $permission_name
+         * @param string $module
+         */
+        public function removePermission($permission_name, $target_id = 0, $module = 'core')
+        {
+            tables\Permissions::getTable()->removeClientPermission($this->getID(), $permission_name, $module, $target_id);
         }
 
     }

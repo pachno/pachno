@@ -1,4 +1,6 @@
-<?php if (isset($customtype)): ?>
+<?php use pachno\core\entities\DatatypeBase;
+
+if (isset($customtype)): ?>
     <div class="form-container">
         <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_update_customtype', array('type' => $type)); ?>" onsubmit="Pachno.Config.Issuefields.Custom.update('<?= make_url('configure_issuefields_update_customtype', array('type' => $type)); ?>', '<?= $type; ?>');return false;" id="edit_custom_type_<?= $type; ?>_form">
             <div class="form-row">
@@ -23,7 +25,7 @@
     </div>
 <?php endif; ?>
 <?php if (isset($customtype)): ?>
-    <?php if ($customtype->getType() == \pachno\core\entities\CustomDatatype::CALCULATED_FIELD): ?>
+    <?php if ($customtype->getType() == DatatypeBase::CALCULATED_FIELD): ?>
         <div class="header_div" style="margin-top: 15px;">
             <?= __('Formula'); ?>
         </div>
@@ -50,7 +52,7 @@
         <?php endforeach; ?>
     </div>
     <div class="form-container">
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', ['type' => $type]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form>
+        <form id="add-field-form" accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', ['type' => $type]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form data-update-container="#field-options-list" data-update-insert data-update-insert-form-list>
             <div class="form-row add-placeholder">
                 <?= fa_image_tag('plus', ['class' => 'icon']); ?>
                 <input type="text" name="name" class="invisible" placeholder="<?= __('Add a choice'); ?>">

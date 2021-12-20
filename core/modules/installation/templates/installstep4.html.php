@@ -10,7 +10,7 @@
         </div>
         <div style="font-size: 13px;">
             An error occured and the installation has been stopped. Please try to fix the error based on the information above, then click start the installation over.<br>
-            If you think this is a bug, please report it in our <a href="https://projects.pachno.com" target="_new">online bug tracker</a>.
+            If you think this is a bug, please report it in our <a href="https://projects.pach.no" target="_new">online bug tracker</a>.
         </div>
     <?php else: ?>
         <?php if ($htaccess_error !== false): ?>

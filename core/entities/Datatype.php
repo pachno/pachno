@@ -29,61 +29,61 @@
          * Item type status
          *
          */
-        const STATUS = 'status';
+        public const STATUS = 'status';
 
         /**
          * Item type priority
          *
          */
-        const PRIORITY = 'priority';
+        public const PRIORITY = 'priority';
 
         /**
          * Item type reproducability
          *
          */
-        const REPRODUCABILITY = 'reproducability';
+        public const REPRODUCABILITY = 'reproducability';
 
         /**
          * Item type resolution
          *
          */
-        const RESOLUTION = 'resolution';
+        public const RESOLUTION = 'resolution';
 
         /**
          * Item type severity
          *
          */
-        const SEVERITY = 'severity';
+        public const SEVERITY = 'severity';
 
         /**
          * Item type issue type
          *
          */
-        const ISSUETYPE = 'issuetype';
+        public const ISSUETYPE = 'issuetype';
 
         /**
          * Item type category
          *
          */
-        const CATEGORY = 'category';
+        public const CATEGORY = 'category';
 
         /**
          * Item type project role
          *
          */
-        const ROLE = 'role';
+        public const ROLE = 'role';
 
         /**
          * Item type tag
          *
          */
-        const TAG = 'tag';
+        public const TAG = 'tag';
 
         /**
          * Item type activity type
          *
          */
-        const ACTIVITYTYPE = 'activitytype';
+        public const ACTIVITYTYPE = 'activitytype';
 
         public static function loadFixtures(Scope $scope)
         {
@@ -95,9 +95,6 @@
             Status::loadFixtures($scope);
             Role::loadFixtures($scope);
             ActivityType::loadFixtures($scope);
-            foreach (self::getTypes() as $type => $class) {
-                framework\Context::setPermission('set_datatype_' . $type, 0, 'core', 0, 0, 0, true, $scope->getID());
-            }
         }
 
         public static function getTypes()
@@ -116,9 +113,11 @@
             return $types;
         }
 
-        public static function has($item_id)
+        public static function has($item_id, $items = null)
         {
-            $items = static::getAll();
+            if ($items === null) {
+                $items = static::getAll();
+            }
 
             return array_key_exists($item_id, $items);
         }
@@ -133,7 +132,7 @@
             return tables\ListTypes::getTable()->getAllByItemType(static::ITEMTYPE);
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             parent::_postSave($is_new);
             tables\ListTypes::getTable()->updateItemCache($this);
@@ -182,6 +181,17 @@
                 default:
                     return 'fas';
             }
+        }
+
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['icon'] = [
+                'name' => $this->getFontAwesomeIcon(),
+                'style' => $this->getFontAwesomeIconStyle()
+            ];
+
+            return $json;
         }
 
     }

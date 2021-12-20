@@ -1,16 +1,22 @@
+@import "../variables";
+
 .message-box {
   display: flex;
   width: calc(100% - 20px);
   box-sizing: border-box;
   margin: 10px;
   padding: 10px;
-  border: 1px solid rgba(200, 200, 200, 0.7);
+  border: none;
   align-items: center;
-  border-radius: 3px;
-  font-weight: $theme-font-weight-light;
+  border-radius: 5px;
+  font-weight: $theme-font-weight-regular;
+
+  &.hidden {
+    display: none;
+  }
 
   &.type-error {
-    background-color: #d62246;
+    background-color: $theme-color-error;
     color: #FFF;
 
     .message {
@@ -19,12 +25,29 @@
   }
 
   &.type-warning {
-    background-color: rgba(249, 245, 178, 0.6);
+    background-color: $theme-color-warning;
+    color: $theme-text-color;
   }
 
   &.type-info {
-    background-color: #d4f4dd;
-    color: rgba(0, 0, 0, .55);
+    border-color: transparent;
+    color: #FFF;
+    background: $theme-color-info;
+
+    .command_box {
+      background-color: rgba(100, 100, 100, .3);
+    }
+  }
+
+  &.cdx-alert-primary,
+  &.cdx-alert-secondary,
+  &.cdx-alert-info,
+  &.cdx-alert-success,
+  &.cdx-alert-warning,
+  &.cdx-alert-danger,
+  &.cdx-alert-light,
+  &.cdx-alert-dark {
+    border: none;
   }
 
   .fas,
@@ -43,7 +66,11 @@
   .title {
     flex: 1 1 auto;
     font-size: 1.1em;
-    font-weight: $theme-font-weight-bold;
+    font-weight: $theme-font-weight-heavy;
+  }
+
+  b {
+    font-weight: $theme-font-weight-heavy;
   }
 
   .message {
@@ -61,6 +88,21 @@
     flex: 0 0 auto;
     flex-direction: column;
     align-items: flex-end;
+
+    .button {
+      &.secondary {
+        &,
+        &.highlight {
+          background-color: rgba(255, 255, 255, .2);
+          color: #FFF;
+          border: 1px solid transparent;
+
+          &:hover {
+            border-color: rgba(255, 255, 255, .4);
+          }
+        }
+      }
+    }
   }
 
   .image-container {
@@ -76,5 +118,21 @@
 
   .command_box {
     font-size: .85em;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 0;
+      &:not(.command_box) {
+        padding: 0;
+      }
+
+      + li {
+        margin-left: .25em;
+      }
+    }
   }
 }

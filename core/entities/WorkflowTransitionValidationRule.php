@@ -9,6 +9,7 @@
     use pachno\core\entities\tables\Clients;
     use pachno\core\entities\tables\Components;
     use pachno\core\entities\tables\Editions;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\entities\tables\Teams;
@@ -36,21 +37,21 @@
     class WorkflowTransitionValidationRule extends IdentifiableScoped
     {
 
-        const RULE_MAX_ASSIGNED_ISSUES = 'max_assigned_issues';
+        public const RULE_MAX_ASSIGNED_ISSUES = 'max_assigned_issues';
 
-        const RULE_STATUS_VALID = 'valid_status';
+        public const RULE_STATUS_VALID = 'valid_status';
 
-        const RULE_RESOLUTION_VALID = 'valid_resolution';
+        public const RULE_RESOLUTION_VALID = 'valid_resolution';
 
-        const RULE_REPRODUCABILITY_VALID = 'valid_reproducability';
+        public const RULE_REPRODUCABILITY_VALID = 'valid_reproducability';
 
-        const RULE_PRIORITY_VALID = 'valid_priority';
+        public const RULE_PRIORITY_VALID = 'valid_priority';
 
-        const RULE_TEAM_MEMBERSHIP_VALID = 'valid_team';
+        public const RULE_TEAM_MEMBERSHIP_VALID = 'valid_team';
 
-        const RULE_ISSUE_IN_MILESTONE_VALID = 'valid_in_milestone';
+        public const RULE_ISSUE_IN_MILESTONE_VALID = 'valid_in_milestone';
 
-        const CUSTOMFIELD_VALIDATE_PREFIX = 'customfield_validate_';
+        public const CUSTOMFIELD_VALIDATE_PREFIX = 'customfield_validate_';
 
         /**
          * @Column(type="string", length=100, name="rule")
@@ -189,7 +190,7 @@
             } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID) {
                 $options = Team::getAll();
             } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID) {
-                $options = Milestone::getB2DBTable()->selectAll();
+                $options = Milestones::getTable()->selectAll();
             } elseif ($this->isCustom()) {
                 $options = $this->getCustomField()->getOptions();
             }
@@ -294,7 +295,7 @@
                     if ($input instanceof Issue) {
                         $issue = $input;
                     } elseif ($input->hasParameter('issue_id')) {
-                        $issue = Issue::getB2DBTable()->selectByID((int)$input->getParameter('issue_id'));
+                        $issue = Issues::getTable()->selectByID((int)$input->getParameter('issue_id'));
                     }
                     if (isset($issue) && $issue instanceof Issue) {
                         if (!$issue->getMilestone() instanceof Milestone) return false;
@@ -363,15 +364,15 @@
                 default:
                     if ($this->isCustom()) {
                         switch ($this->getCustomType()) {
-                            case CustomDatatype::RADIO_CHOICE:
-                            case CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                            case CustomDatatype::TEAM_CHOICE:
-                            case CustomDatatype::STATUS_CHOICE:
-                            case CustomDatatype::MILESTONE_CHOICE:
-                            case CustomDatatype::CLIENT_CHOICE:
-                            case CustomDatatype::COMPONENTS_CHOICE:
-                            case CustomDatatype::EDITIONS_CHOICE:
-                            case CustomDatatype::RELEASES_CHOICE:
+                            case DatatypeBase::RADIO_CHOICE:
+                            case DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                            case DatatypeBase::TEAM_CHOICE:
+                            case DatatypeBase::STATUS_CHOICE:
+                            case DatatypeBase::MILESTONE_CHOICE:
+                            case DatatypeBase::CLIENT_CHOICE:
+                            case DatatypeBase::COMPONENTS_CHOICE:
+                            case DatatypeBase::EDITIONS_CHOICE:
+                            case DatatypeBase::RELEASES_CHOICE:
                                 $valid_items = explode(',', $this->getRuleValue());
                                 if ($input instanceof Issue) {
                                     $value = $input->getCustomField($this->getCustomFieldname());
@@ -468,29 +469,29 @@
                             $field = $fieldname::getB2DBTable()->selectByID((int)$value);
                         } elseif ($is_custom) {
                             switch ($customtype) {
-                                case CustomDatatype::RADIO_CHOICE:
-                                case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                case DatatypeBase::RADIO_CHOICE:
+                                case DatatypeBase::DROPDOWN_CHOICE_TEXT:
                                     $field = tables\CustomFieldOptions::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::TEAM_CHOICE:
+                                case DatatypeBase::TEAM_CHOICE:
                                     $field = Teams::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::STATUS_CHOICE:
+                                case DatatypeBase::STATUS_CHOICE:
                                     $field = ListTypes::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::MILESTONE_CHOICE:
+                                case DatatypeBase::MILESTONE_CHOICE:
                                     $field = Milestones::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::CLIENT_CHOICE:
+                                case DatatypeBase::CLIENT_CHOICE:
                                     $field = Clients::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::COMPONENTS_CHOICE:
+                                case DatatypeBase::COMPONENTS_CHOICE:
                                     $field = Components::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::EDITIONS_CHOICE:
+                                case DatatypeBase::EDITIONS_CHOICE:
                                     $field = Editions::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::RELEASES_CHOICE:
+                                case DatatypeBase::RELEASES_CHOICE:
                                     $field = Builds::getTable()->selectById((int)$value);
                                     break;
                             }

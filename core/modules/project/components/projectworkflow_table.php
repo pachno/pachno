@@ -2,7 +2,7 @@
     <div class="backdrop_detail_header">
         <a href="javascript:void(0);" class="back_link" onclick="$('#change_workflow_table').update('');$('#change_workflow_box').show();"><?= fa_image_tag('chevron-left'); ?></a>
         <span><?php echo __('Change workflow'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div class="backdrop_detail_content">
         <?php echo __("Issues in the workflow step on the left will have their workflow step changed to the one on the right. This will change the issue's status to the one assigned to the new step."); ?>

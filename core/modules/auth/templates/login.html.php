@@ -3,11 +3,9 @@
     use pachno\core\framework\Context;
 
 ?>
-<div id="login_backdrop">
-    <div class="backdrop_box login_page login_popup" id="login_popup">
-        <div id="backdrop_detail_content" class="backdrop_detail_content rounded_top login_content">
-            <?php include_component('auth/login', compact('section')); ?>
-        </div>
+<div id="login_backdrop" class="fullpage_backdrop">
+    <div class="fullpage_backdrop_content">
+        <?php include_component('auth/login', compact('section', 'captcha')); ?>
     </div>
 </div>
 <script type="text/javascript">

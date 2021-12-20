@@ -18,15 +18,17 @@
         <meta name="keywords" content="">
         <meta name="author" content="zegenie">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="shortcut icon" href="images/favicon.png">
-        <script type="text/javascript" src="js/install.js"></script>
+        <link rel="shortcut icon" href="images/favicon_inverted.png">
+        <?php if ($mode != 'upgrade'): ?>
+            <script type="text/javascript" src="js/install.js"></script>
+        <?php endif; ?>
         <style type="text/css">
             <?php include PACHNO_PATH . 'themes' . DS . 'oxygen' . DS . 'css' . DS . 'theme.css'; ?>
         </style>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
         <style type="text/css">
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
+            @import url('https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
 
             body { overflow: hidden; }
 
@@ -50,8 +52,8 @@
             .installpage .installation_progress {
                 margin-bottom: 15px;
             }
-            .progress_bar { display: block; width: calc(100% - 30px); margin: 5px 15px; box-sizing: border-box; position: relative; height: 4px; background-color: rgba(75, 29, 63, .3); border-radius: 0; }
-            .progress_bar .filler { background-color: rgb(75, 29, 63); position: absolute; left: 0; top: 0; height: 4px; min-width: 5px; border-radius: 0; }
+            .progress_bar { display: block; width: calc(100% - 30px); margin: 5px 15px; box-sizing: border-box; position: relative; height: 6px; background-color: rgba(12, 216, 182, .3); border-radius: 3px; }
+            .progress_bar .filler { background-color: rgb(12, 216, 182); position: absolute; left: 0; top: 0; height: 6px; min-width: 5px; border-radius: 3px; }
             .installation_box { padding: 15px; position: relative; font-size: 1em; line-height: 1.6; }
             .installation_box dl { font-size: 1em; }
             .installation_box dl dd, .installation_box dl dt { vertical-align: middle; font-weight: 300; margin-left: 0; }
@@ -71,7 +73,7 @@
             .install_list select { padding: 5px; font-weight: 1.1em; height: auto; vertical-align: middle; border: 1px solid #BEBEBE; border-radius: 4px; }
             .main_header_print
             {
-                background: #4E81AB; /* Old browsers */
+                background: #00adc7; /* Old browsers */
                 color: white;
                 border-radius: 0;
                 margin-top: 0;
@@ -87,6 +89,14 @@
             input[type=text].small { width: 100px; margin-top: -5px; }
             input[type=text].dsn { width: 400px; margin-top: -5px; }
             input[type=text].smallest { width: 50px; }
+
+            input[type=submit].primary, input[type=submit].primary:hover,
+            input[type=button].primary, input[type=button].primary:hover,
+            button.primary, button.primary:hover,
+            .button, .button:hover {
+                font-weight: 400;
+            }
+
 
             .padded_box { padding: 3px 10px 10px 10px; }
             .error { padding: 4px; border: 1px solid #B77; background-color: #FEE; color: #955; margin: 10px 0 10px 0; }
@@ -105,8 +115,8 @@
             .scope_upgrade li label { display: inline-block; width: 180px; vertical-align: middle; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
             .scope_upgrade li select { width: 250px; }
 
-            .progress_buttons { padding: 30px 15px 15px 15px; text-align: right; display: block; height: 30px; }
-            .progress_buttons .button-next { float: right; }
+            .progress_buttons { padding: 30px 15px 15px 15px; text-align: right; display: block; min-height: 30px; }
+            .progress_buttons .button-next, .progress_buttons .button-finish { float: right; }
             .progress_buttons .button-previous { float: left; }
 
             ul.backuplist { margin: 15px 0; padding: 0; }
@@ -163,7 +173,7 @@
                 padding: 5px 10px;
             }
             .prereq.type-fail {
-                background-color: #d62246;
+                background-color: #c72b00;
                 color: #FFF;
                 margin-bottom: 0;
                 border-bottom-left-radius: 0;
@@ -173,8 +183,10 @@
                 background-color: rgba(249, 245, 178, 0.6);
             }
             .prereq.type-ok {
-                background-color: #d4f4dd;
-                color: rgba(0, 0, 0, .55);
+                display: none;
+                background-color: transparent;
+                color: #232323;
+                border: none;
             }
             .prereq + .message-box.type-solution {
                 margin: 0 2px 15px 2px;
@@ -265,8 +277,8 @@
                 max-width: 1024px;
                 display: flex;
                 flex-direction: column;
-                border: 1px solid rgba(100, 100, 100, .2);
-                box-shadow: 0 3px 6px rgba(0,0,0,0.23);
+                border: none;
+                box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16), 0 0 1px 0 rgba(0, 0, 0, 0.16);
             }
             .header_container {
                 flex: 0 0 auto;
@@ -274,7 +286,7 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                background-color: rgb(12, 137, 144);
+                background: linear-gradient(to right, #0cd8b6 0%, #00adc7 20%);
                 color: #FFF;
             }
             .logo_image_container {
@@ -291,14 +303,10 @@
             }
             .header_container .logo_name_container {
                 color: #FFF;
-                font-size: 1.6rem;
-                font-family: "Lilita One";
-            }
-            .logo_name {
-                font-size: 1.6em;
-            }
-            .logo_small {
-                font-size: .9em;
+                font-size: 1.8rem;
+                font-family: "DM Sans";
+                letter-spacing: -1px;
+                font-weight: 700;
             }
             .installation_main_container {
                 flex: 1 1 auto;
@@ -317,10 +325,23 @@
                 border-top: 1px solid #DDD;
                 padding: 15px;
             }
+            .highlight {
+                border-bottom: 2px solid #00adc7;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .highlight .icon {
+                margin: 0 .5em;
+            }
+
 
         </style>
     </head>
     <body>
+        <?php if ($mode == 'upgrade'): ?>
+            <script type="text/javascript" src="js/dist/pachno/main.js?bust=<?= \pachno\core\framework\Settings::getVersion(); ?>"></script>
+        <?php endif; ?>
         <div class="installation_container">
             <div class="header_container">
                 <div class="logo_image_container"><img src="/logo_white_192.png" alt="Pachno - Installation"></div>

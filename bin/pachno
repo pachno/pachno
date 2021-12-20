@@ -30,6 +30,9 @@
     } catch (Exception $e) {
         framework\cli\Command::cli_echo("An error occured when trying to initialize the command line client:\n", 'white', 'bold');
         framework\cli\Command::cli_echo($e->getMessage() . "\n", 'red', 'bold');
+        if ($e->getCode() === framework\exceptions\ConfigurationException::UPGRADE_REQUIRED) {
+            framework\cli\Command::cli_echo("If you are trying to upgrade, remember to create an empty file called 'upgrade' in the main directory\n");
+        }
         die();
     }
 

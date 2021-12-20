@@ -8,6 +8,7 @@
     use pachno\core\framework;
     use pachno\core\framework\Response;
     use PragmaRX\Google2FA\Google2FA;
+    use Gregwar\Captcha\CaptchaBuilder;
 
     /**
      * Login actions
@@ -26,7 +27,15 @@
          */
         public function runLogin(framework\Request $request)
         {
+            if (!$this->getUser()->isGuest()) {
+                return $this->forward($this->getRouting()->generate('profile_account'));
+            }
+
             $this->section = $request->getParameter('section', 'login');
+            $captcha = new CaptchaBuilder();
+            $captcha->build();
+            $_SESSION['activation_number'] = $captcha->getPhrase();
+            $this->captcha = $captcha;
         }
 
         /**
@@ -145,7 +154,7 @@
          */
         public function runSwitchUser(framework\Request $request)
         {
-            if (!$this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS) && !$request->hasCookie('original_username'))
+            if (!$this->getUser()->canSaveConfiguration() && !$request->hasCookie('original_username'))
                 return $this->forward403();
 
             $response = $this->getResponse();

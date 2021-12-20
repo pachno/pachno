@@ -1,6 +1,16 @@
 <?php
 
     use pachno\core\entities\Dashboard;
+    use pachno\core\entities\Project;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Response;
+
+    /**
+     * @var Response $pachno_response
+     * @var User $pachno_user
+     * @var Dashboard $dashboard
+     * @var Project $selected_project
+     */
 
     $pachno_response->setTitle(__('"%project_name" project dashboard', array('%project_name' => $selected_project->getName())));
     $pachno_response->addFeed(make_url('project_timeline', array('project_key' => $selected_project->getKey(), 'format' => 'rss')), __('"%project_name" project timeline', array('%project_name' => $selected_project->getName())));

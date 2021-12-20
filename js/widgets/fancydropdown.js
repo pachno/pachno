@@ -20,7 +20,7 @@ const updateFancyDropdownLabel = function ($dropdown) {
 
                 if ($value.text() != '') {
                     values.push($value.text());
-                } else {
+                } else if ($input.val() != "0") {
                     console.error('Could not find a .value for item', $input);
                 }
             }

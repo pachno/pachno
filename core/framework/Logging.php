@@ -12,15 +12,15 @@
      */
     class Logging
     {
-        const LEVEL_INFO = 1;
+        public const LEVEL_INFO = 1;
 
-        const LEVEL_NOTICE = 5;
+        public const LEVEL_NOTICE = 5;
 
-        const LEVEL_WARNING = 10;
+        public const LEVEL_WARNING = 10;
 
-        const LEVEL_WARNING_RISK = 15;
+        public const LEVEL_WARNING_RISK = 15;
 
-        const LEVEL_FATAL = 20;
+        public const LEVEL_FATAL = 20;
 
         protected static $_logging_enabled = true;
 
@@ -154,14 +154,14 @@
          */
         public static function getEntriesForCategory($category, $min_level = 1)
         {
-            $retval = [];
+            $entries = [];
             foreach (self::$_entries as $entry) {
                 if ($entry['category'] == $category && $entry['level'] >= $min_level) {
-                    $retval[] = $entry;
+                    $entries[] = $entry;
                 }
             }
 
-            return $retval;
+            return $entries;
         }
 
         /**
@@ -174,14 +174,14 @@
          */
         public static function getMessagesForCategory($category, $min_level = 1)
         {
-            $retval = [];
+            $messages = [];
             foreach (self::$_entries as $entry) {
                 if ($entry['category'] == $category && $entry['level'] >= $min_level) {
-                    $retval[] = $entry['message'];
+                    $messages[] = $entry['message'];
                 }
             }
 
-            return $retval;
+            return $messages;
         }
 
         /**

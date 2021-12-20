@@ -3,9 +3,11 @@
     namespace pachno\core\modules\installation;
 
     use Exception;
+    use Nadar\PhpComposerReader\ComposerReader;
     use pachno\core\entities\Scope;
     use pachno\core\framework;
     use pachno\core\framework\cli\Command;
+    use pachno\core\modules\installation\entities\upgrade_1_0_0\tables\LivelinkImports;
 
     class Upgrade
     {
@@ -16,15 +18,22 @@
 
         protected $current_version;
 
+        protected function _upgradeFrom1_0_0(framework\Request $request = null): bool
+        {
+            $this->cliEchoUpgradeTable(LivelinkImports::getTable());
+            \pachno\core\entities\tables\LivelinkImports::getTable()->upgrade(LivelinkImports::getTable());
+
+            $this->current_version = '1.0.1';
+
+            return true;
+        }
+
         /**
          * Perform the actual upgrade
          *
-         * @param framework\Request|null $request
-         *
-         * @return bool
-         * @throws Exception
+         * @param ?framework\Request $request
          */
-        public function upgrade(framework\Request $request = null)
+        public function upgrade(framework\Request $request = null): bool
         {
             set_time_limit(0);
 
@@ -37,21 +46,33 @@
 
             $this->upgrade_complete = false;
 
-            try {
-                if (framework\Context::isCLI()) {
-                    Command::cli_echo("Gathering information before upgrading...\n\n");
-                }
-
-                throw new Exception('Upgrade unavailable. Please upgrade via the web interface');
-            } catch (Exception $e) {
-                list ($existing_version,) = framework\Settings::getUpgradeStatus();
-                if ($this->current_version != $existing_version) {
-                    $existing_installed_content = file_get_contents(PACHNO_PATH . 'installed');
-                    file_put_contents(PACHNO_PATH . 'installed', framework\Settings::getVersion(false, true) . ', upgraded ' . date('d.m.Y H:i') . "\n" . $existing_installed_content);
-                }
-
-                throw $e;
+            if (framework\Context::isCLI()) {
+                Command::cli_echo("Gathering information before upgrading...\n\n");
             }
+
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+            $repositories = $reader->contentSection('repositories', null);
+            if (count($repositories)) {
+                throw new framework\exceptions\ConfigurationException('Invalid composer.json contents', framework\exceptions\ConfigurationException::UPGRADE_NON_RESET_COMPOSER_JSON);
+            }
+
+            switch ($this->current_version) {
+                case '1.0.0':
+                    $this->_upgradeFrom1_0_0($request);
+            }
+
+            framework\Context::loadModules();
+            foreach (framework\Context::getModules() as $module) {
+                if ($module->hasComposerDependencies()) {
+                    $module->addSectionsToComposerJson();
+                }
+            }
+
+            $existing_installed_content = file_get_contents(PACHNO_PATH . 'installed');
+            file_put_contents(PACHNO_PATH . 'installed', framework\Settings::getVersion(false, true) . ', upgraded ' . date('d.m.Y H:i') . "\n" . $existing_installed_content);
+            $this->current_version = framework\Settings::getVersion(false, false);
+
+            return true;
         }
 
         protected function cliEchoUpgradeTable($table, $time_warning = false)
@@ -63,7 +84,7 @@
             $namespaces = explode('\\', get_class($table));
             $classname = array_pop($namespaces);
             Command::cli_echo('Upgrading', 'white', 'bold');
-            Command::cli_echo(' table ' . implode('\\', $namespaces) . '\\');
+            Command::cli_echo(' table ');
             Command::cli_echo($classname, 'yellow');
             if ($time_warning) {
                 Command::cli_echo(' - data migration may take a little while ...');

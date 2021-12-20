@@ -15,19 +15,19 @@
     class Action extends Parameterholder
     {
 
-        const AUTHENTICATION_METHOD_CORE = 'core';
+        public const AUTHENTICATION_METHOD_CORE = 'core';
 
-        const AUTHENTICATION_METHOD_DUMMY = 'dummy';
+        public const AUTHENTICATION_METHOD_DUMMY = 'dummy';
 
-        const AUTHENTICATION_METHOD_CLI = 'cli';
+        public const AUTHENTICATION_METHOD_CLI = 'cli';
 
-        const AUTHENTICATION_METHOD_RSS_KEY = 'rss_key';
+        public const AUTHENTICATION_METHOD_RSS_KEY = 'rss_key';
 
-        const AUTHENTICATION_METHOD_APPLICATION_PASSWORD = 'application_password';
+        public const AUTHENTICATION_METHOD_APPLICATION_PASSWORD = 'application_password';
 
-        const AUTHENTICATION_METHOD_ELEVATED = 'elevated';
+        public const AUTHENTICATION_METHOD_ELEVATED = 'elevated';
 
-        const AUTHENTICATION_METHOD_BASIC = 'basic';
+        public const AUTHENTICATION_METHOD_BASIC = 'basic';
 
         /**
          * Retrieves authentication method for running an
@@ -70,7 +70,7 @@
          *
          * @param string $redirect_to The method to redirect to
          */
-        public function redirect($redirect_to)
+        public function redirect(string $redirect_to)
         {
             $actionName = 'run' . ucfirst($redirect_to);
             $this->getResponse()->setTemplate(mb_strtolower($redirect_to) . '.' . Context::getRequest()->getRequestedFormat() . '.php');
@@ -78,20 +78,6 @@
                 return $this->$actionName(Context::getRequest());
             }
             throw new exceptions\ActionNotFoundException("The action \"{$actionName}\" does not exist in " . get_class($this));
-        }
-
-        /**
-         * Render a string
-         *
-         * @param string $text The text to render
-         *
-         * @return boolean
-         */
-        public function renderText($text)
-        {
-            echo $text;
-
-            return true;
         }
 
         /**
@@ -161,7 +147,7 @@
         public function forward403unless($condition, $message = null)
         {
             if (!$condition) {
-                $message = ($message === null) ? Context::getI18n()->__("You are either not allowed to access this page or don't have access to perform this action") : $message;
+                $message = ($message === null) ? Context::getI18n()->__('Please log in to continue') : $message;
                 if (Context::getUser()->isGuest()) {
                     Context::setMessage('login_message_err', htmlentities($message));
                     Context::setMessage('login_force_redirect', true);
@@ -310,29 +296,24 @@
          *
          * @param mixed $text An array, or text, to serve as json
          *
-         * @return boolean
+         * @return JsonOutput
          */
-        public function renderJSON($text = [])
+        public function renderJSON($text = []): JsonOutput
         {
-            $this->getResponse()->setContentType('application/json');
-            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
+            return new JsonOutput($text);
+        }
 
-            if (is_array($text) && array_key_exists('error', $text)) $this->getResponse()->setHttpStatus(Response::HTTP_STATUS_BAD_REQUEST);
-
-            if (is_array($text))
-                array_walk_recursive($text, function (&$item) {
-                    if (is_object($item)) {
-                        var_dump($item);
-                        exit();
-                    }
-                    $item = iconv('UTF-8', 'UTF-8//IGNORE', $item);
-                });
-            else
-                $text = iconv('UTF-8', 'UTF-8//IGNORE', $text);
-
-            echo json_encode($text);
-
-            return true;
+        /**
+         * Renders plaintext output, also takes care of setting the correct headers
+         *
+         * @param string $text An array, or text, to serve as json
+         * @param ?string $content_type A content type (default is text/plain unless specified)
+         *
+         * @return TextOutput
+         */
+        public function renderText(string $text = '', string $content_type = null): TextOutput
+        {
+            return new TextOutput($text, $content_type);
         }
 
     }

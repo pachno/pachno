@@ -13,15 +13,17 @@
     class ConfigurationException extends Exception
     {
 
-        const NO_VERSION_INFO = 1;
+        public const NO_VERSION_INFO = 1;
 
-        const UPGRADE_REQUIRED = 2;
+        public const UPGRADE_REQUIRED = 2;
 
-        const UPGRADE_FILE_MISSING = 3;
+        public const UPGRADE_FILE_MISSING = 3;
 
-        const NO_B2DB_CONFIGURATION = 4;
+        public const NO_B2DB_CONFIGURATION = 4;
 
-        const PERMISSION_DENIED = 5;
+        public const PERMISSION_DENIED = 5;
+
+        public const UPGRADE_NON_RESET_COMPOSER_JSON = 6;
 
     }
 

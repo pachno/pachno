@@ -14,7 +14,7 @@
 }
 
 .comment-container {
-  padding-top: 35px;
+  //padding-top: 35px;
 
   &.syntax_md {
     p,
@@ -28,7 +28,7 @@
     padding: 0;
     clear: both;
     display: block;
-    margin-bottom: 25px;
+    margin-bottom: 2em;
     border: none;
     position: relative;
 
@@ -43,7 +43,7 @@
         display: block;
         height: calc(100% + 26px);
         width: 1px;
-        border-left: 3px solid rgba(225, 225, 225, .5);
+        border-left: 3px solid $theme-border-color;
         position: absolute;
         top: -1px;
         left: 40px;
@@ -52,18 +52,17 @@
 
     &::before {
       content: '';
-      display: block;
-      height: 25px;
+      display: none;
+      height: 23px;
       width: 1px;
-      border-left: 3px solid rgba(225, 225, 225, .5);
+      border-left: 3px solid $theme-border-color;
       position: absolute;
-      top: -26px;
+      top: -24px;
       left: 40px;
     }
 
     &:first-child::before {
-      top: -56px;
-      height: 55px;
+      display: none;
     }
 
     &:not(.system-comment) {
@@ -97,6 +96,17 @@
       position: relative;
       overflow: visible;
       padding: 0;
+
+      .commentheader {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: .75em;
+
+        .header {
+          padding: 0;
+        }
+      }
     }
 
     &:target {
@@ -135,6 +145,10 @@
     padding: 3px 10px;
     font-size: 1.1em;
 
+    &.article {
+      max-width: none;
+    }
+
     .image_container.thumb img.image {
       width: 130px;
     }
@@ -142,7 +156,7 @@
 
   .tools {
     position: absolute;
-    top: -20px;
+    top: -3em;
     right: 10px;
 
     &.action-buttons a.action-button {
@@ -210,10 +224,6 @@
   font-weight: $theme-font-weight-regular;
 }
 
-.comment:hover > .commentheader .action-buttons.commenttools a.action-button {
-  color: rgba(100, 100, 100, .7);
-}
-
 .comment-replies .commentheader {
   border-top: 1px solid rgba(200, 200, 200, .3);
 }
@@ -260,13 +270,15 @@
   bottom: 5px;
   right: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  background-color: #FFF;
+  background-color: rgb(247, 247, 247);
   border: 0;
 }
 
 .add-comment-container,
 .todo_add_main {
-  padding: 10px;
+  padding: .5em;
+  background: #FFF;
+  border-radius: 4px 4px 0 0;
 }
 
 .comment-editor .typeahead.dropdown-menu,

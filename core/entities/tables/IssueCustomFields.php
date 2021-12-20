@@ -31,21 +31,21 @@
     class IssueCustomFields extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'issuecustomfields';
+        public const B2DBNAME = 'issuecustomfields';
 
-        const ID = 'issuecustomfields.id';
+        public const ID = 'issuecustomfields.id';
 
-        const SCOPE = 'issuecustomfields.scope';
+        public const SCOPE = 'issuecustomfields.scope';
 
-        const ISSUE_ID = 'issuecustomfields.issue_id';
+        public const ISSUE_ID = 'issuecustomfields.issue_id';
 
-        const CUSTOMFIELDOPTION_ID = 'issuecustomfields.customfieldoption_id';
+        public const CUSTOMFIELDOPTION_ID = 'issuecustomfields.customfieldoption_id';
 
-        const CUSTOMFIELDS_ID = 'issuecustomfields.customfields_id';
+        public const CUSTOMFIELDS_ID = 'issuecustomfields.customfields_id';
 
-        const OPTION_VALUE = 'issuecustomfields.option_value';
+        public const OPTION_VALUE = 'issuecustomfields.option_value';
 
         protected $_preloaded_custom_fields = null;
 
@@ -169,7 +169,7 @@
             }
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::ISSUE_ID, Issues::getTable(), Issues::ID);
@@ -178,7 +178,7 @@
             parent::addText(self::OPTION_VALUE, false);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('issueid_scope', [self::ISSUE_ID, self::SCOPE]);
         }

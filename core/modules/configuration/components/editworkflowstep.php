@@ -4,7 +4,7 @@
 
 ?>
 <div class="form-container">
-    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_workflow_step_post', ['step_id' => $step->getID(), 'workflow_id' => $step->getWorkflow()->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Workflow.Step.save(this);return false;" data-interactive-form>
+    <form id="edit-workflow-step-<?= $step->getID(); ?>-form" accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_workflow_step_post', ['step_id' => $step->getID(), 'workflow_id' => $step->getWorkflow()->getID()]); ?>" data-interactive-form>
         <div class="form-row header">
             <h4><?= __('Step settings'); ?></h4>
         </div>
@@ -16,7 +16,7 @@
                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                     <div class="dropdown-container list-mode">
                         <?php foreach (\pachno\core\entities\Status::getAll() as $status): ?>
-                            <input type="radio" name="itemdata" value="<?= $status->getId(); ?>" id="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($step->getLinkedStatusID() == $status->getId()) echo 'checked'; ?>>
+                            <input type="radio" name="status_id" value="<?= $status->getId(); ?>" id="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($step->getLinkedStatusID() == $status->getId()) echo 'checked'; ?>>
                             <label class="list-item" for="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>">
                                 <span class="name"><span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>; color: <?php echo $status->getTextColor(); ?>;"><span class="value"><?php echo $status->getName(); ?></span></span></span>
                             </label>
@@ -26,21 +26,21 @@
             </div>
         </div>
         <div class="form-row">
-            <input type="checkbox" value="1" name="editable" id="edit_step_<?= $step->getID(); ?>_editable_yes" class="fancy-checkbox" <?php if ($step->isEditable()) echo 'checked'; ?>>
+            <input type="checkbox" value="1" name="is_editable" id="edit_step_<?= $step->getID(); ?>_editable_yes" class="fancy-checkbox" <?php if ($step->isEditable()) echo 'checked'; ?>>
             <label for="edit_step_<?= $step->getID(); ?>_editable_yes">
                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                 <span class="name value"><?php echo __('Issue details can be edited when in this step'); ?></span>
             </label>
         </div>
         <div class="form-row">
-            <input type="checkbox" value="1" name="editable" id="edit_step_<?= $step->getID(); ?>_closed_yes" class="fancy-checkbox" <?php if ($step->isClosed()) echo 'checked'; ?>>
+            <input type="checkbox" value="1" name="state" id="edit_step_<?= $step->getID(); ?>_closed_yes" class="fancy-checkbox" <?php if ($step->isClosed()) echo 'checked'; ?>>
             <label for="edit_step_<?= $step->getID(); ?>_closed_yes">
                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                 <span class="name value"><?php echo __('Issues are closed when reaching this step'); ?></span>
             </label>
         </div>
         <div class="form-row submit-container">
-            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Workflow.Step.remove('<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>')}}, no: { click: Pachno.UI.Dialog.dismiss }});">
+            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.deleteComponent, { url: '<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>', type: 'workflow-step', id: <?= $step->getID(); ?> })}}, no: { click: Pachno.UI.Dialog.dismiss }});">
                 <span class="icon"><?= fa_image_tag('times'); ?></span>
                 <span class="name"><?= __('Remove step'); ?></span>
             </a>

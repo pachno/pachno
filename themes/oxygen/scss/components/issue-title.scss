@@ -1,0 +1,116 @@
+@import "../variables";
+
+@mixin issue-title() {
+  .title-container {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    line-height: 1.75em;
+    padding: 1em 0;
+    box-sizing: border-box;
+
+    .title-crumbs {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      line-height: 1.25em;
+      box-sizing: border-box;
+      padding: 0;
+
+      .crumb-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        line-height: 1.25em;
+        padding: 0 .5em .15em 0;
+
+        > a,
+        > a:hover {
+          border: none;
+          color: #141823;
+          font-size: 1em;
+          flex: 0 0 auto;
+          font-weight: $theme-font-weight-bold;
+        }
+      }
+    }
+
+    .title-name {
+      &,
+      &:hover {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 1.5em;
+        font-weight: $theme-font-weight-bold;
+        color: $theme-text-color;
+        border: none;
+        text-decoration: none;
+        box-sizing: border-box;
+      }
+
+      span {
+        flex: 0 0 auto;
+      }
+
+      input {
+        flex: 1 1 auto;
+        border-radius: 4px;
+        border: 2px solid transparent;
+
+        &:hover {
+          background-color: $theme-highlight-color;
+        }
+
+        &:focus {
+          &,
+          &:hover {
+            background-color: transparent;
+            border-color: $theme-primary-color;
+          }
+        }
+      }
+
+      .indicator {
+        flex: 0 0 auto;
+        font-size: .8em;
+        display: none;
+      }
+
+      input.saving {
+        border-color: $theme-highlight-color;
+
+        + .indicator {
+          display: inline-flex;
+        }
+      }
+    }
+  }
+
+  .status-header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    padding-right: 1em;
+
+    .indicator {
+      display: flex;
+      opacity: 0;
+      transition: opacity .25s ease-in-out;
+      flex: 0 0 auto;
+      padding: 1em;
+      align-items: center;
+      justify-content: center;
+
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
+}

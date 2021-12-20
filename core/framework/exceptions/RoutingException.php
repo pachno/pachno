@@ -13,7 +13,7 @@
     class RoutingException extends Exception
     {
 
-        const MISSING_OVERRIDE = 1;
+        public const MISSING_OVERRIDE = 1;
 
     }
 

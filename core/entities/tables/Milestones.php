@@ -24,29 +24,29 @@
     class Milestones extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'milestones';
+        public const B2DBNAME = 'milestones';
 
-        const ID = 'milestones.id';
+        public const ID = 'milestones.id';
 
-        const SCOPE = 'milestones.scope';
+        public const SCOPE = 'milestones.scope';
 
-        const NAME = 'milestones.name';
+        public const NAME = 'milestones.name';
 
-        const PROJECT = 'milestones.project';
+        public const PROJECT = 'milestones.project';
 
-        const DESCRIPTION = 'milestones.description';
+        public const DESCRIPTION = 'milestones.description';
 
-        const MILESTONE_TYPE = 'milestones.itemtype';
+        public const MILESTONE_TYPE = 'milestones.itemtype';
 
-        const REACHED = 'milestones.reacheddate';
+        public const REACHED = 'milestones.reacheddate';
 
-        const STARTING = 'milestones.startingdate';
+        public const STARTING = 'milestones.startingdate';
 
-        const SCHEDULED = 'milestones.scheduleddate';
+        public const SCHEDULED = 'milestones.scheduleddate';
 
-        const PERCENTAGE_TYPE = 'milestones.percentage_type';
+        public const PERCENTAGE_TYPE = 'milestones.percentage_type';
 
         public function getByProjectID($project_id)
         {
@@ -93,7 +93,7 @@
         /**
          * @return Milestone[]
          */
-        public function selectAll()
+        public function selectAll(): array
         {
             $query = $this->getQuery();
 
@@ -105,7 +105,7 @@
             return $this->select($query);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             $update = new Update();
             $update->add('milestones.visible_issues', true);

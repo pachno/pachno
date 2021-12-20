@@ -26,9 +26,17 @@
             $this->whatlinkshere = ($this->article instanceof Article) ? $this->article->getLinkingArticles() : [];
         }
 
-        public function componentTools()
+        public function componentMainMenustrip()
         {
+            $this->publish = framework\Context::getModule('publish');
+            $this->projects = $this->getUser()->getAssociatedProjects();
+            $articles = [];
 
+            foreach ($this->projects as $project) {
+                $articles[$project->getID()] = Articles::getTable()->getOrCreateMainPage($project);
+            }
+            $this->articles = $articles;
+            $this->main_article = Articles::getTable()->getOrCreateMainPage();
         }
 
         public function componentArticledisplay()
@@ -74,26 +82,38 @@
             $this->links = framework\Context::getModule('publish')->getMenuItems($this->links_target_id);
         }
 
-        public function componentManualSidebarLink()
+        public function componentEditCategorySidebarLink()
+        {
+            $this->is_parent = array_key_exists($this->category->getID(), $this->parents);
+            $this->children = $this->category->getChildren();
+        }
+
+        public function componentSidebarLink()
         {
             $this->is_parent = array_key_exists($this->main_article->getID(), $this->parents);
-            $this->is_selected = $this->main_article->getID() == $this->article->getID();
+            $this->is_selected = $this->article instanceof Article && $this->main_article->getID() == $this->article->getID();
             $this->children = ($this->is_parent || $this->is_selected) ? $this->main_article->getChildren() : [];
             $this->has_children = $this->main_article->hasChildren();
         }
 
-        public function componentManualSidebar()
+        public function componentSidebar()
         {
-            $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $this->article->getProject());
-            $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $this->article->getProject());
+            $top_level_articles = Articles::getTable()->getSidebarArticles(false, framework\Context::getCurrentProject());
+            $top_level_categories = Articles::getTable()->getSidebarArticles(true, framework\Context::getCurrentProject());
             usort($top_level_articles, '\pachno\core\entities\Article::sortArticleChildren');
             usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
-            $this->parents = $this->article->getParentsArray();
+            $this->parents = (isset($this->article)) ? $this->article->getParentsArray() : [];
 
-            $this->overview_article = Articles::getTable()->getArticleByName('Main Page', framework\Context::getCurrentProject());
+            $this->article = $this->article ?? null;
+            $this->overview_article = Articles::getTable()->getOrCreateMainPage(framework\Context::getCurrentProject());
             $this->main_article = $this->article;
             $this->top_level_articles = $top_level_articles;
             $this->top_level_categories = $top_level_categories;
+        }
+
+        public function componentHeaderActions()
+        {
+            $this->article = framework\Context::getModule('publish')->getCurrentArticle();
         }
 
         public function componentSpecialSpecialPages()

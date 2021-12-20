@@ -11,6 +11,7 @@
   .row {
     display: flex;
     flex: 0 0 auto;
+    align-items: stretch;
 
     &.hidden {
       display: none;
@@ -20,12 +21,12 @@
       margin-top: 1em;
     }
 
-    &:not(.disabled):hover {
+    &:not(.disabled):not(.blocking):not(.locked):hover {
       .column {
         &:not(.invisible):not(.header):not(.disabled) {
           background-color: #F1F1F1;
 
-          .button.secondary {
+          .button.secondary:not(.danger) {
             background-color: rgba(255, 255, 255, .65);
           }
 
@@ -57,12 +58,42 @@
 
     &.blocking {
       .column:not(.invisible) {
-        background-color: #FCC;
+        background-color: $theme-color-error;
+        color: #FFF;
+      }
+
+      a:not(.button):not(.list-item),
+      .fancy-checkbox + label {
+        color: #FFF;
       }
 
       &:hover {
         .column:not(.invisible) {
-          background-color: #E0aC9C;
+          background-color: $theme-color-error-hover;
+          color: #FFF;
+
+          a:not(.button):not(.list-item),
+          .fancy-checkbox + label {
+            color: #FFF;
+          }
+        }
+      }
+    }
+
+    &.locked {
+      .column:not(.invisible) {
+        background-color: $theme-color-warning;
+        color: $theme-text-color;
+      }
+
+      a:not(.button):not(.list-item),
+      .fancy-checkbox + label {
+        color: $theme-text-color;
+      }
+
+      &:hover {
+        .column:not(.invisible) {
+          background-color: $theme-color-warning-hover;
         }
       }
     }
@@ -76,25 +107,15 @@
     flex: 0 0 170px;
     display: flex;
     align-items: center;
+    align-content: center;
     padding: .35rem;
     box-sizing: border-box;
     border-bottom: 1px dashed rgba(12, 137, 144, .4);
+    max-width: none;
+    min-width: 0;
 
     &.hidden {
       display: none;
-    }
-
-    a,
-    a:hover {
-      display: flex;
-      align-items: center;
-      border: none;
-      font-weight: $theme-font-weight-light;
-      padding: .2em;
-    }
-
-    .count-badge {
-      font-size: 1em;
     }
 
     &.header {
@@ -103,8 +124,20 @@
       font-weight: $theme-font-weight-bold;
       text-transform: uppercase;
       border: none;
-      border-bottom: 2px solid #0C8990;
-      color: #0C8990;
+      border-bottom: 2px solid $theme-text-color;
+      color: $theme-text-color;
+      box-sizing: border-box;
+
+      .sort-indicator-asc,
+      .sort-indicator-desc {
+        display: none;
+      }
+
+      &.sort_asc .sort-indicator-asc,
+      &.sort_desc .sort-indicator-desc {
+        display: inline-flex;
+        margin-left: .25em;
+      }
 
       &.invisible {
         border-bottom-color: transparent;
@@ -127,8 +160,34 @@
 
     &.list {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
+      align-content: stretch;
       justify-content: center;
+
+      &,
+      &.name-container {
+        overflow: visible;
+        text-overflow: unset;
+      }
+
+      .line {
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+
+        &:not(.hidden) {
+          ~ .line {
+            padding-top: .75em;
+          }
+        }
+
+        &.hidden {
+          display: none;
+        }
+      }
     }
 
     &.grid {
@@ -177,10 +236,6 @@
       }
     }
 
-    .button.secondary {
-      color: #141823;
-    }
-
     &.sca_action_selector,
     &.sca_actions {
       flex: 0 0 50px;
@@ -195,7 +250,8 @@
     &.actions {
       flex: 0 0 100px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
+      padding-right: .5em;
 
       &.hidden {
         display: none;
@@ -227,13 +283,14 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
+      overflow: visible;
 
       &.hidden {
         display: none;
       }
 
       .title {
-        font-weight: $theme-font-weight-regular;
+        font-weight: $theme-font-weight-bold;
         flex: 0 0 auto;
       }
 
@@ -259,12 +316,79 @@
       font-size: 0.8em;
     }
 
+    &label {
+      text-transform: none;
+      color: $theme-text-color;
+    }
+
     .fas,
     .far {
       margin-right: .35rem;
 
       &:last-child {
         margin-right: 0;
+      }
+    }
+
+    a,
+    a:hover {
+      &:not(.button):not(.list-item) {
+        display: flex;
+        align-items: center;
+        border: none;
+        font-weight: $theme-font-weight-light;
+        padding: .2em;
+      }
+    }
+
+    .count-badge {
+      font-size: 1em;
+    }
+
+    .button.secondary {
+      color: #141823;
+    }
+
+    input {
+      &[type=text],
+      &[type=search],
+      &[type=password] {
+        flex: 1 1 100%;
+        padding: .35em;
+        font-size: 1.05em;
+
+        &.number {
+          flex: 0 0 4em;
+          max-width: 4em;
+        }
+      }
+
+      ~ input {
+        &[type=text],
+        &[type=search],
+        &[type=password] {
+          margin-left: .35em;
+        }
+      }
+
+      ~ button,
+      ~ .button {
+        margin-left: .35em;
+      }
+
+      ~ .fancy-dropdown-container {
+        margin-left: .35em;
+      }
+    }
+
+    button,
+    .button {
+      ~ input {
+        &[type=text],
+        &[type=search],
+        &[type=password] {
+          margin-left: .35em;
+        }
       }
     }
   }

@@ -65,13 +65,19 @@
             return $options;
         }
 
-        public static function getLanguages()
+        /**
+         * @return array<string, array<string, string|boolean>>
+         */
+        public static function getLanguages(): array
         {
             $retarr = [];
             $cp_handle = opendir(PACHNO_PATH . 'i18n');
             while ($classfile = readdir($cp_handle)) {
                 if (mb_strstr($classfile, '.') == '' && file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/language')) {
-                    $retarr[$classfile] = file_get_contents(PACHNO_PATH . 'i18n/' . $classfile . '/language');
+                    $retarr[$classfile] = [
+                        'language' => file_get_contents(PACHNO_PATH . 'i18n/' . $classfile . '/language'),
+                        'available' => file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/strings.xlf') && file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/strings.json')
+                    ];
                 }
             }
 
@@ -256,6 +262,13 @@
             }
         }
 
+        static function day_delta($tstamp, $tzoffset)
+        {
+            $mdy = explode(':', date('m:d:Y', time() + $tzoffset));
+            $midnight = mktime(0, 0, 0, $mdy[0], $mdy[1], $mdy[2]);
+            return floor(($tstamp - $midnight) / 24 / 60 / 60);
+        }
+
         /**
          * Returns a formatted string of the given timestamp
          *
@@ -311,27 +324,27 @@
                     break;
                 case 12:
                     $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
+                    $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        $tstring .= __('Today') . ', ';
+                        $tstring .= $this->__('Today');
                     } elseif ($days == -1) {
-                        $tstring .= __('Yesterday') . ', ';
+                        $tstring .= $this->__('Yesterday');
                     } elseif ($days == 1) {
-                        $tstring .= __('Tomorrow') . ', ';
+                        $tstring .= $this->__('Tomorrow');
                     } else {
-                        $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
+                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
                     }
-                    $tstring .= strftime($this->getDateTimeFormat(14), $tstamp);
+                    $tstring .= ' ' . strftime($this->getDateTimeFormat(14), $tstamp);
                     break;
                 case 13:
                     $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
+                    $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        //$tstring .= __('Today') . ', ';
+                        //$tstring .= $this->__('Today') . ', ';
                     } elseif ($days == -1) {
-                        $tstring .= __('Yesterday') . ', ';
+                        $tstring .= $this->__('Yesterday') . ', ';
                     } elseif ($days == 1) {
-                        $tstring .= __('Tomorrow') . ', ';
+                        $tstring .= $this->__('Tomorrow') . ', ';
                     } else {
                         $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
                     }
@@ -339,15 +352,15 @@
                     break;
                 case 14:
                     $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
+                    $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        $tstring .= __('Today');
+                        $tstring .= $this->__('Today');
                     } elseif ($days == -1) {
-                        $tstring .= __('Yesterday');
+                        $tstring .= $this->__('Yesterday');
                     } elseif ($days == 1) {
-                        $tstring .= __('Tomorrow');
+                        $tstring .= $this->__('Tomorrow');
                     } else {
-                        $tstring .= strftime($this->getDateTimeFormat(12), $tstamp);
+                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
                     }
                     break;
                 case 15:
@@ -367,13 +380,13 @@
                     break;
                 case 20:
                     $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
+                    $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        $tstring .= __('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                        $tstring .= $this->__('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
                     } elseif ($days == -1) {
-                        $tstring .= __('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                        $tstring .= $this->__('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
                     } elseif ($days == 1) {
-                        $tstring .= __('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                        $tstring .= $this->__('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
                     } else {
                         $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
                     }
@@ -388,13 +401,13 @@
                     break;
                 case 23:
                     $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
+                    $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        $tstring .= __('Today');
+                        $tstring .= $this->__('Today');
                     } elseif ($days == -1) {
-                        $tstring .= __('Yesterday');
+                        $tstring .= $this->__('Yesterday');
                     } elseif ($days == 1) {
-                        $tstring .= __('Tomorrow');
+                        $tstring .= $this->__('Tomorrow');
                     } else {
                         $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
                     }
@@ -404,13 +417,13 @@
                     break;
                 case 25:
                     $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
+                    $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        $tstring .= __('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                        $tstring .= $this->__('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
                     } elseif ($days == -1) {
-                        $tstring .= __('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                        $tstring .= $this->__('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
                     } elseif ($days == 1) {
-                        $tstring .= __('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                        $tstring .= $this->__('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
                     } else {
                         $tstring .= strftime($this->getDateTimeFormat(10), $tstamp);
                     }

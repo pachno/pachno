@@ -20,7 +20,7 @@
             <div class="helper-text centered">
                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_issue_type_schemes_icon.png', [], true); ?></div>
                 <span class="description">
-                    <?php echo __('Issue fields and available issue types for a project is determined by its issue type scheme. Read more about how issue type schemes works and are configured in the %online_documentation', array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/IssuetypeScheme', __('online documentation')))); ?>
+                    <?php echo __('Issue fields and available issue types for a project is determined by its issue type scheme. Read more about how issue type schemes works and are configured in the %online_documentation', array('%online_documentation' => link_tag('https://projects.pach.no/pachno/docs/IssuetypeScheme', __('online documentation')))); ?>
                 </span>
             </div>
             <h3>

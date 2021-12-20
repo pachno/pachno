@@ -8,12 +8,14 @@
     use pachno\core\entities\BoardColumn;
     use pachno\core\entities\Issue;
     use pachno\core\entities\Milestone;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\SavedSearch;
     use pachno\core\entities\SearchFilter;
     use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\Builds;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\Milestones;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\WorkflowTransitions;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -43,7 +45,7 @@
                 }
                 $return_options = ['finished' => 'ok'];
                 $board = AgileBoards::getTable()->selectById($request['board_id']);
-                $milestone = Milestone::getB2DBTable()->selectById($request['milestone_id']);
+                $milestone = Milestones::getTable()->selectById($request['milestone_id']);
                 $reached_date = mktime(23, 59, 59, Context::getRequest()->getParameter('milestone_finish_reached_month'), Context::getRequest()->getParameter('milestone_finish_reached_day'), Context::getRequest()->getParameter('milestone_finish_reached_year'));
                 $milestone->setReachedDate($reached_date);
                 $milestone->setReached();
@@ -55,7 +57,7 @@
                             Issues::getTable()->reAssignIssuesByMilestoneIds($milestone->getID(), null, 0);
                             break;
                         case 'reassign':
-                            $new_milestone = Milestone::getB2DBTable()->selectById($request['assign_issues_milestone_id']);
+                            $new_milestone = Milestones::getTable()->selectById($request['assign_issues_milestone_id']);
                             if ($request['assign_issues_milestone_id'] === '' || !$new_milestone instanceof Milestone || $new_milestone->isClosed()) {
                                 switch ($board->getType()) {
                                     case AgileBoard::TYPE_GENERIC:
@@ -158,7 +160,7 @@
          */
         public function runBoard(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_only_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = ($request['board_id']) ? AgileBoards::getTable()->selectById($request['board_id']) : new AgileBoard();
 
             if (!$this->board instanceof AgileBoard) {
@@ -169,7 +171,7 @@
                 $board_id = $this->board->getID();
                 $this->board->delete();
 
-                return $this->renderJSON(['message' => $this->getI18n()->__('The board has been deleted'), 'board_id' => $board_id]);
+                return $this->renderJSON(['message' => $this->getI18n()->__('The board has been deleted'), 'board' => ['id' => $board_id]]);
             } elseif ($request->isPost()) {
                 if ($request->hasParameter('name')) {
                     $this->board->setName($request['name']);
@@ -289,7 +291,7 @@
          */
         public function runWhiteboardIssues(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = AgileBoards::getTable()->selectById($request['board_id']);
 
             $this->forward403unless($this->board instanceof AgileBoard);
@@ -335,7 +337,7 @@
          */
         public function runWhiteboard(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = AgileBoards::getTable()->selectById($request['board_id']);
 
             $this->forward403unless($this->board instanceof AgileBoard);
@@ -396,7 +398,7 @@
          */
         public function runGetReleases(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $board = AgileBoards::getTable()->selectById($request['board_id']);
 
             return $this->renderComponent('agile/releasestrip', compact('board'));
@@ -411,7 +413,7 @@
          */
         public function runGetEpics(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $board = AgileBoards::getTable()->selectById($request['board_id']);
 
             return $this->renderComponent('agile/epicstrip', compact('board'));
@@ -426,7 +428,7 @@
          */
         public function runAddEpic(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $board = AgileBoards::getTable()->selectById($request['board_id']);
 
             try {
@@ -497,7 +499,7 @@
         public function runAssignMilestone(Request $request)
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
-            $this->forward403unless($this->_checkProjectPageAccess('project_scrum') && Context::getUser()->canAssignScrumUserStories($this->selected_project));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
 
             try {
                 $issue = Issue::getB2DBTable()->selectById((int)$request['issue_id']);
@@ -562,7 +564,7 @@
 
                 $epic->addChildIssue($issue, true);
 
-                return $this->renderJSON(['issue_id' => $issue->getID(), 'epic_id' => $epic->getID(), 'closed_pct' => $epic->getEstimatedPercentCompleted(), 'num_child_issues' => $epic->countChildIssues(), 'estimate' => Issue::getFormattedTime($epic->getEstimatedTime(true, true))]);
+                return $this->renderJSON(['issue_id' => $issue->getID(), 'epic_id' => $epic->getID(), 'closed_pct' => $epic->getEstimatedPercentCompleted(), 'num_child_issues' => $epic->countChildIssues(), 'estimate' => Issue::getFormattedTime($epic->getEstimatedTime())]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -623,7 +625,7 @@
          */
         public function runPoll(Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $last_refreshed = $request['last_refreshed'];
             $board = AgileBoards::getTable()->selectById($request['board_id']);
             $search_object = $board->getBacklogSearchObject();

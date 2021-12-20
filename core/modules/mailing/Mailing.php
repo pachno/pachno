@@ -7,6 +7,7 @@
     use pachno\core\entities\Article;
     use pachno\core\entities\Category;
     use pachno\core\entities\Comment;
+    use pachno\core\entities\Commit;
     use pachno\core\entities\File;
     use pachno\core\entities\IncomingEmailAccount;
     use pachno\core\entities\Issue;
@@ -24,7 +25,6 @@
     use Swift_Mailer;
     use Swift_MailTransport;
     use Swift_Message;
-    use Swift_Mime_Message;
     use Swift_SendmailTransport;
     use Swift_SmtpTransport;
 
@@ -34,65 +34,70 @@
     class Mailing extends CoreModule
     {
 
-        const VERSION = '2.0.1';
+        public const VERSION = '2.0.1';
 
-        const MAIL_TYPE_PHP = 1;
+        public const MAIL_TYPE_PHP = 1;
 
-        const MAIL_TYPE_SMTP = 2;
+        public const MAIL_TYPE_SMTP = 2;
 
-        const MAIL_TYPE_SENDMAIL = 3;
+        public const MAIL_TYPE_SENDMAIL = 3;
 
         /**
          * Notify the user when a new issue is posted in his/her project(s)
          */
-        const NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
+        public const NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
 
-        const NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
+        public const NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
 
         /**
          * Notify the user when a new article is created in his/her project(s)
          */
-        const NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
+        public const NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
 
         /**
          * Only notify me once per issue
          */
-        const NOTIFY_ITEM_ONCE = 'notify_issue_once';
+        public const NOTIFY_ITEM_ONCE = 'notify_issue_once';
 
         /**
          * Notify the user when an issue he/she subscribes to is updated or commented
          */
-        const NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
+        public const NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
 
         /**
          * Notify the user when an article he/she subscribes to is updated or commented
          */
-        const NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
+        public const NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
+
+        /**
+         * Notify the user when a discussion he/she subscribes to is updated or commented
+         */
+        public const NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussions';
 
         /**
          * Notify the user when he updates an issue
          */
-        const NOTIFY_UPDATED_SELF = 'notify_updated_self';
+        public const NOTIFY_UPDATED_SELF = 'notify_updated_self';
 
         /**
          * Notify the user when he is mentioned
          */
-        const NOTIFY_MENTIONED = 'notify_mentioned';
+        public const NOTIFY_MENTIONED = 'notify_mentioned';
 
         /**
          * Don't send email notification if user is active
          */
-        const NOTIFY_NOT_WHEN_ACTIVE = 'notify_not_when_active';
+        public const NOTIFY_NOT_WHEN_ACTIVE = 'notify_not_when_active';
 
-        const MAIL_ENCODING_BASE64 = 3;
+        public const MAIL_ENCODING_BASE64 = 3;
 
-        const MAIL_ENCODING_QUOTED = 4;
+        public const MAIL_ENCODING_QUOTED = 4;
 
-        const MAIL_ENCODING_UTF7 = 0;
+        public const MAIL_ENCODING_UTF7 = 0;
 
-        const SETTING_PROJECT_FROM_ADDRESS = 'project_from_address_';
+        public const SETTING_PROJECT_FROM_ADDRESS = 'project_from_address_';
 
-        const SETTING_PROJECT_FROM_NAME = 'project_from_name_';
+        public const SETTING_PROJECT_FROM_NAME = 'project_from_name_';
 
         protected $_name = 'mailing';
 
@@ -134,7 +139,7 @@
         {
             framework\Context::loadLibrary('common');
             $settings = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pwd', 'smtp_encryption', 'timeout', 'mail_type', 'enable_outgoing_notifications', 'cli_mailing_url',
-                'headcharset', 'from_name', 'from_addr', 'use_queue', 'activation_needed', 'sendmail_command'];
+                'from_name', 'from_addr', 'use_queue', 'activation_needed', 'sendmail_command'];
             foreach ($settings as $setting) {
                 if ($request->getParameter($setting) !== null || $setting == 'no_dash_f' || $setting == 'activation_needed') {
                     $value = $request->getParameter($setting);
@@ -159,19 +164,13 @@
                                 throw new Exception(framework\Context::getI18n()->__('Please provide a valid setting for SMTP server port'));
                             }
                             break;
-                        case 'headcharset':
-                            // list of supported character sets based on PHP doc : http://www.php.net/manual/en/function.htmlentities.php
-                            if (!pachno_check_syntax($value, "CHARSET")) {
-                                throw new Exception(framework\Context::getI18n()->__('Please provide a valid setting for email header charset'));
-                            }
-                            break;
                         case 'activation_needed':
                             $value = (int)$request->getParameter($setting, 0);
                             break;
                         case 'cli_mailing_url':
-                            $value = $request->getParameter($setting);
-                            if (substr($value, -1) == '/') {
-                                $value = substr($value, 0, strlen($value) - 1);
+                            $value = rtrim(trim($request->getParameter($setting)), '/');
+                            if (framework\Context::getScope()->isDefault() && !$value) {
+                                throw new Exception(framework\Context::getI18n()->__('Please provide a valid setting for the issue tracker url'));
                             }
                             break;
                     }
@@ -218,6 +217,61 @@
             return $url;
         }
 
+        /**
+         * @Listener(module='core', identifier='projectActions::addAssignee')
+         * @param Event $event
+         */
+        public function listen_addAssignee(Event $event)
+        {
+            if (!$this->isOutgoingNotificationsEnabled()) {
+                return;
+            }
+
+            $project = $event->getSubject();
+            $user = $event->getParameter('assignee');
+
+            if ($user->getEmail()) {
+                //                The following line is included for the i18n parser to pick up the translatable string:
+                //                __('You have been invited to collaborate');
+                $subject = 'You have been invited to collaborate';
+                $link_to_activate = $this->generateURL('activate', ['user' => str_replace('.', '%2E', $user->getUsername()), 'key' => $user->getActivationKey()]);
+                $parameters = compact('user', 'project', 'link_to_activate');
+                $messages = $this->getTranslatedMessages('project_useradded', $parameters, [$user], $subject);
+
+                foreach ($messages as $message) {
+                    $this->sendMail($message);
+                }
+            }
+            $event->setProcessed();
+        }
+
+        /**
+         * @Listener(module='core', identifier='userdata::inviteUser')
+         * @param Event $event
+         */
+        public function listen_inviteUser(Event $event)
+        {
+            if (!$this->isOutgoingNotificationsEnabled()) {
+                return;
+            }
+
+            $user = $event->getSubject();
+
+            if ($user->getEmail()) {
+                //                The following line is included for the i18n parser to pick up the translatable string:
+                //                __('You have been invited to collaborate');
+                $subject = 'You have been invited to collaborate';
+                $link_to_activate = $this->generateURL('activate', ['user' => str_replace('.', '%2E', $user->getUsername()), 'key' => $user->getActivationKey()]);
+                $parameters = compact('user', 'link_to_activate');
+                $messages = $this->getTranslatedMessages('user_invited', $parameters, [$user], $subject);
+
+                foreach ($messages as $message) {
+                    $this->sendMail($message);
+                }
+            }
+            $event->setProcessed();
+        }
+
         public function listen_registerUser(Event $event)
         {
             if (!$this->isOutgoingNotificationsEnabled()) {
@@ -261,6 +315,11 @@
         {
             $url = framework\Context::getRouting()->generate($route, $parameters);
 
+            return $this->getMailingUrl() . $url;
+        }
+
+        public function getPrefixedUrl($url)
+        {
             return $this->getMailingUrl() . $url;
         }
 
@@ -320,7 +379,7 @@
                 $parameters['module'] = $this;
             $message_plain = framework\Action::returnComponentHTML("mailing/{$template}.text", $parameters);
             $html = framework\Action::returnComponentHTML("mailing/{$template}.html", $parameters);
-            $styles = file_get_contents(PACHNO_MODULES_PATH . 'mailing' . DS . 'fixtures' . DS . framework\Settings::getThemeName() . '.css');
+            $styles = file_get_contents(PACHNO_CORE_PATH . 'modules' . DS . 'mailing' . DS . 'fixtures' . DS . 'oxygen.css');
             $message_html = <<<EOT
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <html>
@@ -348,8 +407,7 @@ EOT;
          */
         public function getSwiftMessage($subject, $message_plain, $message_html)
         {
-            require_once PACHNO_VENDOR_PATH . 'swiftmailer' . DS . 'swiftmailer' . DS . 'lib' . DS . 'swift_required.php';
-            $message = Swift_Message::newInstance();
+            $message = new Swift_Message();
             $message->setSubject($subject);
             $message->setFrom([$this->getEmailFromAddress() => $this->getEmailFromName()]);
             $message->setBody($message_plain);
@@ -379,10 +437,10 @@ EOT;
 
                 return true;
             } else {
-                $retval = $this->mail($email);
+                $result = $this->mail($email);
             }
 
-            return $retval;
+            return $result;
         }
 
         public function usesEmailQueue()
@@ -405,14 +463,9 @@ EOT;
         public function getMailer()
         {
             if ($this->mailer === null) {
-                require_once PACHNO_VENDOR_PATH . DS . 'swiftmailer' . DS . 'swiftmailer' . DS . 'lib' . DS . 'swift_required.php';
                 switch ($this->getMailerType()) {
-                    case self::MAIL_TYPE_SENDMAIL:
-                        $command = $this->getSendmailCommand();
-                        $transport = ($command) ? Swift_SendmailTransport::newInstance($command) : Swift_SendmailTransport::newInstance();
-                        break;
                     case self::MAIL_TYPE_SMTP:
-                        $transport = Swift_SmtpTransport::newInstance($this->getSmtpHost(), $this->getSmtpPort());
+                        $transport = new Swift_SmtpTransport($this->getSmtpHost(), $this->getSmtpPort());
                         if ($this->getSmtpUsername()) {
                             $transport->setUsername($this->getSmtpUsername());
                             $transport->setPassword($this->getSmtpPassword());
@@ -420,12 +473,13 @@ EOT;
                         if ($this->getSmtpTimeout()) $transport->setTimeout($this->getSmtpTimeout());
                         if (in_array($this->getSmtpEncryption(), ['ssl', 'tls'])) $transport->setEncryption($this->getSmtpEncryption());
                         break;
+                    case self::MAIL_TYPE_SENDMAIL:
                     case self::MAIL_TYPE_PHP:
                     default:
-                        $transport = Swift_MailTransport::newInstance();
-                        break;
+                        $command = $this->getSendmailCommand();
+                        $transport = new Swift_SendmailTransport($command);
                 }
-                $mailer = Swift_Mailer::newInstance($transport);
+                $mailer = new Swift_Mailer($transport);
                 $this->mailer = $mailer;
             }
 
@@ -441,7 +495,9 @@ EOT;
 
         public function getSendmailCommand()
         {
-            return $this->getSetting('sendmail_command');
+            $setting = $this->getSetting('sendmail_command');
+
+            return $setting ?? '/usr/sbin/sendmail -bs';
         }
 
         public function getSmtpHost()
@@ -570,7 +626,7 @@ EOT;
             }
         }
 
-        protected function _addProjectEmailAddress(Swift_Mime_Message $message, Project $project = null)
+        protected function _addProjectEmailAddress(Swift_Message $message, Project $project = null)
         {
             if ($project instanceof Project) {
                 $address = $this->getSetting(self::SETTING_PROJECT_FROM_ADDRESS . $project->getID());
@@ -638,6 +694,36 @@ EOT;
             return $users;
         }
 
+        protected function _getCommitRelatedUsers(Commit $commit, User $triggered_by_user = null)
+        {
+            $u_id = ($triggered_by_user instanceof User) ? $triggered_by_user->getID() : $triggered_by_user;
+            $subscribers = $commit->getSubscribers();
+            $users = [];
+            foreach ($subscribers as $user) {
+                if ($user->getNotificationSetting(self::NOTIFY_SUBSCRIBED_DISCUSSIONS, true, 'mailing')->isOff())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_UPDATED_SELF, true, 'mailing')->isOff() && $user->getID() == $u_id)
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn() && $user->getNotificationSetting(self::NOTIFY_ITEM_ONCE . '_commit_' . $commit->getID(), false, 'mailing')->isOn())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_NOT_WHEN_ACTIVE, false, 'mailing')->isOn() && $user->isActive())
+                    unset($users[$user->getID()]);
+            }
+            $mentioned_users = $commit->getMentionedUsers();
+            foreach ($mentioned_users as $user) {
+                $users[$user->getID()] = $user;
+
+                if ($user->getNotificationSetting(self::NOTIFY_MENTIONED, true, 'mailing')->isOff())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn() && $user->getNotificationSetting(self::NOTIFY_ITEM_ONCE . '_commit_' . $commit->getID(), false, 'mailing')->isOn())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_NOT_WHEN_ACTIVE, false, 'mailing')->isOn() && $user->isActive())
+                    unset($users[$user->getID()]);
+            }
+
+            return $users;
+        }
+
         /**
          * Adds "notify once" settings for necessary articles
          *
@@ -649,6 +735,21 @@ EOT;
             foreach ($users as $user) {
                 if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn()) {
                     $user->setNotificationSetting(self::NOTIFY_ITEM_ONCE . '_article_' . $article->getID(), true, 'mailing');
+                }
+            }
+        }
+
+        /**
+         * Adds "notify once" settings for necessary commits
+         *
+         * @param Commit $commit
+         * @param array|User $users
+         */
+        protected function _markCommitSent(Commit $commit, $users)
+        {
+            foreach ($users as $user) {
+                if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn()) {
+                    $user->setNotificationSetting(self::NOTIFY_ITEM_ONCE . '_commit_' . $commit->getID(), true, 'mailing');
                 }
             }
         }
@@ -679,6 +780,15 @@ EOT;
                         $to_users = $this->_getArticleRelatedUsers($article, $comment->getPostedBy());
                         $this->_markArticleSent($article, $to_users);
                         $messages = (empty($to_users)) ? [] : $this->getTranslatedMessages('articlecomment', $parameters, $to_users, $subject, ['%article_name' => html_entity_decode($article->getTitle(), ENT_COMPAT, framework\Context::getI18n()->getCharset())]);
+                        break;
+                    case Comment::TYPE_COMMIT:
+                        $commit = $event->getParameter('commit');
+                        $project = $commit->getProject();
+                        $subject = 'Comment posted on commit %commit_hash';
+                        $parameters = compact('commit', 'comment');
+                        $to_users = $this->_getCommitRelatedUsers($commit, $comment->getPostedBy());
+                        $this->_markCommitSent($commit, $to_users);
+                        $messages = (empty($to_users)) ? [] : $this->getTranslatedMessages('commitcomment', $parameters, $to_users, $subject, ['%commit_hash' => html_entity_decode($commit->getShortRevision(), ENT_COMPAT, framework\Context::getI18n()->getCharset())]);
                         break;
                 }
 
@@ -821,17 +931,17 @@ EOT;
 
         public function listen_projectconfig_tab_settings(Event $event)
         {
-            framework\ActionComponent::includeComponent('mailing/projectconfig_tab_settings', ['selected_tab' => $event->getParameter('selected_tab')]);
+            //framework\ActionComponent::includeComponent('mailing/projectconfig_tab_settings', ['selected_tab' => $event->getParameter('selected_tab')]);
         }
 
         public function listen_projectconfig_tab_other(Event $event)
         {
-            framework\ActionComponent::includeComponent('mailing/projectconfig_tab_other', ['selected_tab' => $event->getParameter('selected_tab')]);
+            //framework\ActionComponent::includeComponent('mailing/projectconfig_tab_other', ['selected_tab' => $event->getParameter('selected_tab')]);
         }
 
         public function listen_projectconfig_panel(Event $event)
         {
-            framework\ActionComponent::includeComponent('mailing/projectconfig_panels', ['selected_tab' => $event->getParameter('selected_tab'), 'access_level' => $event->getParameter('access_level'), 'project' => $event->getParameter('project')]);
+            //framework\ActionComponent::includeComponent('mailing/projectconfig_panels', ['selected_tab' => $event->getParameter('selected_tab'), 'access_level' => $event->getParameter('access_level'), 'project' => $event->getParameter('project')]);
         }
 
         public function listen_accountNotificationSettings(Event $event)
@@ -1088,7 +1198,7 @@ EOT;
                                 foreach ($issues as $issue) {
                                     $text = preg_replace('#(^\w.+:\n)?(^>.*(\n|$))+#mi', "", $data);
                                     $text = trim($text);
-                                    if (!$this->processIncomingEmailCommand($text, $issue) && $user->canPostComments()) {
+                                    if (!$this->processIncomingEmailCommand($text, $issue) && $user->canPostComments(Comment::TYPE_ISSUE, $issue->getProject())) {
                                         $comment = new Comment();
                                         $comment->setSyntax(FrameworkSettings::SYNTAX_MD);
                                         $comment->setContent($text);
@@ -1294,7 +1404,6 @@ EOT;
             $this->saveSetting('smtp_port', 25, 0, $scope);
             $this->saveSetting('smtp_user', '', 0, $scope);
             $this->saveSetting('smtp_pwd', '', 0, $scope);
-            $this->saveSetting('headcharset', framework\Context::getI18n()->getLangCharset(), 0, $scope);
             $this->saveSetting('from_name', 'Pachno Automailer', 0, $scope);
             $this->saveSetting('from_addr', '', 0, $scope);
             $this->saveSetting('ehlo', 1, 0, $scope);

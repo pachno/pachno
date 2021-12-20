@@ -26,25 +26,25 @@
     class Articles extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'articles';
+        public const B2DBNAME = 'articles';
 
-        const ID = 'articles.id';
+        public const ID = 'articles.id';
 
-        const NAME = 'articles.name';
+        public const NAME = 'articles.name';
 
-        const CONTENT = 'articles.content';
+        public const CONTENT = 'articles.content';
 
-        const IS_PUBLISHED = 'articles.is_published';
+        public const IS_PUBLISHED = 'articles.is_published';
 
-        const DATE = 'articles.date';
+        public const DATE = 'articles.date';
 
-        const AUTHOR = 'articles.author';
+        public const AUTHOR = 'articles.author';
 
-        const SCOPE = 'articles.scope';
+        public const SCOPE = 'articles.scope';
 
-        public function _setupIndexes()
+        public function _setupIndexes(): void
         {
             $this->_addIndex('name_scope', [self::NAME, self::SCOPE]);
         }
@@ -65,7 +65,7 @@
          *
          * @return Article[]
          */
-        public function getManualSidebarArticles($is_category, Project $project = null): array
+        public function getSidebarArticles($is_category, Project $project = null): array
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
@@ -90,12 +90,13 @@
         }
 
         /**
-         * @param Project|null $project
          * @param null $filter
+         * @param Project|null $project
+         * @param Article|null $current_article
          *
          * @return Article[]
          */
-        public function findArticles(Article $current_article, $filter, Project $project = null): array
+        public function findArticles($filter, Project $project = null, Article $current_article = null, $limit = null): array
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
@@ -112,11 +113,16 @@
             $crit->or('articles.name', '%' . strtolower($filter), Criterion::LIKE);
             $crit->or('articles.name', strtolower($filter) . '%', Criterion::LIKE);
             $query->where($crit);
-            $query->where('articles.name', 'Main Page', Criterion::NOT_EQUALS);
-            $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
-            $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
+
+            if ($current_article instanceof Article) {
+                $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
+            }
 
             $query->addOrderBy(self::NAME, 'asc');
+
+            if ($limit !== null) {
+                $query->setLimit($limit);
+            }
 
             return $this->select($query);
         }
@@ -248,6 +254,24 @@
 
         /**
          * @param $parent_id
+         * @param int $new_parent_id
+         * @return Article[]
+         * @throws Exception
+         */
+        public function updateParentArticleId($parent_id, $new_parent_id = 0)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where('articles.parent_article_id', $parent_id);
+
+            $update = new Update();
+            $update->update('articles.parent_article_id', $new_parent_id);
+
+            $this->rawUpdate($update, $query);
+        }
+
+        /**
+         * @param $parent_id
          * @param bool $is_category
          *
          * @return int
@@ -308,7 +332,15 @@
 
             $query = $this->getQuery();
             if ($is_manual_name) {
-                $query->where('articles.manual_name', $name, Criterion::LIKE);
+                $criteria = new Criteria();
+                $criteria->where('articles.manual_name', $name, Criterion::LIKE);
+
+                if ($project instanceof Project) {
+                    $criteria->or('articles.manual_name', ucfirst($project->getKey()) . ":" . $name, Criterion::LIKE);
+                }
+
+                $query->where($criteria);
+
                 if ($parent_id !== null) {
                     $query->where('articles.parent_article_id', $parent_id);
                 }
@@ -318,6 +350,8 @@
 
             if ($scope_id !== null) {
                 $query->where('articles.scope', $scope_id);
+            } else {
+                $query->where('articles.scope', framework\Context::getScope()->getID());
             }
 
             if ($project_id !== null) {
@@ -328,6 +362,22 @@
             $query->where('articles.redirect_article_id', 0);
 
             return $this->selectOne($query, 'none');
+        }
+
+        /**
+         * @param null $project
+         * @return Article
+         *
+         * @throws \Exception
+         */
+        public function getOrCreateMainPage($project = null): Article
+        {
+            $article = $this->getArticleByName('Main Page', $project);
+            if (!$article instanceof Article) {
+                $article = framework\Context::getModule('publish')->createMainPageArticle($project);
+            }
+
+            return $article;
         }
 
         public function deleteArticleByName($name)
@@ -437,6 +487,22 @@
 //                return $res;
 //            }
 //        }
+
+        /**
+         * @param $article_ids
+         * @return Article[]
+         */
+        public function getByArticleIds($article_ids)
+        {
+            if (!$article_ids)
+                return [];
+
+            $query = $this->getQuery();
+            $query->where('articles.id', $article_ids, Criterion::IN);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            return $this->select($query);
+        }
 
         public function getDeadEndArticles(Project $project = null)
         {
@@ -610,6 +676,37 @@
             $query->where('articles.redirect_article_id', 0);
 
             $this->rawDelete($query);
+        }
+
+        /**
+         * @return ?Article
+         */
+        public function getArticleBySlug($slug): ?Article
+        {
+            $query = $this->getQuery();
+            $query->where('articles.redirect_slug', $slug);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            return $this->selectOne($query);
+        }
+
+        /**
+         * @return Article[]
+         */
+        public function getRedirectArticles(?Project $project): array
+        {
+            $query = $this->getQuery();
+            $query->where('articles.redirect_slug', '', Criterion::NOT_EQUALS);
+            $query->where('articles.redirect_slug', null, Criterion::IS_NOT_NULL);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            if ($project instanceof Project) {
+                $query->where('articles.project_id', $project->getID());
+            } else {
+                $query->where('articles.project_id', 0);
+            }
+
+            return $this->select($query);
         }
 
     }

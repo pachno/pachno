@@ -26,4 +26,26 @@
     height: auto;
     padding: .3em;
   }
+
+  &.hidden {
+    display: none;
+  }
+
+  &.core {
+    background-color: rgba(150, 150, 150, 0.2);
+    color: #888;
+  }
+
+  &.enabled {
+    background-color: rgba(177, 210, 143, 0.6);
+  }
+
+  &.disabled {
+    background-color: rgba(150, 150, 150, 0.1);
+  }
+
+  &.outdated {
+    background-color: $theme-secondary-color;
+    color: #FFF;
+  }
 }

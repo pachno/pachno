@@ -109,7 +109,7 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
         }
 

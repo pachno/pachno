@@ -10,7 +10,7 @@
     // Default behaviour: define the public folder name to "public" (actually autodetect name of current folder)
     defined('PACHNO_PUBLIC_FOLDER_NAME') || define('PACHNO_PUBLIC_FOLDER_NAME', substr($path, strrpos($path, DIRECTORY_SEPARATOR) + 1));
 
-    // Root installation: https://projects.pachno.com/pachno/docs/HowTo:RootDirectoryInstallation
+    // Root installation: https://projects.pach.no/pachno/docs/HowTo:RootDirectoryInstallation
     // ----
     // Don't look one directory up to find the path to Pachno
     // defined('PACHNO_PATH') || define('PACHNO_PATH', realpath(getcwd() . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);

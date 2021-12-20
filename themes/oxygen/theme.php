@@ -15,9 +15,6 @@
     #regular-signin-button.persona-button span:after{ background-image: url('<?php echo $webroot; ?>images/footer_logo.png'); }
     #forgot_password_username { background-image: url('<?php echo $webroot; ?>images/user_mono.png'); }
 
-    .module .rating { background-image:url('<?php echo $webroot; ?>images/star_faded_small.png'); }
-    .module .rating .score { background-image:url('<?php echo $webroot; ?>images/star_small.png'); }
-
     <?php /*
     .markItUp .markItUpButton1 a { background-image:url('<?php echo $webroot; ?>images/markitup/h1.png'); }
     .markItUp .markItUpButton2 a { background-image:url('<?php echo $webroot; ?>images/markitup/h2.png'); }

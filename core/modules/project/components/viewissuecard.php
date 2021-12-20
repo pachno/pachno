@@ -1,83 +1,80 @@
 <?php
 
     use pachno\core\entities\Issue;
-    use pachno\core\framework\Settings;
+    use pachno\core\entities\File;
 
     /**
      * @var string $set_field_route
      * @var Issue $issue
      */
 
+    $json = $issue->toJSON(true);
+
 ?>
 <div class="backdrop_box huge" id="issue-card-popup">
     <div class="backdrop_detail_header">
-        <span class="title-crumbs">
-            <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
-        </span>
-        <div class="dropper-container">
-            <button class="dropper button secondary" id="more_actions_<?= $issue->getID(); ?>_button"><span><?= __('Actions'); ?></span><?= fa_image_tag('chevron-down'); ?></button>
-            <?php include_component('main/issuemoreactions', array('issue' => $issue, 'times' => false, 'show_workflow_transitions' => false)); ?>
+        <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
+            <?php include_component('project/viewissueworkflowbuttons', ['issue' => $issue, 'showLockedStatus' => false]); ?>
+        <?php endif; ?>
+        <div class="indicator issue-update-indicator" data-issue-id="<?= $issue->getID(); ?>">
+            <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
         </div>
+        <a class="button secondary highlight" href="<?= $issue->getUrl(); ?>" target="_blank"><span><?= __('Go to issue'); ?></span><?= fa_image_tag('external-link-alt', ['class' => 'icon']); ?></a>
         <?php include_component('project/issuefavorite', array('issue' => $issue)); ?>
-        <a class="closer" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <button class="closer"><?= fa_image_tag('times'); ?></button>
     </div>
-    <div id="backdrop_detail_content" class="backdrop_detail_content">
-        <div class="form-container">
-            <div class="form">
-                <div class="row">
-                    <div class="column large">
-                        <form class="form-row" id="issue-card-title-form" action="<?= $set_field_route . '?field=title'; ?>" method="post" data-interactive-form>
-                            <input name="value" class="name-input-enhance invisible" id="edit-issue-name" type="text" value="<?= $issue->getTitle(); ?>" placeholder="<?= __('Enter a short description of this issue here'); ?>">
-                        </form>
-                        <form class="row" id="issue-card-description-form" action="<?= $set_field_route . '?field=description'; ?>" method="post" data-simple-submit data-field="description">
-                            <div class="form-row header">
-                                <h5><?= fa_image_tag('align-left', ['class' => 'icon']); ?><span><?= __('Description'); ?></span></h5>
-                            </div>
-                            <div class="form-row">
-                                <div class="formatted-text-container content">
-                                    <?php echo $issue->getParsedDescription(['issue' => $issue]); ?>
-                                </div>
-                                <div class="editor-container">
-                                    <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'invisible' => true, 'markuppable' => true, 'syntax' => Settings::SYNTAX_MD, 'value' => $issue->getDescription()]); ?>
-                                </div>
-                            </div>
-                            <div class="form-row submit-container">
-                                <button type="button" class="button secondary"><?= __('Cancel'); ?></button>
-                                <button type="submit" class="button primary">
-                                    <span class="name"><?= __('Save'); ?></span>
-                                    <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-                                </button>
-                            </div>
-                        </form>
-                        <form class="row <?php if (!$issue->isReproductionStepsVisible()) echo 'hidden'; ?>" id="issue-card-reproduction_steps-form" action="<?= $set_field_route . '?field=reproduction_steps'; ?>" method="post" data-simple-submit data-field="reproduction_steps">
-                            <div class="form-row header">
-                                <h5><?= fa_image_tag('list-ol', ['class' => 'icon']); ?><span><?= __('How to reproduce'); ?></span></h5>
-                            </div>
-                            <div class="form-row">
-                                <div class="formatted-text-container content">
-                                    <?php echo $issue->getParsedReproductionSteps(['issue' => $issue]); ?>
-                                </div>
-                                <div class="editor-container">
-                                    <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'invisible' => true, 'markuppable' => true, 'syntax' => Settings::SYNTAX_MD, 'value' => $issue->getReproductionSteps()]); ?>
-                                </div>
-                            </div>
-                            <div class="form-row submit-container">
-                                <button type="button" class="button secondary"><?= __('Cancel'); ?></button>
-                                <button type="submit" class="button primary">
-                                    <span class="name"><?= __('Save'); ?></span>
-                                    <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="column">
-                        <form class="form-row align-right" id="issue-card-issuetype-form" action="<?= $set_field_route . '?field=issuetype'; ?>" method="post" data-interactive-form data-field="issuetype">
-                            <?php include_component('project/issuefieldstatus', ['issue' => $issue]); ?>
-                        </form>
+    <div id="backdrop_detail_content" class="backdrop_detail_content with-sidebar sidebar-right">
+        <div class="content <?php if ($issue->getCoverImageFile() instanceof File) echo 'with-cover'; ?>" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="<?= $issue->getId(); ?>">
+            <div id="title-field" class="title-container" style="<?php if ($issue->getCoverImageFile() instanceof File) echo "background-image: url('{$issue->getCoverImageFile()->getURL()}');"; ?>" data-dynamic-field-value data-field="cover_image" data-issue-id="<?= $issue->getId(); ?>">
+                <div id="title_content" class="title-content">
+                    <?php if ($issue->getParentIssues()): ?>
+                        <span class="title-crumbs">
+                            <?php include_component('project/issueparent_crumbs', ['issue' => $issue, 'backdrop' => true]); ?>
+                        </span>
+                    <?php endif; ?>
+                    <div id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
+                        <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                        <span><?= $issue->getFormattedIssueNo(true); ?>&nbsp;&ndash;&nbsp;</span>
+                        <input type="text" name="title" value="<?= $issue->getTitle(); ?>" class="invisible" id="issue_<?= $issue->getID(); ?>_title_input" data-trigger-save-on-blur data-field="title" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
                     </div>
                 </div>
             </div>
-            <?php include_component('project/issue', ['issue' => $issue]); ?>
+            <div id="status-field" class="dropper-container status-field">
+                <div class="status-badge dropper" style="
+                        background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;
+                        color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getTextColor() : '#333'; ?>;
+                <?php if (!$issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> display: none;<?php endif; ?>
+                        " id="status_<?php echo $issue->getID(); ?>_color">
+                    <span id="status_content"><?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype) echo __($issue->getStatus()->getName()); ?></span>
+                </div>
+                <?php if ($issue->canEditStatus()): ?>
+                    <div class="dropdown-container">
+                        <div class="list-mode" id="status_change">
+                            <div class="header">
+                                <span class="name"><?= __('Change status'); ?></span>
+                            </div>
+                            <?php foreach ($statuses as $status): ?>
+                                <div class="list-item">
+                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status', 'status_id' => $status->getID())); ?>', 'status');">
+                                        <div class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
+                                            <span><?php echo __($status->getName()); ?></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php include_component('project/issuedetails', ['issue' => $issue, 'backdrop' => true]); ?>
+            <?php include_component('project/issuecomments', ['issue' => $issue]); ?>
+        </div>
+        <div class="sidebar" id="issue-card-issuefields-container">
+            <?php include_component('main/viewissuefields', ['issue' => $issue, 'include_status' => true]); ?>
         </div>
     </div>
 </div>
+<script>
+    Pachno.addIssue(<?= json_encode($json); ?>).updateVisibleValues();
+</script>

@@ -22,17 +22,17 @@
     class IssuetypeSchemes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issuetype_schemes';
+        public const B2DBNAME = 'issuetype_schemes';
 
-        const ID = 'issuetype_schemes.id';
+        public const ID = 'issuetype_schemes.id';
 
-        const SCOPE = 'issuetype_schemes.scope';
+        public const SCOPE = 'issuetype_schemes.scope';
 
-        const NAME = 'issuetype_schemes.name';
+        public const NAME = 'issuetype_schemes.name';
 
-        const DESCRIPTION = 'issuetype_schemes.description';
+        public const DESCRIPTION = 'issuetype_schemes.description';
 
         public function getAll()
         {

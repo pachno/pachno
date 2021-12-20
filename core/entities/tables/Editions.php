@@ -31,41 +31,41 @@
     class Editions extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'editions';
+        public const B2DBNAME = 'editions';
 
-        const ID = 'editions.id';
+        public const ID = 'editions.id';
 
-        const SCOPE = 'editions.scope';
+        public const SCOPE = 'editions.scope';
 
-        const NAME = 'editions.name';
+        public const NAME = 'editions.name';
 
-        const DESCRIPTION = 'editions.description';
+        public const DESCRIPTION = 'editions.description';
 
-        const PROJECT = 'editions.project';
+        public const PROJECT = 'editions.project';
 
-        const LEAD_BY = 'editions.leader';
+        public const LEAD_BY = 'editions.leader';
 
-        const LEAD_TYPE = 'editions.leader_type';
+        public const LEAD_TYPE = 'editions.leader_type';
 
-        const OWNED_BY = 'editions.owner';
+        public const OWNED_BY = 'editions.owner';
 
-        const OWNED_TYPE = 'editions.owner_type';
+        public const OWNED_TYPE = 'editions.owner_type';
 
-        const DOC_URL = 'editions.doc_url';
+        public const DOC_URL = 'editions.doc_url';
 
-        const QA = 'editions.qa_responsible';
+        public const QA = 'editions.qa_responsible';
 
-        const QA_TYPE = 'editions.qa_responsible_type';
+        public const QA_TYPE = 'editions.qa_responsible_type';
 
-        const RELEASED = 'editions.isreleased';
+        public const RELEASED = 'editions.isreleased';
 
-        const PLANNED_RELEASED = 'editions.isplannedreleased';
+        public const PLANNED_RELEASED = 'editions.isplannedreleased';
 
-        const RELEASE_DATE = 'editions.release_date';
+        public const RELEASE_DATE = 'editions.release_date';
 
-        const LOCKED = 'editions.locked';
+        public const LOCKED = 'editions.locked';
 
         public function preloadEditions($edition_ids)
         {

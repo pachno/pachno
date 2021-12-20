@@ -1,5 +1,15 @@
 @import "../variables";
 
+.project_overview {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 1rem 1rem;
+  align-self: center;
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
 .project-list {
   display: flex;
   flex-direction: column;
@@ -9,22 +19,24 @@
 
 .project-strip {
   display: flex;
+  flex-direction: column;
   border: none;
   background: #FFF;
-  align-items: center;
+  align-items: stretch;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16), 0 0 1px 0 rgba(0, 0, 0, 0.16);
   border-radius: 4px;
-  padding: 0 1rem;
-  margin: .75rem 0 0 0;
+  padding: 0 1.2em;
+  margin: .75em 0 0 0;
   transform: translateY(0);
   transition: box-shadow .25s ease-in-out, transform .25s ease-in-out;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 3px 5px 0 rgba(27, 27, 36, .2);
+    z-index: 1;
 
     & + .subprojects-list {
-      background-color: rgba(225, 225, 200, .25);
+      background-color: theme-secondary-color-alpha(.2);
     }
   }
 
@@ -32,73 +44,80 @@
     font-weight: $theme-font-weight-regular;
     vertical-align: middle;
     box-sizing: border-box;
-    flex: 1 1 auto;
     min-width: 300px;
     line-height: 1.3em;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: .75rem 0;
-
-    .description {
-      font-weight: $theme-font-weight-light;
-    }
-
-    .name {
-      a,
-      a:hover {
-        color: #141823;
-        font-size: 1.1em;
-        font-weight: $theme-font-weight-bold;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        border: none;
-      }
-    }
-  }
-
-  .icon-container {
-    flex: 0 0 32px;
-    padding: .5rem 0;
-    display: flex;
+    flex-direction: row;
     align-items: center;
-    border-radius: 100%;
+    justify-content: flex-start;
+    padding: .5em 0;
 
-    .icon-large {
-      background-color: rgb(255, 255, 255);
-      border: 1px solid rgba(0, 0, 0, 0.1);
+    .icon-container {
+      flex: 0 0 32px;
+      padding: .5rem 0;
+      display: flex;
+      align-items: center;
       border-radius: 100%;
-      display: inline-block;
-      height: 32px;
-      line-height: 32px;
-      margin: 3px 8px 0 0;
-      padding: 3px;
-      text-align: center;
-      vertical-align: middle;
-      width: 32px;
-      overflow: hidden;
 
-      img {
-        width: 100%;
+      .icon-large {
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 100%;
+        display: inline-block;
+        height: 32px;
+        line-height: 32px;
+        margin: 3px 8px 0 0;
+        padding: 3px;
+        text-align: center;
+        vertical-align: middle;
+        width: 32px;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+        }
       }
     }
 
+    .information {
+      display: flex;
+      flex-direction: column;
+
+      .description {
+        font-weight: $theme-font-weight-light;
+      }
+
+      .name {
+        a,
+        a:hover {
+          color: #141823;
+          font-size: 1.1em;
+          font-weight: $theme-font-weight-bold;
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          border: none;
+        }
+      }
+    }
   }
 
   .button-group {
     flex: 0 0 auto;
     box-sizing: border-box;
     min-width: 300px;
-    margin: 5px 0;
+    margin: .5em 0;
     line-height: 1.3em;
     position: relative;
     text-align: right;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 0;
+    padding: 0 0 .75em 0;
+
+    .report-issue-button {
+      margin-left: auto;
+    }
   }
 }
 
@@ -112,7 +131,7 @@
   transition: background-color .25s ease-in-out;
 
   &:hover {
-    background-color: rgba(225, 225, 200, .25);
+    background-color: theme-secondary-color-alpha(.2);
   }
 
   h5 {

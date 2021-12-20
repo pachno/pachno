@@ -44,7 +44,7 @@
         </div>
         <div style="font-size: 13px;">
             An error occured and the installation has been stopped. Please try to fix the error based on the information above, then click start the installation over.<br>
-            If you think this is a bug, please report it in our <a href="https://projects.pachno.com" target="_new">online bug tracker</a>.
+            If you think this is a bug, please report it in our <a href="https://projects.pach.no" target="_new">online bug tracker</a>.
         </div>
     <?php else: ?>
         <h2 style="margin-top: 10px;">Server / URL information</h2>
@@ -55,7 +55,7 @@
                     Your web server must be correctly set up with URL rewriting enabled
                 </span>
                 <span>
-                    For information on how to configure URL rewriting for your web server, see <a href="https://pachno.com/support" target="_blank"><span>pachno.com &raquo; Support</span><?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?></a>
+                    For information on how to configure URL rewriting for your web server, see <a href="https://projects.pach.no/pachno/docs/r/install" target="_blank"><span>Pachno installation docs</span><?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?></a>
                 </span>
             </span>
         </div>

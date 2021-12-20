@@ -1,6 +1,8 @@
 <?php
 
-    $headers = array(__("Project"), __("Issue type"), __("Issue number"), __("Issue title"), __("Description"), __("Reproduction steps"), __("Posted by"), __("Assigned to"), __("Status"), __('Category'), __('Priority'), __('Reproducability'), __('Severity'), __("Resolution"), __('Targetted for'), __("Posted at"), __("Last updated"), __("Percentage complete"), __("Time estimated"), __("Time spent"), __("User pain"), __("Votes"));
+use pachno\core\entities\DatatypeBase;
+
+$headers = array(__("Project"), __("Issue type"), __("Issue number"), __("Issue title"), __("Description"), __("Reproduction steps"), __("Posted by"), __("Assigned to"), __("Status"), __('Category'), __('Priority'), __('Reproducability'), __('Severity'), __("Resolution"), __('Targetted for'), __("Posted at"), __("Last updated"), __("Percentage complete"), __("Time estimated"), __("Time spent"), __("User pain"), __("Votes"));
     foreach ($custom_columns as $column) {
         $headers[] = __($column->getName());
     }
@@ -97,7 +99,7 @@
             $sheet->setCellValueByColumnAndRow(15, $cc, \pachno\core\framework\Context::getI18n()->formatTime($issue->getPosted(), 21));
             $sheet->setCellValueByColumnAndRow(16, $cc, \pachno\core\framework\Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21));
             $sheet->setCellValueByColumnAndRow(17, $cc, $issue->getPercentCompleted() . '%');
-            $sheet->setCellValueByColumnAndRow(18, $cc, (!$issue->hasEstimatedTime()) ? '-' : \pachno\core\entities\Issue::getFormattedTime($issue->getEstimatedTime(true, true)));
+            $sheet->setCellValueByColumnAndRow(18, $cc, (!$issue->hasEstimatedTime()) ? '-' : \pachno\core\entities\Issue::getFormattedTime($issue->getEstimatedTime()));
             $sheet->setCellValueByColumnAndRow(19, $cc, (!$issue->hasSpentTime()) ? '-' : \pachno\core\entities\Issue::getFormattedTime($issue->getSpentTime(true, true)));
             $sheet->setCellValueByColumnAndRow(20, $cc, $issue->getUserpain());
             $sheet->setCellValueByColumnAndRow(21, $cc, $issue->getVotes());
@@ -105,29 +107,29 @@
             foreach ($custom_columns as $column) {
                 $value = $issue->getCustomField($column->getKey());
                 switch ($column->getType()) {
-                    case \pachno\core\entities\CustomDatatype::DATE_PICKER:
+                    case DatatypeBase::DATE_PICKER:
                         $value = strtotime($value) !== false ? \pachno\core\framework\Context::getI18n()->formatTime($value, 20) : '';
                         break;
-                    case \pachno\core\entities\CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                    case \pachno\core\entities\CustomDatatype::RADIO_CHOICE:
+                    case DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                    case DatatypeBase::RADIO_CHOICE:
                         $value = ($value instanceof \pachno\core\entities\CustomDatatypeOption) ? $value->getValue() : '';
                         break;
-                    case \pachno\core\entities\CustomDatatype::CLIENT_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::MILESTONE_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::TEAM_CHOICE:
-                    case \pachno\core\entities\CustomDatatype::USER_CHOICE:
+                    case DatatypeBase::CLIENT_CHOICE:
+                    case DatatypeBase::COMPONENTS_CHOICE:
+                    case DatatypeBase::EDITIONS_CHOICE:
+                    case DatatypeBase::MILESTONE_CHOICE:
+                    case DatatypeBase::RELEASES_CHOICE:
+                    case DatatypeBase::STATUS_CHOICE:
+                    case DatatypeBase::TEAM_CHOICE:
+                    case DatatypeBase::USER_CHOICE:
                         $value = ($value instanceof \pachno\core\entities\common\Identifiable) ? $value->getName() : '';
                         break;
-                    case \pachno\core\entities\CustomDatatype::DATETIME_PICKER:
+                    case DatatypeBase::DATETIME_PICKER:
                         $value = strtotime($value) !== false ? \pachno\core\framework\Context::getI18n()->formatTime($value, 25) : '';
                         break;
-                    case \pachno\core\entities\CustomDatatype::INPUT_TEXT:
-                    case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                    case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
+                    case DatatypeBase::INPUT_TEXT:
+                    case DatatypeBase::INPUT_TEXTAREA_MAIN:
+                    case DatatypeBase::INPUT_TEXTAREA_SMALL:
                     default:
                         break;
                 }
@@ -143,15 +145,15 @@
 
     switch ($format) {
         case 'xlsx':
-            $objWriter = new \PHPExcel_Writer_Excel2007($phpexcel);
+            $objWriter = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment;filename="issues.xlsx"');
             break;
         case 'ods':
         default:
+            $objWriter = new \PhpOffice\PhpSpreadsheet\Writer\Ods($spreadsheet);
             header('Content-Type: application/vnd.oasis.opendocument.spreadsheet');
             header('Content-Disposition: attachment;filename="issues.ods"');
-            $objWriter = new \PHPExcel_Writer_OpenDocument($phpexcel);
     }
 
     header('Cache-Control: max-age=0');

@@ -11,117 +11,117 @@
     class Main extends framework\Action
     {
 
-        const CSV_TYPE_ISSUES = 'issues';
+        public const CSV_TYPE_ISSUES = 'issues';
 
-        const CSV_TYPE_CLIENTS = 'clients';
+        public const CSV_TYPE_CLIENTS = 'clients';
 
-        const CSV_TYPE_PROJECTS = 'projects';
+        public const CSV_TYPE_PROJECTS = 'projects';
 
-        const CSV_PROJECT_NAME = 'name';
+        public const CSV_PROJECT_NAME = 'name';
 
-        const CSV_PROJECT_PREFIX = 'prefix';
+        public const CSV_PROJECT_PREFIX = 'prefix';
 
-        const CSV_PROJECT_SCRUM = 'scrum';
+        public const CSV_PROJECT_SCRUM = 'scrum';
 
-        const CSV_PROJECT_OWNER = 'owner';
+        public const CSV_PROJECT_OWNER = 'owner';
 
-        const CSV_PROJECT_OWNER_TYPE = 'owner_type';
+        public const CSV_PROJECT_OWNER_TYPE = 'owner_type';
 
-        const CSV_PROJECT_LEAD = 'lead';
+        public const CSV_PROJECT_LEAD = 'lead';
 
-        const CSV_PROJECT_LEAD_TYPE = 'lead_type';
+        public const CSV_PROJECT_LEAD_TYPE = 'lead_type';
 
-        const CSV_PROJECT_QA = 'qa';
+        public const CSV_PROJECT_QA = 'qa';
 
-        const CSV_PROJECT_QA_TYPE = 'qa_type';
+        public const CSV_PROJECT_QA_TYPE = 'qa_type';
 
-        const CSV_PROJECT_DESCR = 'descr';
+        public const CSV_PROJECT_DESCR = 'descr';
 
-        const CSV_PROJECT_DOC_URL = 'doc_url';
+        public const CSV_PROJECT_DOC_URL = 'doc_url';
 
-        const CSV_PROJECT_WIKI_URL = 'wiki_url';
+        public const CSV_PROJECT_WIKI_URL = 'wiki_url';
 
-        const CSV_PROJECT_FREELANCE = 'freelance';
+        public const CSV_PROJECT_FREELANCE = 'freelance';
 
-        const CSV_PROJECT_EN_BUILDS = 'en_builds';
+        public const CSV_PROJECT_EN_BUILDS = 'en_builds';
 
-        const CSV_PROJECT_EN_COMPS = 'en_comps';
+        public const CSV_PROJECT_EN_COMPS = 'en_comps';
 
-        const CSV_PROJECT_EN_EDITIONS = 'en_editions';
+        public const CSV_PROJECT_EN_EDITIONS = 'en_editions';
 
-        const CSV_PROJECT_WORKFLOW_ID = 'workflow_id';
+        public const CSV_PROJECT_WORKFLOW_ID = 'workflow_id';
 
-        const CSV_PROJECT_CLIENT = 'client';
+        public const CSV_PROJECT_CLIENT = 'client';
 
-        const CSV_PROJECT_SHOW_SUMMARY = 'show_summary';
+        public const CSV_PROJECT_SHOW_SUMMARY = 'show_summary';
 
-        const CSV_PROJECT_SUMMARY_TYPE = 'summary_type';
+        public const CSV_PROJECT_SUMMARY_TYPE = 'summary_type';
 
-        const CSV_PROJECT_ISSUETYPE_SCHEME = 'issuetype_scheme';
+        public const CSV_PROJECT_ISSUETYPE_SCHEME = 'issuetype_scheme';
 
-        const CSV_PROJECT_ALLOW_REPORTING = 'allow_reporting';
+        public const CSV_PROJECT_ALLOW_REPORTING = 'allow_reporting';
 
-        const CSV_PROJECT_AUTOASSIGN = 'autoassign';
+        public const CSV_PROJECT_AUTOASSIGN = 'autoassign';
 
-        const CSV_CLIENT_NAME = 'name';
+        public const CSV_CLIENT_NAME = 'name';
 
-        const CSV_CLIENT_EMAIL = 'email';
+        public const CSV_CLIENT_EMAIL = 'email';
 
-        const CSV_CLIENT_TELEPHONE = 'telephone';
+        public const CSV_CLIENT_TELEPHONE = 'telephone';
 
-        const CSV_CLIENT_FAX = 'fax';
+        public const CSV_CLIENT_FAX = 'fax';
 
-        const CSV_CLIENT_WEBSITE = 'website';
+        public const CSV_CLIENT_WEBSITE = 'website';
 
-        const CSV_ISSUE_TITLE = 'title';
+        public const CSV_ISSUE_TITLE = 'title';
 
-        const CSV_ISSUE_PROJECT = 'project';
+        public const CSV_ISSUE_PROJECT = 'project';
 
-        const CSV_ISSUE_DESCR = 'descr';
+        public const CSV_ISSUE_DESCR = 'descr';
 
-        const CSV_ISSUE_REPRO = 'repro';
+        public const CSV_ISSUE_REPRO = 'repro';
 
-        const CSV_ISSUE_STATE = 'state';
+        public const CSV_ISSUE_STATE = 'state';
 
-        const CSV_ISSUE_STATUS = 'status';
+        public const CSV_ISSUE_STATUS = 'status';
 
-        const CSV_ISSUE_POSTED_BY = 'posted_by';
+        public const CSV_ISSUE_POSTED_BY = 'posted_by';
 
-        const CSV_ISSUE_OWNER = 'owner';
+        public const CSV_ISSUE_OWNER = 'owner';
 
-        const CSV_ISSUE_OWNER_TYPE = 'owner_type';
+        public const CSV_ISSUE_OWNER_TYPE = 'owner_type';
 
-        const CSV_ISSUE_ASSIGNED = 'assigned';
+        public const CSV_ISSUE_ASSIGNED = 'assigned';
 
-        const CSV_ISSUE_ASSIGNED_TYPE = 'assigned_type';
+        public const CSV_ISSUE_ASSIGNED_TYPE = 'assigned_type';
 
-        const CSV_ISSUE_RESOLUTION = 'resolution';
+        public const CSV_ISSUE_RESOLUTION = 'resolution';
 
-        const CSV_ISSUE_ISSUE_TYPE = 'issue_type';
+        public const CSV_ISSUE_ISSUE_TYPE = 'issue_type';
 
-        const CSV_ISSUE_PRIORITY = 'priority';
+        public const CSV_ISSUE_PRIORITY = 'priority';
 
-        const CSV_ISSUE_CATEGORY = 'category';
+        public const CSV_ISSUE_CATEGORY = 'category';
 
-        const CSV_ISSUE_SEVERITY = 'severity';
+        public const CSV_ISSUE_SEVERITY = 'severity';
 
-        const CSV_ISSUE_REPRODUCIBILITY = 'reproducability';
+        public const CSV_ISSUE_REPRODUCIBILITY = 'reproducability';
 
-        const CSV_ISSUE_VOTES = 'votes';
+        public const CSV_ISSUE_VOTES = 'votes';
 
-        const CSV_ISSUE_PERCENTAGE = 'percentage';
+        public const CSV_ISSUE_PERCENTAGE = 'percentage';
 
-        const CSV_ISSUE_ISSUENO = 'issue_no';
+        public const CSV_ISSUE_ISSUENO = 'issue_no';
 
-        const CSV_ISSUE_BLOCKING = 'blocking';
+        public const CSV_ISSUE_BLOCKING = 'blocking';
 
-        const CSV_ISSUE_MILESTONE = 'milestone';
+        public const CSV_ISSUE_MILESTONE = 'milestone';
 
-        const CSV_ISSUE_POSTED = 'posted';
+        public const CSV_ISSUE_POSTED = 'posted';
 
-        const CSV_IDENTIFIER_TYPE_USER = 1;
+        public const CSV_IDENTIFIER_TYPE_USER = 1;
 
-        const CSV_IDENTIFIER_TYPE_TEAM = 2;
+        public const CSV_IDENTIFIER_TYPE_TEAM = 2;
 
         public function getAuthenticationMethodForAction($action)
         {
@@ -137,22 +137,16 @@
         public function preExecute(framework\Request $request, $action)
         {
             // forward 403 if you're not allowed here
-            if ($request->isAjaxCall() == false) // for avoiding empty error when an user disables himself its own permissions
-            {
+            if ($request->isAjaxCall() == false) {
                 $this->forward403unless(framework\Context::getUser()->canAccessConfigurationPage());
             }
 
-            $this->access_level = $this->getAccessLevel(framework\Settings::CONFIGURATION_SECTION_IMPORT, 'core');
+            $this->access_level = framework\Settings::getConfigurationAccessLevel();
 
             if (!$request->isAjaxCall()) {
                 $this->getResponse()->setPage('config');
                 framework\Context::loadLibrary('ui');
             }
-        }
-
-        public function getAccessLevel($section, $module)
-        {
-            return (framework\Context::getUser()->canSaveConfiguration($section, $module)) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
         }
 
         /**
@@ -507,14 +501,14 @@
                                         switch ($activerow[$identifiableitem[1]]) {
                                             case self::CSV_IDENTIFIER_TYPE_USER:
                                                 try {
-                                                    entities\User::getB2DBTable()->selectByID($activerow[$identifiableitem[0]]);
+                                                    tables\Users::getTable()->selectByID($activerow[$identifiableitem[0]]);
                                                 } catch (Exception $e) {
                                                     $errors[] = $this->getI18n()->__('Row %row column %col: user does not exist', ['%col' => $identifiableitem[0], '%row' => $i + 1]);
                                                 }
                                                 break;
                                             case self::CSV_IDENTIFIER_TYPE_TEAM:
                                                 try {
-                                                    entities\Team::getB2DBTable()->selectById($activerow[$identifiableitem[0]]);
+                                                    tables\Teams::getTable()->selectById($activerow[$identifiableitem[0]]);
                                                 } catch (Exception $e) {
                                                     $errors[] = $this->getI18n()->__('Row %row column %col: team does not exist', ['%col' => $identifiableitem[0], '%row' => $i + 1]);
                                                 }
@@ -628,14 +622,14 @@
                                         switch ($activerow[$identifiableitem[1]]) {
                                             case self::CSV_IDENTIFIER_TYPE_USER:
                                                 try {
-                                                    entities\User::getB2DBTable()->selectByID($activerow[$identifiableitem[0]]);
+                                                    tables\Users::getTable()->selectByID($activerow[$identifiableitem[0]]);
                                                 } catch (Exception $e) {
                                                     $errors[] = $this->getI18n()->__('Row %row column %col: user does not exist', ['%col' => $identifiableitem[0], '%row' => $i + 1]);
                                                 }
                                                 break;
                                             case self::CSV_IDENTIFIER_TYPE_TEAM:
                                                 try {
-                                                    entities\Team::getB2DBTable()->selectById($activerow[$identifiableitem[0]]);
+                                                    tables\Teams::getTable()->selectById($activerow[$identifiableitem[0]]);
                                                 } catch (Exception $e) {
                                                     $errors[] = $this->getI18n()->__('Row %row column %col: team does not exist', ['%col' => $identifiableitem[0], '%row' => $i + 1]);
                                                 }
@@ -655,7 +649,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_POSTED_BY, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\User::getB2DBTable()->selectByID($activerow[self::CSV_ISSUE_POSTED_BY]);
+                                            tables\Users::getTable()->selectByID($activerow[self::CSV_ISSUE_POSTED_BY]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: user does not exist', ['%col' => self::CSV_ISSUE_POSTED_BY, '%row' => $i + 1]);
                                         }
@@ -949,7 +943,7 @@
                                     $issue->setStatus($activerow[self::CSV_ISSUE_STATUS]);
 
                                 if (isset($activerow[self::CSV_ISSUE_POSTED_BY]))
-                                    $issue->setPostedBy(entities\User::getB2DBTable()->selectByID($activerow[self::CSV_ISSUE_POSTED_BY]));
+                                    $issue->setPostedBy(tables\Users::getTable()->selectByID($activerow[self::CSV_ISSUE_POSTED_BY]));
 
                                 if (isset($activerow[self::CSV_ISSUE_OWNER]) && isset($activerow[self::CSV_ISSUE_OWNER_TYPE])) {
                                     switch ($activerow[self::CSV_ISSUE_OWNER_TYPE]) {

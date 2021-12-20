@@ -4,7 +4,8 @@
 use pachno\core\entities\common\Identifiable;
 use pachno\core\entities\Component;
     use pachno\core\entities\CustomDatatype;
-    use pachno\core\entities\Milestone;
+use pachno\core\entities\DatatypeBase;
+use pachno\core\entities\Milestone;
     use pachno\core\entities\Team;
     use pachno\core\entities\User;
     use pachno\core\entities\WorkflowTransitionAction;
@@ -20,11 +21,11 @@ use pachno\core\entities\Component;
     <div class="row">
         <?php if (!$action->hasEdit()): ?>
             <div class="name"><?= $action->getDescription(); ?></div>
-        <?php elseif ($action->isCustomSetAction() && in_array($action->getCustomField()->getType(), [CustomDatatype::USER_CHOICE, CustomDatatype::TEAM_CHOICE, CustomDatatype::CLIENT_CHOICE])): ?>
+        <?php elseif ($action->isCustomSetAction() && in_array($action->getCustomField()->getType(), [DatatypeBase::USER_CHOICE, DatatypeBase::TEAM_CHOICE, DatatypeBase::CLIENT_CHOICE])): ?>
             <div class="name"><?= $action->getDescription(); ?></div>
             <div class="icon">
                 <button class="dropper icon secondary"><?= fa_image_tag('user-edit'); ?></button>
-                <?php if ($action->getCustomField()->getType() == CustomDatatype::USER_CHOICE): ?>
+                <?php if ($action->getCustomField()->getType() == DatatypeBase::USER_CHOICE): ?>
                     <?php include_component('main/identifiableselector', [
                         'html_id'        => 'workflowtransitionaction_'. $action->getID().'_edit',
                         'header'          => __('Select a user'),
@@ -38,7 +39,7 @@ use pachno\core\entities\Component;
                         'hidden'          => false,
                         'classes'         => 'leftie popup_box more_actions_dropdown'
                     ]); ?>
-                <?php elseif ($action->getCustomField()->getType() == CustomDatatype::TEAM_CHOICE): ?>
+                <?php elseif ($action->getCustomField()->getType() == DatatypeBase::TEAM_CHOICE): ?>
                     <?php include_component('main/identifiableselector', [
                         'html_id'        => 'workflowtransitionaction_'. $action->getID().'_edit',
                         'header'          => __('Select a team'),
@@ -52,7 +53,7 @@ use pachno\core\entities\Component;
                         'hidden'          => false,
                         'classes'         => 'leftie popup_box more_actions_dropdown'
                     ]); ?>
-                <?php elseif ($action->getCustomField()->getType() == CustomDatatype::CLIENT_CHOICE): ?>
+                <?php elseif ($action->getCustomField()->getType() == DatatypeBase::CLIENT_CHOICE): ?>
                     <?php include_component('main/identifiableselector', [
                         'html_id'        => 'workflowtransitionaction_'. $action->getID().'_edit',
                         'header'          => __('Select a client'),
@@ -80,6 +81,10 @@ use pachno\core\entities\Component;
                                             <?= __('Set status to %status', ['%status' => '']); ?>
                                         <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_PRIORITY): ?>
                                             <?= __('Set priority to %priority', ['%priority' => '']); ?>
+                                        <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_SEVERITY): ?>
+                                            <?= __('Set severity to %severity', ['%severity' => '']); ?>
+                                        <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_CATEGORY): ?>
+                                            <?= __('Set category to %category', ['%category' => '']); ?>
                                         <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_PERCENT): ?>
                                             <?= __('Set percent completed to %percentcompleted', ['%percentcompleted' => '']); ?>
                                         <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_RESOLUTION): ?>
@@ -151,13 +156,13 @@ use pachno\core\entities\Component;
                         <?php else: ?>
                             <span><?= __('Set issue field %key to %value', array('%key' => $action->getCustomActionType(), '%value' => '')); ?></span>
                             <?php switch (CustomDatatype::getByKey($action->getCustomActionType())->getType()) {
-                                case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                                case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                case DatatypeBase::INPUT_TEXTAREA_MAIN:
+                                case DatatypeBase::INPUT_TEXTAREA_SMALL:
                                     include_component('main/textarea', array('area_name' => 'target_value', 'target_type' => 'workflowtransitionaction', 'target_id' => $action->getID(), 'area_id' => 'workflowtransitionaction_'. $action->getID() .'_value', 'class' => 'inline', 'value' => $action->getTargetValue()));
                                     break;
-                                case CustomDatatype::DATE_PICKER:
-                                case CustomDatatype::DATETIME_PICKER: ?>
-                                <input type="hidden" id="workflowtransitionaction_<?= $action->getID(); ?>_value_1" name="target_value" value="<?= ($action->getTargetValue() ? date('Y-m-d' . (CustomDatatype::getByKey($action->getCustomActionType())->getType() == CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), $action->getTargetValue()) : ''); ?>">
+                                case DatatypeBase::DATE_PICKER:
+                                case DatatypeBase::DATETIME_PICKER: ?>
+                                <input type="hidden" id="workflowtransitionaction_<?= $action->getID(); ?>_value_1" name="target_value" value="<?= ($action->getTargetValue() ? date('Y-m-d' . (CustomDatatype::getByKey($action->getCustomActionType())->getType() == DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), $action->getTargetValue()) : ''); ?>">
                                     <div id="customfield_<?= 'workflowtransitionaction_'. $action->getID(); ?>_calendar_container"></div>
                                     <script type="text/javascript">
                                         Calendar.setup({
@@ -167,8 +172,8 @@ use pachno\core\entities\Component;
                                     </script>
                                 <?php
                                 break;
-                                case CustomDatatype::INPUT_TEXT:
-                                case CustomDatatype::CALCULATED_FIELD: ?>
+                                case DatatypeBase::INPUT_TEXT:
+                                case DatatypeBase::CALCULATED_FIELD: ?>
                                 <input type="text" id="workflowtransitionaction_<?= $action->getID(); ?>_value_1" name="target_value" value="<?= ($action->getTargetValue() ?: ''); ?>" class="inline">
                                     <?php
                                     break;

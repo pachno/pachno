@@ -28,11 +28,11 @@
     class Link extends IdentifiableScoped
     {
 
-        const TYPE_MENU = 'main_menu';
+        public const TYPE_MENU = 'main_menu';
 
-        const TYPE_ISSUE = 'issue';
+        public const TYPE_ISSUE = 'issue';
 
-        const TYPE_WIKI = 'wiki';
+        public const TYPE_WIKI = 'wiki';
 
         /**
          * Who created the link
@@ -219,7 +219,7 @@
             $this->_link_order = $link_order;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
 

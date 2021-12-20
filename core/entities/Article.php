@@ -3,7 +3,6 @@
     namespace pachno\core\entities;
 
     use b2db\Row;
-    use EditorJS\EditorJS;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
@@ -14,7 +13,9 @@
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\UserArticles;
     use pachno\core\entities\tables\Users;
+    use pachno\core\entities\traits\Commentable;
     use pachno\core\framework;
+    use pachno\core\framework\Context;
     use pachno\core\framework\Event;
     use pachno\core\framework\Settings;
     use pachno\core\helpers\Attachable;
@@ -31,9 +32,11 @@
     class Article extends IdentifiableScoped implements Attachable
     {
 
-        const TYPE_WIKI = 1;
+        use Commentable;
 
-        const TYPE_MANUAL = 2;
+        public const TYPE_WIKI = 1;
+
+        public const TYPE_MANUAL = 2;
 
         /**
          * The article author
@@ -189,6 +192,8 @@
 
         protected $_namespaces = null;
 
+        protected $_is_clone = false;
+
         /**
          * The article this slug redirects to
          *
@@ -241,6 +246,14 @@
             ArticleLinks::getTable()->deleteLinksByArticle($article_name);
         }
 
+        /**
+         * @param $name
+         * @param $content
+         * @param null $scope
+         * @param array $options
+         * @param null $project
+         * @return Article
+         */
         public static function createNew($name, $content, $scope = null, $options = [], $project = null)
         {
             $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
@@ -252,17 +265,19 @@
                 $article->setProject($project->getID());
             }
 
-            if (!isset($options['noauthor']))
+            if (!isset($options['noauthor'])) {
                 $article->setAuthor($user_id);
-            else
+            } else {
                 $article->setAuthor(0);
+            }
 
-            if ($scope !== null)
+            if ($scope !== null) {
                 $article->setScope($scope);
+            }
 
-            $article->doSave($options);
+            $article->save();
 
-            return $article->getID();
+            return $article;
         }
 
         public static function sortArticleChildren ($a, $b)
@@ -289,42 +304,6 @@
         public function setProject($project_id)
         {
             $this->_project_id = $project_id;
-        }
-
-        public function doSave($options = [], $reason = null)
-        {
-            $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
-
-            if (!isset($options['revert']) || !$options['revert']) {
-                $revision = ArticleHistory::getTable()->addArticleHistory($this->_name, $this->_old_content, $this->_content, $user_id, $reason);
-            } else {
-                $revision = null;
-            }
-
-//            ArticleLinks::getTable()->deleteLinksByArticle($this->_name);
-//            ArticleCategoryLinks::getTable()->deleteCategoriesByArticle($this->_name);
-
-            $this->save();
-
-            $this->_old_content = $this->_content;
-
-            $links = $this->_retrieveLinksFromContent($options);
-
-            foreach ($links as $link => $occurrences) {
-                $linked_article = Publish::getArticleLink($link, $this->getProject());
-                if ($linked_article instanceof Article) {
-                    $article_link = new ArticleLink();
-                    $article_link->setArticle($this);
-                    $article_link->setLinkedArticle($linked_article);
-                    $article_link->save();
-                }
-            }
-
-            $this->_history = null;
-
-            Event::createNew('core', 'pachno\core\entities\Article::doSave', $this, compact('reason', 'revision', 'user_id'))->trigger();
-
-            return true;
         }
 
         public function getArticleType()
@@ -370,13 +349,13 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_content = str_replace("\r\n", "\n", $this->_content);
             $this->_old_content = $this->_content;
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return $this->_content;
         }
@@ -550,7 +529,50 @@
         protected function _populateCategories()
         {
             if ($this->_categories === null) {
-                $this->_categories = ArticleCategoryLinks::getTable()->getCategoriesByArticleId($this->getID());
+                $this->_categories = [];
+                $categories = ArticleCategoryLinks::getTable()->getCategoriesByArticleId($this->getID());
+                foreach ($categories as $index => $category) {
+                    if (!$category->getCategory() instanceof Article || $category->getCategory()->getProject() instanceof Project != $this->getProject() instanceof Project) {
+                        $category->delete();
+                        continue;
+                    }
+
+                    if ($category->getCategory()->getProject() instanceof Project && (!$this->getProject() instanceof Project || $this->getProject()->getID() !== $category->getCategory()->getProject()->getID())) {
+                        $category->delete();
+                        continue;
+                    }
+
+                    $this->_categories[$index] = $category;
+                }
+            }
+        }
+
+        /**
+         * @param Article $category
+         * @return bool
+         */
+        public function hasCategory(Article $category)
+        {
+            foreach ($this->getCategories() as $article_category) {
+                if ($category->getID() == $article_category->getCategory()->getID())
+                    return true;
+            }
+
+            return false;
+        }
+
+        public function addCategory($category, $save = true)
+        {
+            $article_category = new ArticleCategoryLink();
+            $article_category->setArticle($this);
+            $article_category->setCategory($category);
+            if ($save) {
+                $article_category->save();
+            } else {
+                if ($this->_categories === null) {
+                    $this->_categories = [];
+                }
+                $this->_categories[] = $article_category;
             }
         }
 
@@ -570,9 +592,9 @@
         }
 
         /**
-         * @return Project
+         * @return ?Project
          */
-        public function getProject()
+        public function getProject(): ?Project
         {
             return $this->_b2dbLazyLoad('_project_id');
         }
@@ -662,7 +684,7 @@
         /**
          * Return an array with all files attached to this issue
          *
-         * @return array
+         * @return File[]
          */
         public function getFiles()
         {
@@ -677,7 +699,7 @@
         protected function _populateFiles()
         {
             if ($this->_files === null) {
-                $this->_files = File::getByArticleID($this->getID());
+                $this->_files = ArticleFiles::getTable()->getByArticleID($this->getID());
             }
         }
 
@@ -700,13 +722,14 @@
         }
 
         /**
-         * Attach a file to the issue
+         * Attach a file to the article
          *
          * @param File $file The file to attach
+         * @param null $timestamp
          */
-        public function attachFile(File $file, $file_comment = '', $file_description = '')
+        public function attachFile(File $file, $timestamp = null)
         {
-            ArticleFiles::getTable()->addByArticleIDandFileID($this->getID(), $file->getID());
+            ArticleFiles::getTable()->addByArticleIDandFileID($this->getID(), $file->getID(), $timestamp);
             if ($this->_files !== null) {
                 $this->_files[$file->getID()] = $file;
             }
@@ -728,35 +751,8 @@
             $file->delete();
         }
 
-        public function canDelete()
-        {
-            $namespaces = $this->getNamespaces();
-
-            if (count($namespaces) > 0) {
-                $key = $namespaces[0];
-                $project = Project::getByKey($key);
-                if ($project instanceof Project) {
-                    if ($project->isArchived())
-                        return false;
-                }
-            }
-
-            return framework\Context::getModule('publish')->canUserDeleteArticle($this);
-        }
-
         public function canEdit()
         {
-            $namespaces = $this->getNamespaces();
-
-            if (count($namespaces) > 0) {
-                $key = $namespaces[0];
-                $project = Project::getByKey($key);
-                if ($project instanceof Project) {
-                    if ($project->isArchived())
-                        return false;
-                }
-            }
-
             return framework\Context::getModule('publish')->canUserEditArticle($this);
         }
 
@@ -774,19 +770,14 @@
             return null;
         }
 
-        public function hasAccess()
+        public function hasAccess(): bool
         {
             $project = $this->getProject();
 
             if ($project instanceof Project && $project->isArchived())
                 return false;
 
-            return $this->canRead();
-        }
-
-        public function canRead()
-        {
-            return framework\Context::getModule('publish')->canUserReadArticle($this);
+            return framework\Context::getUser()->canReadArticlesInProject($this->getProject());
         }
 
         /**
@@ -824,7 +815,7 @@
         /**
          * Return the parent article (if any)
          *
-         * @return Article
+         * @return ?Article
          */
         public function getParentArticle()
         {
@@ -846,9 +837,9 @@
         /**
          * Return the redirect article (if any)
          *
-         * @return Article
+         * @return ?Article
          */
-        public function getRedirectArticle()
+        public function getRedirectArticle(): ?Article
         {
             return $this->_b2dbLazyLoad('_redirect_article_id');
         }
@@ -860,6 +851,9 @@
             }
         }
 
+        /**
+         * @return Article[]
+         */
         public function getChildArticles()
         {
             $this->_populateChildArticles();
@@ -956,7 +950,7 @@
                         return framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $this->getProject()->getKey(), 'article_id' => (int)$this->getId(), 'article_name' => $this->getName()]);
                     }
 
-                    return framework\Context::getRouting()->generate('publish_article', ['article_id' => (int)$this->getId(), 'article_name' => $this->getName()]);
+                    return framework\Context::getRouting()->generate('publish_article', ['article_id' => (int) $this->getId(), 'article_name' => $this->getName()]);
 
                 case 'history':
                     return framework\Context::getRouting()->generate('publish_article_history', ['article_id' => (int)$this->getId(), 'article_name' => $this->getName()]);
@@ -972,21 +966,26 @@
             return '';
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if (!framework\Context::isCLI()) {
                 $this->_date = NOW;
                 $this->_author = framework\Context::getUser();
             }
+
+//            if (!$is_new) {
+//                $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
+//                ArticleHistory::getTable()->addArticleHistory($this->_name, $this->_old_content, $this->_content, $user_id);
+//            }
         }
 
-        protected function _postDelete()
+        protected function _postDelete(): void
         {
-//            ArticleLinks::getTable()->deleteLinksByArticle($this->getName());
-            ArticleCategoryLinks::getTable()->deleteByArticleId($this->getID());
-//            ArticleHistory::getTable()->deleteHistoryByArticle($this->getName());
             ArticleFiles::getTable()->deleteFilesByArticleID($this->getID());
+            ArticleCategoryLinks::getTable()->deleteByArticleId($this->getID());
+            $new_parent_id = ($this->getParentArticle() instanceof self) ? $this->getParentArticle()->getID() : 0;
+            Articles::getTable()->updateParentArticleId($this->getID(), $new_parent_id);
         }
 
         /**
@@ -1010,8 +1009,16 @@
             $this->_name = $name;
         }
 
-        protected function _postSave($is_new)
+        protected function _clone(): void
         {
+            $this->_is_clone = true;
+        }
+
+        protected function _postSave(bool $is_new): void
+        {
+            if ($this->_is_clone)
+                return;
+
             if ($is_new) {
                 if ($this->hasMentions()) {
                     foreach ($this->getMentions() as $user) {
@@ -1029,6 +1036,14 @@
 
                 if ($history_item !== null) $this->_addUpdateNotifications($history_item['author']);
             }
+
+            //            if (!$is_new) {
+//                $this->_old_content = $this->_content;
+//                $this->_history = null;
+//
+//                $revision = ArticleHistory::getTable()->getLatestByArticleId($this->getID());
+//                Event::createNew('core', 'pachno\core\entities\Article::doSave', $this, ['revision' => $revision, 'user_id' => $revision->getUserId()])->trigger();
+//            }
 
             if (framework\Context::getUser() instanceof User && framework\Context::getUser()->getNotificationSetting(Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES, false)->isOn() && !$this->isSubscriber(framework\Context::getUser())) {
                 $this->addSubscriber(framework\Context::getUser()->getID());
@@ -1253,6 +1268,36 @@
             $this->_redirect_slug = $redirect_slug;
         }
 
+        public function getRedirectUrl()
+        {
+            if ($this->getProject() instanceof Project) {
+                return Context::getRouting()->generate('publish_project_redirect_article', ['project_key' => $this->getProject()->getKey(), 'slug' => $this->_redirect_slug]);
+            }
+
+            return Context::getRouting()->generate('publish_global_redirect_article', ['slug' => $this->_redirect_slug]);
+        }
+
+        public function getCategoryParentsArray()
+        {
+            $parents = [];
+            $article = $this;
+
+            foreach ($article->getCategories() as $articleCategoryLink) {
+                $category_id = $articleCategoryLink->getCategory()->getID();
+                $parents[$category_id] = $articleCategoryLink->getCategory()->getName();
+
+                do {
+                    $parent = ($articleCategoryLink instanceof self) ? $articleCategoryLink->getParentArticle() : $articleCategoryLink->getCategory()->getParentArticle();
+                    if ($parent instanceof self) {
+                        $parents[$parent->getId()] = $parent->getName();
+                        $articleCategoryLink = $parent;
+                    }
+                } while ($parent instanceof self);
+            }
+
+            return $parents;
+        }
+
         public function getParentsArray()
         {
             $parents = [];
@@ -1274,10 +1319,420 @@
             return $parents;
         }
 
+        /**
+         * @param $include_attachments
+         * @param $include_comments
+         * @param $include_child_articles
+         * @param Article|null $parent_article
+         *
+         * @return Article|null
+         */
+        public function copy($include_attachments, $include_comments, $include_child_articles, Article $parent_article = null): ?Article
+        {
+            $article = clone $this;
+            if ($parent_article instanceof self) {
+                $article->setParentArticle($parent_article);
+            } else {
+                $article->setName($article->getName() . ' (copy)');
+            }
+
+            $article->save();
+
+            foreach ($this->getCategories() as $category) {
+                $article_category = new ArticleCategoryLink();
+                $article_category->setArticle($article);
+                $article_category->setCategory($category);
+                $article_category->save();
+            }
+
+            if ($include_attachments) {
+                foreach ($this->getFiles() as $file) {
+                    $article->attachFile($file, $file->getUploadedAt());
+                }
+            }
+
+            if ($include_comments) {
+                foreach ($this->getComments() as $comment) {
+                    $new_comment = clone $comment;
+                    $new_comment->setTargetID($article->getID());
+                    $new_comment->save();
+                }
+            }
+
+            if ($include_child_articles) {
+                foreach ($this->getChildArticles() as $child_article) {
+                    $child_article->copy($include_attachments, $include_comments, $include_child_articles,  $article);
+                }
+            }
+
+            return $article;
+        }
+
         public function isMainPage()
         {
             $name = str_replace(' ', '', mb_strtolower(trim($this->getName())));
-            return $name == 'mainpage';
+            if (!$name == 'mainpage') {
+                return false;
+            }
+
+            $mainpage = Articles::getTable()->getOrCreateMainPage($this->getProject());
+            return ($mainpage->getID() === $this->getID());
+        }
+
+        protected function convertLine($content_line, &$blocks = null)
+        {
+            $content_line = preg_replace_callback('/\!(.*?)/i', function ($matches) {
+                return $matches[1];
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/<(nowiki|pre)>(.*)<\/(\\1)>(?!<\/(\\1)>)/ismU', function ($matches) {
+                return '<span class="inline-code">' . str_replace(['<', '>'], ['<', '>'], $matches[2]) . '</span>';
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/<source((?:\s+[^\s]+=.*)*)>\s*?(.+)\s*?<\/source>/ismU', function ($matches) {
+                return '<span class="inline-code">' . str_replace(['<', '>'], ['<', '>'], $matches[2]) . '</span>';
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(^|[ \t\r\n])((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;\[\]\/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9\[\]$_.+!*(),;\/?:@&~=-]*))?([A-Za-z0-9\[\]$_+!*();\/?:~-]))/', function ($matches) {
+                $href = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
+                $href = str_replace(['[', ']'], ['&#91;', '&#93;'], $href);
+
+                return link_tag($href, $href, ['target' => '_new']);;
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(\[\[(\:?([^\]]*?)\:)?([^\]]*?)(\|([^\]]*?))?\]\]([a-z]+)?)/i', function ($matches) use (&$blocks) {
+                $href = html_entity_decode($matches[4], ENT_QUOTES, 'UTF-8');
+                if (isset($matches[6]) && $matches[6]) {
+                    $title = $matches[6];
+                } else {
+                    $title = $href;
+                    if (isset($matches[7]) && $matches[7]) {
+                        $title .= $matches[7];
+                    }
+                }
+                $namespace = $matches[3];
+
+                if (mb_strtolower($namespace) == 'category') {
+                    return '';
+                }
+
+                if (mb_strtolower($namespace) == 'image') {
+                    if ($blocks === null)
+                        return $matches[0];
+
+                    $file = $this->getFileByFilename($href);
+                    if (!$file instanceof File)
+                        return $matches[0];
+
+                    $options = explode('|', $title);
+                    $caption = (!empty($options)) ? array_pop($options) : htmlentities($file->getDescription(), ENT_COMPAT, Context::getI18n()->getCharset());
+                    $caption = ($caption != '') ? $caption : htmlentities($file->getOriginalFilename(), ENT_COMPAT, Context::getI18n()->getCharset());
+                    $file_link = make_url('showfile', ['id' => $file->getID()], false);
+
+                    $blocks[] = [
+                        'type' => 'image',
+                        'data' => [
+                            'file' => ['url' => $file_link],
+                            'caption' => $caption,
+                            'withBorder' => false,
+                            'withBackground' => false,
+                            'stretched' => false
+                        ]
+                    ];
+
+                    return '';
+                    //$file_id = \pachno\core\entities\tables\Files::get
+                }
+
+                if (in_array(mb_strtolower($namespace), ['wikipedia', 'wiki'])) {
+                    if (Context::isCLI()) return $href;
+
+                    $options = explode('|', $title);
+                    $title = (array_key_exists(5, $matches) && (mb_strpos($matches[5], '|') !== false) ? '' : $namespace . ':') . array_pop($options);
+
+                    return link_tag('http://en.wikipedia.org/wiki/' . $href, $href);
+                }
+
+                if ($namespace == 'TBG') {
+                    if (Context::isCLI()) return $href;
+                    if (!Context::getRouting()->hasRoute($href)) return $href;
+
+                    $options = explode('|', $title);
+                    $title = array_pop($options);
+
+                    try {
+                        return link_tag(make_url($href), $title); // $this->parse_image($href,$title,$options);
+                    } catch (Exception $e) {
+                        return $href;
+                    }
+                }
+
+                if (mb_substr($href, 0, 1) == '/') {
+                    if (Context::isCLI()) return $href;
+
+                    $options = explode('|', $title);
+                    $title = array_pop($options);
+
+                    return link_tag($href, $title); // $this->parse_image($href,$title,$options);
+                }
+
+                $title = preg_replace('/\(.*?\)/', '', $title);
+                $title = preg_replace('/^.*?\:/', '', $title);
+
+                if (!$namespace || !array_key_exists($namespace, ['ftp', 'http', 'https', 'gopher', 'mailto', 'news', 'nntp', 'telnet', 'wais', 'file', 'prospero', 'aim', 'webcal'])) {
+                    $project = ($namespace) ? Project::getByKey($namespace) : null;
+                    $title = (isset($title)) ? $title : $href;
+
+                    if (Context::isCLI()) return $href;
+
+                    $article = Articles::getTable()->getArticleByName($href, $project, true);
+                    if (!$article instanceof Article) {
+                        $article = Articles::getTable()->getArticleByName($href, $project, false);
+                    }
+                    $id = ($article instanceof Article) ? $article->getID() : '';
+                    $completed_class= ($article instanceof Article) ? 'completed' : 'invalid';
+                    return '<span class="inline-mention article-link ' . $completed_class . '" data-article-id="' . $id . '">' . $href . '</span>';
+                } else {
+                    $href = $namespace . ':' . $this->_wiki_link($href);
+                }
+
+                if (Context::isCLI()) return $href;
+
+                return link_tag($href, $title);
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(\[([^\]]*?)(?:\s+([^\]]*?))?\])/i', function ($matches) {
+                if (!is_array($matches)) {
+                    if (is_null($matches)) return '';
+
+                    $href = $title = html_entity_decode($matches, ENT_QUOTES, 'UTF-8');
+                } else {
+                    $href = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
+                    $title = (array_key_exists(3, $matches)) ? $matches[3] : $matches[2];
+
+                    if (Context::isCLI()) return $href;
+                }
+
+                return link_tag(str_replace(['[', ']'], ['&#91;', '&#93;'], $href), str_replace(['[', ']'], ['&#91;', '&#93;'], $title), ['target' => '_new']);
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(\'{2,5})(.*?)(\'{2,5})/', function ($matches) {
+                $amount = mb_strlen($matches[1]);
+                switch ($amount) {
+                    case 2:
+                    case 4:
+                        return "<i>{$matches[2]}</i>";
+                    case 3:
+                        return "<b>{$matches[2]}</b>";
+                    case 5:
+                        return "<i><b>{$matches[2]}</b></i>";
+                }
+
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/\B\@([\w\-.]+)/i', function ($matches) {
+                $matched_user = (mb_substr($matches[1], -1) === '.') ? mb_substr($matches[1], 0, -1) : $matches[1];
+                $user = Users::getTable()->getByUsername($matched_user);
+
+                if (!$user instanceof User) {
+                    return $matches[0];
+                }
+
+                return '<span class="inline-mention user-link" data-user-id="' . $user->getId() . '">' . $matched_user . '</span>';
+            }, $content_line);
+
+            $content_line = preg_replace_callback(TextParser::getIssueRegex(), function ($matches) {
+                $issue = Issue::getIssueFromLink($matches[2]);
+                if ($issue instanceof Issue) {
+                    return $matches[1] . '<span class="inline-mention issue-link completed" data-issue-id="' . $issue->getId() . '">' . $matches[2] . '</span>';
+                } else {
+                    return $matches[1] . $matches[2];
+                }
+
+            }, $content_line);
+
+            return $content_line;
+        }
+
+        public function convert()
+        {
+            Context::loadLibrary('ui');
+            $this->setContentSyntax(framework\Settings::SYNTAX_EDITOR_JS);
+            $blocks = [];
+            $content = str_replace(['{{TOC}}'], [''], $this->getContent());
+            $content_lines = explode("\n", $content);
+            $previous_block = null;
+            $tablemode = false;
+
+            foreach ($content_lines as $content_line) {
+                if (!trim($content_line)) {
+                    continue;
+                }
+
+                if ($tablemode === false && strpos(strtolower($content_line), '{|') === 0) {
+                    $blocks[] = ['type' => 'table', 'data' => ['content' => []]];
+                    $tablemode = 'true';
+
+                    continue;
+                }
+
+                if (strpos(strtolower($content_line), '|}') === 0) {
+                    $tablemode = false;
+
+                    continue;
+                }
+
+                if ($tablemode && strpos(strtolower($content_line), '|-') === 0) {
+                    continue;
+                }
+
+                if ($tablemode) {
+                    $is_header = stripos($content_line, '!!') !== false;
+                    $columns = ($is_header) ? explode('!!', $content_line) : explode('||', $content_line);
+                    $items = [];
+                    foreach ($columns as $column) {
+                        $content = ltrim($column, '!|');
+                        $items[] = ($is_header) ? '<b>' . $this->convertLine($content) . '</b>' : $this->convertLine($content);
+                    }
+                    $blocks[count($blocks) - 1]['data']['content'][] = $items;
+
+                    continue;
+                }
+
+                if ($previous_block !== 'nowiki' && stripos(strtolower($content_line), '<nowiki>') === 0) {
+                    $blocks[] = ['type' => 'code', 'data' => ['code' => '']];
+                    $previous_block = 'nowiki';
+                    $content_line = substr($content_line, 8);
+
+                    if (trim($content_line) == '')
+                        continue;
+                }
+
+                if (stripos(strtolower($content_line), '</nowiki>') === 0) {
+                    $previous_block = '';
+
+                    continue;
+                }
+
+                if ($previous_block === 'nowiki') {
+                    $content_line = trim($content_line);
+
+                    if (substr($content_line, -9) == "</nowiki>") {
+                        $content_line = substr($content_line, 0, strlen($content_line) - 9);
+                        $previous_block = '';
+                    }
+
+                    $blocks[count($blocks) - 1]['data']['code'] .= str_replace(['<', '>'], ['<', '>'], $content_line) . "\n";
+
+                    if (substr($content_line, -9) == "</nowiki>") {
+                        $previous_block = '';
+                    }
+
+                    continue;
+                }
+
+                if ($previous_block !== 'source' && stripos(strtolower($content_line), '<source') === 0) {
+                    $blocks[] = ['type' => 'code', 'data' => ['code' => '']];
+                    $previous_block = 'source';
+                    $content_line = substr($content_line, strpos($content_line, '>') + 1);
+
+                    if (trim($content_line) == '')
+                        continue;
+                }
+
+                if (stripos(strtolower($content_line), '</source>') === 0) {
+                    $previous_block = '';
+
+                    continue;
+                }
+
+                if ($previous_block === 'source') {
+                    $content_line = trim($content_line);
+
+                    if (substr($content_line, -9) == "</source>") {
+                        $content_line = substr($content_line, 0, strlen($content_line) - 9);
+                        $previous_block = '';
+                    }
+
+                    $blocks[count($blocks) - 1]['data']['code'] .= str_replace(['<', '>'], ['<', '>'], $content_line) . "\n";
+
+                    if (substr($content_line, -9) == "</source>") {
+                        $previous_block = '';
+                    }
+
+                    continue;
+                }
+
+                if (stripos($content_line, '=') === 0) {
+                    preg_replace_callback('/^(\={1,6})(.*?)(\={1,6})$/', function ($matches) use (&$blocks) {
+                        $level = mb_strlen($matches[1]);
+                        $blocks[] = ['type' => 'header', 'data' => ['text' => trim($matches[2]), 'level' => $level]];
+                    }, $content_line);
+                    $previous_block = 'header';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '  ') === 0) {
+                    $content_line = trim($content_line);
+                    if ($previous_block === 'code') {
+                        $blocks[count($blocks) - 1]['data']['code'] .= "\n" . $content_line;
+                    } else {
+                        $blocks[] = ['type' => 'code', 'data' => ['code' => $content_line]];
+                    }
+                    $previous_block = 'code';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '*') === 0) {
+                    $content_line = trim(substr($content_line, 1));
+                    if ($previous_block === 'unordered-list') {
+                        $blocks[count($blocks) - 1]['data']['items'][] = $this->convertLine($content_line);
+                    } else {
+                        $blocks[] = ['type' => 'list', 'data' => ['style' => 'unordered', 'items' => [$this->convertLine($content_line)]]];
+                    }
+                    $previous_block = 'unordered-list';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '#') === 0) {
+                    $content_line = trim(substr($content_line, 1));
+                    if ($previous_block === 'ordered-list') {
+                        $blocks[count($blocks) - 1]['data']['items'][] = $this->convertLine($content_line);
+                    } else {
+                        $blocks[] = ['type' => 'list', 'data' => ['style' => 'ordered', 'items' => [$this->convertLine($content_line)]]];
+                    }
+                    $previous_block = 'ordered-list';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '----') === 0) {
+                    $blocks[] = ['type' => 'delimiter', 'data' => []];
+                    $previous_block = 'delimiter';
+
+                    continue;
+                }
+
+                $previous_block = 'paragraph';
+                $blocks[] = ['type' => 'paragraph', 'data' => ['text' => $this->convertLine($content_line, $blocks)]];
+            }
+
+            $blocks[] = ['type' => 'paragraph', 'data' => ['text' => '']];
+            $json = ['time' => $this->getLastUpdatedDate() * 1000, 'blocks' => $blocks, 'version' => '2.17.0'];
+
+            $this->setContent(json_encode($json, JSON_THROW_ON_ERROR));
+        }
+
+        public function updateChecklistItem($block_index, $list_index, $checked)
+        {
+            $json = json_decode($this->_content, true);
+            if (is_array($json)) {
+                $json['blocks'][$block_index]['data']['items'][$list_index]['checked'] = $checked;
+                $this->setContent(json_encode($json, JSON_THROW_ON_ERROR));
+            }
         }
 
     }

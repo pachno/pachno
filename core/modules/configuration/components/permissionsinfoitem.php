@@ -9,7 +9,7 @@
         <?php elseif ($mode == 'datatype'): ?>
             <?php $image_tag = image_tag('permission_unset_ok.png'); ?>
         <?php elseif ($mode == 'general' && $type == 'everyone'): ?>
-            <?php $image_tag = (\pachno\core\framework\Settings::isPermissive()) ? image_tag('permission_unset_ok.png') : image_tag('permission_unset_denied.png'); ?>
+            <?php $image_tag = image_tag('permission_unset_denied.png'); ?>
         <?php elseif ($mode == 'configuration' && $type == 'everyone'): ?>
             <?php $image_tag = image_tag('permission_unset_denied.png'); ?>
         <?php elseif ($mode == 'pages' && $type == 'everyone'): ?>
@@ -39,7 +39,7 @@
             <?php elseif ($mode == 'datatype'): ?>
                 <?php $image_tag = image_tag('permission_unset_ok.png'); ?>
             <?php elseif ($mode == 'general' && $type == 'everyone'): ?>
-                <?php $image_tag = (\pachno\core\framework\Settings::isPermissive()) ? image_tag('permission_unset_ok.png') : image_tag('permission_unset_denied.png'); ?>
+                <?php $image_tag = image_tag('permission_unset_denied.png'); ?>
             <?php elseif ($mode == 'configuration' && $type == 'everyone'): ?>
                 <?php $image_tag = image_tag('permission_unset_denied.png'); ?>
             <?php elseif ($mode == 'pages' && $type == 'everyone'): ?>

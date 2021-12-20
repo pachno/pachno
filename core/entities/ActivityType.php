@@ -8,7 +8,7 @@
     class ActivityType extends Datatype
     {
 
-        const ITEMTYPE = Datatype::ACTIVITYTYPE;
+        public const ITEMTYPE = Datatype::ACTIVITYTYPE;
 
         protected static $_items = null;
 

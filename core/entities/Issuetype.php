@@ -26,23 +26,23 @@
     class Issuetype extends Keyable
     {
 
-        const TYPE_BUG = 'bug_report';
+        public const TYPE_BUG = 'bug_report';
 
-        const TYPE_DOCUMENTATION = 'documentation_request';
+        public const TYPE_DOCUMENTATION = 'documentation_request';
 
-        const TYPE_SUPPORT = 'support_request';
+        public const TYPE_SUPPORT = 'support_request';
 
-        const TYPE_FEATURE = 'feature_request';
+        public const TYPE_FEATURE = 'feature_request';
 
-        const TYPE_ENHANCEMENT = 'enhancement';
+        public const TYPE_ENHANCEMENT = 'enhancement';
 
-        const TYPE_EPIC = 'epic';
+        public const TYPE_EPIC = 'epic';
 
-        const TYPE_USER_STORY = 'developer_report';
+        public const TYPE_USER_STORY = 'developer_report';
 
-        const TYPE_TASK = 'task';
+        public const TYPE_TASK = 'task';
 
-        const TYPE_IDEA = 'idea';
+        public const TYPE_IDEA = 'idea';
 
         static $_issuetypes = null;
 
@@ -302,13 +302,13 @@
             $this->_description = $description;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\IssuetypeSchemeLink::getTable()->deleteByIssuetypeID($this->getID());
             tables\VisibleIssueTypes::getTable()->deleteByIssuetypeID($this->getID());
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             framework\Context::getCache()->delete(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX);
         }

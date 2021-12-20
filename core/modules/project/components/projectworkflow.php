@@ -2,7 +2,7 @@
     <div id="change_workflow_box">
         <div class="backdrop_detail_header">
             <span><?php echo __('Change workflow'); ?></span>
-            <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+            <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
         </div>
         <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" onsubmit="Pachno.Project.workflowtable('<?php echo make_url('configure_projects_workflow_table', array('project_id' => $project->getID())); ?>', <?php echo $project->getID(); ?>);return false;" action="<?php echo make_url('configure_projects_workflow_table', array('project_id' => $project->getID())); ?>" method="post" id="workflow_form" enctype="multipart/form-data">
             <div id="backdrop_detail_content" class="backdrop_detail_content">

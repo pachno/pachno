@@ -1,42 +1,27 @@
+@import 'widgets/attachment';
 @import 'widgets/avatar';
 @import 'widgets/buttons';
 @import 'widgets/card-badge';
 @import 'widgets/card';
 @import 'widgets/collapser';
+@import 'widgets/count-badge';
+@import 'widgets/diff';
 @import 'widgets/dropdowns';
 @import 'widgets/fancy-checkbox';
 @import 'widgets/fancy-dropdown';
 @import 'widgets/fancy-label-select';
 @import 'widgets/fancy-tabs';
 @import 'widgets/fancy-tag-input';
+@import 'widgets/favourite-toggle';
 @import 'widgets/interactive-toggle';
 @import 'widgets/issuetype-badge';
 @import 'widgets/list-mode';
 @import 'widgets/paginator';
+@import 'widgets/percentbar';
+@import 'widgets/property-list';
 @import 'widgets/slider';
 @import 'widgets/tooltip';
 @import 'variables';
-
-.count-badge {
-  font-weight: $theme-font-weight-regular;
-  font-size: 0.8em;
-  color: rgba(50, 50, 50, 0.6);
-  margin-left: 5px;
-  border-radius: 3px;
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-  padding: 3px 6px;
-  background-color: rgba(200, 200, 200, .3);
-
-  span:first-child {
-    margin-right: 5px;
-  }
-
-  + span {
-    margin-left: .35em;
-  }
-}
 
 .rotate-90 {
   transform: rotate(-90deg);

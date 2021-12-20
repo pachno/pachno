@@ -12,6 +12,7 @@
     use pachno\core\entities\Project;
     use pachno\core\entities\SavedSearch;
     use pachno\core\entities\tables;
+    use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\entities\tables\Projects;
@@ -97,10 +98,10 @@
             } while ($found_issue instanceof Issue && !$found_issue->hasAccess());
 
             if ($found_issue instanceof Issue) {
-                $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $found_issue->getProject()->getKey(), 'issue_no' => $found_issue->getFormattedIssueNo()]));
+                $this->forward($found_issue->getUrl());
             } else {
                 framework\Context::setMessage('issue_message', $this->getI18n()->__('There are no more issues in that direction.'));
-                $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                $this->forward($issue->getUrl());
             }
         }
 
@@ -244,7 +245,7 @@
             if (!$issue->canEditIssueDetails()) {
                 $this->getResponse()->setHttpStatus(403);
 
-                return $this->forward403($this->getI18n()->__("You don't have permission to move this issue"));
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have permission to move this issue")]);
             }
 
             if (!$project instanceof Project) {
@@ -263,7 +264,7 @@
                 if (!$issue->canEditIssueDetails()) {
                     $this->getResponse()->setHttpStatus(403);
 
-                    return $this->forward403($this->getI18n()->__("You don't have permission to move this issue"));
+                    return $this->renderJSON(['error' => $this->getI18n()->__("You don't have permission to move this issue")]);
                 }
 
                 $issue->clearUserWorkingOnIssue();
@@ -288,24 +289,7 @@
                 framework\Context::setMessage('issue_error', framework\Context::getI18n()->__('The issue was not moved, since the project is the same'));
             }
 
-            return $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $project->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
-        }
-
-        /**
-         * Frontpage
-         *
-         * @param Request $request
-         */
-        public function runIndex(Request $request)
-        {
-            if (Settings::isSingleProjectTracker()) {
-                if (($projects = Project::getAllRootProjects(false)) && $project = array_shift($projects)) {
-                    $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]));
-                }
-            }
-            $this->forward403unless($this->getUser()->hasPageAccess('home'));
-            $this->links = tables\Links::getTable()->getMainLinks();
-            $this->show_project_list = Settings::isFrontpageProjectListVisible();
+            return $this->renderJSON(['forward' => $issue->getUrl()]);
         }
 
         /**
@@ -349,7 +333,7 @@
                     'project_count' => count($projects),
                     'list_mode' => $list_mode,
                     'project_state' => $project_state,
-                    'show_project_config_link' => $this->getUser()->canAccessConfigurationPage(Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable(),
+                    'show_project_config_link' => $this->getUser()->canSaveConfiguration() && framework\Context::getScope()->hasProjectsAvailable(),
                 ])
             ]);
         }
@@ -364,53 +348,74 @@
                     switch ($request['say']) {
                         case 'install-module':
                             try {
-                                entities\Module::downloadModule($request['module_key']);
+                                if (framework\Context::getScope()->isDefault()) {
+                                    if ((bool) $request['download']) {
+                                        entities\Module::downloadModule($request['module_key']);
+                                    } elseif ((bool) $request['install_update']) {
+                                        entities\Module::extractModuleArchive($request['module_key']);
+                                    }
+                                }
                                 $module = entities\Module::installModule($request['module_key']);
+                                if (framework\Context::getScope()->isDefault() && $module->hasComposerDependencies()) {
+                                    $data['message'] = framework\Context::getI18n()->__('The module "%module_name" was installed successfully, including dependencies. Before you can use the new module, you have to run %composer_update from the main pachno directory.', ['%module_name' => $module->getLongName(), '%composer_update' => '<span class="command_box">composer update</span>']);
+                                } elseif (framework\Context::getScope()->isDefault()) {
+                                    $data['message'] = framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]);
+                                } else {
+                                    $data['message'] = framework\Context::getI18n()->__('The module "%module_name" was enabled successfully', ['%module_name' => $module->getLongName()]);
+                                }
                                 $data['installed'] = true;
                                 $data['module_key'] = $request['module_key'];
-                                $data['module'] = $this->getComponentHTML('configuration/modulebox', ['module' => $module]);
+                                $data['module'] = $this->getComponentHTML('configuration/module', ['module' => $module]);
                             } catch (framework\exceptions\ModuleDownloadException $e) {
                                 $this->getResponse()->setHttpStatus(400);
                                 switch ($e->getCode()) {
                                     case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
                                         return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to retrieve the module data')]);
-                                        break;
                                     case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
                                         return $this->renderJSON(['message' => $this->getI18n()->__('The module could not be downloaded')]);
-                                        break;
                                     case framework\exceptions\ModuleDownloadException::READONLY_TARGET:
-                                        return $this->renderJSON(['title' => $this->getI18n()->__('Error extracting module zip'), 'message' => $this->getI18n()->__('Could not extract the module into the destination folder. Please check permissions.')]);
-                                        break;
+                                    case framework\exceptions\ModuleDownloadException::EXTRACT_ERROR:
+                                        return $this->renderJSON(['title' => $this->getI18n()->__('Error extracting module zip'), 'message' => $this->getI18n()->__('Could not extract the module into the destination folder. Make sure you have write access to the modules folder and try again.')]);
                                 }
                             } catch (Exception $e) {
                                 $this->getResponse()->setHttpStatus(400);
 
-                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to install the module')]);
+                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to install the module: ' . $e->getMessage())]);
                             }
                             break;
-                        case 'install-theme':
+                        case 'uninstall-module':
                             try {
-                                entities\Module::downloadTheme($request['theme_key']);
-                                $data['installed'] = true;
-                                $data['theme_key'] = $request['theme_key'];
-                                $themes = framework\Context::getThemes();
-                                $data['theme'] = $this->getComponentHTML('configuration/theme', ['theme' => $themes[$request['theme_key']]]);
-                            } catch (framework\exceptions\ModuleDownloadException $e) {
-                                $this->getResponse()->setHttpStatus(400);
-                                switch ($e->getCode()) {
-                                    case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
-                                        return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to retrieve the module data')]);
-                                        break;
-                                    case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
-                                        return $this->renderJSON(['message' => $this->getI18n()->__('The module could not be downloaded')]);
-                                        break;
+                                $module = framework\Context::getModule($request['module_key']);
+                                $module->uninstall();
+                                $data['uninstalled'] = true;
+                                $data['module_key'] = $request['module_key'];
+                                $data['module'] = $this->getComponentHTML('configuration/module', ['module' => $module]);
+                                if (framework\Context::getScope()->isDefault()) {
+                                    $data['message'] = $this->getI18n()->__('The module has been uninstalled');
+                                } else {
+                                    $data['message'] = $this->getI18n()->__('The module has been disabled');
                                 }
                             } catch (Exception $e) {
                                 $this->getResponse()->setHttpStatus(400);
-
-                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to install the module')]);
+                                if (!framework\Context::getScope()->isDefault()) {
+                                    return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to disable the module: ' . $e->getMessage())]);
+                                }
+                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to uninstall the module: ' . $e->getMessage())]);
                             }
                             break;
+                        case 'toggle-module':
+                            $module = framework\Context::getModule($request['module_key']);
+                            if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH) {
+                                if ($module->isEnabled()) {
+                                    $module->disable();
+                                } else {
+                                    $module->enable();
+                                }
+                            }
+                            return $this->renderJSON([
+                                'enabled' => $module->isEnabled(),
+                                'message' => ($module->isEnabled()) ? $this->getI18n()->__('The module is enabled') : $this->getI18n()->__('The module is disabled')
+                            ]);
                         case 'notificationstatus':
                             $notification = tables\Notifications::getTable()->selectById($request['notification_id']);
                             $data['notification_id'] = $request['notification_id'];
@@ -433,24 +438,52 @@
                             $this->getUser()->setCommentSortOrder($new_direction);
                             $data['new_direction'] = $new_direction;
                             break;
+                        case 'invite-user':
+                            $inviteUser = new entities\User();
+                            $inviteUser->setUsername($request['email']);
+                            $inviteUser->setRealname($request['email']);
+                            $inviteUser->setEmail($request['email']);
+                            $inviteUser->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                            $password = entities\User::createPassword();
+                            $inviteUser->setPassword($password);
+                            $inviteUser->save();
+                            $inviteUser->setActivated(false);
+                            $inviteUser->save();
+
+                            framework\Event::createNew('core', 'userdata::inviteUser', $inviteUser)->trigger();
+                            break;
                     }
                 } else {
                     switch ($request['say']) {
                         case 'get_module_updates':
-                            $addons_param = [];
-                            $addons_json = [];
-                            foreach ($request['addons'] as $addon) {
-                                $addons_param[] = 'addons[]=' . $addon;
-                            }
-                            try {
-                                $client = new Net_Http_Client();
-                                $client->get('https://pachno.com/addons.json?' . join('&', $addons_param));
-                                $addons_json = json_decode($client->getBody(), true);
-                            } catch (Exception $e) {
+                            if (!framework\Context::getScope()->isDefault() || framework\Settings::getConfigurationAccessLevel() != Settings::ACCESS_FULL) {
+                                return $this->renderJSON([]);
                             }
 
-                            return $this->renderJSON($addons_json);
-                            break;
+                            $addons_param = [];
+                            $addons_json = [];
+                            foreach ($request->getParameter('addons', []) as $addon) {
+                                $addons_param[] = 'addons[]=' . $addon;
+                            }
+                            if (count($addons_param)) {
+                                try {
+                                    $client = new \GuzzleHttp\Client([
+                                        'base_uri' => framework\Context::getBaseOnlineUrl(),
+                                        'verify' => framework\Context::getOnlineVerifySsl(),
+                                        'http_errors' => false
+                                    ]);
+                                    $response = $client->request('GET', '/modules/index.json?' . implode('&', $addons_param));
+
+                                    if ($response->getStatusCode() == 200) {
+                                        $addons_json = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+                                    }
+                                } catch (Exception $e) {
+                                }
+
+                                return $this->renderJSON($addons_json);
+                            }
+
+                            return $this->renderJSON([]);
                         case 'getsearchcounts':
                             $counts_json = [];
                             foreach ($request['search_ids'] as $search_id) {
@@ -467,21 +500,6 @@
 
                             return $this->renderJSON($counts_json);
                             break;
-                        case 'get_theme_updates':
-                            $addons_param = [];
-                            $addons_json = [];
-                            foreach ($request['addons'] as $addon) {
-                                $addons_param[] = 'themes[]=' . $addon;
-                            }
-                            try {
-                                $client = new Net_Http_Client();
-                                $client->get('https://pachno.com/themes.json?' . join('&', $addons_param));
-                                $addons_json = json_decode($client->getBody(), true);
-                            } catch (Exception $e) {
-                            }
-
-                            return $this->renderJSON($addons_json);
-                            break;
                         case 'verify_module_update_file':
                             $filename = PACHNO_CACHE_PATH . $request['module_key'] . '.zip';
                             $exists = file_exists($filename) && dirname($filename) . DS == PACHNO_CACHE_PATH;
@@ -489,48 +507,110 @@
                             return $this->renderJSON(['verified' => (int)$exists]);
                             break;
                         case 'get_modules':
-                            return $this->renderComponent('configuration/onlinemodules');
+                            return $this->renderJSON(['component' => $this->getComponentHTML('configuration/onlinemodules')]);
                             break;
-                        case 'get_themes':
-                            return $this->renderComponent('configuration/onlinethemes');
+                            break;
+                        case 'get_usernames':
+                            $users = tables\Users::getTable()->getByUserIDs(explode(',', $request['user_ids']));
+                            $data['users'] = [];
+                            foreach ($users as $user) {
+                                $data['users'][] = ['id' => $user->getID(), 'name' => $user->getName()];
+                            }
+                            break;
+                        case 'get_articlenames':
+                            $articles = tables\Articles::getTable()->getByArticleIds(explode(',', $request['article_ids']));
+                            $data['articles'] = [];
+                            foreach ($articles as $article) {
+                                $data['articles'][] = ['id' => $article->getID(), 'name' => $article->getName(), 'url' => $article->getLink()];
+                            }
+                            break;
+                        case 'get_issues':
+                            $issues = tables\Issues::getTable()->getByIssueIDs(explode(',', $request['issue_ids']));
+                            $data['issues'] = [];
+                            foreach ($issues as $issue) {
+                                $data['issues'][] = ['id' => $issue->getID(), 'name' => $issue->getName(), 'title' => $issue->getFormattedTitle(true), 'issue_no' => $issue->getIssueNo(), 'url' => $issue->getUrl(), 'closed' => ($issue->isClosed()), 'issue_type' => $issue->getIssueType()->toJSON(), 'status' => $issue->getStatus()->toJSON()];
+                            }
                             break;
                         case 'get_mentionables':
-                            switch ($request['target_type']) {
-                                case 'issue':
-                                    $target = Issues::getTable()->selectById($request['target_id']);
-                                    break;
-                                case 'article':
-                                    $target = tables\Articles::getTable()->selectById($request['target_id']);
-                                    break;
-                                case 'project':
-                                    $target = Projects::getTable()->selectById($request['target_id']);
-                                    break;
-                            }
                             $mentionables = [];
-                            if (isset($target) && $target instanceof MentionableProvider) {
-                                foreach ($target->getMentionableUsers() as $user) {
-                                    if ($user->isOpenIdLocked())
-                                        continue;
-                                    $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                            if ($request->hasParameter('value')) {
+                                switch ($request['type']) {
+                                    case 'user':
+                                        $users = tables\Users::getTable()->getByDetails($request['value'], 10);
+
+                                        foreach ($users as $user) {
+                                            if ($user->isOpenIdLocked())
+                                                continue;
+
+                                            $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                        }
+
+                                        break;
+                                    case 'article':
+                                        $target = tables\Articles::getTable()->selectById($request['target_id']);
+
+                                        foreach (Articles::getTable()->findArticles($request['value'], $target->getProject(), null, 10) as $article) {
+                                            $mentionables[] = ['id' => $article->getID(), 'name' => $article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
+                                        }
+
+                                        break;
                                 }
-                            }
-                            foreach ($this->getUser()->getFriends() as $user) {
-                                if ($user->isOpenIdLocked())
-                                    continue;
-                                $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
-                            }
-                            foreach ($this->getUser()->getTeams() as $team) {
-                                foreach ($team->getMembers() as $user) {
-                                    if ($user->isOpenIdLocked())
-                                        continue;
-                                    $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                            } else {
+                                switch ($request['target_type']) {
+                                    case 'issue':
+                                        $target = Issues::getTable()->selectById($request['target_id']);
+                                        break;
+                                    case 'article':
+                                        $target = tables\Articles::getTable()->selectById($request['target_id']);
+                                        break;
+                                    case 'project':
+                                        $target = Projects::getTable()->selectById($request['target_id']);
+                                        break;
                                 }
-                            }
-                            foreach ($this->getUser()->getClients() as $client) {
-                                foreach ($client->getMembers() as $user) {
-                                    if ($user->isOpenIdLocked())
-                                        continue;
-                                    $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                switch ($request['type']) {
+                                    case 'user':
+                                        if (isset($target) && $target instanceof MentionableProvider) {
+                                            foreach ($target->getMentionableUsers() as $user) {
+                                                if ($user->isOpenIdLocked())
+                                                    continue;
+
+                                                $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                            }
+                                        }
+                                        foreach ($this->getUser()->getFriends() as $user) {
+                                            if ($user->isOpenIdLocked())
+                                                continue;
+
+                                            $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                        }
+                                        foreach ($this->getUser()->getTeams() as $team) {
+                                            foreach ($team->getMembers() as $user) {
+                                                if ($user->isOpenIdLocked())
+                                                    continue;
+
+                                                $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                            }
+                                        }
+                                        foreach ($this->getUser()->getClients() as $client) {
+                                            foreach ($client->getMembers() as $user) {
+                                                if ($user->isOpenIdLocked())
+                                                    continue;
+
+                                                $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                            }
+                                        }
+                                        break;
+                                    case 'article':
+                                        $overview_article = Articles::getTable()->getOrCreateMainPage($target->getProject());
+                                        $mentionables[] = ['id' => $overview_article->getID(), 'name' => $overview_article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
+                                        foreach (Articles::getTable()->getSidebarArticles(false, $target->getProject()) as $article) {
+                                            $mentionables[] = ['id' => $article->getID(), 'name' => $article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
+                                        }
+                                        if (count($mentionables) > 10) {
+                                            $mentionables = array_slice($mentionables, 0, 10);
+                                        }
+
+                                        break;
                                 }
                             }
                             $data['mentionables'] = array_values($mentionables);
@@ -557,6 +637,16 @@
                                         'article' => $target
                                     ]);
                                     break;
+                                case entities\Comment::TYPE_COMMIT:
+                                    $target = tables\Commits::getTable()->selectById($request['target_id']);
+                                    $data['comments'] = $this->getComponentHTML('main/commentlist', [
+                                        'comment_count_div' => 'commit_comment_count',
+                                        'mentionable_target_type' => 'commit',
+                                        'target_type' => Comment::TYPE_COMMIT,
+                                        'target_id' => $target->getID(),
+                                        'commit' => $target
+                                    ]);
+                                    break;
                             }
                             break;
                         default:
@@ -574,18 +664,32 @@
         }
 
         /**
-         * Developer dashboard
+         * Frontpage
+         *
+         * @Route(url="/projects", name="projects_list")
          *
          * @param Request $request
          */
-        public function runDashboard(Request $request)
+        public function runProjectsList(Request $request)
         {
-            $this->forward403unless(!$this->getUser()->isGuest() && $this->getUser()->hasPageAccess('dashboard'));
-            if (Settings::isSingleProjectTracker()) {
-                if (($projects = Project::getAll()) && $project = array_shift($projects)) {
-                    framework\Context::setCurrentProject($project);
+            $this->forward403unless($this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_PROJECT_LIST));
+        }
+
+        /**
+         * User homepage
+         *
+         * @param Request $request
+         */
+        public function runIndex(Request $request)
+        {
+            if ($this->getUser()->isGuest() || !$this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_DASHBOARD)) {
+                if ($this->getUser()->isGuest()) {
+                    return $this->forward($this->getRouting()->generate('projects_list'));
+                } else {
+                    $this->forward403();
                 }
             }
+
             if ($request['dashboard_id']) {
                 $dashboard = tables\Dashboards::getTable()->selectById((int)$request['dashboard_id']);
                 if ($dashboard->getType() == entities\Dashboard::TYPE_PROJECT && !$dashboard->getProject()->hasAccess()) {
@@ -741,7 +845,15 @@
             $username = mb_strtolower(trim($request['username']));
             $available = ($username != '') ? tables\Users::getTable()->isUsernameAvailable($username) : false;
 
-            return $this->renderJSON(['available' => (bool)$available]);
+            if (!$available) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON([
+                    'error' => $this->getI18n()->__('Woops, that username is unavailable'),
+                    'errors' => ['username' => $this->getI18n()->__('Oh no, this username is unavailable!')]
+                ]);
+            }
+
+            return $this->renderJSON(['available' => (bool) $available]);
         }
 
         /**
@@ -760,11 +872,9 @@
 
             try {
                 $username = mb_strtolower(trim($request['username']));
-                $buddyname = $request['buddyname'];
                 $email = mb_strtolower(trim($request['email_address']));
                 $confirmemail = mb_strtolower(trim($request['email_confirm']));
                 $security = $request['verification_no'];
-                $realname = $request['realname'];
 
                 $available = tables\Users::getTable()->isUsernameAvailable($username);
 
@@ -772,71 +882,79 @@
                     throw new Exception($i18n->__('This username is in use'));
                 }
 
-                if (!empty($buddyname) && !empty($email) && !empty($confirmemail) && !empty($security)) {
-                    if ($email != $confirmemail) {
-                        array_push($fields, 'email_address', 'email_confirm');
-                        throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
+                if (empty($username)) {
+                    $fields['username'] = $i18n->__('Please enter your desired username.');
+                }
+
+                if (empty($email)) {
+                    $fields['email_address'] = $i18n->__('You need to fill out this field.');
+                }
+                if (empty($confirmemail)) {
+                    $fields['email_confirm'] = $i18n->__('You need to fill out this field.');
+                }
+                if (empty($security)) {
+                    $fields['verification_no'] = $i18n->__('You need to fill out this field.');
+                }
+
+                if (!empty($email) && !empty($confirmemail) && $email != $confirmemail) {
+                    $fields['email_address'] = $i18n->__('Please enter the email address twice');
+                    $fields['email_confirm'] = $i18n->__('Please enter the email address twice');
+                    throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
+                }
+
+                if (!empty($security) && $security != $_SESSION['activation_number']) {
+                    $fields['verification_no'] = $i18n->__('Woops, that seems like a wrong number');
+                    throw new Exception($i18n->__('To prevent automatic sign-ups, enter the verification number shown in the image.'));
+                }
+
+                $email_ok = false;
+
+                if (pachno_check_syntax($email, "EMAIL")) {
+                    $email_ok = true;
+                }
+
+                if ($email_ok && Settings::hasRegistrationDomainWhitelist()) {
+                    $allowed_domains = preg_replace('/[[:space:]]*,[[:space:]]*/', '|', Settings::getRegistrationDomainWhitelist());
+                    if (preg_match('/@(' . $allowed_domains . ')$/i', $email) == false) {
+                        $fields['email_address'] = $i18n->__('Please enter a valid email address');
+                        throw new Exception($i18n->__('Email adresses from this domain can not be used.'));
                     }
+                }
 
-                    if ($security != $_SESSION['activation_number']) {
-                        array_push($fields, 'verification_no');
-                        throw new Exception($i18n->__('To prevent automatic sign-ups, enter the verification number shown below.'));
-                    }
+                if ($email_ok == false) {
+                    $fields['email_address'] = $i18n->__('Please enter the email address twice');
+                    $fields['email_confirm'] = $i18n->__('Please enter the email address twice');
+                    throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
+                }
 
-                    $email_ok = false;
-
-                    if (pachno_check_syntax($email, "EMAIL")) {
-                        $email_ok = true;
-                    }
-
-                    if ($email_ok && Settings::hasRegistrationDomainWhitelist()) {
-
-                        $allowed_domains = preg_replace('/[[:space:]]*,[[:space:]]*/', '|', Settings::getRegistrationDomainWhitelist());
-                        if (preg_match('/@(' . $allowed_domains . ')$/i', $email) == false) {
-                            array_push($fields, 'email_address', 'email_confirm');
-                            throw new Exception($i18n->__('Email adresses from this domain can not be used.'));
-                        }
-                    }
-
-                    if ($email_ok == false) {
-                        array_push($fields, 'email_address', 'email_confirm');
-                        throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
-                    }
-
-                    if ($security != $_SESSION['activation_number']) {
-                        array_push($fields, 'verification_no');
-                        throw new Exception($i18n->__('To prevent automatic sign-ups, enter the verification number shown below.'));
-                    }
-
-                    $password = entities\User::createPassword();
-                    $user = new entities\User();
-                    $user->setUsername($username);
-                    $user->setRealname($realname);
-                    $user->setBuddyname($buddyname);
-                    $user->setGroup(Settings::getDefaultGroup());
-                    $user->setEnabled();
-                    $user->setPassword($password);
-                    $user->setEmail($email);
-                    $user->setJoined();
-                    $user->save();
-
-                    $_SESSION['activation_number'] = pachno_get_activation_number();
-
-                    if ($user->isActivated()) {
-                        framework\Context::setMessage('auto_password', $password);
-
-                        return $this->renderJSON(['loginmessage' => $i18n->__('After pressing %continue, you need to set your password.', ['%continue' => $i18n->__('Continue')]), 'one_time_password' => $password, 'activated' => true]);
-                    }
-
-                    return $this->renderJSON(['loginmessage' => $i18n->__('The account has now been registered - check your email inbox for the activation email. Please be patient - this email can take up to two hours to arrive.'), 'activated' => false]);
-                } else {
-                    array_push($fields, 'email_address', 'email_confirm', 'buddyname', 'verification_no');
+                if (count($fields)) {
                     throw new Exception($i18n->__('You need to fill out all fields correctly.'));
                 }
+
+                $password = entities\User::createPassword();
+                $user = new entities\User();
+                $user->setUsername($username);
+                $user->setRealname($username);
+                $user->setGroup(Settings::getDefaultGroup());
+                $user->setEnabled();
+                $user->setPassword($password);
+                $user->setEmail($email);
+                $user->setJoined();
+                $user->save();
+
+                unset($_SESSION['activation_number']);
+
+                if ($user->isActivated()) {
+                    framework\Context::setMessage('auto_password', $password);
+
+                    return $this->renderJSON(['loginmessage' => $i18n->__('After pressing %continue, you need to set your password.', ['%continue' => $i18n->__('Continue')]), 'one_time_password' => $password, 'activated' => true]);
+                }
+
+                return $this->renderJSON(['loginmessage' => $i18n->__('The account has now been registered - check your email inbox for the activation email. Please be patient - this email can take up to two hours to arrive.'), 'activated' => false]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
-                return $this->renderJSON(['error' => $i18n->__($e->getMessage()), 'fields' => $fields]);
+                return $this->renderJSON(['error' => $i18n->__($e->getMessage()), 'errors' => $fields]);
             }
         }
 
@@ -852,14 +970,27 @@
         {
             $this->getResponse()->setPage('login');
 
-            $user = tables\Users::getTable()->getByUsername(str_replace('%2E', '.', $request['user']));
+            $user = tables\Users::getTable()->getByUsername(str_replace(['%2E', '%2B', ' '], ['.', '+', '+'], $request->getRawParameter('user')));
             if ($user instanceof entities\User) {
                 if ($user->getActivationKey() != $request['key']) {
                     framework\Context::setMessage('login_message_err', framework\Context::getI18n()->__('This activation link is not valid'));
                 } else {
                     $user->setValidated(true);
                     $user->save();
-                    framework\Context::setMessage('login_message', framework\Context::getI18n()->__('Your account has been activated! You can now log in with the username %user and the password in your activation email.', ['%user' => $user->getUsername()]));
+
+                    $authentication_backend = framework\Settings::getAuthenticationBackend();
+                    if ($authentication_backend->getAuthenticationMethod() == framework\AuthenticationBackend::AUTHENTICATION_TYPE_TOKEN) {
+                        $token = $user->createUserSession();
+                        $authentication_backend->persistTokenSession($user, $token, false);
+                    } else {
+                        $password = $user->getHashPassword();
+                        $authentication_backend->persistPasswordSession($user, $password, false);
+                    }
+
+                    framework\Context::setMessage('auto_password', entities\User::createPassword());
+
+                    return $this->forward($this->getRouting()->generate('profile_account'));
+//                    framework\Context::setMessage('login_message', framework\Context::getI18n()->__('Your account has been activated! You can now log in with the username %user and the password in your activation email.', ['%user' => $user->getUsername()]));
                 }
             } else {
                 framework\Context::setMessage('login_message_err', framework\Context::getI18n()->__('This activation link is not valid'));
@@ -885,94 +1016,31 @@
          *
          * @param Request $request
          */
-        public function runAccountRemovePassword(Request $request)
-        {
-            $passwords = $this->getUser()->getApplicationPasswords();
-            foreach ($passwords as $password) {
-                if ($password->getID() == $request['id']) {
-                    $password->delete();
-
-                    return $this->renderJSON(['message' => $this->getI18n()->__('The application password has been deleted')]);
-                }
-            }
-
-            $this->getResponse()->setHttpStatus(400);
-
-            return $this->renderJSON(['error' => $this->getI18n()->__('Cannot delete this application-specific password')]);
-        }
-
-        /**
-         * Add a new application password: ajax action
-         *
-         * @param Request $request
-         */
-        public function runAccountAddPassword(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPageAccess('account'));
-            $name = trim($request['name']);
-            if ($name) {
-                framework\Logging::log('Adding new application password for user.', 'account', framework\Logging::LEVEL_INFO);
-                $password = new entities\ApplicationPassword();
-                $password->setUser($this->getUser());
-                $password->setName($name);
-                $visible_password = strtolower(entities\User::createPassword());
-                // Internally creates a hash from this visible password & crypts that hash for storage
-                $password->setPassword($visible_password);
-                $password->save();
-                $spans = '';
-
-                for ($cc = 0; $cc < 4; $cc++) {
-                    $spans .= '<span>' . substr($visible_password, $cc * 4, 4) . '</span>';
-                }
-
-                return $this->renderJSON(['password' => $spans]);
-            } else {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter a valid name')]);
-            }
-        }
-
-        /**
-         * Change password ajax action
-         *
-         * @param Request $request
-         */
         public function runAccountChangePassword(Request $request)
         {
             $this->forward403unless($this->getUser()->hasPageAccess('account'));
             if ($request->isPost()) {
-                if ($this->getUser()->canChangePassword() == false) {
+                if ($this->getUser()->isGuest()) {
                     $this->getResponse()->setHttpStatus(400);
 
                     return $this->renderJSON(['error' => framework\Context::getI18n()->__("You're not allowed to change your password.")]);
                 }
-                if (!$request->hasParameter('current_password') || !$request['current_password']) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter your current password')]);
-                }
                 if (!$request->hasParameter('new_password_1') || !$request['new_password_1']) {
                     $this->getResponse()->setHttpStatus(400);
 
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter a new password')]);
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter a new password'), 'errors' => ['new_password_1' => $this->getI18n()->__('Please enter a password')]]);
                 }
                 if (!$request->hasParameter('new_password_2') || !$request['new_password_2']) {
                     $this->getResponse()->setHttpStatus(400);
 
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice')]);
-                }
-                if (!$this->getUser()->hasPassword($request['current_password'])) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter your current password')]);
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice'), 'errors' => ['new_password_1' => $this->getI18n()->__("These passwords don't match"), 'new_password_2' => $this->getI18n()->__("These passwords don't match")]]);
                 }
                 if ($request['new_password_1'] != $request['new_password_2']) {
                     $this->getResponse()->setHttpStatus(400);
 
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice')]);
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice'), 'errors' => ['new_password_2' => $this->getI18n()->__('Please enter the password again, here')]]);
                 }
-                $this->getUser()->changePassword($request['new_password_1']);
+                $this->getUser()->setPassword($request['new_password_1']);
                 $this->getUser()->save();
                 framework\Context::clearMessage('auto_password');
 
@@ -1006,22 +1074,22 @@
             $i_al = $issue->getAccessList();
             foreach ($i_al as $k => $item) {
                 if ($item['target'] instanceof entities\Team) {
-                    $tid = $item['target']->getID();
-                    if (array_key_exists($tid, $al_teams)) {
+                    $team_id = $item['target']->getID();
+                    if (array_key_exists($team_id, $al_teams)) {
                         unset($i_al[$k]);
                     }
                 } elseif ($item['target'] instanceof entities\User) {
-                    $uid = $item['target']->getID();
-                    if (array_key_exists($uid, $al_users)) {
+                    $user_id = $item['target']->getID();
+                    if (array_key_exists($user_id, $al_users)) {
                         unset($i_al[$k]);
                     }
                 }
             }
-            foreach ($al_users as $uid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0, true);
+            foreach ($al_users as $user_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
             }
-            foreach ($al_teams as $tid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
+            foreach ($al_teams as $team_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
             }
         }
 
@@ -1031,37 +1099,33 @@
          */
         protected function _lockIssueAfter(Request $request, $issue)
         {
-            framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, 0, false);
-            framework\Context::setPermission('canviewissue', $issue->getID(), 'core', $this->getUser()
-                ->getID(), 0, 0, true);
+            framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $this->getUser()->getID(), 0, 0);
 
             $al_users = $request->getParameter('access_list_users', []);
             $al_teams = $request->getParameter('access_list_teams', []);
             $i_al = $issue->getAccessList();
             foreach ($i_al as $k => $item) {
                 if ($item['target'] instanceof entities\Team) {
-                    $tid = $item['target']->getID();
-                    if (array_key_exists($tid, $al_teams)) {
+                    $team_id = $item['target']->getID();
+                    if (array_key_exists($team_id, $al_teams)) {
                         unset($i_al[$k]);
                     } else {
-                        framework\Context::removePermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid);
+                        framework\Context::removePermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
                     }
                 } elseif ($item['target'] instanceof entities\User) {
-                    $uid = $item['target']->getID();
-                    if (array_key_exists($uid, $al_users)) {
+                    $user_id = $item['target']->getID();
+                    if (array_key_exists($user_id, $al_users)) {
                         unset($i_al[$k]);
-                    } elseif ($uid != $this->getUser()
-                            ->getID()
-                    ) {
-                        framework\Context::removePermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0);
+                    } elseif ($user_id != $this->getUser()->getID()) {
+                        framework\Context::removePermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
                     }
                 }
             }
-            foreach ($al_users as $uid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0, true);
+            foreach ($al_users as $user_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
             }
-            foreach ($al_teams as $tid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
+            foreach ($al_teams as $team_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
             }
         }
 
@@ -1096,7 +1160,19 @@
                                 tables\IssueFiles::getTable()->addByIssueIDandFileID($issue->getID(), $file->getID());
                             }
                         }
-                        return $this->renderJSON(['issue' => $issue->toJSON()]);
+                        $json_issues = [];
+                        $component = '';
+                        if ($issue->isChildIssue()) {
+                            foreach ($issue->getParentIssues() as $parent_issue) {
+                                $json_issues[] = $parent_issue->toJSON();
+                                $component = $this->getComponentHTML('main/relatedissue', ['issue' => $issue, 'related_issue' => $parent_issue]);
+                            }
+                        }
+                        return $this->renderJSON([
+                            'issue' => $issue->toJSON(),
+                            'component' => $component,
+                            'issues' => $json_issues
+                        ]);
                     } catch (Exception $e) {
                         if ($request['return_format'] == 'planning') {
                             $this->getResponse()->setHttpStatus(400);
@@ -1144,7 +1220,7 @@
 
             $this->selected_issuetype = null;
             if ($request->hasParameter('issuetype'))
-                $this->selected_issuetype = entities\Issuetype::getByKeyish($request['issuetype']);
+                $this->selected_issuetype = tables\IssueTypes::getTable()->selectById($request['issuetype']);
 
             $this->locked_issuetype = (bool)$request['lock_issuetype'];
 
@@ -1188,10 +1264,13 @@
 
                 if (trim($this->title) == '' || $this->title == $this->default_title)
                     $errors['title'] = true;
+
                 if (isset($fields_array['shortname']) && $fields_array['shortname']['required'] && trim($this->selected_shortname) == '')
                     $errors['shortname'] = true;
+
                 if (isset($fields_array['description']) && $fields_array['description']['required'] && trim($this->selected_description) == '')
                     $errors['description'] = true;
+
                 if (isset($fields_array['reproduction_steps']) && !$request->isAjaxCall() && $fields_array['reproduction_steps']['required'] && trim($this->selected_reproduction_steps) == '')
                     $errors['reproduction_steps'] = true;
 
@@ -1204,7 +1283,7 @@
                 if (isset($fields_array['component']) && $component_id && !in_array($component_id, array_keys($fields_array['component']['values'])))
                     $errors['component'] = true;
 
-                if ($category_id = (int)$request['category_id']) {
+                if ($category_id = (int) $request['category_id']) {
                     $category = tables\ListTypes::getTable()->selectById($category_id);
 
                     if (!$category->hasAccess()) {
@@ -1273,8 +1352,8 @@
                     } else {
                         $selected_customdatatype[$customdatatype->getKey()] = null;
                         switch ($customdatatype->getType()) {
-                            case entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                            case entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
+                            case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
+                            case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
                                 if ($request->hasParameter($customdatatype_value))
                                     $selected_customdatatype[$customdatatype->getKey()] = $request->getParameter($customdatatype_value, null, false);
 
@@ -1300,11 +1379,11 @@
                         }
                     } elseif ($info['required']) {
                         $var_name = "selected_{$field}";
-                        if ((in_array($field, entities\Datatype::getAvailableFields(true)) && ($this->$var_name === null || $this->$var_name === 0)) || (!in_array($field, entities\DatatypeBase::getAvailableFields(true)) && !in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect']) && (array_key_exists($field, $selected_customdatatype) && $selected_customdatatype[$field] === null))) {
+                        if ((array_key_exists($field, entities\DatatypeBase::getAvailableFields(true)) && ($this->$var_name === null || $this->$var_name === 0)) || (!array_key_exists($field, entities\DatatypeBase::getAvailableFields(true)) && !in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect']) && (array_key_exists($field, $selected_customdatatype) && $selected_customdatatype[$field] === null))) {
                             $errors[$field] = true;
                         }
                     } else {
-                        if (in_array($field, entities\Datatype::getAvailableFields(true)) || in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])) {
+                        if (array_key_exists($field, entities\DatatypeBase::getAvailableFields(true)) || in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])) {
                             if (!$this->selected_project->fieldPermissionCheck($field)) {
                                 $permission_errors[$field] = true;
                             }
@@ -1334,6 +1413,82 @@
             }
         }
 
+        protected function _getStatusesFromRequest($request)
+        {
+            if ($request->hasParameter('status_ids')) {
+                try {
+                    $statuses = $this->selected_project->getAvailableStatuses();
+                    $request_statuses = explode(',', $request['status_ids']);
+                    $selected_statuses = [];
+                    foreach ($statuses as $status) {
+                        if (in_array($status->getID(), $request_statuses)) {
+                            $selected_statuses[$status->getID()] = $status;
+                        }
+                    }
+
+                    return $selected_statuses;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
+        protected function _getPrioritiesFromRequest($request)
+        {
+            if ($request->hasParameter('priority_ids')) {
+                try {
+                    $priorities = entities\Priority::getAll();
+                    $request_priorities = explode(',', $request['priority_ids']);
+                    $selected_priorities = [];
+                    foreach ($priorities as $priority) {
+                        if (in_array($priority->getID(), $request_priorities)) {
+                            $selected_priorities[$priority->getID()] = $priority;
+                        }
+                    }
+
+                    return $selected_priorities;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
+        protected function _getCategoriesFromRequest($request)
+        {
+            if ($request->hasParameter('category_ids')) {
+                try {
+                    $categories = entities\Category::getAll();
+                    $request_categories = explode(',', $request['category_ids']);
+                    $selected_categories = [];
+                    foreach ($categories as $category) {
+                        if (in_array($category->getID(), $request_categories)) {
+                            $selected_categories[$category->getID()] = $category;
+                        }
+                    }
+
+                    return $selected_categories;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
+        protected function _getSeveritiesFromRequest($request)
+        {
+            if ($request->hasParameter('severity_ids')) {
+                try {
+                    $severities = entities\Severity::getAll();
+                    $request_severities = explode(',', $request['severity_ids']);
+                    $selected_severities = [];
+                    foreach ($severities as $severity) {
+                        if (in_array($severity->getID(), $request_severities)) {
+                            $selected_severities[$severity->getID()] = $severity;
+                        }
+                    }
+
+                    return $selected_severities;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
         protected function _postIssue(Request $request)
         {
             $fields_array = $this->selected_project->getReportableFieldsArray($this->issuetype_id);
@@ -1341,30 +1496,41 @@
             $issue->setProject($this->selected_project);
             $issue->setIssuetype($this->issuetype_id);
             $issue->setTitle($this->title);
+
             if (isset($fields_array['shortname']))
                 $issue->setShortname($this->selected_shortname);
+
             if (isset($fields_array['description'])) {
                 $issue->setDescription($this->selected_description);
                 $issue->setDescriptionSyntax($this->selected_description_syntax);
             }
+
             if (isset($fields_array['reproduction_steps'])) {
                 $issue->setReproductionSteps($this->selected_reproduction_steps);
                 $issue->setReproductionStepsSyntax($this->selected_reproduction_steps_syntax);
             }
-            if (isset($fields_array['category']) && $this->selected_category instanceof entities\Datatype)
-                $issue->setCategory($this->selected_category->getID());
-            if (isset($fields_array['status']) && $this->selected_status instanceof entities\Datatype)
-                $issue->setStatus($this->selected_status->getID());
+
+            if (isset($fields_array['category']) || $this->selected_category instanceof entities\Datatype)
+                $issue->setCategory($this->selected_category);
+
+            if ($this->selected_status instanceof entities\Datatype)
+                $issue->setStatus($this->selected_status);
+
             if (isset($fields_array['reproducability']) && $this->selected_reproducability instanceof entities\Datatype)
                 $issue->setReproducability($this->selected_reproducability->getID());
+
             if (isset($fields_array['resolution']) && $this->selected_resolution instanceof entities\Datatype)
                 $issue->setResolution($this->selected_resolution->getID());
-            if (isset($fields_array['severity']) && $this->selected_severity instanceof entities\Datatype)
-                $issue->setSeverity($this->selected_severity->getID());
-            if (isset($fields_array['priority']) && $this->selected_priority instanceof entities\Datatype)
-                $issue->setPriority($this->selected_priority->getID());
+
+            if (isset($fields_array['severity']) || $this->selected_severity instanceof entities\Datatype)
+                $issue->setSeverity($this->selected_severity);
+
+            if (isset($fields_array['priority']) || $this->selected_priority instanceof entities\Datatype)
+                $issue->setPriority($this->selected_priority);
+
             if (isset($fields_array['estimated_time']))
                 $issue->setEstimatedTime($this->selected_estimated_time);
+
             if (isset($fields_array['spent_time']))
                 $issue->setSpentTime($this->selected_spent_time);
             if (isset($fields_array['milestone']) || isset($this->selected_milestone))
@@ -1410,10 +1576,13 @@
 
             if (isset($this->parent_issue))
                 $issue->addParentIssue($this->parent_issue);
+
             if (isset($fields_array['edition']) && $this->selected_edition instanceof entities\Edition)
                 $issue->addAffectedEdition($this->selected_edition);
+
             if (isset($fields_array['build']) && $this->selected_build instanceof entities\Build)
                 $issue->addAffectedBuild($this->selected_build);
+
             if (isset($fields_array['component']) && $this->selected_component instanceof entities\Component)
                 $issue->addAffectedComponent($this->selected_component);
 
@@ -1485,7 +1654,7 @@
             }
 
             $fields_array = $this->selected_project->getReportableFieldsArray($request['issuetype_id'], true);
-            $available_fields = entities\DatatypeBase::getAvailableFields();
+            $available_fields = array_keys(entities\DatatypeBase::getAvailableFields());
             $available_fields[] = 'pain_bug_type';
             $available_fields[] = 'pain_likelihood';
             $available_fields[] = 'pain_effect';
@@ -1497,31 +1666,43 @@
          * Toggle favourite issue (starring)
          *
          * @param Request $request
+         * @return framework\JsonOutput
          */
-        public function runToggleFavouriteIssue(Request $request)
+        public function runToggleFavouriteIssue(Request $request): framework\JsonOutput
         {
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                    $user = tables\Users::getTable()->selectById($request['user_id']);
-                } catch (Exception $e) {
-                    return $this->renderText('fail');
+            try {
+                $issue = Issues::getTable()->selectById($request['issue_id']);
+                $user = tables\Users::getTable()->selectById($request['user_id']);
+
+                if (!$issue instanceof Issue) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This issue does not exist')]);
                 }
-            } else {
-                return $this->renderText('no issue');
-            }
 
-            if ($user->isIssueStarred($issue_id)) {
-                $retval = !$user->removeStarredIssue($issue_id);
-            } else {
-                $retval = $user->addStarredIssue($issue_id);
-                if ($user->getID() != $this->getUser()->getID()) {
-                    framework\Event::createNew('core', 'issue_subscribe_user', $issue, compact('user'))->trigger();
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
                 }
+
+                if ($user->isIssueStarred($issue->getID())) {
+                    $user->removeStarredIssue($issue->getID());
+                    $starred = false;
+                } else {
+                    $user->addStarredIssue($issue->getID());
+                    $starred = true;
+                    if ($user->getID() != $this->getUser()->getID()) {
+                        framework\Event::createNew('core', 'issue_subscribe_user', $issue, compact('user'))->trigger();
+                    }
+                }
+
+                return $this->renderJSON([
+                    'starred' => $starred,
+                    'subscriber' => $this->getComponentHTML('main/issuesubscriber', ['user' => $user, 'issue' => $issue]),
+                    'count' => count($issue->getSubscribers())
+                ]);
+            } catch (Exception $e) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('An error occurred trying to toggle issue star status')]);
             }
-
-
-            return $this->renderText(json_encode(['starred' => $retval, 'subscriber' => $this->getComponentHTML('main/issuesubscriber', ['user' => $user, 'issue' => $issue]), 'count' => count($issue->getSubscribers())]));
         }
 
         public function runIssueDeleteTimeSpent(Request $request)
@@ -1549,29 +1730,61 @@
             }
         }
 
-        public function runIssueEditTimeSpent(Request $request)
+        /**
+         * @Route(name="issue_edittimespent", url="/:project_key/issues/:issue_id/timespent/:entry_id/:csrf_token")
+         * @CsrfProtected
+         *
+         * @param Request $request
+         *
+         * @return framework\JsonOutput
+         */
+        public function runIssueEditTimeSpent(Request $request): framework\JsonOutput
         {
             $entry_id = $request['entry_id'];
-            $spenttime = ($entry_id) ? tables\IssueSpentTimes::getTable()->selectById($entry_id) : new entities\IssueSpentTime();
+            $issue_id = $request['issue_id'];
+            $issue = Issues::getTable()->selectById($issue_id);
 
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderText('fail');
-                }
-            } else {
+            if (!$issue instanceof Issue) {
                 $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderText('no issue');
+                return $this->renderJSON(['error' => $this->getI18n()->__('This issue does not exist')]);
             }
 
-            framework\Context::loadLibrary('common');
-            $spenttime->editOrAdd($issue, $this->getUser(), array_only_with_default($request->getParameters(), array_merge(['timespent_manual', 'timespent_specified_type', 'timespent_specified_value', 'timespent_activitytype', 'timespent_comment', 'edited_at'], Timeable::getUnitsWithPoints())));
+            if ($entry_id) {
+                $entry = tables\IssueSpentTimes::getTable()->selectById($entry_id);
+            } else {
+                $entry = new entities\IssueSpentTime();
+                $entry->setIssue($issue);
+                $entry->setUser($this->getUser());
+            }
 
-            return $this->renderJSON(['edited' => 'ok', 'issue_id' => $issue_id, 'timesum' => array_sum($spenttime->getIssue()->getSpentTime()), 'spenttime' => Issue::getFormattedTime($spenttime->getIssue()->getSpentTime(true, true)), 'percentbar' => $this->getComponentHTML('main/percentbar', ['percent' => $issue->getEstimatedPercentCompleted(), 'height' => 3]), 'timeentries' => $this->getComponentHTML('main/issuespenttimes', ['issue' => $spenttime->getIssue()])]);
+            if (!$entry instanceof entities\IssueSpentTime) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This entry does not exist')]);
+            }
+
+            if ($request->isDelete()) {
+                $entry->delete();
+                $issue->save();
+
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('The time entry was deleted'),
+                    'issue' => $issue->toJSON()
+                ]);
+            }
+
+            try {
+                $entry->updateFromRequest($request);
+                $entry->saveFromRequest($request);
+            } catch (Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+
+            return $this->renderJSON([
+                'component' => $this->getComponentHTML('main/editspenttimeentry', ['entry' => $entry, 'issue' => $issue]),
+                'issue' => $issue->toJSON(),
+                'entry' => $entry->toJSON()
+            ]);
         }
 
         /**
@@ -1617,7 +1830,7 @@
                     ];
                     break;
                 case 'shortname':
-                    $issue->setShortname($request->getRawParameter('shortname_value'));
+                    $issue->setShortname($request->getRawParameter('value'));
                     $return_details['changed']['shortname'] = [
                         'value' => $issue->getShortname()
                     ];
@@ -1642,7 +1855,7 @@
                     ];
                     break;
                 case 'percent_complete':
-                    $issue->setPercentCompleted($request['percent']);
+                    $issue->setPercentCompleted($request['value']);
                     $return_details['changed']['percent_complete'] = [
                         'value' => $issue->getPercentCompleted()
                     ];
@@ -1661,14 +1874,14 @@
                         if ($request->hasParameter('points')) $issue->setEstimatedPoints($request['points']);
                     }
                     $return_details['changed']['estimated_time'] = [
-                        'value' => Issue::getFormattedTime($issue->getEstimatedTime(true, true)),
-                        'values' => $issue->getEstimatedTime(true, true)
+                        'value' => Issue::getFormattedTime($issue->getEstimatedTime()),
+                        'values' => $issue->getEstimatedTime()
                     ];
                     break;
                 case 'posted_by':
                 case 'owned_by':
                 case 'assigned_to':
-                    $identifiable_type = ($request->hasParameter('identifiable_type')) ? $request['identifiable_type'] : 'user';
+                    $identifiable_type = ($request->hasParameter('additional_value')) ? $request['additional_value'] : 'user';
                     if ($request['value'] && in_array($identifiable_type, ['team', 'user'])) {
                         switch ($identifiable_type) {
                             case 'user':
@@ -1717,6 +1930,20 @@
                         ];
                     }
                     break;
+                case 'parent_issue_id':
+                    $new_parent_issue = tables\Issues::getTable()->selectById($request['value']);
+                    foreach ($issue->getParentIssues() as $parent_issue) {
+                        if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
+                            $issue->removeDependantIssue($parent_issue);
+                        }
+                    }
+
+                    if ($new_parent_issue instanceof entities\Issue) {
+                        $issue->addParentIssue($new_parent_issue);
+                    }
+
+                    $return_details['changed']['parent_issue_id'] = $request['parent_issue_id'];
+                    break;
                 case 'category':
                 case 'resolution':
                 case 'severity':
@@ -1731,7 +1958,6 @@
                     try {
                         $classname = null;
                         $parameter_name = mb_strtolower($request['field']);
-                        $parameter_id_name = "{$parameter_name}_id";
                         $is_pain = in_array($parameter_name, ['pain_bug_type', 'pain_likelihood', 'pain_effect']);
                         if ($is_pain) {
                             switch ($parameter_name) {
@@ -1751,24 +1977,47 @@
                             $set_function_name = 'set' . ucfirst($parameter_name);
                         }
 
-                        if ($request->hasParameter($parameter_id_name)) {
-                            $parameter_id = $request->getParameter($parameter_id_name);
-                            if ($parameter_id !== 0) {
-                                $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $lab_function_name::getB2DBTable()->selectByID($parameter_id)) instanceof $classname));
-                            }
-                            if ($parameter_id == 0 || $is_valid) {
-                                $issue->$set_function_name($parameter_id);
+                        $parameter_id = $request->getParameter('value');
+                        if ($parameter_id !== 0) {
+                            $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $lab_function_name::getB2DBTable()->selectByID($parameter_id)) instanceof $classname));
+                        }
+                        if ($parameter_id == 0 || $is_valid) {
+                            $issue->$set_function_name($parameter_id);
 
-                                $return_details['changed'][$request['field']] = [
-                                    'value' => $parameter_id
-                                ];
-                            }
+                            $return_details['changed'][$request['field']] = [
+                                'value' => $parameter_id
+                            ];
                         }
                     } catch (Exception $e) {
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => $e->getMessage()]);
                     }
+                    break;
+                case 'cover_image':
+                    if (!$request['value']) {
+                        $issue->setCoverImageFile(null);
+                    }
+                    foreach ($issue->getFiles() as $file) {
+                        if ($file->getID() == $request['value']) {
+                            $file->setType(entities\File::TYPE_COVER);
+                            $file->save();
+                            $issue->setCoverImageFile($file);
+                        } elseif ($file->getType() == entities\File::TYPE_COVER) {
+                            $file->setType(entities\File::TYPE_ATTACHMENT);
+                            $file->save();
+                        }
+                    }
+
+                    $issue->save();
+                    break;
+                case 'blocking':
+                    $issue->setBlocking($request['value']);
+                    $issue->save();
+                    break;
+                case 'locked':
+                    $issue->setLocked($request['value']);
+                    $issue->save();
                     break;
                 default:
                     $custom_field = entities\CustomDatatype::getByKey($request['field']);
@@ -1779,7 +2028,7 @@
                     }
 
                     $key = $custom_field->getKey();
-                    $custom_field_value = $request->getRawParameter("{$key}_value");
+                    $custom_field_value = $request->getRawParameter('value');
                     if (!$custom_field_value) {
                         $issue->clearCustomField($key);
                     } else {
@@ -1798,6 +2047,7 @@
                 framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', [$this, 'listen_issueCreate']);
             }
             $issue->save();
+            $return_details['issue'] = $issue->toJSON();
 
             return $this->renderJSON($return_details);
         }
@@ -1839,12 +2089,20 @@
                     return $issue->canEditIssuetype();
                 case 'status':
                     return $issue->canEditStatus();
+                case 'parent_issue_id':
+                    return $issue->canAddRelatedIssues();
+                case 'cover_image':
+                    return $issue->canAttachFiles();
                 case 'pain_bug_type':
                 case 'pain_likelihood':
                 case 'pain_effect':
                     return $issue->canEditUserPain();
+                case 'blocking':
+                    return $issue->canEditBlockerStatus();
+                case 'locked':
+                    return $issue->canEditAccessPolicy();
                 default:
-                    if ($customdatatype = entities\CustomDatatype::getByKey($request['field'])) {
+                    if ($customdatatype = entities\CustomDatatype::getByKey($field)) {
                         $key = $customdatatype->getKey();
 
                         return $issue->canEditCustomFields($key);
@@ -1931,103 +2189,6 @@
         public function listen_issueSaveLock(framework\Event $event)
         {
             $this->_lockIssueAfter(framework\Context::getRequest(), $event->getSubject());
-        }
-
-        /**
-         * Mark the issue as not blocking the next release
-         *
-         * @param Request $request
-         */
-        public function runMarkAsNotBlocker(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPermission('caneditissue') || $this->getUser()->hasPermission('caneditissuebasic'));
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            $issue->setBlocking(false);
-            $issue->save();
-
-            return $this->renderJSON('not blocking');
-        }
-
-        /**
-         * Mark the issue as blocking the next release
-         *
-         * @param Request $request
-         */
-        public function runMarkAsBlocker(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPermission('caneditissue') || $this->getUser()->hasPermission('caneditissuebasic'));
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            $issue->setBlocking();
-            $issue->save();
-
-            return $this->renderJSON('blocking');
-        }
-
-        /**
-         * Delete an issue
-         *
-         * @param Request $request
-         */
-        public function runDeleteIssue(Request $request)
-        {
-            $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    if ($request_referer) {
-                        return $this->forward($request_referer);
-                    }
-
-                    return $this->return404(framework\Context::getI18n()->__('This issue does not exist'));
-                }
-            } else {
-                if ($request_referer) {
-                    return $this->forward($request_referer);
-                }
-
-                return $this->return404(framework\Context::getI18n()->__('This issue does not exist'));
-            }
-
-            if ($issue->isDeleted()) {
-                return $this->forward($request_referer);
-            }
-
-            $this->forward403unless($issue->canDeleteIssue());
-            $issue->deleteIssue();
-            $issue->save();
-
-            framework\Context::setMessage('issue_deleted', true);
-            $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]) . '?referer=' . $request_referer);
         }
 
         /**
@@ -2134,7 +2295,7 @@
                 $file->save();
                 if (in_array($file_id, $saved_file_ids)) {
                     if ($target instanceof Issue) {
-                        $comment = $target->attachFile($file, '', '', true);
+                        $comment = $target->attachFile($file);
 
                         if ($comment instanceof entities\Comment) $comments = $this->getComponentHTML('main/comment', ['comment' => $comment, 'issue' => $target, 'mentionable_target_type' => 'issue', 'comment_count_div' => 'viewissue_comment_count']) . $comments;
                     } else {
@@ -2160,7 +2321,6 @@
                 $_SESSION['upload_files'] = [];
             }
 
-            $files = [];
             $files_dir = Settings::getUploadsLocalpath();
 
             foreach ($request->getUploadedFiles() as $key => $file) {
@@ -2184,90 +2344,45 @@
                     $saved_file->setContentType($content_type);
                     $saved_file->setType($request['type']);
                     $saved_file->setProject($request['project_id']);
+                    $saved_file->setUploadedBy($this->getUser());
                     if (Settings::getUploadStorage() == 'database') {
                         $saved_file->setContent(file_get_contents($filename));
                     }
                     $saved_file->save();
 
-                    return $this->renderJSON(['file' => $saved_file->toJSON()]);
+                    $json = [
+                        'success' => 1,
+                        'file' => $saved_file->toJSON()
+                    ];
+                    if ($request['issue_id']) {
+                        $issue = Issues::getTable()->selectById($request['issue_id']);
+                        if ($issue instanceof Issue && $issue->hasAccess() && $issue->canAttachFiles()) {
+                            $issue->attachFile($saved_file);
+                            $json['element'] = $this->getComponentHTML('main/attachedfile', ['mode' => 'issue', 'issue' => $issue, 'file' => $saved_file]);
+                        }
+                    } elseif ($request['article_id']) {
+                        $article = tables\Articles::getTable()->selectById($request['article_id']);
+                        if ($article instanceof entities\Article && $article->canEdit()) {
+                            $article->attachFile($saved_file);
+                            $json['element'] = $this->getComponentHTML('main/attachedfile', ['mode' => 'article', 'article' => $article, 'file' => $saved_file]);
+                        }
+                    } elseif ($request->hasParameter('build_id')) {
+                        if ($request['build_id']) {
+                            $build = tables\Builds::getTable()->selectById($request['build_id']);
+                            if ($build instanceof entities\Build && $this->getUser()->canManageProjectReleases($build->getProject())) {
+                                $build->attachFile($saved_file);
+                            }
+                        } else {
+                            $build = null;
+                        }
+                        $json['element'] = $this->getComponentHTML('project/editbuildfile', ['build' => $build, 'file' => $saved_file]);
+                    }
+
+                    return $this->renderJSON($json);
                 }
             }
 
             return $this->renderJSON(['error' => $this->getI18n()->__('An error occurred when uploading the file')]);
-        }
-
-        public function runUpload(Request $request)
-        {
-            $apc_exists = Request::CanGetUploadStatus();
-            if ($apc_exists && !$request['APC_UPLOAD_PROGRESS']) {
-                $request->setParameter('APC_UPLOAD_PROGRESS', $request['upload_id']);
-            }
-            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
-
-            $canupload = false;
-
-            if ($request['mode'] == 'issue') {
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $canupload = (bool)($issue instanceof Issue && $issue->hasAccess() && $issue->canAttachFiles());
-            } elseif ($request['mode'] == 'article') {
-                $article = entities\Article::getByName($request['article_name']);
-                $canupload = (bool)($article instanceof entities\Article && $article->canEdit());
-            } else {
-                $event = framework\Event::createNew('core', 'upload', $request['mode']);
-                $event->triggerUntilProcessed();
-
-                $canupload = ($event->isProcessed()) ? (bool)$event->getReturnValue() : true;
-            }
-
-            if ($canupload) {
-                try {
-                    $file = framework\Context::getRequest()->handleUpload('uploader_file');
-                    if ($file instanceof entities\File) {
-                        switch ($request['mode']) {
-                            case 'issue':
-                                if (!$issue instanceof Issue)
-                                    break;
-                                $issue->attachFile($file, $request->getRawParameter('comment'), $request['uploader_file_description']);
-                                $issue->save();
-                                break;
-                            case 'article':
-                                if (!$article instanceof entities\Article)
-                                    break;
-
-                                $article->attachFile($file);
-                                break;
-                        }
-                        if ($apc_exists)
-                            return $this->renderText('ok');
-                    }
-                    $this->error = framework\Context::getI18n()->__('An unhandled error occured with the upload');
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-                    $this->error = $e->getMessage();
-                }
-            } else {
-                $this->error = framework\Context::getI18n()->__('You are not allowed to attach files here');
-            }
-            if (!$apc_exists) {
-                switch ($request['mode']) {
-                    case 'issue':
-                        if (!$issue instanceof Issue)
-                            break;
-
-                        $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
-                        break;
-                    case 'article':
-                        if (!$article instanceof entities\Article)
-                            break;
-
-                        $this->forward($this->getRouting()->generate('publish_article_attachments', ['article_name' => $article->getName()]));
-                        break;
-                }
-            }
-            framework\Logging::log('marking upload ' . $request['APC_UPLOAD_PROGRESS'] . ' as completed with error ' . $this->error);
-            $request->markUploadAsFinishedWithError($request['APC_UPLOAD_PROGRESS'], $this->error);
-
-            return $this->renderText($request['APC_UPLOAD_PROGRESS'] . ': ' . $this->error);
         }
 
         public function runDetachFile(Request $request)
@@ -2277,24 +2392,37 @@
                 switch ($request['mode']) {
                     case 'issue':
                         $issue = Issues::getTable()->selectById($request['issue_id']);
-                        if ($issue instanceof Issue && $issue->canRemoveAttachments() && (int)$request->getParameter('file_id', 0)) {
+                        if ($issue instanceof Issue && $file instanceof entities\File && $issue->canRemoveAttachment($this->getUser(), $file)) {
                             $issue->detachFile($file);
 
-                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachmentcount' => (count($issue->getFiles()) + count($issue->getLinks())), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'message' => framework\Context::getI18n()->__('The attachment has been removed'), 'issue' => $issue->toJSON()]);
                         }
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this issue')]);
                     case 'article':
-                        $article = entities\Article::getByName($request['article_name']);
-                        if ($article instanceof entities\Article && $article->canEdit() && (int)$request->getParameter('file_id', 0)) {
+                        $article = tables\Articles::getTable()->selectById($request['article_id']);
+                        if ($article instanceof entities\Article && $file instanceof entities\File && $article->canEdit()) {
                             $article->detachFile($file);
 
-                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachmentcount' => count($article->getFiles()), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachments' => count($article->getFiles()), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
                         }
                         $this->getResponse()->setHttpStatus(400);
 
-                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this issue')]);
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this article')]);
+                    case 'build':
+                        $build = tables\Builds::getTable()->selectById($request['build_id']);
+                        if ($build instanceof entities\Build && $file instanceof entities\File && $this->getUser()->canManageProjectReleases($build->getProject())) {
+                            $build->detachFile($file);
+
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachments' => $build->getNumberOfDownloads(), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                        } elseif ($file->getUploadedBy()->getID() == $this->getUser()->getID()) {
+                            $file->delete();
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                        }
+                        $this->getResponse()->setHttpStatus(400);
+
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this release')]);
                 }
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
@@ -2387,41 +2515,6 @@
             return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this issue')]);
         }
 
-        public function runAttachLink(Request $request)
-        {
-            $link = tables\Links::getTable()->addLink($request['target_type'], $request['target_id'], $request['link_url'], $request->getRawParameter('description'));
-
-            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Link added!'), 'content' => $this->getComponentHTML('main/menulink', ['link_id' => $link->getID(), 'link' => ['target_type' => $request['target_type'], 'target_id' => $request['target_id'], 'description' => $request->getRawParameter('description'), 'url' => $request['link_url']]])]);
-        }
-
-        public function runRemoveLink(Request $request)
-        {
-            if (!$this->getUser()->canEditMainMenu($request['target_type'])) {
-                $this->getResponse()->setHttpStatus(403);
-
-                return $this->renderJSON(['error' => framework\Context::getI18n()->__('You do not have access to removing links')]);
-            }
-
-            if (!$request['link_id']) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => framework\Context::getI18n()->__('You have to provide a valid link id')]);
-            }
-
-            tables\Links::getTable()->removeByTargetTypeTargetIDandLinkID($request['target_type'], $request['target_id'], $request['link_id']);
-
-            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Link removed!')]);
-        }
-
-        public function runSaveMenuOrder(Request $request)
-        {
-            $target_type = $request['target_type'];
-            $target_id = $request['target_id'];
-            tables\Links::getTable()->saveLinkOrder($request[$target_type . '_' . $target_id . '_links']);
-
-            return $this->renderJSON('ok');
-        }
-
         public function runDeleteComment(Request $request)
         {
             $comment = tables\Comments::getTable()->selectById($request['comment_id']);
@@ -2460,16 +2553,16 @@
                 if (!$is_new) {
                     $comment = tables\Comments::getTable()->selectById($request['comment_id']);
                 } else {
-                    if (!$this->getUser()->canPostComments()) {
-                        throw new Exception($i18n->__('You are not allowed to do this'));
-                    }
-
                     $comment = new entities\Comment();
                     $comment->setPostedBy($this->getUser()->getID());
                     $comment->setTargetID($request['comment_applies_id']);
                     $comment->setTargetType($request['comment_applies_type']);
                     $comment->setReplyToComment($request['reply_to_comment_id']);
                     $comment->setModuleName($request['comment_module']);
+
+                    if (!$this->getUser()->canPostComments($comment_applies_type, $comment->getTarget()->getProject())) {
+                        throw new Exception($i18n->__('You are not allowed to do this'));
+                    }
                 }
 
                 if (!trim($request['comment_body'])) {
@@ -2487,6 +2580,9 @@
                 } elseif ($comment_applies_type == entities\Comment::TYPE_ARTICLE) {
                     $article = tables\Articles::getTable()->selectById((int)$request['comment_applies_id']);
                     framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('article'))->trigger();
+                } elseif ($comment_applies_type == entities\Comment::TYPE_COMMIT) {
+                    $commit = tables\Commits::getTable()->selectById((int)$request['comment_applies_id']);
+                    framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('commit'))->trigger();
                 }
 
                 $component_name = ($comment->isReply()) ? 'main/comment' : 'main/commentwrapper';
@@ -2504,6 +2600,13 @@
                     case entities\Comment::TYPE_ARTICLE:
                         if ($is_new) {
                             $comment_html = $this->getComponentHTML($component_name, ['comment' => $comment, 'mentionable_target_type' => 'article', 'options' => [], 'comment_count_div' => 'article_comment_count']);
+                        } else {
+                            $comment_html = $comment->getParsedContent();
+                        }
+                        break;
+                    case entities\Comment::TYPE_COMMIT:
+                        if ($is_new) {
+                            $comment_html = $this->getComponentHTML($component_name, ['comment' => $comment, 'mentionable_target_type' => 'commit', 'options' => ['commit' => $commit], 'comment_count_div' => 'commit_comment_count']);
                         } else {
                             $comment_html = $comment->getParsedContent();
                         }
@@ -2548,7 +2651,7 @@
         {
             $field_key = $request['field_key'];
             $return_array = ['description' => null, 'type' => null, 'choices' => null];
-            if ($field_key == 'title' || in_array($field_key, entities\DatatypeBase::getAvailableFields(true))) {
+            if ($field_key == 'title' || array_key_exists($field_key, entities\DatatypeBase::getAvailableFields(true))) {
                 switch ($field_key) {
                     case 'title':
                     case 'shortname':
@@ -2611,26 +2714,7 @@
         /**
          * Find users and show selection box
          *
-         * @Route(name="invite_users_find", url="/invite/find", methods="POST")
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runFindInviteUsers(framework\Request $request)
-        {
-            $this->message = false;
-
-            $find_by = trim($request['find_by']);
-            if ($find_by) {
-                $this->registered = !tables\Users::getTable()->isEmailAvailable($find_by);
-            } else {
-                $this->message = true;
-            }
-        }
-
-        /**
-         * Find users and show selection box
-         *
-         * @Route(name="invite_users", url="/invite/invite", methods="POST")
+         * @Route(name="find_invite_users", url="/invite/find", methods="POST")
          *
          * @param framework\Request $request The request object
          */
@@ -2639,11 +2723,25 @@
             $this->message = false;
 
             $find_by = trim($request['find_by']);
-            if ($find_by) {
-                $this->registered = !tables\Users::getTable()->isEmailAvailable($find_by);
-            } else {
-                $this->message = true;
+            if (!$find_by) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
             }
+            if (filter_var($find_by, FILTER_VALIDATE_EMAIL) != $find_by) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter a valid email address')]);
+            }
+
+            $options = [
+                'users' => tables\Users::getTable()->getByDetails($find_by, 1, true)
+            ];
+
+            if (!count($options['users'])) {
+                $email_user = new entities\User();
+                $email_user->setEmail($find_by);
+                $options['email_user'] = $email_user;
+            }
+
+
+            return $this->renderJSON(['content' => $this->getComponentHTML('main/invite_user', $options)]);
         }
 
         /**
@@ -2675,8 +2773,9 @@
                         break;
                     case 'notifications':
                         $template_name = 'main/notifications';
-                        $options['first_notification_id'] = $request['first_notification_id'];
-                        $options['last_notification_id'] = $request['last_notification_id'];
+                        break;
+                    case 'timers':
+                        $template_name = 'main/timers';
                         break;
                     case 'workflow_transition':
                         $transition = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
@@ -2690,18 +2789,35 @@
                         } else {
                             $options['issue'] = new Issue($request['issue_id']);
                         }
+                        if ($request->hasParameter('board_id')) {
+                            $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                            $options['milestone'] = ($request['milestone_id']) ? Milestones::getTable()->selectById($request['milestone_id']) : null;
+                            $options['swimlane_identifier'] = $request['swimlane_identifier'];
+                        }
                         $options['show'] = true;
                         $options['interactive'] = true;
                         $options['project'] = $this->selected_project;
                         break;
                     case 'reportissue':
                         $this->_loadSelectedProjectAndIssueTypeFromRequestForReportIssueAction($request);
+                        if (!$this->selected_project instanceof Project) {
+                            throw new Exception($this->getI18n()->__('This project does not exist'));
+                        }
+
+                        if ($this->selected_project->isLocked()) {
+                            throw new Exception($this->getI18n()->__('This project is locked'));
+                        }
+
                         if ($this->selected_project instanceof Project && !$this->selected_project->isLocked() && $this->getUser()->canReportIssues($this->selected_project)) {
                             $template_name = 'main/reportissuecontainer';
                             $options['selected_project'] = $this->selected_project;
                             $options['selected_issuetype'] = $this->selected_issuetype;
                             $options['locked_issuetype'] = $this->locked_issuetype;
                             $options['selected_milestone'] = $this->_getMilestoneFromRequest($request);
+                            $options['selected_statuses'] = $this->_getStatusesFromRequest($request);
+                            $options['selected_priorities'] = $this->_getPrioritiesFromRequest($request);
+                            $options['selected_severities'] = $this->_getSeveritiesFromRequest($request);
+                            $options['selected_categories'] = $this->_getCategoriesFromRequest($request);
                             $options['parent_issue'] = $this->_getParentIssueFromRequest($request);
                             $options['board'] = $this->_getBoardFromRequest($request);
                             $options['selected_build'] = $this->_getBuildFromRequest($request);
@@ -2725,6 +2841,9 @@
                         $template_name = 'main/issuespenttimes';
                         $options['initial_view'] = $request->getParameter('initial_view', 'list');
                         break;
+                    case 'issue_estimate':
+                        $template_name = 'main/issueestimate';
+                        break;
                     case 'issue_spenttime':
                         $template_name = 'main/issuespenttime';
                         $options['entry_id'] = $request->getParameter('entry_id');
@@ -2733,10 +2852,15 @@
                         $template_name = 'main/relateissue';
                         break;
                     case 'project_build':
-                        $template_name = 'project/build';
+                        $template_name = 'project/editbuild';
                         $options['project'] = Projects::getTable()->selectById($request['project_id']);
-                        if ($request->hasParameter('build_id'))
-                            $options['build'] = tables\Builds::getTable()->selectById($request['build_id']);
+                        if ($request->getParameter('build_id')) {
+                            $build = tables\Builds::getTable()->selectById($request['build_id']);
+                        } else {
+                            $build = new entities\Build();
+                            $build->setProject($options['project']);
+                        }
+                        $options['build'] = $build;
                         break;
                     case 'project_icons':
                         $template_name = 'project/projecticons';
@@ -2784,8 +2908,42 @@
                             $role = tables\ListTypes::getTable()->selectById($request['role_id']);
                         } else {
                             $role = new entities\Role();
+                            if ($request->hasParameter('project_id')) {
+                                $role->setProject($request['project_id']);
+                            }
                         }
                         $options['role'] = $role;
+                        break;
+                    case 'edit_group':
+                        $template_name = 'configuration/editgroup';
+                        if ($request['group_id']) {
+                            $group = tables\Groups::getTable()->selectById($request['group_id']);
+                        } else {
+                            $group = new entities\Group();
+                        }
+                        $options['group'] = $group;
+                        break;
+                    case 'edit_team':
+                        $template_name = 'configuration/editteam';
+                        if ($request['team_id']) {
+                            $team = tables\Teams::getTable()->selectById($request['team_id']);
+                        } else {
+                            $team = new entities\Team();
+                        }
+                        $options['team'] = $team;
+                        break;
+                    case 'edit_client':
+                        $template_name = 'configuration/editclient';
+                        if ($request['client_id']) {
+                            $client = tables\Clients::getTable()->selectById($request['client_id']);
+                        } else {
+                            $client = new entities\Client();
+                        }
+                        $options['client'] = $client;
+                        break;
+                    case 'client_add_member':
+                        $template_name = 'configuration/clientaddmembers';
+                        $options['client'] = tables\Clients::getTable()->selectById($request['client_id']);
                         break;
                     case 'edit_workflow_scheme':
                         $template_name = 'configuration/editworkflowscheme';
@@ -2847,7 +3005,7 @@
                         }
                         if ($request['type']) {
                             $type = $request['type'];
-                            if (in_array($type, entities\DatatypeBase::getAvailableFields(true))) {
+                            if (array_key_exists($type, entities\DatatypeBase::getAvailableFields(true))) {
                                 $item = $type;
                             } else {
                                 $item = entities\CustomDatatype::getByKey($type);
@@ -2894,9 +3052,8 @@
                         break;
                     case 'dashboard_config':
                         $template_name = 'main/dashboardconfig';
-                        $options['tid'] = $request['tid'];
+                        $options['dashboard_id'] = $request['dashboard_id'];
                         $options['target_type'] = $request['target_type'];
-                        $options['previous_route'] = $request['previous_route'];
                         $options['mandatory'] = true;
                         break;
                     case 'bulk_workflow':
@@ -2912,7 +3069,9 @@
                         break;
                     case 'viewissue':
                         $template_name = 'project/viewissuecard';
-                        $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                        if ($request->hasParameter('board_id')) {
+                            $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                        }
                         break;
                     case 'userscopes':
                         if (!framework\Context::getScope()->isDefault())
@@ -2922,10 +3081,11 @@
                         $options['user'] = new entities\User((int)$request['user_id']);
                         break;
                     case 'milestone':
-                        $template_name = 'project/milestone';
+                        $template_name = 'project/editmilestone';
                         $options['project'] = Projects::getTable()->selectById($request['project_id']);
-                        if ($request->hasParameter('milestone_id'))
+                        if ($request->hasParameter('milestone_id')) {
                             $options['milestone'] = Milestones::getTable()->selectById($request['milestone_id']);
+                        }
                         break;
                     default:
                         $event = new framework\Event('core', 'get_backdrop_partial', $request['key'], ['request' => $request]);
@@ -3103,30 +3263,39 @@
             return $this->renderJSON(['content' => $this->getComponentHTML('main/findduplicateissues', $parameters)]);
         }
 
-        public function runRemoveRelatedIssue(Request $request)
+        /**
+         * @Route(name="viewissue_remove_parent_issue", url="/:project_key/issues/:issue_id/parent_issue/:csrf_token", methods="DELETE")
+         * @CsrfProtected
+
+         * @param Request $request
+         * @return framework\JsonOutput
+         */
+        public function runRemoveParentIssue(Request $request): framework\JsonOutput
         {
             try {
-                try {
-                    $issue_id = (int)$request['issue_id'];
-                    $related_issue_id = (int)$request['related_issue_id'];
-                    $issue = null;
-                    $related_issue = null;
-                    if ($issue_id && $related_issue_id) {
-                        $issue = Issues::getTable()->selectById($issue_id);
-                        $related_issue = Issues::getTable()->selectById($related_issue_id);
-                    }
-                    if (!$issue instanceof Issue || !$related_issue instanceof Issue) {
-                        throw new Exception('');
-                    }
-                    $issue->removeDependantIssue($related_issue->getID());
-                } catch (Exception $e) {
-                    throw new Exception($this->getI18n()->__('Please provide a valid issue number and a valid related issue number'));
+                $issue = Issues::getTable()->selectById($request['issue_id']);
+                if (!$issue instanceof Issue) {
+                    throw new Exception('This issue does not exist');
                 }
 
-                return $this->renderJSON(['message' => $this->getI18n()->__('The issues are no longer related')]);
+                $json_issues = [];
+
+                foreach ($issue->getParentIssues() as $parent_issue) {
+                    $issue->removeDependantIssue($parent_issue);
+                    tables\IssueRelations::getTable()->clearRelationCache();
+                    $json_issues[] = $parent_issue->toJSON();
+                }
+
+                $issue->clearCachedItems();
+                tables\IssueRelations::getTable()->clearRelationCache();
+                $json_issues[] = $issue->toJSON();
+
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('The issues are no longer related'),
+                    'issues' => $json_issues
+                ]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
@@ -3191,6 +3360,7 @@
             $cc = 0;
             $message = framework\Context::getI18n()->__('Unknown error');
             $content = '';
+            $json_issues = [];
             if (count($related_issues)) {
                 $mode = $request['relate_action'];
                 foreach ($related_issues as $issue_id) {
@@ -3201,6 +3371,7 @@
                         } else {
                             $issue->addParentIssue($related_issue);
                         }
+                        $json_issues[] = $related_issue->toJSON();
                         $cc++;
                         $content .= $this->getComponentHTML('main/relatedissue', ['issue' => $related_issue, 'related_issue' => $issue]);
                     } catch (Exception $e) {
@@ -3214,10 +3385,14 @@
             }
 
             if ($cc > 0) {
-                return $this->renderJSON(['content' => $content, 'message' => framework\Context::getI18n()->__('The related issue was added'), 'count' => count($issue->getChildIssues())]);
+                $json_issues[] = $issue->toJSON();
+                return $this->renderJSON([
+                    'content' => $content,
+                    'issues' => $json_issues,
+                    'message' => ($cc > 1) ? framework\Context::getI18n()->__('The related issues were added') : framework\Context::getI18n()->__('The related issue was added')
+                ]);
             } else {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('An error occured when relating issues: %error', ['%error' => $message])]);
             }
         }
@@ -3284,95 +3459,8 @@
             }
         }
 
-        public function runToggleAffectedConfirmed(Request $request)
-        {
-            try {
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $itemtype = $request['affected_type'];
-
-                if (!(($itemtype == 'build' && $issue->canEditAffectedBuilds()) || ($itemtype == 'component' && $issue->canEditAffectedComponents()) || ($itemtype == 'edition' && $issue->canEditAffectedEditions()))) {
-                    throw new Exception($this->getI18n()->__('You are not allowed to do this'));
-                }
-
-                $affected_id = $request['affected_id'];
-                $confirmed = true;
-
-                switch ($itemtype) {
-                    case 'edition':
-                        if (!$issue->getProject()->isEditionsEnabled()) {
-                            throw new Exception($this->getI18n()->__('Editions are disabled'));
-                        }
-
-                        $editions = $issue->getEditions();
-                        if (!array_key_exists($affected_id, $editions)) {
-                            throw new Exception($this->getI18n()->__('This edition is not affected by this issue'));
-                        }
-                        $edition = $editions[$affected_id];
-
-                        if ($edition['confirmed'] == true) {
-                            $issue->confirmAffectedEdition($edition['edition'], false);
-                            $confirmed = false;
-                        } else {
-                            $issue->confirmAffectedEdition($edition['edition']);
-                            $confirmed = true;
-                        }
-
-                        break;
-                    case 'component':
-                        if (!$issue->getProject()->isComponentsEnabled()) {
-                            throw new Exception($this->getI18n()->__('Components are disabled'));
-                        }
-
-                        $components = $issue->getComponents();
-                        if (!array_key_exists($affected_id, $components)) {
-                            throw new Exception($this->getI18n()->__('This component is not affected by this issue'));
-                        }
-                        $component = $components[$affected_id];
-
-                        if ($component['confirmed'] == true) {
-                            $issue->confirmAffectedComponent($component['component'], false);
-                            $confirmed = false;
-                        } else {
-                            $issue->confirmAffectedComponent($component['component']);
-                            $confirmed = true;
-                        }
-
-                        break;
-                    case 'build':
-                        if (!$issue->getProject()->isBuildsEnabled()) {
-                            throw new Exception($this->getI18n()->__('Releases are disabled'));
-                        }
-
-                        $builds = $issue->getBuilds();
-                        if (!array_key_exists($affected_id, $builds)) {
-                            throw new Exception($this->getI18n()->__('This release is not affected by this issue'));
-                        }
-                        $build = $builds[$affected_id];
-
-                        if ($build['confirmed'] == true) {
-                            $issue->confirmAffectedBuild($build['build'], false);
-                            $confirmed = false;
-                        } else {
-                            $issue->confirmAffectedBuild($build['build']);
-                            $confirmed = true;
-                        }
-
-                        break;
-                    default:
-                        throw new Exception('Internal error');
-                }
-
-                return $this->renderJSON(['confirmed' => $confirmed, 'text' => ($confirmed) ? $this->getI18n()->__('Confirmed') : $this->getI18n()->__('Unconfirmed')]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
         public function runRemoveAffected(Request $request)
         {
-            framework\Context::loadLibrary('ui');
             try {
                 $issue = Issues::getTable()->selectById($request['issue_id']);
 
@@ -3435,83 +3523,7 @@
                         throw new Exception('Internal error');
                 }
 
-                $editions = [];
-                $components = [];
-                $builds = [];
-
-                if ($issue->getProject()->isEditionsEnabled()) {
-                    $editions = $issue->getEditions();
-                }
-
-                if ($issue->getProject()->isComponentsEnabled()) {
-                    $components = $issue->getComponents();
-                }
-
-                if ($issue->getProject()->isBuildsEnabled()) {
-                    $builds = $issue->getBuilds();
-                }
-
-                $count = count($editions) + count($components) + count($builds) - 1;
-
-                return $this->renderJSON(['message' => $message, 'itemcount' => $count]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => framework\Context::getI18n()->__('An internal error has occured')]);
-            }
-        }
-
-        public function runStatusAffected(Request $request)
-        {
-            framework\Context::loadLibrary('ui');
-            try {
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $status = tables\ListTypes::getTable()->selectById($request['status_id']);
-                if (!$issue->canEditIssue()) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('You are not allowed to do this')]);
-                }
-
-                switch ($request['affected_type']) {
-                    case 'edition':
-                        if (!$issue->getProject()->isEditionsEnabled()) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Editions are disabled')]);
-                        }
-                        $editions = $issue->getEditions();
-                        $edition = $editions[$request['affected_id']];
-
-                        $issue->setAffectedEditionStatus($edition['edition'], $status);
-                        break;
-                    case 'component':
-                        if (!$issue->getProject()->isComponentsEnabled()) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Components are disabled')]);
-                        }
-                        $components = $issue->getComponents();
-                        $component = $components[$request['affected_id']];
-
-                        $issue->setAffectedcomponentStatus($component['component'], $status);
-                        break;
-                    case 'build':
-                        if (!$issue->getProject()->isBuildsEnabled()) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Releases are disabled')]);
-                        }
-                        $builds = $issue->getBuilds();
-                        $build = $builds[$request['affected_id']];
-
-                        $issue->setAffectedbuildStatus($build['build'], $status);
-                        break;
-                    default:
-                        throw new Exception('Internal error');
-                }
-
-                return $this->renderJSON(['colour' => $status->getColor(), 'name' => $status->getName()]);
+                return $this->renderJSON(['message' => $message, 'issue' => $issue->toJSON()]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -3521,7 +3533,6 @@
 
         public function runAddAffected(Request $request)
         {
-            framework\Context::loadLibrary('ui');
             try {
                 $issue = Issues::getTable()->selectById($request['issue_id']);
                 $statuses = entities\Status::getAll();
@@ -3552,7 +3563,7 @@
                             $itemtype = 'edition';
                             $item = $result;
                             $itemtypename = framework\Context::getI18n()->__('Edition');
-                            $content = get_component_html('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
+                            $content = $this->getComponentHTML('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
                         }
 
                         $message = framework\Context::getI18n()->__('Edition <b>%edition</b> is now affected by this issue', ['%edition' => $edition->getName()], true);
@@ -3583,7 +3594,7 @@
                             $itemtype = 'component';
                             $item = $result;
                             $itemtypename = framework\Context::getI18n()->__('Component');
-                            $content = get_component_html('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
+                            $content = $this->getComponentHTML('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
                         }
 
                         $message = framework\Context::getI18n()->__('Component <b>%component</b> is now affected by this issue', ['%component' => $component->getName()], true);
@@ -3614,7 +3625,7 @@
                             $itemtype = 'build';
                             $item = $result;
                             $itemtypename = framework\Context::getI18n()->__('Release');
-                            $content = get_component_html('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
+                            $content = $this->getComponentHTML('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
                         }
 
                         $message = framework\Context::getI18n()->__('Release <b>%build</b> is now affected by this issue', ['%build' => $build->getName()], true);
@@ -3624,25 +3635,11 @@
                         throw new Exception('Internal error');
                 }
 
-                $editions = [];
-                $components = [];
-                $builds = [];
-
-                if ($issue->getProject()->isEditionsEnabled()) {
-                    $editions = $issue->getEditions();
-                }
-
-                if ($issue->getProject()->isComponentsEnabled()) {
-                    $components = $issue->getComponents();
-                }
-
-                if ($issue->getProject()->isBuildsEnabled()) {
-                    $builds = $issue->getBuilds();
-                }
-
-                $count = count($editions) + count($components) + count($builds);
-
-                return $this->renderJSON(['content' => $content, 'message' => $message, 'itemcount' => $count]);
+                return $this->renderJSON([
+                    'content' => $content,
+                    'issue' => $issue->toJSON(),
+                    'message' => $message
+                ]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -3783,6 +3780,21 @@
             }
         }
 
+        /**
+         * @Route(name="issue_load_dynamic_choices", url="/:project_key/choices/:issue_id")
+         *
+         * @param Request $request
+         */
+        public function runIssueLoadChoices(Request $request)
+        {
+            $issue = Issues::getTable()->getIssueById((int)$request['issue_id']);
+            if ($issue instanceof Issue) {
+                $json = $issue->getChoiceValues($request['field']);
+
+                return $this->renderJSON(['data' => $json]);
+            }
+        }
+
         public function runIssueMoreactions(Request $request)
         {
             try {
@@ -3814,7 +3826,7 @@
             $action_option = str_replace($this->selected_project->getKey() . '/milestone/' . $request['milestone_id'] . '/', '', $request['url']);
 
             try {
-                if (!($this->getUser()->canEditMilestones($this->selected_project) || ($this->getUser()->canManageProjectReleases($this->selected_project) && $this->getUser()->canManageProject($this->selected_project))))
+                if (!$this->getUser()->canManageProjectReleases($this->selected_project))
                     throw new Exception($this->getI18n()->__("You don't have access to modify milestones"));
 
                 switch (true) {
@@ -3837,7 +3849,7 @@
                         if ($event->isProcessed()) {
                             $component = $event->getReturnValue();
                         } else {
-                            $component = $this->getComponentHTML('project/milestonebox', ['milestone' => $milestone, 'include_counts' => true]);
+                            $component = $this->getComponentHTML('project/milestone', ['milestone' => $milestone, 'include_counts' => true]);
                         }
                         $message = framework\Context::getI18n()->__('Milestone saved');
 

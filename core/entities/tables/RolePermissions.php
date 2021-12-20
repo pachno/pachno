@@ -27,21 +27,19 @@
     class RolePermissions extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'rolepermissions';
+        public const B2DBNAME = 'rolepermissions';
 
-        const ID = 'rolepermissions.id';
+        public const ID = 'rolepermissions.id';
 
-        const SCOPE = 'rolepermissions.scope';
+        public const ROLE_ID = 'rolepermissions.role_id';
 
-        const ROLE_ID = 'rolepermissions.role_id';
+        public const PERMISSION = 'rolepermissions.permission';
 
-        const PERMISSION = 'rolepermissions.permission';
+        public const MODULE = 'rolepermissions.module';
 
-        const MODULE = 'rolepermissions.module';
-
-        const TARGET_ID = 'rolepermissions.target_id';
+        public const TARGET_ID = 'rolepermissions.target_id';
 
         public function clearPermissionsForRole($role_id)
         {
@@ -61,7 +59,7 @@
             $this->rawInsert($insertion);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('role_id', self::ROLE_ID);
         }

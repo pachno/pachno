@@ -30,19 +30,19 @@
     class WorkflowIssuetype extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'workflow_issuetype';
+        public const B2DBNAME = 'workflow_issuetype';
 
-        const ID = 'workflow_issuetype.id';
+        public const ID = 'workflow_issuetype.id';
 
-        const SCOPE = 'workflow_issuetype.scope';
+        public const SCOPE = 'workflow_issuetype.scope';
 
-        const WORKFLOW_SCHEME_ID = 'workflow_issuetype.workflow_scheme_id';
+        public const WORKFLOW_SCHEME_ID = 'workflow_issuetype.workflow_scheme_id';
 
-        const WORKFLOW_ID = 'workflow_issuetype.workflow_id';
+        public const WORKFLOW_ID = 'workflow_issuetype.workflow_id';
 
-        const ISSUETYPE_ID = 'workflow_issuetype.issutype_id';
+        public const ISSUETYPE_ID = 'workflow_issuetype.issutype_id';
 
         public function loadFixtures(Scope $scope, Workflow $workflow, WorkflowScheme $workflowScheme)
         {
@@ -125,7 +125,7 @@
             return $return_array;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::WORKFLOW_ID, Workflows::getTable());

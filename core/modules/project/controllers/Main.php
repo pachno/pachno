@@ -5,11 +5,17 @@
     use Exception;
     use InvalidArgumentException;
     use pachno\core\entities;
+    use pachno\core\entities\Project;
     use pachno\core\entities\tables;
+    use pachno\core\entities\tables\BuildFiles;
+    use pachno\core\entities\tables\Builds;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
     use pachno\core\framework\Context;
+    use pachno\core\framework\Request;
+    use pachno\core\framework\Settings;
     use pachno\core\helpers;
+    use pachno\core\modules\main\cli\entities\tbg\AgileBoard;
 
     /**
      * actions for the project module
@@ -17,6 +23,9 @@
      * @Routes(name_prefix="project_", url_prefix="/:project_key")
      *
      * @property entities\Client $selected_client
+     * @property entities\Build[][] $active_builds
+     * @property entities\Build[][] $archived_builds
+     * @property entities\Build[][] $upcoming_builds
      */
     class Main extends helpers\ProjectActions
     {
@@ -33,10 +42,10 @@
          */
         public function runDashboard(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_dashboard'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if ($request->isPost() && $request['setup_default_dashboard'] && $this->getUser()->canEditProjectDetails($this->selected_project)) {
-                entities\DashboardView::getB2DBTable()->setDefaultViews($this->selected_project->getID(), entities\DashboardView::TYPE_PROJECT);
+                tables\DashboardViews::getTable()->setDefaultViews($this->selected_project->getID(), entities\DashboardView::TYPE_PROJECT);
                 $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]));
             }
             if ($request['dashboard_id']) {
@@ -67,22 +76,56 @@
 
         /**
          * The project roadmap page
-         * @Route(name="roadmap", url="/roadmap/*")
+         * @Route(name="roadmap", url="/roadmap")
          *
          * @param framework\Request $request
          */
         public function runRoadmap(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_roadmap'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_RELEASES));
         }
 
         /**
-         * @Route(name="milestone", url="/milestones/:milestone_id")
+         * @Route(name="milestone", url="/milestones/:milestone_id", methods="GET")
          * @param framework\Request $request
          */
         public function runGetMilestone(framework\Request $request)
         {
             $milestone = Milestones::getTable()->selectById($request['milestone_id']);
+            return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
+        }
+
+        /**
+         * @Route(name="post_milestone", url="/milestones/:milestone_id", methods="POST")
+         * @param framework\Request $request
+         */
+        public function runEditMilestone(framework\Request $request)
+        {
+            $milestone_id = $request['milestone_id'];
+            if ($milestone_id) {
+                $milestone = Milestones::getTable()->selectById($request['milestone_id']);
+            } else {
+                $milestone = new entities\Milestone();
+            }
+            if (!$request['name'])
+                throw new \Exception($this->getI18n()->__('You must provide a valid milestone name'));
+
+            $milestone->setName($request['name']);
+            $milestone->setProject($this->selected_project);
+            $milestone->setStarting((bool) $request['is_starting']);
+            $milestone->setScheduled((bool) $request['is_scheduled']);
+
+            if ($request['is_starting'] && $request['is_scheduled']) {
+                $milestone->setStartingDate($request['dates'][0]);
+                $milestone->setScheduledDate($request['dates'][1]);
+            } elseif ($request['is_starting']) {
+                $milestone->setStartingDate($request['dates']);
+            } elseif ($request['is_scheduled']) {
+                $milestone->setScheduledDate($request['dates']);
+            }
+
+            $milestone->save();
+
             return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
         }
 
@@ -95,6 +138,14 @@
             $json = ['milestones' => []];
             try {
                 foreach ($this->selected_project->getMilestones() as $milestone) {
+                    if ($request['state'] == 'open' && $milestone->isClosed()) {
+                        continue;
+                    }
+
+                    if ($request['state'] == 'closed' && !$milestone->isClosed()) {
+                        continue;
+                    }
+
                     if (!$request['milestone_type'] || $request['milestone_type'] == 'all') {
                         $json['milestones'][] = $milestone->toJSON(false);
                         continue;
@@ -123,7 +174,7 @@
          */
         public function runTimeline(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_timeline'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
             $offset = $request->getParameter('offset', 0);
             if ($request['show'] == 'important') {
                 $this->recent_activities = $this->selected_project->getRecentActivities(40, true, $offset);
@@ -179,13 +230,13 @@
          */
         public function runScrumShowBurndownImage(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_scrum'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
 
             $milestone = null;
             $maxEstimation = 0;
 
             if ($m_id = $request['sprint_id']) {
-                $milestone = entities\Milestone::getB2DBTable()->selectById($m_id);
+                $milestone = entities\tables\Milestones::getTable()->selectById($m_id);
             } else {
                 $milestones = $this->selected_project->getUpcomingMilestones();
                 if (count($milestones)) {
@@ -229,13 +280,12 @@
         public function runScrumSetStoryDetail(framework\Request $request)
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
-            $this->forward403unless($this->_checkProjectPageAccess('project_scrum'));
-            $issue = entities\Issue::getB2DBTable()->selectById((int)$request['story_id']);
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $issue = tables\Issues::getTable()->selectById((int)$request['story_id']);
             try {
                 if ($issue instanceof entities\Issue) {
                     switch ($request['detail']) {
                         case 'color':
-                            $this->forward403unless($issue->canEditColor());
                             $issue->setCoverColor($request['color']);
                             $issue->save();
 
@@ -261,7 +311,7 @@
         public function runScrumAddSprint(framework\Request $request)
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
-            $this->forward403unless($this->_checkProjectPageAccess('project_scrum'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             if (($sprint_name = $request['sprint_name']) && trim($sprint_name) != '') {
                 $sprint = new entities\Milestone();
                 $sprint->setName($sprint_name);
@@ -284,7 +334,7 @@
          */
         public function runIssues(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_issues'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_ISSUES));
         }
 
         /**
@@ -294,7 +344,7 @@
          */
         public function runTeam(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_team'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
             $this->assigned_users = $this->selected_project->getAssignedUsers();
             $this->assigned_teams = $this->selected_project->getAssignedTeams();
         }
@@ -306,15 +356,15 @@
          */
         public function runStatistics(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_statistics'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
         }
 
         public function runStatisticsLast15(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_statistics'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if (!function_exists('imagecreatetruecolor')) {
-                return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://pachno.com for more information'));
+                return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://projects.pach.no/pachno/docs/r/faq for more information'));
             }
 
             $this->getResponse()->setContentType('image/png');
@@ -329,7 +379,7 @@
 
         public function runStatisticsImagesets(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_statistics'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
             try {
                 if (!in_array($request['set'], ['issues_per_status', 'issues_per_state', 'issues_per_priority', 'issues_per_category', 'issues_per_resolution', 'issues_per_reproducability'])) {
                     throw new InvalidArgumentException(Context::getI18n()->__('Invalid image set'));
@@ -363,7 +413,7 @@
 
         public function runStatisticsGetImage(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_statistics'));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if (!function_exists('imagecreatetruecolor')) {
                 return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://pachno.com for more information'));
@@ -481,19 +531,11 @@
                     if ($item_id != 0 || $this->key == 'issues_per_state') {
                         switch ($this->key) {
                             case 'issues_per_status':
-                                $item = entities\Status::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_priority':
-                                $item = entities\Priority::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_category':
-                                $item = entities\Category::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_resolution':
-                                $item = entities\Resolution::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_reproducability':
-                                $item = entities\Reproducability::getB2DBTable()->selectById($item_id);
+                                $item = tables\ListTypes::getTable()->selectById($item_id);
                                 break;
                             case 'issues_per_state':
                                 $item = ($item_id == entities\Issue::STATE_OPEN) ? $i18n->__('Open', [], true) : $i18n->__('Closed', [], true);
@@ -538,33 +580,90 @@
             }
         }
 
-        public function runMenuLinks(framework\Request $request)
-        {
-
-        }
-
         public function runTransitionIssue(framework\Request $request)
         {
             try {
-                $transition = entities\WorkflowTransition::getB2DBTable()->selectById($request['transition_id']);
-                $issue = entities\Issue::getB2DBTable()->selectById((int)$request['issue_id']);
+                $transition = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
+                $issue = tables\Issues::getTable()->selectById((int)$request['issue_id']);
                 if (!$issue->isWorkflowTransitionsAvailable()) {
                     throw new Exception(Context::getI18n()->__('You are not allowed to perform any workflow transitions on this issue'));
                 }
 
-                if ($transition->validateFromRequest($request)) {
-                    $transition->transitionIssueToOutgoingStepFromRequest($issue, $request);
-                } else {
-                    Context::setMessage('issue_error', 'transition_error');
-                    Context::setMessage('issue_workflow_errors', $transition->getValidationErrors());
+                $validation_results = $transition->validateFromRequest($request);
+                if ($validation_results === true) {
+                    $validation_results = $transition->transitionIssueToOutgoingStepFromRequest($issue, $request);
+                }
 
-                    if ($request->isResponseFormatAccepted('application/json', false)) {
-                        $this->getResponse()->setHttpStatus(400);
+                if ($validation_results !== true) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error', ['errors' => $validation_results]))]);
+                }
 
-                        return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
+                if ($request->hasParameter('board_id')) {
+                    $board = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                    $milestone = ($request['milestone_id']) ? Milestones::getTable()->selectById($request['milestone_id']) : null;
+
+                    if ($board->usesSwimlanes()) {
+                        switch ($board->getSwimlaneType()) {
+                            case entities\AgileBoard::SWIMLANES_ISSUES:
+                                foreach ($board->getMilestoneSwimlanes($milestone) as $swimlane) {
+                                    if ($swimlane->getIdentifier() != $request['swimlane_identifier'])
+                                        continue;
+
+                                    foreach ($issue->getParentIssues() as $parent_issue) {
+                                        if (!$swimlane->getIdentifierIssue() instanceof entities\Issue || $parent_issue->getID() !== $swimlane->getIdentifierIssue()->getID()) {
+                                            $issue->removeDependantIssue($parent_issue);
+                                        }
+                                    }
+
+                                    if ($swimlane->getIdentifierIssue() instanceof entities\Issue) {
+                                        $issue->addParentIssue($swimlane->getIdentifierIssue());
+                                    }
+
+                                    break;
+                                }
+                                break;
+                            case entities\AgileBoard::SWIMLANES_EXPEDITE:
+                            case entities\AgileBoard::SWIMLANES_GROUPING:
+                                foreach ($board->getMilestoneSwimlanes($milestone) as $swimlane) {
+                                    if ($swimlane->getIdentifier() != $request['swimlane_identifier'])
+                                        continue;
+
+                                    if (!$swimlane->hasIssue($issue)) {
+                                        $identifiables = $swimlane->getIdentifiables();
+                                        $identifiable = array_shift($identifiables);
+
+                                        if ($swimlane->getIdentifierGrouping() == 'priority') {
+                                            $issue->setPriority($identifiable);
+                                        } elseif ($swimlane->getIdentifierGrouping() == 'category') {
+                                            $issue->setCategory($identifiable);
+                                        } elseif ($swimlane->getIdentifierGrouping() == 'severity') {
+                                            $issue->setSeverity($identifiable);
+                                        }
+
+                                        $issue->save();
+                                        break;
+                                    }
+                                }
+                                break;
+                            default:
+                                throw new Exception('Woops');
+                        }
+                    }
+                } elseif ($request->hasParameter('parent_issue_id')) {
+                    $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
+                    foreach ($issue->getParentIssues() as $parent_issue) {
+                        if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
+                            $issue->removeDependantIssue($parent_issue);
+                        }
+                    }
+
+                    if ($new_parent_issue instanceof entities\Issue) {
+                        $issue->addParentIssue($new_parent_issue);
                     }
                 }
-                $this->forward(Context::getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+
+                return $this->renderJSON(['last_updated' => Context::getI18n()->formatTime(time(), 20), 'issues' => [$issue->toJSON()]]);
             } catch (Exception $e) {
                 return $this->return404();
             }
@@ -574,7 +673,7 @@
         {
             try {
                 try {
-                    $transition = entities\WorkflowTransition::getB2DBTable()->selectById($request['transition_id']);
+                    $transition = entities\tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
 
@@ -583,8 +682,9 @@
                 $issue_ids = $request['issue_ids'];
                 $status = null;
                 $closed = false;
+                $issues = [];
                 foreach ($issue_ids as $issue_id) {
-                    $issue = entities\Issue::getB2DBTable()->selectById((int)$issue_id);
+                    $issue = tables\Issues::getTable()->selectById((int)$issue_id);
                     if (!$issue->isWorkflowTransitionsAvailable() || !$transition->validateFromRequest($request)) {
                         $this->getResponse()->setHttpStatus(400);
 
@@ -600,14 +700,42 @@
 
                         return $this->renderJSON(['error' => $this->getI18n()->__('The transition failed because of an error in the workflow. Check your workflow configuration.')]);
                     }
-                    if ($status === null)
+                    if ($status === null) {
                         $status = $issue->getStatus();
+                    }
+
+                    if ($request->hasParameter('parent_issue_id')) {
+                        $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
+                        foreach ($issue->getParentIssues() as $parent_issue) {
+                            if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
+                                $issue->removeDependantIssue($parent_issue);
+                            }
+                        }
+
+                        if ($new_parent_issue instanceof entities\Issue) {
+                            $issue->addParentIssue($new_parent_issue);
+                        }
+                    }
+                    if ($request->hasParameter('priority_id')) {
+                        $priority = ($request['priority_id']) ? tables\ListTypes::getTable()->selectById($request['priority_id']) : null;
+                        $issue->setPriority($priority);
+                    }
+                    if ($request->hasParameter('severity_id')) {
+                        $severity = ($request['severity_id']) ? tables\ListTypes::getTable()->selectById($request['severity_id']) : null;
+                        $issue->setSeverity($severity);
+                    }
+                    if ($request->hasParameter('category_id')) {
+                        $category = ($request['category_id']) ? tables\ListTypes::getTable()->selectById($request['category_id']) : null;
+                        $issue->setCategory($category);
+                    }
+                    $issue->save();
 
                     $closed = $issue->isClosed();
+                    $issues[] = $issue->toJSON();
                 }
 
                 Context::loadLibrary('common');
-                $options = ['issue_ids' => array_keys($issue_ids), 'last_updated' => Context::getI18n()->formatTime(time(), 20), 'closed' => $closed];
+                $options = ['last_updated' => Context::getI18n()->formatTime(time(), 20), 'closed' => $closed, 'issues' => $issues];
                 $options['status'] = ['color' => $status->getColor(), 'name' => $status->getName(), 'id' => $status->getID()];
                 if ($request->hasParameter('milestone_id')) {
                     $milestone = new entities\Milestone($request['milestone_id']);
@@ -648,38 +776,51 @@
             $this->access_level = ($this->getUser()->canEditProjectDetails(Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
         }
 
-        public function runReleaseCenter(framework\Request $request)
-        {
-            $this->forward403if(Context::getCurrentProject()->isArchived() || !$this->getUser()->canManageProjectReleases(Context::getCurrentProject()));
-            $this->build_error = Context::getMessageAndClear('build_error');
-        }
-
+        /**
+         * @Route(url="/releases")
+         *
+         * @param framework\Request $request
+         */
         public function runReleases(framework\Request $request)
-        {
-            $this->_setupBuilds();
-        }
-
-        protected function _setupBuilds()
         {
             $builds = $this->selected_project->getBuilds();
 
             $active_builds = [0 => []];
+            $active_builds_count = 0;
             $archived_builds = [0 => []];
+            $archived_builds_count = 0;
+            $upcoming_builds = [0 => []];
+            $upcoming_builds_count = 0;
 
             foreach ($this->selected_project->getEditions() as $edition_id => $edition) {
                 $active_builds[$edition_id] = [];
                 $archived_builds[$edition_id] = [];
+                $upcoming_builds[$edition_id] = [];
             }
 
             foreach ($builds as $build) {
-                if ($build->isLocked())
+                if ($build->isInternal() && (!$this->getUser()->canManageProjectReleases($build->getProject()) || !$build->getProject()->canSeeInternalBuilds())) {
+                    continue;
+                }
+
+                if ((!$build->hasReleaseDate() || $build->getReleaseDate() > NOW) && !$build->isReleased()) {
+                    $upcoming_builds[$build->getEditionID()][$build->getID()] = $build;
+                    $upcoming_builds_count++;
+                } elseif ($build->isArchived()) {
                     $archived_builds[$build->getEditionID()][$build->getID()] = $build;
-                else
+                    $archived_builds_count++;
+                } else {
                     $active_builds[$build->getEditionID()][$build->getID()] = $build;
+                    $active_builds_count++;
+                }
             }
 
             $this->active_builds = $active_builds;
+            $this->active_builds_count = $active_builds_count;
             $this->archived_builds = $archived_builds;
+            $this->archived_builds_count = $archived_builds_count;
+            $this->upcoming_builds = $upcoming_builds;
+            $this->upcoming_builds_count = $upcoming_builds_count;
         }
 
         /**
@@ -692,19 +833,12 @@
             $this->message = false;
 
             $find_by = trim($request['find_by']);
-            if ($find_by) {
-                $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
-                $this->users = tables\Users::getTable()->getByDetails($find_by, 10, true);
-                $this->teams = tables\Teams::getTable()->quickfind($find_by);
-                $this->global_roles = entities\Role::getGlobalRoles();
-                $this->project_roles = entities\Role::getByProjectID($this->selected_project->getID());
-
-                if (filter_var($find_by, FILTER_VALIDATE_EMAIL) == $find_by) {
-                    $this->email = $find_by;
-                }
-            } else {
-                $this->message = true;
+            if (!$find_by) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
             }
+
+            $selected_project = tables\Projects::getTable()->selectById($request['project_id']);
+            return $this->renderJSON(['content' => $this->getComponentHTML('project/findassignee', ['selected_project' => $selected_project, 'find_by' => $find_by])]);
         }
 
         /**
@@ -715,30 +849,61 @@
         public function runAssignToProject(framework\Request $request)
         {
             if ($this->getUser()->canEditProjectDetails($this->selected_project)) {
+                if ($request->hasParameter('permission')) {
+                    if ($request['value'] == 1) {
+                        Settings::getDefaultGroup()->addPermission($request['permission'], 'core', null, $this->selected_project->getID());
+                    } else {
+                        Settings::getDefaultGroup()->removePermission($request['permission'], $this->selected_project->getID());
+                    }
+                    framework\Context::clearPermissionsCache();
+
+                    return $this->renderJSON(['message' => $this->getI18n()->__('Permission saved')]);
+                }
+
                 $assignee_type = $request['assignee_type'];
                 $assignee_id = $request['assignee_id'];
+
+                $assignee_role = tables\ListTypes::getTable()->selectById($request['role_id']);
+
+                if (!$assignee_role instanceof entities\Role) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('You have to specify a role for this assignee')]);
+                }
 
                 try {
                     switch ($assignee_type) {
                         case 'user':
-                            $assignee = entities\User::getB2DBTable()->selectById($assignee_id);
+                            if (is_numeric($assignee_id)) {
+                                $assignee = tables\Users::getTable()->selectById($assignee_id);
+                            } else {
+                                $assignee = new entities\User();
+                                $assignee->setUsername($assignee_id);
+                                $assignee->setRealname($assignee_id);
+                                $assignee->setEmail($assignee_id);
+                                $assignee->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                                $password = entities\User::createPassword();
+                                $assignee->setPassword($password);
+                                $assignee->save();
+                                $assignee->setActivated(false);
+                                $assignee->save();
+                            }
+
+                            framework\Event::createNew('core', 'projectActions::addAssignee', $this->selected_project)->trigger(['assignee' => $assignee]);
                             break;
                         case 'team':
-                            $assignee = entities\Team::getB2DBTable()->selectById($assignee_id);
+                            $assignee = tables\Teams::getTable()->selectById($assignee_id);
                             break;
                         default:
                             throw new Exception('Invalid assignee');
                     }
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => Context::getI18n()->__('An error occurred when trying to assign user/team to this project')]);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('An error occurred when trying to assign user/team to this project: ' . $e->getMessage())]);
                 }
 
-                $assignee_role = new entities\Role($request['role_id']);
                 $this->selected_project->addAssignee($assignee, $assignee_role);
 
-                return $this->renderComponent('projects_assignees', ['project' => $this->selected_project]);
+                return $this->renderJSON(['content' => $this->getComponentHTML('project/settings_project_assignee', ['project' => $this->selected_project, 'assignee' => $assignee])]);
             } else {
                 $this->getResponse()->setHttpStatus(403);
 
@@ -756,13 +921,13 @@
             try {
                 switch ($request['item_type']) {
                     case 'project':
-                        $item = entities\Project::getB2DBTable()->selectById($request['project_id']);
+                        $item = tables\Projects::getTable()->selectById($request['project_id']);
                         break;
                     case 'edition':
-                        $item = entities\Edition::getB2DBTable()->selectById($request['edition_id']);
+                        $item = tables\Editions::getTable()->selectById($request['edition_id']);
                         break;
                     case 'component':
-                        $item = entities\Component::getB2DBTable()->selectById($request['component_id']);
+                        $item = tables\Components::getTable()->selectById($request['component_id']);
                         break;
                 }
             } catch (Exception $e) {
@@ -777,10 +942,10 @@
                     if (in_array($request['identifiable_type'], ['team', 'user']) && $request['value']) {
                         switch ($request['identifiable_type']) {
                             case 'user':
-                                $identified = entities\User::getB2DBTable()->selectById($request['value']);
+                                $identified = tables\Users::getTable()->selectById($request['value']);
                                 break;
                             case 'team':
-                                $identified = entities\Team::getB2DBTable()->selectById($request['value']);
+                                $identified = tables\Teams::getTable()->selectById($request['value']);
                                 break;
                         }
                         if ($identified instanceof entities\common\Identifiable) {
@@ -803,11 +968,11 @@
                     }
                 }
                 if ($request['field'] == 'owned_by')
-                    return $this->renderJSON(['field' => (($item->hasOwner()) ? ['id' => $item->getOwner()->getID(), 'name' => (($item->getOwner() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getOwner()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getOwner()]))] : ['id' => 0])]);
+                    return $this->renderJSON(['field' => (($item->hasOwner()) ? ['id' => $item->getOwner()->getID(), 'name' => (($item->getOwner() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getOwner()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getOwner()]))] : ['id' => 0, 'name' => $this->getI18n()->__('No project owner assigned')])]);
                 elseif ($request['field'] == 'lead_by')
-                    return $this->renderJSON(['field' => (($item->hasLeader()) ? ['id' => $item->getLeader()->getID(), 'name' => (($item->getLeader() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getLeader()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getLeader()]))] : ['id' => 0])]);
+                    return $this->renderJSON(['field' => (($item->hasLeader()) ? ['id' => $item->getLeader()->getID(), 'name' => (($item->getLeader() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getLeader()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getLeader()]))] : ['id' => 0, 'name' => $this->getI18n()->__('No project leader assigned')])]);
                 elseif ($request['field'] == 'qa_by')
-                    return $this->renderJSON(['field' => (($item->hasQaResponsible()) ? ['id' => $item->getQaResponsible()->getID(), 'name' => (($item->getQaResponsible() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getQaResponsible()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getQaResponsible()]))] : ['id' => 0])]);
+                    return $this->renderJSON(['field' => (($item->hasQaResponsible()) ? ['id' => $item->getQaResponsible()->getID(), 'name' => (($item->getQaResponsible() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getQaResponsible()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getQaResponsible()]))] : ['id' => 0, 'name' => $this->getI18n()->__('No QA responsible assigned')])]);
             }
         }
 
@@ -884,7 +1049,7 @@
                     if ($request['client'] == 0) {
                         $this->selected_project->setClient(null);
                     } else {
-                        $this->selected_project->setClient(entities\Client::getB2DBTable()->selectById($request['client']));
+                        $this->selected_project->setClient(tables\Clients::getTable()->selectById($request['client']));
                     }
                 }
 
@@ -892,13 +1057,13 @@
                     if ($request['subproject_id'] == 0) {
                         $this->selected_project->clearParent();
                     } else {
-                        $this->selected_project->setParent(entities\Project::getB2DBTable()->selectById($request['subproject_id']));
+                        $this->selected_project->setParent(tables\Projects::getTable()->selectById($request['subproject_id']));
                     }
                 }
 
                 if ($request->hasParameter('workflow_scheme')) {
                     try {
-                        $workflow_scheme = entities\WorkflowScheme::getB2DBTable()->selectById($request['workflow_scheme']);
+                        $workflow_scheme = tables\WorkflowSchemes::getTable()->selectById($request['workflow_scheme']);
                         $this->selected_project->setWorkflowScheme($workflow_scheme);
                     } catch (Exception $e) {
 
@@ -907,7 +1072,7 @@
 
                 if ($request->hasParameter('issuetype_scheme')) {
                     try {
-                        $issuetype_scheme = entities\IssuetypeScheme::getB2DBTable()->selectById($request['issuetype_scheme']);
+                        $issuetype_scheme = tables\IssuetypeSchemes::getTable()->selectById($request['issuetype_scheme']);
                         $this->selected_project->setIssuetypeScheme($issuetype_scheme);
                     } catch (Exception $e) {
 
@@ -1032,7 +1197,7 @@
             try {
                 if ($this->getUser()->canManageProjectReleases($this->selected_project)) {
                     if ($b_id = $request['build_id']) {
-                        $build = entities\Build::getB2DBTable()->selectById($b_id);
+                        $build = tables\Builds::getTable()->selectById($b_id);
                         if ($build->hasAccess()) {
                             $build->delete();
 
@@ -1062,67 +1227,58 @@
         {
             $i18n = Context::getI18n();
 
-            if ($this->getUser()->canManageProjectReleases($this->selected_project)) {
-                try {
-                    if (Context::getUser()->canManageProjectReleases($this->selected_project)) {
-                        if (($b_name = $request['build_name']) && trim($b_name) != '') {
-                            $build = new entities\Build($request['build_id']);
-                            $build->setName($b_name);
-                            $build->setVersion($request->getParameter('ver_mj', 0), $request->getParameter('ver_mn', 0), $request->getParameter('ver_rev', 0));
-                            $build->setReleased((bool)$request['isreleased']);
-                            $build->setLocked((bool)$request['locked']);
-                            if ($request['milestone'] && $milestone = entities\Milestone::getB2DBTable()->selectById($request['milestone'])) {
-                                $build->setMilestone($milestone);
-                            } else {
-                                $build->clearMilestone();
-                            }
-                            if ($request['edition'] && $edition = entities\Edition::getB2DBTable()->selectById($request['edition'])) {
-                                $build->setEdition($edition);
-                            } else {
-                                $build->clearEdition();
-                            }
-                            $release_date = null;
-                            if ($request['has_release_date']) {
-                                $release_date = mktime($request['release_hour'], $request['release_minute'], 1, $request['release_month'], $request['release_day'], $request['release_year']);
-                            }
-                            $build->setReleaseDate($release_date);
-                            switch ($request->getParameter('download', 'leave_file')) {
-                                case '0':
-                                    $build->clearFile();
-                                    $build->setFileURL('');
-                                    break;
-                                case 'upload_file':
-                                    if ($build->hasFile()) {
-                                        $build->getFile()->delete();
-                                        $build->clearFile();
-                                    }
-                                    $file = Context::getRequest()->handleUpload('upload_file');
-                                    $build->setFile($file);
-                                    $build->setFileURL('');
-                                    break;
-                                case 'url':
-                                    $build->clearFile();
-                                    $build->setFileURL($request['file_url']);
-                                    break;
-                            }
-
-                            if (!$build->getID())
-                                $build->setProject($this->selected_project);
-
-                            $build->save();
-                        } else {
-                            throw new Exception($i18n->__('You need to specify a name for the release'));
-                        }
-                    } else {
-                        throw new Exception($i18n->__('You do not have access to this project'));
-                    }
-                } catch (Exception $e) {
-                    Context::setMessage('build_error', $e->getMessage());
+            try {
+                if (!$this->getUser()->canManageProjectReleases($this->selected_project)) {
+                    throw new Exception($i18n->__('You do not have access to manage project releases'));
                 }
-                $this->forward(Context::getRouting()->generate('project_release_center', ['project_key' => $this->selected_project->getKey()]));
-            }
+                if (trim($request['name']) == '') {
+                    throw new Exception($i18n->__('You need to specify a name for the release'));
+                }
 
-            return $this->forward403($i18n->__("You don't have access to add releases"));
+                if (!$request['build_id']) {
+                    $build = new entities\Build();
+                } else {
+                    $build = tables\Builds::getTable()->selectById($request['build_id']);
+                }
+
+                if (!$build instanceof entities\Build) {
+                    throw new Exception('This release does not exist');
+                }
+
+                $build->setName($request['name']);
+                $build->setVersion($request->getParameter('ver_mj', 0), $request->getParameter('ver_mn', 0), $request->getParameter('ver_rev', 0));
+                $build->setReleased((bool) $request['released']);
+                $build->setLocked((bool) $request['locked']);
+                $build->setActive((bool) $request['active']);
+                $build->setFileURL($request['file_url']);
+                $build->setReleaseDate($request['date']);
+                $build->setProject($this->selected_project);
+
+                if ($request['milestone'] && $milestone = Milestones::getTable()->selectById($request['milestone'])) {
+                    $build->setMilestone($milestone);
+                } else {
+                    $build->clearMilestone();
+                }
+                if ($request['edition'] && $edition = tables\Editions::getTable()->selectById($request['edition'])) {
+                    $build->setEdition($edition);
+                } else {
+                    $build->clearEdition();
+                }
+
+                $build->save();
+
+                if ($request->hasParameter('files')) {
+                    $file_ids = $request->getParameter('files');
+                    foreach ($file_ids as $file_id) {
+                        BuildFiles::getTable()->addByBuildIDandFileID($build->getID(), $file_id);
+                    }
+                }
+                return $this->renderJSON(['build' => $build->toJSON(), 'component' => $this->getComponentHTML('project/release', ['build' => $build])]);
+
+            } catch (Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
         }
 
         /**
@@ -1136,7 +1292,7 @@
 
             if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project)) {
                 try {
-                    $edition = entities\Edition::getB2DBTable()->selectById($request['edition_id']);
+                    $edition = tables\Editions::getTable()->selectById($request['edition_id']);
                     if ($request['mode'] == 'add') {
                         $edition->addComponent($request['component_id']);
                     } elseif ($request['mode'] == 'remove') {
@@ -1348,7 +1504,7 @@
         {
             try {
                 if ($request['project_id']) {
-                    $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
+                    $this->selected_project = tables\Projects::getTable()->selectById($request['project_id']);
                 } else {
                     $this->selected_project = new entities\Project();
                 }
@@ -1361,7 +1517,7 @@
 
             $this->selected_project->setName($request['project_name']);
 
-            return $this->renderJSON(['content' => $this->selected_project->getKey()]);
+            return $this->renderJSON(['new_values' => ['project_key' => $this->selected_project->getKey()]]);
         }
 
         public function runUnassignFromProject(framework\Request $request)
@@ -1371,7 +1527,7 @@
                     $assignee = ($request['assignee_type'] == 'user') ? new entities\User($request['assignee_id']) : new entities\Team($request['assignee_id']);
                     $this->selected_project->removeAssignee($assignee);
 
-                    return $this->renderJSON(['message' => Context::getI18n()->__('The assignee has been removed')]);
+                    return $this->renderJSON(['message' => Context::getI18n()->__('The assignee has been removed'), 'assignee_type' => $request['assignee_type'], 'assignee_id' => $request['assignee_id']]);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
 
@@ -1384,7 +1540,7 @@
         }
 
         /**
-         * @Route(url="/configure/project/:project_id/icons/:csrf_token", name="configure_projects_icons")
+         * @Route(url="/configure/project/:project_id/icons/:csrf_token", name="configure_icons")
          * @CsrfProtected
          *
          * @param framework\Request $request
@@ -1426,7 +1582,7 @@
                         $this->selected_project->convertIssueStepPerIssuetype($type, $data);
                     }
 
-                    $this->selected_project->setWorkflowScheme(entities\WorkflowScheme::getB2DBTable()->selectById($request['workflow_id']));
+                    $this->selected_project->setWorkflowScheme(tables\WorkflowSchemes::getTable()->selectById($request['workflow_id']));
                     $this->selected_project->save();
 
                     return $this->renderJSON(['message' => Context::geti18n()->__('Workflow scheme changed and issues updated')]);
@@ -1443,10 +1599,10 @@
 
         public function runProjectWorkflowTable(framework\Request $request)
         {
-            $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
+            $this->selected_project = tables\Projects::getTable()->selectById($request['project_id']);
             if ($request->isPost()) {
                 try {
-                    $workflow_scheme = entities\WorkflowScheme::getB2DBTable()->selectById($request['new_workflow']);
+                    $workflow_scheme = tables\WorkflowSchemes::getTable()->selectById($request['new_workflow']);
 
                     return $this->renderJSON(['content' => $this->getComponentHTML('projectworkflow_table', ['project' => $this->selected_project, 'new_workflow' => $workflow_scheme])]);
                 } catch (Exception $e) {
@@ -1495,30 +1651,29 @@
          */
         protected function _unlockIssueAfter(framework\Request $request, $issue)
         {
-            tables\Permissions::getTable()
-                ->deleteByPermissionTargetIDAndModule('canviewissue', $issue->getID());
+            tables\Permissions::getTable()->deleteByPermissionTargetIDAndModule('canaccessrestrictedissues', $issue->getID());
 
             $al_users = $request->getParameter('access_list_users', []);
             $al_teams = $request->getParameter('access_list_teams', []);
             $i_al = $issue->getAccessList();
             foreach ($i_al as $k => $item) {
                 if ($item['target'] instanceof entities\Team) {
-                    $tid = $item['target']->getID();
-                    if (array_key_exists($tid, $al_teams)) {
+                    $team_id = $item['target']->getID();
+                    if (array_key_exists($team_id, $al_teams)) {
                         unset($i_al[$k]);
                     }
                 } elseif ($item['target'] instanceof entities\User) {
-                    $uid = $item['target']->getID();
-                    if (array_key_exists($uid, $al_users)) {
+                    $user_id = $item['target']->getID();
+                    if (array_key_exists($user_id, $al_users)) {
                         unset($i_al[$k]);
                     }
                 }
             }
-            foreach ($al_users as $uid) {
-                Context::setPermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0, true);
+            foreach ($al_users as $user_id) {
+                Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
             }
-            foreach ($al_teams as $tid) {
-                Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
+            foreach ($al_teams as $team_id) {
+                Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
             }
         }
 

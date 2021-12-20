@@ -45,6 +45,6 @@
         <a class="button secondary" href="<?php echo $view->getProject()->getDocumentationURL(); ?>" target="_blank"><?php echo __('Open documentation'); ?></a>
     <?php endif; ?>
     <?php if ($view->getProject()->hasHomepage()): ?>
-        <a class="button secondary highlight" href="<?php echo $view->getProject()->getHomepage(); ?>" target="_blank"><?php echo __('Visit homepage'); ?></a>
+        <a class="button secondary highlight" href="<?php echo $view->getProject()->getHomepage(); ?>" target="_blank"><?= fa_image_tag('globe', ['class' => 'icon']); ?><span class="name"><?php echo __('Visit homepage'); ?></span></a>
     <?php endif; ?>
 </div>

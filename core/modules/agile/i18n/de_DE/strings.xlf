@@ -12,7 +12,7 @@
 
 <xliff version="1.2">
 
-    <file datatype="php" original="Agile.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="Agile.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="21d28aa03f67eb242b1c95a6a0594ff5">
                 <source>Planning</source>
@@ -21,7 +21,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="Components.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="Components.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="53fbb4285f5a5c035c9e3e102e477dee">
                 <source>Project open issues (recommended)</source>
@@ -62,7 +62,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="controllers/Main.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="controllers/Main.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="6ae8cabf4766060e4dc30b156d3c84ad">
                 <source>You don't have access to modify milestones</source>
@@ -115,7 +115,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="entities/BoardSwimlane.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="entities/BoardSwimlane.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="e5a93185a2d2caeb8f4df8f1d1861b2c">
                 <source>Unknown / not set</source>
@@ -124,7 +124,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_backlog.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_backlog.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="80b768b15c3693e345a436b9dc0ea36f">
                 <source>Issues</source>
@@ -145,7 +145,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_boardbox.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_boardbox.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="43b53d4637c0f3a52c51d2bd61895f5f">
                 <source>Edit this board</source>
@@ -170,7 +170,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_boardcolumnheader.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_boardcolumnheader.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="279fdac449fbaa1eb1028dc8f003631c">
                 <source>%count (min %min_workitems - max %max_workitems)</source>
@@ -195,7 +195,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_colorpicker.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_colorpicker.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="bf1a1db8dc8673071129027191db1485">
                 <source>Click to select a planning color for this issue</source>
@@ -220,7 +220,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_editagileboard.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_editagileboard.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="e9bfb485e714c812407664d52a4f5052">
                 <source>Edit agile board</source>
@@ -425,7 +425,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_editboardcolumn.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_editboardcolumn.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="710b83fcac12967268bc99b5bab9a093">
                 <source>Column name</source>
@@ -458,7 +458,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_epicstrip.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_epicstrip.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="b78a3223503896721cca1303f776159b">
                 <source>Title</source>
@@ -491,7 +491,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_headermenuprojectlinks.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_headermenuprojectlinks.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="657fd3eec6624217c3ad5de3744a69d2">
                 <source>Agile</source>
@@ -512,7 +512,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_milestone.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_milestone.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="e81989bb4880b2fad170dc8b76620220">
                 <source>Save sprint</source>
@@ -545,7 +545,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_milestonebox.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_milestonebox.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="b4438b15f6cdf9bc2115bc6f93221c7d">
                 <source>No issues are assigned to this milestone</source>
@@ -570,7 +570,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_milestoneboxheader.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_milestoneboxheader.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="4d34f1097f6c8b9cee28bca8b78bbee9">
                 <source>Start date</source>
@@ -623,7 +623,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_milestoneepic.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_milestoneepic.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="f9134937ba5da4d91eead723aee72481">
                 <source>Current status</source>
@@ -652,7 +652,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_milestonefinish.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_milestonefinish.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="07be48e2d921063f1ebbe8e01b8b6505">
                 <source>Mark milestone finished</source>
@@ -725,7 +725,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_milestoneissue.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_milestoneissue.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="cb253883bfc6845f7227be93e8e27096">
                 <source>Priority not set</source>
@@ -758,7 +758,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_projectheaderstriplinks.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_projectheaderstriplinks.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="c90dd092eedeba2b2a72f32e17837b5d">
                 <source>Manage columns</source>
@@ -771,7 +771,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_releasestrip.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_releasestrip.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="9b2d288c7b0c5d6240966cf13bfc6ec8">
                 <source>Release date</source>
@@ -800,7 +800,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_whiteboardissue.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_whiteboardissue.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="3e8840a4c791dbdd8cf9ca20ca4b4d78">
                 <source>%percentage % completed</source>
@@ -813,7 +813,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_whiteboardtransitionselector.inc.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/_whiteboardtransitionselector.inc.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="43e09d3f973823629c4c1692ffa6edc9">
                 <source>Transition issue</source>
@@ -830,7 +830,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/board.html.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/board.html.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="b741c0133b1c4bcaa70b46f63f090691">
                 <source>&quot;%project_name&quot; project planning</source>
@@ -903,7 +903,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/index.html.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/index.html.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="720cb0855773f3411311be9dd894126a">
                 <source>Manage agile boards</source>
@@ -920,7 +920,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/whiteboard.html.php" source-language="en" target-language="de-DE">
+    <file datatype="php" original="templates/whiteboard.html.php" source-language="en-US" target-language="de-DE">
         <body>
             <trans-unit id="655f838f26b376a27833fdb71586c234">
                 <source>&quot;%project_name&quot; agile whiteboard</source>

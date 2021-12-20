@@ -20,21 +20,26 @@
     class IssueRelations extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issuerelations';
+        public const B2DBNAME = 'issuerelations';
 
-        const ID = 'issuerelations.id';
+        public const ID = 'issuerelations.id';
 
-        const SCOPE = 'issuerelations.scope';
+        public const SCOPE = 'issuerelations.scope';
 
-        const PARENT_ID = 'issuerelations.parent_id';
+        public const PARENT_ID = 'issuerelations.parent_id';
 
-        const CHILD_ID = 'issuerelations.child_id';
+        public const CHILD_ID = 'issuerelations.child_id';
 
-        const MUSTFIX = 'issuerelations.mustfix';
+        public const MUSTFIX = 'issuerelations.mustfix';
 
         protected $_relations_cache = [];
+
+        public function clearRelationCache()
+        {
+            $this->_relations_cache = [];
+        }
 
         public function getRelatedIssues($issue_id)
         {
@@ -145,7 +150,7 @@
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawInsert($insertion);
 
-            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$parent_id]);
+            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$child_id]);
 
             return $res;
         }
@@ -188,7 +193,7 @@
             return $res;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addBoolean(self::MUSTFIX);

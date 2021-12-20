@@ -20,113 +20,113 @@
     class LogItem extends IdentifiableScoped
     {
 
-        const ACTION_MILESTONE_STARTED = 1;
+        public const ACTION_MILESTONE_STARTED = 1;
 
-        const ACTION_MILESTONE_REACHED = 2;
+        public const ACTION_MILESTONE_REACHED = 2;
 
-        const ACTION_ISSUE_UPDATE_STATUS = 3;
+        public const ACTION_ISSUE_UPDATE_STATUS = 3;
 
-        const ACTION_ISSUE_UPDATE_USER_WORKING_ON_ISSUE = 4;
+        public const ACTION_ISSUE_UPDATE_USER_WORKING_ON_ISSUE = 4;
 
-        const ACTION_ISSUE_UPDATE_FREE_TEXT = 5;
+        public const ACTION_ISSUE_UPDATE_FREE_TEXT = 5;
 
-        const ACTION_ISSUE_UPDATE_ISSUETYPE = 6;
+        public const ACTION_ISSUE_UPDATE_ISSUETYPE = 6;
 
-        const ACTION_ISSUE_UPDATE_CATEGORY = 7;
+        public const ACTION_ISSUE_UPDATE_CATEGORY = 7;
 
-        const ACTION_ISSUE_UPDATE_REPRODUCABILITY = 8;
+        public const ACTION_ISSUE_UPDATE_REPRODUCABILITY = 8;
 
-        const ACTION_ISSUE_UPDATE_PERCENT_COMPLETE = 9;
+        public const ACTION_ISSUE_UPDATE_PERCENT_COMPLETE = 9;
 
-        const ACTION_ISSUE_UPDATE_ESTIMATED_TIME = 10;
+        public const ACTION_ISSUE_UPDATE_ESTIMATED_TIME = 10;
 
-        const ACTION_ISSUE_UPDATE_RELATED_ISSUE = 11;
+        public const ACTION_ISSUE_UPDATE_RELATED_ISSUE = 11;
 
-        const ACTION_ISSUE_UPDATE_RESOLUTION = 12;
+        public const ACTION_ISSUE_UPDATE_RESOLUTION = 12;
 
-        const ACTION_ISSUE_UPDATE_PRIORITY = 13;
+        public const ACTION_ISSUE_UPDATE_PRIORITY = 13;
 
-        const ACTION_ISSUE_CLOSE = 14;
+        public const ACTION_ISSUE_CLOSE = 14;
 
-        const ACTION_ISSUE_ADD_AFFECTED_ITEM = 15;
+        public const ACTION_ISSUE_ADD_AFFECTED_ITEM = 15;
 
-        const ACTION_ISSUE_UPDATE_AFFECTED_ITEM = 16;
+        public const ACTION_ISSUE_UPDATE_AFFECTED_ITEM = 16;
 
-        const ACTION_ISSUE_REMOVE_AFFECTED_ITEM = 17;
+        public const ACTION_ISSUE_REMOVE_AFFECTED_ITEM = 17;
 
-        const ACTION_BUILD_RELEASED = 18;
+        public const ACTION_BUILD_RELEASED = 18;
 
-        const LOG_TASK_UPDATE = 19;
+        public const LOG_TASK_UPDATE = 19;
 
-        const LOG_TASK_DELETE = 20;
+        public const LOG_TASK_DELETE = 20;
 
-        const ACTION_ISSUE_UPDATE_TEAM = 21;
+        public const ACTION_ISSUE_UPDATE_TEAM = 21;
 
-        const ACTION_ISSUE_REOPEN = 22;
+        public const ACTION_ISSUE_REOPEN = 22;
 
-        const LOG_TASK_COMPLETED = 23;
+        public const LOG_TASK_COMPLETED = 23;
 
-        const LOG_TASK_REOPENED = 24;
+        public const LOG_TASK_REOPENED = 24;
 
-        const LOG_TASK_STATUS = 25;
+        public const LOG_TASK_STATUS = 25;
 
-        const LOG_TASK_ASSIGN_USER = 26;
+        public const LOG_TASK_ASSIGN_USER = 26;
 
-        const LOG_TASK_ASSIGN_TEAM = 27;
+        public const LOG_TASK_ASSIGN_TEAM = 27;
 
-        const ACTION_COMMENT_CREATED = 28;
+        public const ACTION_COMMENT_CREATED = 28;
 
-        const ACTION_ISSUE_CREATED = 29;
+        public const ACTION_ISSUE_CREATED = 29;
 
-        const ACTION_ISSUE_UPDATE_SEVERITY = 30;
+        public const ACTION_ISSUE_UPDATE_SEVERITY = 30;
 
-        const ACTION_ISSUE_UPDATE_MILESTONE = 31;
+        public const ACTION_ISSUE_UPDATE_MILESTONE = 31;
 
-        const ACTION_ISSUE_UPDATE_TIME_SPENT = 32;
+        public const ACTION_ISSUE_UPDATE_TIME_SPENT = 32;
 
-        const ACTION_ISSUE_UPDATE_ASSIGNEE = 33;
+        public const ACTION_ISSUE_UPDATE_ASSIGNEE = 33;
 
-        const ACTION_ISSUE_UPDATE_OWNER = 34;
+        public const ACTION_ISSUE_UPDATE_OWNER = 34;
 
-        const ACTION_ISSUE_UPDATE_POSTED_BY = 35;
+        public const ACTION_ISSUE_UPDATE_POSTED_BY = 35;
 
-        const ACTION_ISSUE_UPDATE_CUSTOMFIELD = 36;
+        public const ACTION_ISSUE_UPDATE_CUSTOMFIELD = 36;
 
-        const ACTION_ISSUE_UPDATE_PAIN_BUG_TYPE = 37;
+        public const ACTION_ISSUE_UPDATE_PAIN_BUG_TYPE = 37;
 
-        const ACTION_ISSUE_UPDATE_PAIN_EFFECT = 38;
+        public const ACTION_ISSUE_UPDATE_PAIN_EFFECT = 38;
 
-        const ACTION_ISSUE_UPDATE_PAIN_LIKELIHOOD = 39;
+        public const ACTION_ISSUE_UPDATE_PAIN_LIKELIHOOD = 39;
 
-        const ACTION_ISSUE_UPDATE_PAIN_SCORE = 40;
+        public const ACTION_ISSUE_UPDATE_PAIN_SCORE = 40;
 
-        const ACTION_ISSUE_ADD_BLOCKING = 41;
+        public const ACTION_ISSUE_ADD_BLOCKING = 41;
 
-        const ACTION_ISSUE_REMOVE_BLOCKING = 42;
+        public const ACTION_ISSUE_REMOVE_BLOCKING = 42;
 
-        const ACTION_ISSUE_UPDATE_TITLE = 43;
+        public const ACTION_ISSUE_UPDATE_TITLE = 43;
 
-        const ACTION_ISSUE_UPDATE_DESCRIPTION = 44;
+        public const ACTION_ISSUE_UPDATE_DESCRIPTION = 44;
 
-        const ACTION_ISSUE_UPDATE_REPRODUCTION_STEPS = 45;
+        public const ACTION_ISSUE_UPDATE_REPRODUCTION_STEPS = 45;
 
-        const ACTION_ISSUE_UPDATE_SHORT_LABEL = 46;
+        public const ACTION_ISSUE_UPDATE_SHORT_LABEL = 46;
 
-        const ACTION_ISSUE_UPDATE_COMMIT = 47;
+        public const ACTION_ISSUE_UPDATE_COMMIT = 47;
 
-        const ACTION_COMMIT_CREATED = 48;
+        public const ACTION_COMMIT_CREATED = 48;
 
-        const TYPE_ISSUE = 1;
+        public const TYPE_ISSUE = 1;
 
-        const TYPE_COMMENT = 2;
+        public const TYPE_COMMENT = 2;
 
-        const TYPE_MILESTONE = 3;
+        public const TYPE_MILESTONE = 3;
 
-        const TYPE_COMMIT = 4;
+        public const TYPE_COMMIT = 4;
 
-        const TYPE_ISSUE_COMMIT = 5;
+        public const TYPE_ISSUE_COMMIT = 5;
 
-        const TYPE_BUILD = 6;
+        public const TYPE_BUILD = 6;
 
         /**
          * @Column(type="integer", length=10)
@@ -384,7 +384,7 @@
             }
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new && !$this->_time) {

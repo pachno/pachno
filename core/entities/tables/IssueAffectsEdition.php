@@ -29,21 +29,21 @@
     class IssueAffectsEdition extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issueaffectsedition';
+        public const B2DBNAME = 'issueaffectsedition';
 
-        const ID = 'issueaffectsedition.id';
+        public const ID = 'issueaffectsedition.id';
 
-        const SCOPE = 'issueaffectsedition.scope';
+        public const SCOPE = 'issueaffectsedition.scope';
 
-        const ISSUE = 'issueaffectsedition.issue';
+        public const ISSUE = 'issueaffectsedition.issue';
 
-        const EDITION = 'issueaffectsedition.edition';
+        public const EDITION = 'issueaffectsedition.edition';
 
-        const CONFIRMED = 'issueaffectsedition.confirmed';
+        public const CONFIRMED = 'issueaffectsedition.confirmed';
 
-        const STATUS = 'issueaffectsedition.status';
+        public const STATUS = 'issueaffectsedition.status';
 
         protected $_preloaded_values = null;
 
@@ -170,7 +170,7 @@
             }
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addBoolean(self::CONFIRMED);
@@ -179,7 +179,7 @@
             parent::addForeignKeyColumn(self::STATUS, ListTypes::getTable(), ListTypes::ID);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('issue', self::ISSUE);
         }

@@ -1,0 +1,44 @@
+{
+  "common": {
+    "mentions": {
+      "user_search_placeholder": "Saisir votre recherche"
+    },
+    "editorjs": {
+      "tools": {
+        "code": "Bloc de code (auto-détection du langage)",
+        "codeMirror": "Code de bloc (spécifiez le langage)",
+        "alert": {
+          "title": "Message surligné",
+          "placeholder": "Insérez un message ici pour le surligner"
+        }
+      }
+    }
+  },
+  "agile": {
+    "add_card": "Ajouter une carte",
+    "add_card_here": "Ajouter une carte",
+    "add_swimlane": "Ajouter un couloir de navigation"
+  },
+  "issue": {
+    "value_not_set": "Non déterminé",
+    "unknown_value": "Inconnu",
+    "time_spent_none": "Pas de temps consacré",
+    "time_estimated_none": "Pas d'estimation",
+    "go_to_converted_issue": {
+      "title": "Se rendre sur la nouvelle demande ?",
+      "message": "Souhaitez-vous vous rendre sur la demande que vous venez de convertir ?"
+    }
+  },
+  "roadmap": {
+    "percent_complete": "%percentage% complété"
+  },
+  "configuration": {
+    "update_available": {
+      "header": "Pachno %version est disponible",
+      "content": "Une mise à jour de Pachno est disponible ! Souhaitez-vous ouvrir le site web pach.no pour en savoir plus sur la version %version"
+    },
+    "up_to_date": {
+      "message": "Pachno est à jour"
+    }
+  }
+}

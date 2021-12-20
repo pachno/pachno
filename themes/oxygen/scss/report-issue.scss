@@ -6,9 +6,61 @@
   }
 }
 
+#report_form {
+  + .sidebar {
+    transform: scaleX(1);
+    opacity: 1;
+    transition: opacity .25s ease-in-out, transform .25s ease-in-out, flex .25s ease-in-out;
+  }
+
+  &.hidden {
+    + .sidebar {
+      flex: 0 0 0;
+      transform: scaleX(0);
+      opacity: 0;
+    }
+  }
+}
+
 #report_issue_form {
+  .content-with-sidebar-container {
+    flex-wrap: nowrap;
+    padding: 0;
+    align-items: stretch;
+
+    .content {
+      border-radius: 0 .75em .75em 0;
+    }
+
+    .sidebar {
+      align-items: flex-start;
+
+      .fancy-dropdown {
+        flex-wrap: wrap;
+
+        > label {
+          flex: 0 0 100%;
+          padding: 0 0 .5em 0;
+          margin: 0;
+        }
+
+        .value {
+          max-width: 250px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+
   .form-row {
     &.submit-container {
+      padding: 1em;
       justify-content: flex-end;
     }
   }

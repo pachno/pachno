@@ -12,6 +12,7 @@
     use pachno\core\entities\Issue;
     use pachno\core\entities\IssueCommit;
     use pachno\core\entities\LivelinkImport;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Priority;
     use pachno\core\entities\Project;
     use pachno\core\entities\Resolution;
@@ -20,6 +21,7 @@
     use pachno\core\entities\tables\Commits;
     use pachno\core\entities\tables\IssueCommits;
     use pachno\core\entities\tables\LivelinkImports;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
@@ -38,22 +40,22 @@
     class Livelink extends framework\CoreModule
     {
 
-        const SETTINGS_WORKFLOW_ACTIONS = 'workflow_actions_';
+        public const SETTINGS_WORKFLOW_ACTIONS = 'workflow_actions_';
 
-        const SETTINGS_PROJECT_CONNECTOR = 'connector_project_';
+        public const SETTINGS_PROJECT_CONNECTOR = 'connector_project_';
 
-        const SETTINGS_PROJECT_LIVELINK_ENABLED = 'connector_livelink_enabled_project_';
+        public const SETTINGS_PROJECT_LIVELINK_ENABLED = 'connector_livelink_enabled_project_';
 
-        const SETTINGS_PROJECT_CONNECTOR_SECRET = 'connector_secret_project_';
+        public const SETTINGS_PROJECT_CONNECTOR_SECRET = 'connector_secret_project_';
 
-        const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
+        public const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
 
         /**
          * @var ConnectorProvider[]
          */
         protected $_connectors = [];
 
-        protected $long_name = 'Pachno integrations';
+        protected $long_name = 'External accounts';
 
         public function hasAccountSettings()
         {
@@ -62,12 +64,12 @@
 
         public function getAccountSettingsLogo()
         {
-            return 'magic';
+            return 'laptop-code';
         }
 
         public function getAccountSettingsName()
         {
-            return 'Pachno integrations';
+            return 'External accounts';
         }
 
         /**
@@ -216,6 +218,22 @@
         }
 
         /**
+         * @Listener(module='core', identifier='project/editproject::sidebar_tabs')
+         * @param Event $event
+         */
+        public function listen_editProjectTabs(Event $event)
+        {
+            if (!$this->isEnabled()) {
+                return;
+            }
+
+            $selected = $this->hasConnectors();
+            $event->setReturnValue(!$selected);
+
+            include_component('livelink/editproject_tab', ['selected' => $selected]);
+        }
+
+        /**
          * @Listener(module='core', identifier='project/editproject::above_content')
          * @param Event $event
          */
@@ -237,10 +255,11 @@
                 $options['display_name'] = $options['connector']->getImportDisplayNameForProjectEdit($request);
                 $options['input'] = $options['connector']->getInputOptionsForProjectEdit($request);
                 $event->getParameter('project')->setName($options['connector']->getImportProjectNameForProjectEdit($request));
+            } elseif ($this->hasConnectors()) {
+                $event->setReturnValue('livelink');
             }
 
             include_component('livelink/projectconfig_template', $options);
-
         }
 
         public function getCurrentPartialOptions()
@@ -336,13 +355,13 @@
         /**
          * Header wiki menu and search dropdown / list
          *
-         * @Listener(module="core", identifier="templates/headermainmenu::projectmenulinks")
+         * @Listener(module="core", identifier="templates/header::projectmenulinks")
          *
          * @param Event $event
          */
         public function listen_MenustripLinks(Event $event)
         {
-            if (framework\Context::getUser()->hasProjectPageAccess('project_commits', framework\Context::getCurrentProject())) {
+            if (framework\Context::getUser()->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, $event->getSubject())) {
                 framework\ActionComponent::includeComponent('livelink/menustriplinks', ['project' => $event->getSubject()]);
             }
         }
@@ -662,6 +681,27 @@
         public function isProjectImportInProgress(Project $project)
         {
             return LivelinkImports::getTable()->hasPendingByProject($project);
+        }
+
+        /**
+         * Listen to header menu strip
+         *
+         * @Listener(module="core", identifier="header_menu_strip")
+         *
+         * @param Event $event
+         */
+        public function listenerMainMenustrip(Event $event)
+        {
+            $route = $event->getSubject();
+
+            if (!$route instanceof framework\routing\Route)
+                return;
+
+            if ($route->getModuleName() == 'livelink' && framework\Context::getCurrentProject() instanceof Project) {
+                $component = framework\Action::returnComponentHTML('project/projectheader');
+                $event->setReturnValue($component);
+                $event->setProcessed();
+            }
         }
 
     }

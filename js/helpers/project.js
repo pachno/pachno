@@ -1,57 +1,71 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
 
-const projectFormSubmit = function (event) {
+const addAssignee = function (event) {
     event.preventDefault();
-    const $form = $(this);
+    event.stopPropagation();
 
-    const project_id = $form.data('project-id');
-    const url = $form.attr('action');
+    const $button = $(this);
+    const $row = $button.parents('.row');
+    const $table = $row.parents('.flexible-table');
+    const url = $table.data('url');
+    const $role = $row.find('input[name=role_id]:checked');
+    const role_id = ($role.length) ? $role.val() : 0;
+
+    let assignee_type;
+    let assignee_id;
+
+    $row.addClass('submitting');
+    $button.attr('disabled', true);
+
+    if (!$row.data('id')) {
+        assignee_type = 'user';
+        assignee_id = $row.data('email');
+    } else {
+        assignee_type = $row.data('identifiable-type');
+        assignee_id = $row.data('id');
+    }
+
     Pachno.fetch(url, {
-        form: $form.attr('id'),
-        success: {
-            callback: function (json) {
-                if ($('#project_name_span'))
-                    $('#project_name_span').html($('#project_name_input').val());
-                if ($('#project_description_span')) {
-                    if ($('#project_description_input').val()) {
-                        $('#project_description_span').html(json.project_description);
-                        $('#project_no_description').hide();
-                    } else {
-                        $('#project_description_span').html('');
-                        $('#project_no_description').show();
-                    }
-                }
-                if ($('#project_key_span'))
-                    $('#project_key_span').html(json.project_key);
-                if ($('#sidebar_link_scrum') && $('#use_scrum').val() == 1)
-                    $('#sidebar_link_scrum').show();
-                else if ($('#sidebar_link_scrum'))
-                    $('#sidebar_link_scrum').hide();
-
-                ['edition', 'component'].each(function (element) {
-                    if ($('#enable_' + element + 's').val() == 1) {
-                        $('#add_' + element + '_button').show();
-                        $('#project_' + element + 's').show();
-                        $('#project_' + element + 's_disabled').hide();
-                    } else {
-                        $('#add_' + element + '_button').hide();
-                        $('#project_' + element + 's').hide();
-                        $('#project_' + element + 's_disabled').show();
-                    }
-                });
-
-                if (project_id && $('#project_box_' + project_id).length) {
-                    $('#project_box_' + project_id).html(json.content);
-                }
-            }
+        method: 'POST',
+        data: {
+            assignee_type,
+            assignee_id,
+            role_id
         }
+    }).then((json) => {
+        $button.html(Pachno.UI.fa_image_tag('check', { classes: 'icon' }));
+        const $assignee_list = $('#project_team_list');
+        if ($assignee_list.length) {
+            $assignee_list.append(json.content);
+        }
+    }).catch(() => {
+        $button.removeAttr('disabled');
+        $row.removeClass('submitting')
     });
 }
 
+const removeAssignee = function (PachnoApplication, data) {
+    const url = data.url;
+    Pachno.UI.Dialog.setSubmitting();
 
-const setupAdminListeners = function () {
+    Pachno.fetch(url, {
+        method: 'POST'
+    })
+    .then((json) => {
+        Pachno.UI.Dialog.dismiss();
+        const $row = $(`.row[data-assignee-type=${json.assignee_type}][data-assignee-id=${json.assignee_id}]`);
+        $row.remove();
+    });
+}
+
+const setupListeners = function () {
     const $body = $("body");
 
-    $body.on("submit", "form[data-submit-project-settings]", projectFormSubmit);
+    $body.on('click', ".trigger-assign-to-project", addAssignee);
+    Pachno.on(Pachno.EVENTS.project.removeAssignee, removeAssignee);
 };
+
+export {
+    setupListeners
+}

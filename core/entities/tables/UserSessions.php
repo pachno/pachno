@@ -26,8 +26,8 @@
     class UserSessions extends Table
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'usersession';
+        public const B2DBNAME = 'usersession';
 
     }

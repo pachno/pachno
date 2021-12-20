@@ -24,7 +24,7 @@
     class NotificationSettings extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
         public function getByModuleAndNameAndUserId($module, $name, $user_id)
         {

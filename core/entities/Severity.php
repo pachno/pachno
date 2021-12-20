@@ -8,7 +8,7 @@
     class Severity extends Datatype
     {
 
-        const ITEMTYPE = Datatype::SEVERITY;
+        public const ITEMTYPE = Datatype::SEVERITY;
 
         protected static $_items = null;
 

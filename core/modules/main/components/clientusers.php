@@ -1,7 +1,7 @@
 <div class="backdrop_box medium" id="client_users">
     <div class="backdrop_detail_header">
         <span><?= __('Users for %clientname', array('%clientname' => $client->getName())); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?= __('Click a user to view more details, such as view his/her user card.'); ?>

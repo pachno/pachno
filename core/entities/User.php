@@ -5,26 +5,24 @@
     use b2db\Row;
     use DateTimeZone;
     use Exception;
+    use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableEventContainer;
     use pachno\core\entities\tables\ClientMembers;
+    use pachno\core\entities\tables\Dashboards;
+    use pachno\core\entities\tables\Issues;
+    use pachno\core\entities\tables\IssueSpentTimes;
     use pachno\core\entities\tables\Notifications;
+    use pachno\core\entities\tables\NotificationSettings;
+    use pachno\core\entities\tables\Permissions;
+    use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\TeamMembers;
     use pachno\core\entities\tables\UserIssues;
+    use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\framework\Action;
     use pachno\core\framework\Event;
     use pachno\core\framework\Request;
     use Ramsey\Uuid\Uuid;
-
-    /**
-     * User class
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
 
     /**
      * User class
@@ -362,10 +360,17 @@
         protected $_notifications = null;
 
         /**
+         * List of user's timers
+         *
+         * @var IssueSpentTime[]
+         * @Relates(class="\pachno\core\entities\IssueSpentTime", collection=true, foreign_column="user_id", orderby="edited_at")
+         */
+        protected $_timers = null;
+
+        /**
          * List of user's dashboards
          *
          * @var Dashboard[]
-         * @Relates(class="\pachno\core\entities\Dashboard", collection=true, foreign_column="user_id", orderby="name")
          */
         protected $_dashboards = null;
 
@@ -396,6 +401,8 @@
 
         protected $_filter_first_notification = null;
 
+        protected $_ongoing_timers_count = null;
+
         protected $_permissions_cache = [];
 
         protected $_authenticated = true;
@@ -416,7 +423,7 @@
          */
         public static function getByEmail($email, $createNew = true)
         {
-            $user = self::getB2DBTable()->getByEmail($email);
+            $user = Users::getTable()->getByEmail($email);
 
             if (!$user instanceof User && $createNew && !framework\Settings::isUsingExternalAuthenticationBackend()) {
                 $user = new User();
@@ -439,20 +446,13 @@
          */
         public static function createPassword($len = 16)
         {
-            $pass = '';
-            $lchar = 0;
-            $char = 0;
-            for ($i = 0; $i < $len; $i++) {
-                while ($char == $lchar) {
-                    $char = mt_rand(48, 109);
-                    if ($char > 57) $char += 7;
-                    if ($char > 90) $char += 6;
-                }
-                $pass .= chr($char);
-                $lchar = $char;
-            }
+            $generator = new \Password\Generator();
+            $generator->setMinLength($len);
+            $generator->setNumberOfUpperCaseLetters(2);
+            $generator->setNumberOfNumbers(2);
+            $generator->setNumberOfSymbols(1);
 
-            return $pass;
+            return $generator->generate();
         }
 
         /**
@@ -473,7 +473,7 @@
         public static function getAll()
         {
             if (self::$_users === null) {
-                self::$_users = self::getB2DBTable()->getAll();
+                self::$_users = Users::getTable()->getAll();
             }
 
             return self::$_users;
@@ -481,12 +481,12 @@
 
         public static function isUsernameAvailable($username)
         {
-            return static::getB2DBTable()->isUsernameAvailable($username);
+            return Users::getTable()->isUsernameAvailable($username);
         }
 
         public static function doesIDExist($id)
         {
-            return (bool)static::getB2DBTable()->doesIDExist($id);
+            return (bool)Users::getTable()->doesIDExist($id);
         }
 
         /**
@@ -599,13 +599,13 @@
 
                     break;
                 case Action::AUTHENTICATION_METHOD_DUMMY:
-                    $user = self::getB2DBTable()->getByUserID(framework\Settings::getDefaultUserID());
+                    $user = Users::getTable()->getByUserID(framework\Settings::getDefaultUserID());
                     break;
                 case Action::AUTHENTICATION_METHOD_CLI:
-                    $user = self::getB2DBTable()->getByUsername(framework\Context::getCurrentCLIusername());
+                    $user = Users::getTable()->getByUsername(framework\Context::getCurrentCLIusername());
                     break;
                 case Action::AUTHENTICATION_METHOD_RSS_KEY:
-                    $user = self::getB2DBTable()->getByRssKey($request['rsskey']);
+                    $user = Users::getTable()->getByRssKey($request['rsskey']);
                     break;
                 case Action::AUTHENTICATION_METHOD_APPLICATION_PASSWORD:
 
@@ -625,7 +625,7 @@
                     $token = $header_details[1];
 
                     framework\Logging::log('Fetching user by username', 'auth', framework\Logging::LEVEL_INFO);
-                    $user = self::getB2DBTable()->getByUsername($username);
+                    $user = Users::getTable()->getByUsername($username);
 
                     if ($user instanceof User) {
                         if (!$user->authenticateApplicationPassword($token)) $user = null;
@@ -636,7 +636,7 @@
 
                     $username = $_SERVER['PHP_AUTH_USER'];
                     framework\Logging::log("Fetching user by username", 'auth', framework\Logging::LEVEL_INFO);
-                    $user = self::getB2DBTable()->getByUsername($username);
+                    $user = Users::getTable()->getByUsername($username);
 
                     if ($user instanceof User) {
                         if (!$user->hasPassword($_SERVER['PHP_AUTH_PW'])) $user = null;
@@ -645,7 +645,7 @@
                     break;
             }
 
-            if (!$user instanceof User && !framework\Settings::isLoginRequired()) {
+            if (!$user instanceof User && framework\Settings::isLoginRequired() !== framework\Settings::LOGIN_REQUIRED_READ) {
                 $user = framework\Settings::getDefaultUser();
             }
 
@@ -659,7 +659,7 @@
                         throw new Exception('This account does not have access to this scope');
                     }
                 }
-            } elseif (framework\Settings::isLoginRequired()) {
+            } elseif (framework\Settings::isLoginRequired() == framework\Settings::LOGIN_REQUIRED_READ) {
                 throw new Exception('Login required');
             } else {
                 throw new Exception('No such login');
@@ -842,7 +842,7 @@
          */
         public static function findUser($details)
         {
-            $users = self::getB2DBTable()->getByDetails($details);
+            $users = Users::getTable()->getByDetails($details);
             if (is_array($users) && count($users) == 1)
                 return array_shift($users);
 
@@ -859,7 +859,7 @@
          */
         public static function findUsers($details, $limit = null)
         {
-            return self::getB2DBTable()->getByDetails($details, $limit);
+            return Users::getTable()->getByDetails($details, $limit);
         }
 
         /**
@@ -867,12 +867,12 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             framework\Logging::log("User with id {$this->getID()} set up successfully");
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return $this->getNameWithUsername();
         }
@@ -1095,7 +1095,7 @@
         public function addStarredIssue($issue_id)
         {
             $this->_populateStarredIssues();
-            if ($this->isLoggedIn() && !$this->isGuest()) {
+            if (!$this->isGuest()) {
                 if (array_key_exists($issue_id, $this->_starredissues))
                     return true;
 
@@ -1213,7 +1213,7 @@
                 $friends = [];
                 foreach ($userids as $friend) {
                     try {
-                        $friend = User::getB2DBTable()->selectById((int)$friend);
+                        $friend = Users::getTable()->selectById((int)$friend);
                         $friends[$friend->getID()] = $friend;
                     } catch (Exception $e) {
                         $this->removeFriend($friend);
@@ -1255,7 +1255,7 @@
          *
          * @param string $newpassword
          */
-        public function changePassword($newpassword)
+        protected function changePassword($newpassword)
         {
             if (!$newpassword) {
                 throw new Exception("Cannot set empty password");
@@ -1455,7 +1455,7 @@
          *
          * @param string $newpassword
          *
-         * @see self::changePassword
+         * @see self::changePassword()
          */
         public function setPassword($newpassword)
         {
@@ -1598,7 +1598,7 @@
 
         public function regenerateActivationKey()
         {
-            $value = md5(uniqid() . rand(100, 100000));
+            $value = md5(uniqid('', true) . random_int(100, 100000));
             framework\Settings::saveUserSetting($this->getID(), framework\Settings::SETTING_USER_ACTIVATION_KEY, $value);
 
             return $value;
@@ -1642,42 +1642,21 @@
         /**
          * Check whether the user can access the specified project page
          *
-         * @param string $page The page key
+         * @param string $permission The page key
          * @param Project $project
+         * @param bool $anonymous_write_access Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return boolean
          */
-        public function hasProjectPageAccess($page, Project $project)
+        public function hasProjectPermission($permission, Project $project, bool $anonymous_write_access = false)
         {
-            $retval = $this->hasPageAccess($page, $project->getID());
-            $retval = ($retval === null) ? $this->hasPageAccess('project_allpages', $project->getID()) : $retval;
+            if ($project->isArchived()) return false;
+            if ($this->canSaveConfiguration()) return true;
+            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
 
-            if ($retval === null) {
-                if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-                if ($project->getLeader() instanceof User && $project->getLeader()->getID() == $this->getID()) return true;
-            }
+            $allowed = $this->hasPermission($permission, $project->getID(), 'core', $anonymous_write_access);
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
-        }
-
-        /**
-         * Whether this user can access the specified page
-         *
-         * @param string $page The page key
-         *
-         * @return boolean
-         */
-        public function hasPageAccess($page, $target_id = null)
-        {
-            if ($target_id === null) {
-                $retval = $this->hasPermission("page_{$page}_access", 0, "core");
-
-                return $retval;
-            } else {
-                $retval = $this->hasPermission("page_{$page}_access", $target_id, "core");
-
-                return ($retval === null) ? $this->hasPermission("page_{$page}_access", 0, "core") : $retval;
-            }
+            return $allowed ?? false;
         }
 
         /**
@@ -1707,10 +1686,11 @@
          * @param string $permission_type Type of permission to check. Available values depend on module specified.
          * @param mixed $target_id [optional] Target (object) ID, if applicable. Should be non-negative integer or string. Default is 0.
          * @param string $module_name [optional] Module to which the $permission_type is applicable. Default is 'core'.
+         * @param bool $anonymous_write_access Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return mixed If permission matching the specified criteria has been found in database (cache, to be more precise), returns permission value (true or false). If no matching permission has been found, returns null. Receiving null means the caller needs to apply a default rule (allow or deny), which depends on caller implementation.
          */
-        public function hasPermission($permission_type, $target_id = 0, $module_name = 'core')
+        public function hasPermission($permission_type, $target_id = 0, $module_name = 'core', bool $anonymous_write_access = false)
         {
             // Parts of code seem to expected to be able to pass-in target_id as
             // null. Assume this means target_id 0.
@@ -1725,42 +1705,53 @@
                 $cached_value = $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id];
                 framework\Logging::log('Permission check has already been done and cached, using the cached value: ' . ($cached_value === null ? 'null' : $cached_value));
 
-                return $cached_value;
+                return (bool) $cached_value;
             }
 
             // Obtain group, team, and role memberships for the user.
             $user_id = $this->getID();
-            $group_id = (int)$this->getGroupID();
+            $group_id = (int)$this->getGroupID($anonymous_write_access);
             $teams = $this->getTeams();
             $team_ids = [];
             foreach ($teams as $team) {
                 $team_ids[] = $team->getID();
             }
+            $clients = $this->getClients();
+            $client_ids = [];
+            foreach ($clients as $client) {
+                $client_ids[] = $client->getID();
+            }
 
             framework\Logging::log('Checking permission for user ID: ' . $user_id . ', group ID ' . $group_id . ',team IDs ' . implode(',', $team_ids));
 
-            $retval = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids);
-            if ($retval === null) {
+            $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids, $client_ids);
+
+            if ($allowed === null) {
+                $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, 0, 0, [], []);
+            }
+
+            if ($allowed === null) {
                 framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', no matching rules found.');
             } else {
-                framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', permission granted: ' . (($retval) ? 'true' : 'false'));
+                framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', permission granted: ' . (($allowed) ? 'true' : 'false'));
             }
 
             // Cache the check for specified module/permission type/target ID combo in User object.
-            $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id] = $retval;
+            $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id] = $allowed;
 
-            return $retval;
+            return (bool) $allowed;
         }
 
         /**
          * Return this users group ID if any
+         * @param bool $write_access_check Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return integer
          */
-        public function getGroupID()
+        public function getGroupID(bool $write_access_check = false)
         {
             if (is_object($this->getGroup())) {
-                return $this->getGroup()->getID();
+                return $this->getGroup($write_access_check)->getID();
             }
 
             return null;
@@ -1778,8 +1769,8 @@
 
             if (framework\Context::isProjectContext()) {
                 $project = framework\Context::getCurrentProject();
-            } elseif (framework\Context::getRequest()->hasParameter('issue_id')) {
-                $issue = Issue::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('issue_id'));
+            } elseif (!framework\Context::isCLI() && framework\Context::getRequest()->hasParameter('issue_id')) {
+                $issue = Issues::getTable()->selectById(framework\Context::getRequest()->getParameter('issue_id'));
 
                 if ($issue instanceof Issue && $issue->getProject() instanceof Project) $project = $issue->getProject();
             }
@@ -1865,99 +1856,113 @@
         /**
          * Return if the user can report new issues
          *
-         * @param integer|Project $project_id [optional] A project id
+         * @param Project $project The project to check against
          *
          * @return boolean
          */
-        public function canReportIssues($project_id = null)
+        public function canReportIssues(Project $project): bool
         {
-            $retval = null;
-            if ($project_id !== null) {
-                if (is_numeric($project_id)) $project_id = tables\Projects::getTable()->selectById($project_id);
-                if ($project_id->isArchived()) return false;
+            if ($project->isArchived()) return false;
 
-                $project_id = ($project_id instanceof Project) ? $project_id->getID() : $project_id;
-                $retval = $this->hasPermission('cancreateissues', $project_id);
-                $retval = ($retval !== null) ? $retval : $this->hasPermission('cancreateandeditissues', $project_id);
-            }
-
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
-        }
-
-        /**
-         * Return if the user can search for issues
-         *
-         * @return boolean
-         */
-        public function canSearchForIssues()
-        {
-            return (bool)$this->_dualPermissionsCheck('canfindissues', 0, 'canfindissuesandsavesearches', 0, framework\Settings::isPermissive());
-        }
-
-        protected function _dualPermissionsCheck($permission_1, $permission_1_target, $permission_2, $permission_2_target, $fallback)
-        {
-            $retval = $this->hasPermission($permission_1, $permission_1_target);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission($permission_2, $permission_2_target);
-
-            return (bool)($retval !== null) ? $retval : $fallback;
-        }
-
-        /**
-         * Return if the user can edit the main menu
-         *
-         * @return boolean
-         */
-        public function canEditMainMenu($target_type = null)
-        {
-            if ($target_type === null || $target_type == 'main_menu') {
-                $retval = $this->hasPermission('caneditmainmenu', 0, 'core');
-            } elseif ($target_type == 'wiki') {
-                $retval = $this->hasPermission('editwikimenu', 0, 'publish');
-            } else {
-                $retval = false;
-            }
-
-            return ($retval !== null) ? $retval : false;
-        }
-
-        /**
-         * Return if the user can see comments
-         *
-         * @return boolean
-         */
-        public function canViewComments()
-        {
-            return $this->_dualPermissionsCheck('canviewcomments', 0, 'canpostseeandeditallcomments', 0, framework\Settings::isPermissive());
+            return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project, true);
         }
 
         /**
          * Return if the user can post comments
          *
+         * @param $comment_type
+         * @param Project|null $project
          * @return boolean
          */
-        public function canPostComments()
+        public function canPostComments($comment_type, Project $project = null): bool
         {
-            return $this->_dualPermissionsCheck('canpostcomments', 0, 'canpostseeandeditallcomments', 0, framework\Settings::isPermissive());
+            if ($project instanceof Project && $project->isArchived()) {
+                return false;
+            }
+
+            switch ($comment_type) {
+                case Comment::TYPE_ARTICLE:
+                    if ($project instanceof Project) {
+                        return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project, true);
+                    }
+
+                    return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+                case Comment::TYPE_ISSUE:
+                    return $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS . Permission::PERMISSION_OWN_SUFFIX, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project, true);
+                case Comment::TYPE_COMMIT:
+                    return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project, true);
+            }
+
+            return false;
+        }
+
+        /**
+         * @param Project|null $project
+         * @return bool
+         */
+        public function canReadArticlesInProject(Project $project = null): bool
+        {
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION, $project->getID());
+            } else {
+                return $this->hasPermission(Permission::PERMISSION_PAGE_ACCESS_DOCUMENTATION) || $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+            }
+        }
+
+        /**
+         * @param Project|null $project
+         * @return bool
+         */
+        public function canCreateArticlesInProject(Project $project = null): bool
+        {
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, $project->getID()) || $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_OWN, $project->getID());
+            } else {
+                return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+            }
+        }
+
+        /**
+         * @param Project|null $project
+         * @return bool
+         */
+        public function canCreateCategoriesInProject(Project $project = null): bool
+        {
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, $project->getID());
+            } else {
+                return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+            }
         }
 
         /**
          * Return if the user can see non public comments
          *
+         * @param Project|null $project
          * @return boolean
          */
-        public function canSeeNonPublicComments()
+        public function canSeeInternalComments(Project $project = null)
         {
-            return $this->_dualPermissionsCheck('canseenonpubliccomments', 0, 'canpostseeandeditallcomments', 0, framework\Settings::isPermissive());
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_COMMENTS, $project->getID());
+            }
+
+            return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
         }
 
         /**
          * Return if the user can create public saved searches
          *
+         * @param Project|null $project
          * @return boolean
          */
-        public function canCreatePublicSearches()
+        public function canCreatePublicSearches(Project $project = null)
         {
-            return $this->_dualPermissionsCheck('cancreatepublicsearches', 0, 'canfindissuesandsavesearches', 0, framework\Settings::isPermissive());
+            if (!$project instanceof Project) {
+                return false;
+            }
+
+            return $this->hasPermission(Permission::PERMISSION_MANAGE_PROJECT_SAVED_SEARCHES, $project->getID());
         }
 
         /**
@@ -1975,23 +1980,21 @@
         /**
          * Return if the user can access configuration pages
          *
-         * @param integer $section [optional] a section, or the configuration frontpage
+         * @return boolean
+         */
+        public function canAccessConfigurationPage()
+        {
+            return $this->hasPermission(Permission::PERMISSION_ACCESS_CONFIGURATION);
+        }
+
+        /**
+         * Return if the user can create projects
          *
          * @return boolean
          */
-        public function canAccessConfigurationPage($section = null)
+        public function canCreateProjects()
         {
-            $retval = $this->hasPermission('canviewconfig', $section);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('cansaveconfig', $section);
-
-            foreach (range(0, 19) as $target_id) {
-                if ($retval !== null) break;
-
-                $retval = ($retval !== null) ? $retval : $this->hasPermission('canviewconfig', $target_id);
-                $retval = ($retval !== null) ? $retval : $this->hasPermission('cansaveconfig', $target_id);
-            }
-
-            return (bool)($retval !== null) ? $retval : false;
+            return $this->hasPermission(Permission::PERMISSION_CREATE_PROJECTS);
         }
 
         /**
@@ -2003,9 +2006,7 @@
          */
         public function canManageProject(Project $project)
         {
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return (bool)$this->hasPermission('canmanageproject', $project->getID()) || $this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS);
+            return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT, $project) || $this->canSaveConfiguration();
         }
 
         /**
@@ -2013,12 +2014,9 @@
          *
          * @return boolean
          */
-        public function canSaveConfiguration($section, $module = 'core')
+        public function canSaveConfiguration()
         {
-            $retval = $this->hasPermission('cansaveconfig', $section, $module);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('cansaveconfig', 0, $module);
-
-            return (bool)($retval !== null) ? $retval : false;
+            return $this->hasPermission(Permission::PERMISSION_SAVE_CONFIGURATION);
         }
 
         /**
@@ -2030,19 +2028,7 @@
          */
         public function canManageProjectReleases(Project $project)
         {
-            if ($project->isArchived()) return false;
-            if ($this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS)) return true;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return $this->_dualPermissionsCheck('canmanageprojectreleases', $project->getID(), 'canmanageproject', $project->getID(), false);
-        }
-
-        public function canEditMilestones(Project $project)
-        {
-            if ($project->isArchived()) return false;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return $this->_dualPermissionsCheck('canaddscrumsprints', $project->getID(), 'canmanageproject', $project->getID(), false);
+            return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_RELEASES, $project);
         }
 
         /**
@@ -2054,42 +2040,7 @@
          */
         public function canEditProjectDetails(Project $project)
         {
-            if ($project->isArchived()) return false;
-            if ($this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS)) return true;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return $this->_dualPermissionsCheck('caneditprojectdetails', $project->getID(), 'canmanageproject', $project->getID(), false);
-        }
-
-        /**
-         * Return if the user can assign scrum user stories
-         *
-         * @param Project $project
-         *
-         * @return boolean
-         */
-        public function canAssignScrumUserStories(Project $project)
-        {
-            if ($project->isArchived()) return false;
-            if ($this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS)) return true;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            $retval = $this->hasPermission('caneditissueassigned_to', $project->getID());
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('caneditissue', $project->getID());
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('caneditissueassigned_to', 0);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('caneditissue', 0);
-
-            return (bool)($retval !== null) ? $retval : false;
-        }
-
-        /**
-         * Return if the user can change its own password
-         *
-         * @return boolean
-         */
-        public function canChangePassword()
-        {
-            return $this->_dualPermissionsCheck('canchangepassword', 0, 'page_account_access', 0, true);
+            return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_DETAILS, $project);
         }
 
         /**
@@ -2139,7 +2090,10 @@
 
                 foreach ($project_ids as $project_id) {
                     try {
-                        $this->_associated_projects[$project_id] = tables\Projects::getTable()->selectById($project_id);
+                        $project = tables\Projects::getTable()->selectById($project_id);
+                        if ($project instanceof Project && !$project->isDeleted()) {
+                            $this->_associated_projects[$project_id] = tables\Projects::getTable()->selectById($project_id);
+                        }
                     } catch (Exception $e) {
                     }
                 }
@@ -2194,40 +2148,36 @@
          *
          * @return Notification[]
          */
-        public function getNotifications($first_notification_id = null, $last_notification_id = null)
+        public function getNotifications()
         {
-            $this->_populateNotifications($first_notification_id, $last_notification_id);
+            $this->_populateNotifications();
 
             return $this->_notifications['all'];
         }
 
-        protected function _populateNotifications($first_notification_id = null, $last_notification_id = null)
+        protected function _populateNotifications()
         {
-            $filter_first_notification = !is_null($first_notification_id) && is_numeric($first_notification_id);
-            if ($filter_first_notification) {
-                $this->_notifications = null;
-                $this->_filter_first_notification = true;
-            } elseif (!$filter_first_notification && $this->_filter_first_notification) {
-                $this->_notifications = null;
-                $this->_filter_first_notification = false;
-            }
             if (!is_array($this->_notifications)) {
-                $this->_notifications = Notifications::getTable()->getByUserIDAndGroupableMinutes($this->getID(), $this->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS, false, 'core')->getValue());
                 $notifications = ['unread' => [], 'read' => [], 'all' => []];
-                $db_notifcations = $this->_notifications;
-                foreach ($db_notifcations as $notification) {
-                    if ($filter_first_notification && $notification->getID() <= $first_notification_id) break;
-                    if (!$filter_first_notification && !is_null($last_notification_id) && $notification->getID() >= $last_notification_id) continue;
+                $db_notifications = Notifications::getTable()->getByUserId($this->getID());
+                foreach ($db_notifications as $notification) {
                     if ($notification->getTriggeredByUser()->getID() == $this->getID()) continue;
+                    if (!$notification->getTarget() instanceof Identifiable) {
+                        $notification->delete();
+                        continue;
+                    }
 
-                    array_push($notifications['all'], $notification);
+                    $notifications['all'][] = $notification;
                     if ($notification->isRead()) {
-                        array_push($notifications['read'], $notification);
+                        $notifications['read'][] = $notification;
                     } else {
-                        array_push($notifications['unread'], $notification);
+                        $notifications['unread'][] = $notification;
                     }
                 }
-                $notifications = array_reverse($notifications);
+                $notifications['all'] = array_reverse($notifications['all']);
+                $notifications['unread'] = array_reverse($notifications['unread']);
+                $notifications['read'] = array_reverse($notifications['read']);
+
                 $this->_notifications = $notifications;
                 $this->_unread_notifications_count = count($notifications['unread']);
                 $this->_read_notifications_count = count($notifications['read']);
@@ -2249,7 +2199,7 @@
             }
 
             if (!array_key_exists($setting, $this->_notification_settings[$module])) {
-                $notificationsetting = NotificationSetting::getB2DBTable()->getByModuleAndNameAndUserId($module, $setting, $this->getID());
+                $notificationsetting = NotificationSettings::getTable()->getByModuleAndNameAndUserId($module, $setting, $this->getID());
                 if (!$notificationsetting instanceof NotificationSetting) {
                     $notificationsetting = new NotificationSetting();
                     $notificationsetting->setUser($this);
@@ -2288,6 +2238,31 @@
             $this->_populateNotificationsCounts();
 
             return $this->_unread_notifications_count;
+        }
+
+        public function getNumberOfOngoingTimers()
+        {
+            if ($this->_timers !== null) {
+                return count($this->_timers);
+            }
+
+            if ($this->_ongoing_timers_count === null) {
+                $this->_ongoing_timers_count = IssueSpentTimes::getTable()->countAutoTimersByUserId($this->getID());
+            }
+
+            return $this->_ongoing_timers_count;
+        }
+
+        /**
+         * @return IssueSpentTime[]
+         */
+        public function getTimers(): array
+        {
+            if ($this->_timers === null) {
+                $this->_timers = IssueSpentTimes::getTable()->getAutoTimersByUserId($this->getID());
+            }
+
+            return $this->_timers;
         }
 
         protected function _populateNotificationsCounts()
@@ -2384,6 +2359,13 @@
             return $dashboard;
         }
 
+        protected function _populateDashboards()
+        {
+            if (!is_array($this->_dashboards)) {
+                $this->_dashboards = Dashboards::getTable()->getByUserIdScoped($this->getID());
+            }
+        }
+
         /**
          * Returns an array of user dashboards
          *
@@ -2391,7 +2373,7 @@
          */
         public function getDashboards()
         {
-            $this->_b2dbLazyLoad('_dashboards');
+            $this->_populateDashboards();
 
             return $this->_dashboards;
         }
@@ -2502,6 +2484,11 @@
             return $setting_object;
         }
 
+        public function getUserCardUrl()
+        {
+            return framework\Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'usercard', 'user_id' => $this->getID()]);
+        }
+
         public function toJSON($detailed = true)
         {
             $returnJSON = [
@@ -2516,6 +2503,7 @@
                 'avatar_url_small' => $this->getAvatarURL(true),
                 'url_homepage' => $this->getHomepage(),
                 'last_seen' => $this->getLastSeen(),
+                'card_url' => $this->getUserCardUrl(),
                 'type' => 'user' // This is for distinguishing of assignees & similar "ambiguous" values in JSON.
             ];
 
@@ -2565,6 +2553,11 @@
             if ($this->isDeleted()) {
                 return framework\Context::getI18n()->__('No such user');
             }
+
+            if (!$this->isActivated()) {
+                return $this->getEmail();
+            }
+
             switch (framework\Settings::getUserDisplaynameFormat()) {
                 case framework\Settings::USER_DISPLAYNAME_FORMAT_REALNAME:
                     return ($this->_realname) ? $this->_realname : $this->_username;
@@ -2664,7 +2657,7 @@
          */
         public function getAvatarURL($small = true)
         {
-            $event = Event::createNew('core', 'self::getAvatarURL', $this)->trigger();
+            $event = Event::createNew('core', 'User::getAvatarURL', $this)->trigger();
             $url = $event->getReturnValue();
 
             if ($url === null) {
@@ -2672,7 +2665,7 @@
                     $url = (framework\Context::getScope()->isSecure()) ? 'https://secure.gravatar.com/avatar/' : 'http://www.gravatar.com/avatar/';
                     $url .= md5(trim($this->getEmail())) . '.png?d=wavatar&amp;s=';
 
-                    $size_event = Event::createNew('core', 'self::getGravatarSize', $this)->trigger(compact('small'));
+                    $size_event = Event::createNew('core', 'User::getGravatarSize', $this)->trigger(compact('small'));
                     $size = $size_event->getReturnValue();
 
                     if ($size === null) {
@@ -2818,7 +2811,7 @@
          *
          * @param boolean $is_new Whether this is a new user object
          */
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if (!framework\Context::isInstallmode() && !framework\Context::isUpgrademode()) {
@@ -2876,7 +2869,7 @@
          */
         public static function getByUsername($username)
         {
-            return self::getB2DBTable()->getByUsername($username);
+            return Users::getTable()->getByUsername($username);
         }
 
         /**
@@ -2901,10 +2894,11 @@
 
         /**
          * Returns the user group
+         * @param bool $write_access_check Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return Group
          */
-        public function getGroup()
+        public function getGroup(bool $write_access_check = false)
         {
             if (!is_object($this->_group_id)) {
                 try {
@@ -2920,6 +2914,10 @@
                 }
             }
 
+            if ($this->isGuest() && framework\Settings::isLoginRequired() !== framework\Settings::LOGIN_REQUIRED_READ) {
+                return (framework\Settings::isLoginRequired() === framework\Settings::LOGIN_REQUIRED_WRITE && $write_access_check) ? $this->_group_id : framework\Settings::getDefaultGroup();
+            }
+
             return $this->_group_id;
         }
 
@@ -2932,7 +2930,7 @@
          *
          * @param boolean $is_new Whether this is a new object or not (automatically passed to the function from B2DB)
          */
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 // Set up a default dashboard for the user
@@ -2940,7 +2938,7 @@
                 $dashboard->setUser($this);
                 $dashboard->save();
 
-                $scope = Scope::getB2DBTable()->selectById((int)framework\Settings::getDefaultScopeID());
+                $scope = Scopes::getTable()->selectById((int)framework\Settings::getDefaultScopeID());
                 $this->addScope($scope, false);
                 $this->confirmScope($scope->getID());
                 if (!framework\Context::getScope()->isDefault()) {
@@ -2949,7 +2947,7 @@
                     $this->confirmScope($scope->getID());
                 }
 
-                $event = Event::createNew('core', 'self::_postSave', $this);
+                $event = Event::createNew('core', 'User::_postSave', $this);
                 $event->trigger();
             }
 
@@ -2964,7 +2962,7 @@
             if (!$this->isMemberOfScope($scope)) {
                 tables\UserScopes::getTable()->addUserToScope($this->getID(), $scope->getID());
                 if ($notify) {
-                    Event::createNew('core', 'self::addScope', $this, ['scope' => $scope])->trigger();
+                    Event::createNew('core', 'User::addScope', $this, ['scope' => $scope])->trigger();
                 }
                 $this->_scopes = null;
                 $this->_unconfirmed_scopes = null;

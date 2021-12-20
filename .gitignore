@@ -1,10 +1,11 @@
 node_modules
-vendor
+vendor/
 cache/*
 core/config/b2db.yml
 public/.htaccess
 installed
 files/*
+modules/*
 
 # Development environment artefacts.
 .vagrant/
@@ -13,7 +14,8 @@ apache-access.log
 apache-error.log
 artefacts/
 pachno.log
-/nbproject/private/
+/nbproject
 .idea
 .eslintrc.js
 *-VBoxSVC-*.log
+/composer.phar

@@ -4,6 +4,7 @@
 
     use Exception;
     use InvalidArgumentException;
+    use Nadar\PhpComposerReader\ComposerReader;
     use pachno\core\entities;
     use pachno\core\entities\CustomDatatype;
     use pachno\core\entities\tables;
@@ -13,11 +14,23 @@
     use pachno\core\entities\tables\Editions;
     use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\Milestones;
+    use pachno\core\exceptions\FormException;
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
+    use pachno\core\modules\main\cli\entities\tbg\tables\Teams;
+    use RuntimeException;
 
     /**
      * Main controller for settings
+     *
+     * @property int $access_level
+     * @property array $config_sections
+     * @property array $outdated_modules
+     * @property entities\Scope[] $scopes
+     * @property entities\Group[] $groups
+     * @property entities\Team[] $teams
+     * @property entities\Client[] $clients
+     * @property entities\Role[] $roles
      *
      * @Routes(name_prefix="configure_", url_prefix="/configure")
      * @package pachno\core\modules\configuration\controllers
@@ -43,26 +56,16 @@
          */
         public function preExecute(framework\Request $request, $action)
         {
-            if (!$request->hasParameter('section'))
-                return;
-
-            // forward 403 if you're not allowed here
-            if ($request->isAjaxCall() == false) // for avoiding empty error when an user disables himself its own permissions
-            {
-                $this->forward403unless(framework\Context::getUser()->canAccessConfigurationPage($request['section']));
+            if ($request->isAjaxCall() == false) {
+                $this->forward403unless(framework\Context::getUser()->canAccessConfigurationPage());
             }
 
-            $this->access_level = $this->getAccessLevel($request['section'], 'core');
+            $this->access_level = framework\Settings::getConfigurationAccessLevel();
 
             if (!$request->isAjaxCall()) {
                 $this->getResponse()->setPage('config');
                 framework\Context::loadLibrary('ui');
             }
-        }
-
-        public function getAccessLevel($section, $module)
-        {
-            return framework\Settings::getAccessLevel($section, $module);
         }
 
         /**
@@ -77,37 +80,28 @@
         }
 
         /**
-         * check for updates
+         * Check for updates and return a JSON-encoded data object with version information
+         *
+         * @Route(name="update_check", url="/check/updates")
          *
          * @param framework\Request $request
+         * @return framework\JsonOutput
          */
-        public function runCheckUpdates(framework\Request $request)
+        public function runCheckUpdates(framework\Request $request): framework\JsonOutput
         {
             $latest_version = framework\Context::getLatestAvailableVersionInformation();
 
             if ($latest_version === null) {
                 $this->getResponse()->setHttpStatus(400);
-                $uptodate = null;
-                $title = framework\Context::getI18n()->__('Failed to check for updates');
-                $message = framework\Context::getI18n()->__('The response from Pachno website was invalid');
-            } else {
-                $update_available = framework\Context::isUpdateAvailable($latest_version);
 
-                if ($update_available) {
-                    $uptodate = false;
-                    $title = framework\Context::getI18n()->__('Pachno is out of date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pachno.com.', ['%ver' => $latest_version->nicever]);
-                } else {
-                    $uptodate = true;
-                    $title = framework\Context::getI18n()->__('Pachno is up to date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver', ['%ver' => $latest_version->nicever]);
-                }
+                return $this->renderJSON([
+                    'error' => framework\Context::getI18n()->__('The response from Pachno website was invalid')
+                ]);
             }
 
             return $this->renderJSON([
-                'uptodate' => $uptodate,
-                'title' => $title,
-                'message' => $message
+                'update_available' => framework\Context::isUpdateAvailable($latest_version['version']),
+                'version' => $latest_version['version']
             ]);
         }
 
@@ -115,7 +109,6 @@
          * Configure general and server settings
          *
          * @Route(name="settings", url="/settings")
-         * @Parameters(config_module="core", section=12)
          *
          * @param framework\Request $request The request object
          */
@@ -124,10 +117,10 @@
             if (framework\Context::getRequest()->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
 
-                $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
+                $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS,
                     framework\Settings::SETTING_REQUIRE_LOGIN, framework\Settings::SETTING_ALLOW_REGISTRATION, framework\Settings::SETTING_USER_GROUP,
                     framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT,
-                    framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST, framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW, framework\Settings::SETTING_KEEP_COMMENT_TRAIL_CLEAN,
+                    framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST,
                     framework\Settings::SETTING_SITE_NAME, framework\Settings::SETTING_SITE_NAME_HTML, framework\Settings::SETTING_DEFAULT_CHARSET, framework\Settings::SETTING_DEFAULT_LANGUAGE,
                     framework\Settings::SETTING_SERVER_TIMEZONE, framework\Settings::SETTING_HEADER_LINK,
                     framework\Settings::SETTING_MAINTENANCE_MESSAGE, framework\Settings::SETTING_MAINTENANCE_MODE, framework\Settings::SETTING_ELEVATED_LOGIN_DISABLED,
@@ -170,6 +163,17 @@
          */
         public function runConfigureProjects(framework\Request $request)
         {
+            $this->user_group = framework\Settings::getDefaultGroup();
+
+            if ($this->access_level == framework\Settings::ACCESS_FULL && $request->isPost()) {
+                if ($request['value']) {
+                    $this->user_group->addPermission(entities\Permission::PERMISSION_CREATE_PROJECTS);
+                } else {
+                    $this->user_group->removePermission(entities\Permission::PERMISSION_CREATE_PROJECTS);
+                }
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('Settings saved')]);
+            }
             $this->active_projects = entities\Project::getAllRootProjects(false);
             $this->archived_projects = entities\Project::getAllRootProjects(true);
         }
@@ -260,7 +264,7 @@
             $this->number_of_schemes = tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope();
             $this->issue_types = entities\Issuetype::getAll();
             $this->icons = entities\Issuetype::getIcons();
-            $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int)$request['scheme_id']);
+            $this->scheme = tables\IssuetypeSchemes::getTable()->selectById((int)$request['scheme_id']);
 
 //                if ($this->mode == 'copy_scheme')
 //                {
@@ -312,7 +316,7 @@
             $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
             $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
 
-            $builtin_types = entities\DatatypeBase::getAvailableFields(true);
+            $builtin_types = array_keys(entities\DatatypeBase::getAvailableFields(true));
             $custom_types = CustomDatatype::getAll();
             $visible_fields = $scheme->getVisibleFieldsForIssuetype($issue_type);
             $key = $request['key'];
@@ -372,7 +376,7 @@
             if ($is_new) {
                 $issuetype = new entities\Issuetype();
             } else {
-                $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issuetype_id']);
+                $issuetype = tables\IssueTypes::getTable()->selectById($request['issuetype_id']);
             }
 
             if ($request->hasParameter('icon') && !$request['icon']) {
@@ -716,7 +720,11 @@
             $this->module_message = framework\Context::getMessageAndClear('module_message');
             $this->module_error = framework\Context::getMessageAndClear('module_error');
             $this->modules = framework\Context::getAllModules();
+            if (!framework\Context::getScope()->isDefault()) {
+                $this->available_modules = tables\Modules::getTable()->getByScopeId(framework\Settings::getDefaultScopeID());
+            }
             $this->writable = is_writable(PACHNO_MODULES_PATH);
+            $this->can_install_modules = entities\Module::canInstallModules() && $this->writable;
             $this->uninstalled_modules = framework\Context::getUninstalledModules();
             $this->outdated_modules = framework\Context::getOutdatedModules();
             $this->is_default_scope = framework\Context::getScope()->isDefault();
@@ -763,14 +771,6 @@
             $this->getResponse()->setHttpStatus(400);
 
             return $this->renderJSON(["error" => $i18n->__("You don't have access to add projects")]);
-        }
-
-        /**
-         * Get edit form for user
-         */
-        public function runGetUserEditForm(framework\Request $request)
-        {
-            return $this->renderJSON(["content" => $this->getComponentHTML('finduser_row_editable', ['user' => entities\User::getB2DBTable()->selectByID($request['user_id'])])]);
         }
 
         /**
@@ -858,80 +858,10 @@
         }
 
         /**
-         * Perform an action on a module
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runModuleAction(framework\Request $request)
-        {
-            $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
-
-            try {
-                if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php')) {
-                    if (entities\Module::installModule($request['module_key'])) {
-                        framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $request['module_key']]));
-                    } else {
-                        framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', ['%module_name' => $request['module_key']]));
-                    }
-                } else {
-                    $module = framework\Context::getModule($request['module_key']);
-                    if (!$module->isCore())
-                        switch ($request['mode']) {
-                            case 'disable':
-                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
-                                    $module->disable();
-                                endif;
-                                break;
-                            case 'enable':
-                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
-                                    $module->enable();
-                                endif;
-                                break;
-                            case 'uninstall':
-                                $module->uninstall();
-                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getName()]));
-                                break;
-                            case 'update':
-                                try {
-                                    $module->upgrade();
-                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was successfully upgraded and can now be used again', ['%module_name' => $module->getName()]));
-                                } catch (Exception $e) {
-                                    framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" was not successfully upgraded', ['%module_name' => $module->getName()]));
-                                    throw $e;
-                                }
-                                break;
-                        }
-                }
-            } catch (Exception $e) {
-                framework\Logging::log('Trying to run action ' . $request['mode'] . ' on module ' . $request['module_key'] . ' made an exception: ' . $e->getMessage(), framework\Logging::LEVEL_FATAL);
-                framework\Context::setMessage('module_error', framework\Context::getI18n()->__('This module (%module_name) does not exist', ['%module_name' => $request['module_key']]));
-                throw $e;
-            }
-            $this->forward(framework\Context::getRouting()->generate('configure_modules'));
-        }
-
-        /**
-         * Configure the selected theme
-         *
-         * @param framework\Request $request
-         * @Route(name="configuration_themes", url="/configure/themes")
-         * @Parameters(config_module="core", section=19)
-         */
-        public function runConfigureThemes(framework\Request $request)
-        {
-            $this->themes = framework\Context::getThemes();
-            $this->writable = is_writable(PACHNO_PATH . 'themes');
-            $this->writable_link = is_writable(PACHNO_PATH . PACHNO_PUBLIC_FOLDER_NAME . DS . 'themes');
-            $this->theme_message = framework\Context::getMessageAndClear('theme_message');
-            $this->theme_error = framework\Context::getMessageAndClear('theme_error');
-            $this->is_default_scope = framework\Context::getScope()->isDefault();
-        }
-
-        /**
          * Perform the module update for a specific module
          *
          * @param framework\Request $request
-         * @Route(name="configuration_module_update", url="/configure/modules/:module_key/update")
+         * @Route(name="module_update", url="/configure/modules/:module_key/update")
          */
         public function runUpdateModule(framework\Request $request)
         {
@@ -948,7 +878,7 @@
          * Enable a theme
          *
          * @param framework\Request $request
-         * @Route(name="configuration_enable_theme", url="/configure/themes/:theme_key/enable/:csrf_token")
+         * @Route(name="enable_theme", url="/configure/themes/:theme_key/enable/:csrf_token")
          *
          * @CsrfProtected
          */
@@ -975,40 +905,10 @@
         }
 
         /**
-         * Download the update file for a specific theme
-         *
-         * @param framework\Request $request
-         * @Route(name="configuration_download_theme_update", url="/configure/themes/:theme_key/update/download")
-         */
-        public function runDownloadThemeUpdate(framework\Request $request)
-        {
-            try {
-                entities\Module::downloadTheme($request['theme_key']);
-                framework\Context::setMessage('theme_message', $this->getI18n()->__('The theme was updated'));
-                $url = $this->getRouting()->generate('configuration_themes');
-            } catch (framework\exceptions\ModuleDownloadException $e) {
-                $url = $this->getRouting()->generate('configuration_themes');
-                switch ($e->getCode()) {
-                    case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
-                        framework\Context::setMessage('theme_error', $this->getI18n()->__('An error occured when trying to retrieve the theme update data'));
-                        break;
-                    case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
-                        framework\Context::setMessage('theme_error', $this->getI18n()->__('The theme update could not be downloaded'));
-                        break;
-                }
-            } catch (Exception $e) {
-                framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the theme'));
-                $url = $this->getRouting()->generate('configuration_themes');
-            }
-
-            return $this->forward($url);
-        }
-
-        /**
          * Download the update file for a specific module
          *
          * @param framework\Request $request
-         * @Route(name="configuration_download_module_update", url="/configure/modules/:module_key/update/download")
+         * @Route(name="download_module_update", url="/configure/modules/:module_key/update/download")
          */
         public function runDownloadModuleUpdate(framework\Request $request)
         {
@@ -1017,17 +917,22 @@
                 $url = $this->getRouting()->generate('configuration_module_update', ['module_key' => $request['module_key']]);
             } catch (framework\exceptions\ModuleDownloadException $e) {
                 $url = $this->getRouting()->generate('configure_modules');
-                switch ($e->getCode()) {
-                    case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
-                        framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module data'));
-                        break;
-                    case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
-                        framework\Context::setMessage('module_error', $this->getI18n()->__('The module could not be downloaded'));
-                        break;
-                }
             } catch (Exception $e) {
-                framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module'));
-                $url = $this->getRouting()->generate('configure_modules');
+                if ($e instanceof framework\exceptions\ModuleDownloadException) {
+                    switch ($e->getCode()) {
+                        case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
+                            framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module data'));
+                            break;
+                        case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
+                            framework\Context::setMessage('module_error', $this->getI18n()->__('The module could not be downloaded'));
+                            break;
+                    }
+                } else {
+
+                }
+                $message = $this->getI18n()->__('An error occured when trying to retrieve the module: %error', ['%error' => $error]);
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $message]);
             }
 
             return $this->forward($url);
@@ -1044,45 +949,6 @@
 
             if ($this->access_level == framework\Settings::ACCESS_FULL) {
                 return $this->renderJSON(['content' => $this->getComponentHTML('configuration/permissionsblock', ['base_id' => $request['base_id'], 'permissions_list' => $request['permissions_list'], 'mode' => $request['mode'], 'target_id' => $request['target_id'], 'user_id' => $request['user_id'], 'team_id' => $request['team_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level])]);
-            }
-            $this->getResponse()->setHttpStatus(400);
-
-            return $this->renderJSON(["error" => $i18n->__("You don't have access to modify permissions")]);
-        }
-
-        public function runSetPermission(framework\Request $request)
-        {
-            $i18n = framework\Context::getI18n();
-
-            if ($this->access_level == framework\Settings::ACCESS_FULL) {
-                $uid = 0;
-                $gid = 0;
-                $tid = 0;
-                switch ($request['target_type']) {
-                    case 'user':
-                        $uid = $request['item_id'];
-                        break;
-                    case 'group':
-                        $gid = $request['item_id'];
-                        break;
-                    case 'team':
-                        $tid = $request['item_id'];
-                        break;
-                }
-
-                switch ($request['mode']) {
-                    case 'allowed':
-                        framework\Context::setPermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, true);
-                        break;
-                    case 'denied':
-                        framework\Context::setPermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, false);
-                        break;
-                    case 'unset':
-                        framework\Context::removePermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, true, null, 0);
-                        break;
-                }
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/permissionsinfoitem', ['key' => $request['key'], 'target_id' => $request['target_id'], 'type' => $request['target_type'], 'mode' => $request['template_mode'], 'item_id' => $request['item_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level, 'in_json' => 1])]);
             }
             $this->getResponse()->setHttpStatus(400);
 
@@ -1108,13 +974,11 @@
                     if ($request->isPost() && $this->access_level == framework\Settings::ACCESS_FULL) {
                         try {
                             $module->postConfigSettings($request);
-                            if (!framework\Context::hasMessage('module_message')) {
-                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('Settings saved successfully'));
-                            }
+                            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Settings saved successfully')]);
                         } catch (Exception $e) {
                             framework\Context::setMessage('module_error', $e->getMessage());
+                            return $this->renderJSON(['error' => $e->getMessage()]);
                         }
-                        $this->forward(framework\Context::getRouting()->generate('configure_module', ['config_module' => $request['config_module']]));
                     }
                     $this->module = $module;
                 }
@@ -1142,26 +1006,26 @@
                     if (framework\Context::getScope()->isDefault()) {
                         $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_storage', 'upload_localpath'];
 
-                        if ($request['upload_storage'] == 'files' && (bool)$request['enable_uploads']) {
-                            if (!is_dir($request['upload_localpath'])) {
-                                mkdir($request['upload_localpath'], 0744, true);
+                        if ($request['upload_storage'] == 'files' && (bool) $request['enable_uploads']) {
+                            if ($request['upload_localpath'] && !is_dir($request['upload_localpath'])) {
+                                if (!mkdir($concurrentDirectory = $request['upload_localpath'], 0744, true) && !is_dir($concurrentDirectory)) {
+                                    throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+                                }
                             }
-                            if (!is_writable($request['upload_localpath'])) {
+                            if ($request['upload_localpath'] && !is_writable($request['upload_localpath'])) {
                                 $this->getResponse()->setHttpStatus(400);
 
                                 return $this->renderJSON(['error' => framework\Context::getI18n()->__("The upload path isn't writable")]);
                             }
                         }
+
+                        framework\Settings::saveSetting('upload_allow_image_caching', framework\Context::getRequest()->getParameter('upload_allow_image_caching'));
+                        framework\Settings::saveSetting('upload_delivery_use_xsend', framework\Context::getRequest()->getParameter('upload_delivery_use_xsend'));
+                        framework\Settings::saveSetting('enable_uploads', framework\Context::getRequest()->getParameter('enable_uploads'));
                     } else {
                         $settings = ['upload_restriction_mode', 'upload_extensions_list'];
                         framework\Settings::copyDefaultScopeSetting('upload_localpath');
                     }
-
-//                    if (!is_numeric($request['upload_max_file_size'])) {
-//                        $this->getResponse()->setHttpStatus(400);
-//
-//                        return $this->renderJSON(['error' => framework\Context::getI18n()->__("The maximum file size must be a number")]);
-//                    }
 
                     foreach ($settings as $setting) {
                         if (framework\Context::getRequest()->hasParameter($setting)) {
@@ -1170,11 +1034,7 @@
                     }
                 }
 
-                framework\Settings::saveSetting('upload_allow_image_caching', framework\Context::getRequest()->getParameter('upload_allow_image_caching'));
-                framework\Settings::saveSetting('upload_delivery_use_xsend', framework\Context::getRequest()->getParameter('upload_delivery_use_xsend'));
-                framework\Settings::saveSetting('enable_uploads', framework\Context::getRequest()->getParameter('enable_uploads'));
-
-                return $this->renderJSON(['title' => framework\Context::getI18n()->__('All settings saved')]);
+                return $this->renderJSON(['message' => framework\Context::getI18n()->__('All settings saved')]);
             }
         }
 
@@ -1205,19 +1065,67 @@
             }
         }
 
+        /**
+         * @Route(name="users", url="/users", methods="GET|POST")
+         *
+         * @param framework\Request $request
+         */
         public function runConfigureUsers(framework\Request $request)
         {
-            $this->finduser = $request['finduser'];
-            $this->groups = entities\Group::getAll();
+            if ($request->hasParameter('findstring')) {
+                $options = ['findstring' => $request['findstring']];
+
+                if (mb_strlen($options['findstring']) >= 1) {
+                    $options['users'] = tables\Users::getTable()->findInConfig($options['findstring']);
+                    $options['total_results'] = count($options['users']);
+                } else {
+                    $options['too_short'] = true;
+                }
+                switch ($options['findstring']) {
+                    case 'unactivated':
+                        $options['findstring'] = framework\Context::getI18n()->__('Unactivated users');
+                        break;
+                    case 'newusers':
+                        $options['findstring'] = framework\Context::getI18n()->__('New users');
+                        break;
+                    case 'all':
+                        $options['findstring'] = framework\Context::getI18n()->__('All users');
+                        break;
+                }
+
+                return $this->renderJSON([
+                    'content' => $this->getComponentHTML('configuration/userlist', $options)
+                ]);
+            }
+
             $this->teams = entities\Team::getAll();
+            $this->groups = entities\Group::getAll();
             $this->number_of_users = tables\UserScopes::getTable()->countUsers();
         }
 
+        /**
+         * @Route(name="groups", url="/groups", methods="GET")
+         *
+         * @param framework\Request $request
+         */
+        public function runConfigureGroups(framework\Request $request)
+        {
+            $this->groups = entities\Group::getAll();
+        }
+
+        /**
+         * @Route(name="teams", url="/teams", methods="GET|POST")
+         * @param framework\Request $request
+         */
         public function runConfigureTeams(framework\Request $request)
         {
             $this->teams = entities\Team::getAll();
         }
 
+        /**
+         * @Route(name="clients", url="/clients", methods="GET|POST")
+         * @param framework\Request $request
+         */
         public function runConfigureClients(framework\Request $request)
         {
             $this->clients = entities\Client::getAll();
@@ -1281,24 +1189,10 @@
                         $message = framework\Context::getI18n()->__('The group was added');
                     }
 
-                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/groupbox', ['group' => $group])]);
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/group', ['group' => $group])]);
                 } else {
                     throw new Exception(framework\Context::getI18n()->__('Please enter a group name'));
                 }
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runGetGroupMembers(framework\Request $request)
-        {
-            try {
-                $group = entities\Group::getB2DBTable()->selectById((int)$request['group_id']);
-                $users = $group->getMembers();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/groupuserlist', ['users' => $users])]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -1311,7 +1205,7 @@
             try {
                 try {
                     $return_options = [];
-                    $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
+                    $user = tables\Users::getTable()->selectByID($request['user_id']);
                     if ($user->getGroup() instanceof entities\Group) {
                         $return_options['update_groups'] = ['ids' => [], 'membercounts' => []];
                         $group_id = $user->getGroup()->getID();
@@ -1354,339 +1248,166 @@
             }
         }
 
-        public function runDeleteTeam(framework\Request $request)
+        /**
+         * @Route(name="update_user_password", url="/users/:user_id/password/:csrf_token")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runUpdateUserPassword(framework\Request $request): framework\JsonOutput
         {
-            try {
-                try {
-                    $team = entities\Team::getB2DBTable()->selectById($request['team_id']);
-                } catch (Exception $e) {
-
-                }
-                if (!$team instanceof entities\Team) {
-                    throw new Exception(framework\Context::getI18n()->__("You cannot delete this team"));
-                }
-                $team->delete();
-
-                return $this->renderJSON(['success' => true, 'message' => framework\Context::getI18n()->__('The team was deleted'), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()]);
-            } catch (Exception $e) {
+            if ($this->access_level !== framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
             }
-        }
 
-        public function runAddTeam(framework\Request $request)
-        {
-            try {
-                $mode = $request['mode'];
-                if ($team_name = $request['team_name']) {
-                    if ($mode == 'clone') {
-                        try {
-                            $old_team = entities\Team::getB2DBTable()->selectById($request['team_id']);
-                        } catch (Exception $e) {
-
-                        }
-                        if (!$old_team instanceof entities\Team) {
-                            throw new Exception(framework\Context::getI18n()->__("You cannot clone this team"));
-                        }
-                    }
-                    if (entities\Team::doesTeamNameExist(trim($team_name))) {
-                        throw new Exception(framework\Context::getI18n()->__("Please enter a team name that doesn't already exist"));
-                    }
-                    $team = new entities\Team();
-                    $team->setName($team_name);
-                    $team->save();
-                    if ($mode == 'clone') {
-                        if ($request['clone_permissions']) {
-                            tables\Permissions::getTable()->cloneTeamPermissions($old_team->getID(), $team->getID());
-                        }
-                        if ($request['clone_memberships']) {
-                            tables\TeamMembers::getTable()->cloneTeamMemberships($old_team->getID(), $team->getID());
-                        }
-                        $message = framework\Context::getI18n()->__('The team was cloned');
-                    } else {
-                        $message = framework\Context::getI18n()->__('The team was added');
-                    }
-
-                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/teambox', ['team' => $team]), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()]);
-                } else {
-                    throw new Exception(framework\Context::getI18n()->__('Please enter a team name'));
-                }
-            } catch (Exception $e) {
+            $user = tables\Users::getTable()->selectByID($request['user_id']);
+            if (!$user instanceof entities\User) {
                 $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Cannot find this user')]);
             }
-        }
 
-        public function runGetTeamMembers(framework\Request $request)
-        {
-            try {
-                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
-                $users = $team->getMembers();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/teamuserlist', compact('users', 'team'))]);
-            } catch (Exception $e) {
+            if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
                 $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
             }
-        }
 
-        public function runRemoveTeamMember(framework\Request $request)
-        {
-            try {
-                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
-                $user = entities\User::getB2DBTable()->selectByID((int)$request['user_id']);
-
-                $team->removeMember($user);
-
-                return $this->renderJSON(['update_teams' => ['ids' => [$team->getID()], 'membercounts' => [$team->getID() => $team->getNumberOfMembers()]]]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runAddTeamMember(framework\Request $request)
-        {
-            try {
-                $user_id = (int)$request['user_id'];
-                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
-                $user = entities\User::getB2DBTable()->selectByID($user_id);
-
-                $team->addMember($user);
-
-                return $this->renderJSON(['teamlistitem' => $this->getComponentHTML('configuration/teamuserlistitem', compact('team', 'user_id', 'user')), 'update_teams' => ['ids' => [$team->getID()], 'membercounts' => [$team->getID() => $team->getNumberOfMembers()]]]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runFindUsers(framework\Request $request)
-        {
-            $options = [
-                'findstring' => $request['findstring']
-            ];
-
-            if (mb_strlen($options['findstring']) >= 1) {
-                $options['users'] = tables\Users::getTable()->findInConfig($options['findstring']);
-                $options['total_results'] = count($options['users']);
-            } else {
-                $options['too_short'] = true;
-            }
-            switch ($options['findstring']) {
-                case 'unactivated':
-                    $options['findstring'] = framework\Context::getI18n()->__('Unactivated users');
-                    break;
-                case 'newusers':
-                    $options['findstring'] = framework\Context::getI18n()->__('New users');
-                    break;
-                case 'all':
-                    $options['findstring'] = framework\Context::getI18n()->__('All users');
-                    break;
-            }
+            $random_password = entities\User::createPassword();
+            $user->setPassword($random_password);
+            $user->save();
 
             return $this->renderJSON([
-                'content' => $this->getComponentHTML('configuration/usersresult', $options)
+                'password' => $random_password
             ]);
         }
 
-        public function runAddUser(framework\Request $request)
+        /**
+         * @Route(name="user", url="/users/:user_id", methods="POST|GET")
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runEditUser(framework\Request $request): framework\JsonOutput
         {
-            try {
-                if (!framework\Context::getScope()->hasUsersAvailable()) {
-                    throw new Exception($this->getI18n()->__('This instance of Pachno cannot add more users'));
+            $user_id = $request['user_id'];
+            if ($user_id) {
+                $user = tables\Users::getTable()->selectById($user_id);
+
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
                 }
 
-                if ($username = trim($request['username'])) {
-                    if (!entities\User::isUsernameAvailable($username)) {
-                        if ($request->getParameter('mode') == 'import') {
-                            $user = entities\User::getByUsername($username);
-                            $user->addScope(framework\Context::getScope());
-
-                            return $this->renderJSON(['imported' => true, 'message' => $this->getI18n()->__('The user was successfully added to this scope (pending user confirmation)')]);
-                        } elseif (framework\Context::getScope()->isDefault()) {
-                            throw new Exception($this->getI18n()->__('This username already exists'));
-                        } else {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['allow_import' => true]);
-                        }
-                    }
-
-                    $user = new entities\User();
-                    $user->setUsername($username);
-                    $user->setRealname($request->getParameter('realname', $username));
-                    $user->setBuddyname($request->getParameter('buddyname', $username));
-                    $user->setEmail($request->getParameter('email'));
-                    $group_id = ($request->getParameter('group_id')) ? $request->getParameter('group_id') : framework\Settings::get(framework\Settings::SETTING_USER_GROUP);
-                    $user->setGroup($group_id);
-                    if ($request->hasParameter('password') && !(empty($request['password']) && empty($request['password_repeat']))) {
-                        if (empty($request['password']) || $request['password'] != $request['password_repeat']) {
-                            throw new Exception($this->getI18n()->__('Please enter the same password twice'));
-                        }
-                        $password = $request['password'];
-                        $user->setPassword($password);
-                    } else {
-                        $password = entities\User::createPassword();
-                        $user->setPassword($password);
-                    }
-                    $user->save();
-                    foreach ((array)$request['teams'] as $team_id) {
-                        $user->addToTeam(entities\Team::getB2DBTable()->selectById((int)$team_id));
-                    }
-                    framework\Event::createNew('core', 'config.createuser.save', $user, ['password' => $password])->trigger();
-                } else {
-                    throw new Exception($this->getI18n()->__('Please enter a username'));
+                if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
                 }
-                $this->getResponse()->setTemplate('configuration/findusers');
-                $this->too_short = false;
-                $this->created_user = true;
-                $this->users = [$user];
-                $this->total_results = 1;
-                $this->title = $this->getI18n()->__('User %username created', ['%username' => $username]);
-                $this->total_count = entities\User::getUsersCount();
-                $this->more_available = framework\Context::getScope()->hasUsersAvailable();
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runUpdateUser(framework\Request $request)
-        {
-            try {
-                $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
-                if ($user instanceof entities\User) {
-                    if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
+            } else {
+                if (!framework\Context::getScope()->isDefault() && $request->hasParameter('username')) {
+                    if (!framework\Context::getScope()->hasUsersAvailable()) {
                         $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This instance of Pachno cannot add more users')]);
                     }
-                    if (!empty($request['username'])) {
-                        $testuser = entities\User::getByUsername($request['username']);
-                        if (!$testuser instanceof entities\User || $testuser->getID() == $user->getID()) {
-                            $user->setUsername($request['username']);
-                        } else {
+
+                    $user = entities\User::getByUsername($request['username']);
+                    if ($user instanceof entities\User) {
+                        if ($user->isMemberOfScope(framework\Context::getScope())) {
                             $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => $this->getI18n()->__('This username is already taken')]);
-                        }
-                    }
-                    $password_changed = false;
-                    if ($request['password_action'] == 'change' && $request['new_password_1'] && $request['new_password_2']) {
-                        if ($request['new_password_1'] == $request['new_password_2']) {
-                            $user->setPassword($request['new_password_1']);
-                            $password_changed = true;
+                            return $this->renderJSON(['error' => $this->getI18n()->__('This user has already been invited to this scope')]);
                         } else {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => $this->getI18n()->__('Please enter the new password twice')]);
+                            $user->addScope(framework\Context::getScope());
                         }
-                    } elseif ($request['password_action'] == 'random') {
-                        $random_password = entities\User::createPassword();
-                        $user->setPassword($random_password);
-                        $password_changed = true;
-                    }
-                    if (isset($request['realname'])) {
-                        $user->setRealname($request['realname']);
-                    }
-                    $return_options = [];
-                    try {
-                        if ($group = entities\Group::getB2DBTable()->selectById($request['group'])) {
-                            if ($user->getGroupID() != $group->getID()) {
-                                $groups = [$user->getGroupID(), $group->getID()];
-                                $return_options['update_groups'] = ['ids' => [], 'membercounts' => []];
-                            }
-                            $user->setGroup($group);
-                        }
-                    } catch (Exception $e) {
-                        throw new Exception($this->getI18n()->__('Invalid user group'));
                     }
 
-                    $existing_teams = array_keys($user->getTeams());
-                    $new_teams = [];
-                    $new_clients = [];
-                    $user->clearTeams();
-                    try {
-                        foreach ($request->getParameter('teams', []) as $team_id => $team) {
-                            if ($team = entities\Team::getB2DBTable()->selectById($team_id)) {
-                                $new_teams[] = $team_id;
-                                $user->addToTeam($team);
-                            }
-                        }
-                    } catch (Exception $e) {
-                        throw new Exception($this->getI18n()->__('One or more teams were invalid'));
-                    }
-
-                    try {
-                        $user->clearClients();
-                        foreach ($request->getParameter('clients', []) as $client_id => $client) {
-                            if ($client = entities\Client::getB2DBTable()->selectById($client_id)) {
-                                $new_clients[] = $client_id;
-                                $user->addToClient($client);
-                            }
-                        }
-                    } catch (Exception $e) {
-                        throw new Exception($this->getI18n()->__('One or more clients were invalid'));
-                    }
-                    if (isset($request['nickname'])) {
-                        $user->setBuddyname($request['nickname']);
-                    }
-                    if (isset($request['email'])) {
-                        $user->setEmail($request['email']);
-                    }
-                    if (isset($request['homepage'])) {
-                        $user->setHomepage($request['homepage']);
-                    }
-                    if (framework\Context::getScope()->isDefault()) {
-                        $user->setActivated((bool)$request['activated']);
-                        $user->setEnabled((bool)$request['enabled']);
-                    }
-                    $user->save();
-                    if (isset($groups)) {
-                        foreach ($groups as $group_id) {
-                            if (!$group_id)
-                                continue;
-                            $return_options['update_groups']['ids'][] = $group_id;
-                            $return_options['update_groups']['membercounts'][$group_id] = entities\Group::getB2DBTable()->selectById($group_id)->getNumberOfMembers();
-                        }
-                    }
-                    if ($new_teams != $existing_teams) {
-                        $new_team_ids = array_diff($new_teams, $existing_teams);
-                        $existing_team_ids = array_diff($existing_teams, $new_teams);
-                        $teams_to_update = array_merge($new_team_ids, $existing_team_ids);
-                        $return_options['update_teams'] = ['ids' => [], 'membercounts' => []];
-                        foreach ($teams_to_update as $team_id) {
-                            $return_options['update_teams']['ids'][] = $team_id;
-                            $return_options['update_teams']['membercounts'][$team_id] = entities\Team::getB2DBTable()->selectById($team_id)->getNumberOfMembers();
-                        }
-                    }
-                    $template_options = ['user' => $user];
-                    if (isset($random_password)) {
-                        $template_options['random_password'] = $random_password;
-                    }
-                    $return_options['content'] = $this->getComponentHTML('configuration/finduser_row', $template_options);
-                    $return_options['title'] = $this->getI18n()->__('User updated!');
-                    if ($password_changed) {
-                        $return_options['message'] = $this->getI18n()->__('The password was changed');
-                    }
-
-                    return $this->renderJSON($return_options);
+                    return $this->renderJSON(['imported' => true, 'message' => $this->getI18n()->__('The user was successfully added to this scope (pending user confirmation)')]);
+                } else {
+                    $user = new entities\User();
                 }
+            }
+
+            if ($request->isGet()) {
+                return $this->renderJSON([
+                    'content' => $this->getComponentHTML('edituser', ['user' => $user])
+                ]);
+            }
+
+            try {
+                if (!empty($request['username'])) {
+                    $testuser = entities\User::getByUsername($request['username']);
+                    if ($testuser instanceof entities\User && $testuser->getID() != $user->getID()) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This username is already taken')]);
+                    }
+
+                    $user->setUsername($request['username']);
+                }
+
+                if (isset($request['group_id'])) {
+                    $group = tables\Groups::getTable()->selectById($request['group_id']);
+                    if (!$group instanceof entities\Group) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This user group does not exist')]);
+                    }
+                    $user->setGroup($group);
+                }
+
+                if (isset($request['realname'])) {
+                    $user->setRealname($request['realname']);
+                }
+                if (isset($request['nickname'])) {
+                    $user->setBuddyname($request['nickname']);
+                }
+                if (isset($request['email'])) {
+                    $user->setEmail($request['email']);
+                }
+                if (isset($request['homepage'])) {
+                    $user->setHomepage($request['homepage']);
+                }
+
+                if (framework\Context::getScope()->isDefault()) {
+                    $user->setActivated((bool) $request['activated']);
+                    $user->setEnabled((bool) $request['enabled']);
+                }
+
+                $user->save();
+
+                $new_teams = $request->getParameter('teams', []);
+                $remove_teams = array_diff(array_keys($user->getTeams()), array_keys($new_teams));
+                tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), $remove_teams);
+
+                foreach ($new_teams as $team_id => $team) {
+                    if ($team = tables\Teams::getTable()->selectById($team_id)) {
+                        $user->addToTeam($team);
+                    }
+                }
+
+                $new_clients = $request->getParameter('clients', []);
+                $remove_clients = array_diff(array_keys($user->getClients()), array_keys($new_clients));
+                tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), $remove_clients);
+
+                foreach ($new_clients as $client_id => $client) {
+                    if ($client = tables\Clients::getTable()->selectById($client_id)) {
+                        $user->addToClient($client);
+                    }
+                }
+
+                if (!$user_id) {
+                    $password = entities\User::createPassword();
+                    $user->setPassword($password);
+                    $user->save();
+                    framework\Event::createNew('core', 'config.createuser.save', $user, ['password' => $password])->trigger();
+                }
+
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('User updated'),
+                    'user' => $user->toJSON(),
+                    'content' => $this->getComponentHTML('configuration/user', ['user' => $user])
+                ]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated: %message', ['%message' => $e->getMessage()])]);
             }
-            $this->getResponse()->setHttpStatus(400);
-
-            return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated')]);
         }
 
         public function runUpdateUserScopes(framework\Request $request)
@@ -1695,7 +1416,7 @@
                 if (!framework\Context::getScope()->isDefault())
                     throw new Exception('This operation is not allowed');
 
-                $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
+                $user = tables\Users::getTable()->selectByID($request['user_id']);
                 if ($user instanceof entities\User) {
                     $return_options = ['message' => $this->getI18n()->__("The user's scope access was successfully updated")];
                     $scopes = $request->getParameter('scopes', []);
@@ -1916,8 +1637,13 @@
 
         public function runConfigureWorkflowStep(framework\Request $request)
         {
-            $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
             $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
+
+            switch ($request['mode']) {
+                case 'delete':
+                    $step->delete();
+                    break;
+            }
 
             return $this->renderJSON([
                 'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $step])
@@ -1952,8 +1678,7 @@
                     $this->step->setIsClosed((bool)($request['state'] == entities\Issue::STATE_CLOSED));
                     $this->step->save();
 
-
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', ['workflow_id' => $this->workflow->getID(), 'step_id' => $this->step->getID()]));
+                    return $this->renderJSON(['workflow_step' => $this->step->toJSON()]);
                 }
             } catch (Exception $e) {
                 $this->error = $this->getI18n()->__('This workflow / step does not exist');
@@ -2020,7 +1745,7 @@
                                 case entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE:
                                     if ($this->action->hasTargetValue()) {
                                         $target_details = explode('_', $this->action->getTargetValue());
-                                        $text = ($target_details[0] == 'user') ? entities\User::getB2DBTable()->selectById((int)$target_details[1])->getNameWithUsername() : entities\Team::getB2DBTable()->selectById((int)$target_details[1])->getName();
+                                        $text = ($target_details[0] == 'user') ? tables\Users::getTable()->selectById((int)$target_details[1])->getNameWithUsername() : entities\Team::getB2DBTable()->selectById((int)$target_details[1])->getName();
                                     } else {
                                         $text = $this->getI18n()->__('User specified during transition');
                                     }
@@ -2038,61 +1763,67 @@
                                 case entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
                                     $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Priority specified by user');
                                     break;
+                                case entities\WorkflowTransitionAction::ACTION_SET_SEVERITY:
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Severity specified by user');
+                                    break;
+                                case entities\WorkflowTransitionAction::ACTION_SET_CATEGORY:
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Category specified by user');
+                                    break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_MILESTONE:
                                     $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                     $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Milestone specified by user');
                                     break;
                                 case entities\WorkflowTransitionAction::CUSTOMFIELD_SET_PREFIX . $this->action->getCustomActionType():
                                     switch (CustomDatatype::getByKey($this->action->getCustomActionType())->getType()) {
-                                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                        case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
+                                        case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
                                             break;
-                                        case CustomDatatype::DATE_PICKER:
-                                        case CustomDatatype::DATETIME_PICKER:
-                                            return $this->renderJSON(['content' => date('Y-m-d' . (CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int)$text)]);
+                                        case entities\DatatypeBase::DATE_PICKER:
+                                        case entities\DatatypeBase::DATETIME_PICKER:
+                                            return $this->renderJSON(['content' => date('Y-m-d' . (CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == entities\DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), (int)$text)]);
                                             break;
-                                        case CustomDatatype::USER_CHOICE:
+                                        case entities\DatatypeBase::USER_CHOICE:
                                             return $this->renderJSON(['content' => $this->getComponentHTML('main/userdropdown', ['user' => $text])]);
                                             break;
-                                        case CustomDatatype::TEAM_CHOICE:
+                                        case entities\DatatypeBase::TEAM_CHOICE:
                                             return $this->renderJSON(['content' => $this->getComponentHTML('main/teamdropdown', ['team' => $text])]);
                                             break;
-                                        case CustomDatatype::CLIENT_CHOICE:
+                                        case entities\DatatypeBase::CLIENT_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $text = ($this->action->getTargetValue()) ? Clients::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::RELEASES_CHOICE:
+                                        case entities\DatatypeBase::RELEASES_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Builds::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::COMPONENTS_CHOICE:
+                                        case entities\DatatypeBase::COMPONENTS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Components::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::EDITIONS_CHOICE:
+                                        case entities\DatatypeBase::EDITIONS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Editions::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::MILESTONE_CHOICE:
+                                        case entities\DatatypeBase::MILESTONE_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Milestones::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::STATUS_CHOICE:
+                                        case entities\DatatypeBase::STATUS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: ' . $target->getColor() . '; color: ' . $target->getTextColor() . ';">' . $target->getName() . '</span>' : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                        case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
                                         default:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $text = ($this->action->getTargetValue()) ? tables\CustomFieldOptions::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
@@ -2139,15 +1870,15 @@
                             $text = null;
                             if ($rule->isCustom()) {
                                 switch ($rule->getCustomType()) {
-                                    case CustomDatatype::RADIO_CHOICE:
-                                    case CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                                    case CustomDatatype::TEAM_CHOICE:
-                                    case CustomDatatype::STATUS_CHOICE:
-                                    case CustomDatatype::MILESTONE_CHOICE:
-                                    case CustomDatatype::CLIENT_CHOICE:
-                                    case CustomDatatype::COMPONENTS_CHOICE:
-                                    case CustomDatatype::EDITIONS_CHOICE:
-                                    case CustomDatatype::RELEASES_CHOICE:
+                                    case entities\DatatypeBase::RADIO_CHOICE:
+                                    case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                                    case entities\DatatypeBase::TEAM_CHOICE:
+                                    case entities\DatatypeBase::STATUS_CHOICE:
+                                    case entities\DatatypeBase::MILESTONE_CHOICE:
+                                    case entities\DatatypeBase::CLIENT_CHOICE:
+                                    case entities\DatatypeBase::COMPONENTS_CHOICE:
+                                    case entities\DatatypeBase::EDITIONS_CHOICE:
+                                    case entities\DatatypeBase::RELEASES_CHOICE:
                                         $rule->setRuleValue(join(',', $request['rule_value'] ?: []));
                                         $text = ($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : $this->getI18n()->__('Any valid value');
                                         break;
@@ -2233,7 +1964,7 @@
 
                     $message = $this->getI18n()->__('The client was added');
 
-                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/clientbox', ['client' => $client])]);
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/client', ['client' => $client])]);
                 } else {
                     throw new Exception($this->getI18n()->__('Please enter a client name'));
                 }
@@ -2248,7 +1979,7 @@
         {
             try {
                 try {
-                    $client = entities\Client::getB2DBTable()->selectById($request['client_id']);
+                    $client = Clients::getTable()->selectById($request['client_id']);
                 } catch (Exception $e) {
 
                 }
@@ -2273,110 +2004,49 @@
             }
         }
 
-        public function runGetClientMembers(framework\Request $request)
-        {
-            try {
-                $client = entities\Client::getB2DBTable()->selectById((int)$request['client_id']);
-                $users = $client->getMembers();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/clientuserlist', compact('users', 'client'))]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
         public function runRemoveClientMember(framework\Request $request)
         {
             try {
-                $client = Clients::getTable()->selectById((int)$request['client_id']);
-                $user = entities\User::getB2DBTable()->selectByID((int)$request['user_id']);
+                $client = Clients::getTable()->selectById((int) $request['client_id']);
+                $user = tables\Users::getTable()->selectByID((int) $request['user_id']);
+
+                if (!$client instanceof entities\Client) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This client does not exist')]);
+                }
+
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+                }
 
                 $client->removeMember($user);
 
-                return $this->renderJSON(['update_clients' => ['ids' => [$client->getID()], 'membercounts' => [$client->getID() => $client->getNumberOfMembers()]]]);
+                return $this->renderJSON(['message' => $this->getI18n()->__('The user has been removed from the client'), 'user_id' => $user->getID()]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runAddClientMember(framework\Request $request)
-        {
-            try {
-                $user_id = (int)$request['user_id'];
-                $client = Clients::getTable()->selectById((int)$request['client_id']);
-                $user = entities\User::getB2DBTable()->selectByID($user_id);
-
-                $client->addMember($user);
-
-                return $this->renderJSON(['clientlistitem' => $this->getComponentHTML('configuration/clientuserlistitem', compact('client', 'user_id', 'user')), 'update_clients' => ['ids' => [$client->getID()], 'membercounts' => [$client->getID() => $client->getNumberOfMembers()]]]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runEditClient(framework\Request $request)
-        {
-            try {
-                try {
-                    $client = entities\Client::getB2DBTable()->selectById($request['client_id']);
-                } catch (Exception $e) {
-
-                }
-                if (!$client instanceof entities\Client) {
-                    throw new Exception($this->getI18n()->__("You cannot edit this client"));
-                }
-
-                if (entities\Client::doesClientNameExist(trim($request['client_name'])) && strtolower($request['client_name']) != strtolower($client->getName())) {
-                    throw new Exception($this->getI18n()->__("Please enter a client name that doesn't already exist"));
-                }
-
-                $client->setName($request['client_name']);
-                $client->setEmail($request['client_email']);
-                $client->setWebsite($request['client_website']);
-                $client->setTelephone($request['client_telephone']);
-                $client->setFax($request['client_fax']);
-                $client->save();
-
-                return $this->renderJSON(['success' => true, 'content' => $this->getComponentHTML('configuration/clientbox', ['client' => $client]), 'message' => $this->getI18n()->__('The client was saved')]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runConfigureScopes(framework\Request $request)
         {
-            if ($request->isPost()) {
-                $hostname = $request['hostname'];
-                $hostname = str_replace(['http://', 'https://'], ['', ''], $hostname);
-
-                $scopename = $request['name'];
-                if (!$hostname || tables\Scopes::getTable()->getByHostname($hostname) instanceof entities\Scope) {
-                    $this->scope_hostname_error = true;
-                } elseif (!$scopename) {
-                    $this->scope_name_error = true;
-                } else {
-                    $scope = new entities\Scope();
-                    $scope->addHostname($hostname);
-                    $scope->setName($scopename);
-                    $scope->setEnabled();
-                    $scope->save();
-                    $this->forward(framework\Context::getRouting()->generate('configure_scopes'));
-                }
+            if (!framework\Context::getScope()->isDefault()) {
+                return $this->forward403($this->getI18n()->__('Scopes can only be managed from the default scope'));
             }
-            $this->scope_deleted = framework\Context::getMessageAndClear('scope_deleted');
-            $this->scope_saved = framework\Context::getMessageAndClear('scope_saved');
-            $pagination_scopes = tables\Scopes::getTable()->getPaginationItems();
-            $pagination = new Pagination($pagination_scopes, $this->getRouting()->generate('configure_scopes'), $request);
+
+            $exclude_empty_issues = (bool) $request->getParameter('exclude_empty_issues', false);
+            $exclude_empty_projects = (bool) $request->getParameter('exclude_empty_projects', false);
+            $pagination_scopes = tables\Scopes::getTable()->getPaginationItems($exclude_empty_projects, $exclude_empty_issues);
+            $pagination = new Pagination($pagination_scopes, $this->getRouting()->generate('configure_scopes'), $request, compact('exclude_empty_projects', 'exclude_empty_issues'));
             $this->scopes = tables\Scopes::getTable()->getByIds($pagination->getPageItems());
             $this->pagination = $pagination;
+            $this->exclude_empty_issues = $exclude_empty_issues;
+            $this->exclude_empty_projects = $exclude_empty_projects;
+
+            if ($request->isPost()) {
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/scopelist', ['scopes' => $this->scopes, 'pagination' => $this->pagination])]);
+            }
         }
 
         public function runScope(framework\Request $request)
@@ -2397,6 +2067,24 @@
                             $this->scope_save_error = $this->getI18n()->__('You cannot delete the default scope');
                         }
                     } else {
+                        if ($request->isPost()) {
+                            $hostname = $request['hostname'];
+                            $hostname = str_replace(['http://', 'https://'], ['', ''], $hostname);
+
+                            $scopename = $request['name'];
+                            if (!$hostname || tables\Scopes::getTable()->getByHostname($hostname) instanceof entities\Scope) {
+                                $this->scope_hostname_error = true;
+                            } elseif (!$scopename) {
+                                $this->scope_name_error = true;
+                            } else {
+                                $scope = new entities\Scope();
+                                $scope->addHostname($hostname);
+                                $scope->setName($scopename);
+                                $scope->setEnabled();
+                                $scope->save();
+                                $this->forward(framework\Context::getRouting()->generate('configure_scopes'));
+                            }
+                        }
                         if (!$request['name']) {
                             throw new Exception($this->getI18n()->__('Please specify a scope name'));
                         }
@@ -2414,10 +2102,13 @@
                         $enabled_modules = $request['module_enabled'];
                         $prev_scope = framework\Context::getScope();
                         foreach ($enabled_modules as $module => $enabled) {
-                            if (!framework\Context::getModule($module)->isCore() && !$enabled && array_key_exists($module, $modules)) {
+                            if (framework\Context::getModule($module) instanceof framework\CoreModule)
+                                continue;
+
+                            if (!$enabled && array_key_exists($module, $modules)) {
                                 $module = tables\Modules::getTable()->getModuleForScope($module, $this->scope->getID());
                                 $module->uninstall($this->scope->getID());
-                            } elseif (!framework\Context::getModule($module)->isCore() && $enabled && !array_key_exists($module, $modules)) {
+                            } elseif ($enabled && !array_key_exists($module, $modules)) {
                                 framework\Context::setScope($this->scope);
                                 entities\Module::installModule($module);
                                 framework\Context::setScope($prev_scope);
@@ -2432,103 +2123,452 @@
             }
         }
 
-        public function runConfigureRole(framework\Request $request)
+        /**
+         * @Route(name="group", url="/groups/:group_id", methods="POST")
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runEditGroup(framework\Request $request): framework\JsonOutput
         {
-            try {
-                $role = new entities\Role($request['role_id']);
-            } catch (Exception $e) {
+            if (!$this->access_level == framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
 
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
+            }
+
+            try {
+                if ($request['group_id']) {
+                    $group = tables\Groups::getTable()->selectById($request['group_id']);
+                } else {
+                    $group = new entities\Group();
+                }
+            } catch (Exception $e) {}
+
+            if (!isset($group) || !$group instanceof entities\Group) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid group')]);
+            }
+
+            $group->setName($request['name']);
+            $is_new = (!$group->getID());
+            $group->save();
+
+            $this->updatePermissions($request['permissions'] ?: [], $group);
+
+            return $this->renderJSON([
+                'message' => ($is_new) ? $this->getI18n()->__('Group created') : $this->getI18n()->__('Group updated'),
+                'group' => $group->toJSON(),
+                'component' => $this->getComponentHTML('configuration/group', ['group' => $group])]
+            );
+        }
+
+        /**
+         * @Route(name="team", url="/teams/:team_id/:csrf_token", methods="POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runEditTeam(framework\Request $request): framework\JsonOutput
+        {
+            if (!$this->access_level == framework\Settings::ACCESS_FULL) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
+            }
+
+            try {
+                if ($request['team_id']) {
+                    $team = tables\Teams::getTable()->selectById($request['team_id']);
+                } else {
+                    $team = new entities\Team();
+                }
+            } catch (Exception $e) {}
+
+            if (!isset($team) || !$team instanceof entities\Team) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid team')]);
+            }
+
+            if ($request->isDelete()) {
+                $team->delete();
+
+                return $this->renderJSON(['success' => true, 'message' => $this->getI18n()->__('The team was deleted')]);
+            }
+
+            if (strtolower($request['team_name']) != strtolower($team->getName()) && entities\Team::doesTeamNameExist(trim($request['team_name']))) {
+                throw new Exception($this->getI18n()->__("Please enter a team name that doesn't already exist"));
+            }
+
+            $is_new = (!$team->getID());
+
+            if ($request->hasParameter('name')) {
+                $team->setName($request['name']);
+                $team->save();
+            }
+
+            if (!$is_new && $request->hasParameter('save_permissions')) {
+                $new_permissions = [];
+                foreach ($request['permissions'] ?: [] as $new_permission) {
+                    $permission_details = explode(',', $new_permission);
+                    $new_permissions[$permission_details[1]] = $permission_details[0];
+                }
+                foreach ($team->getPermissions() as $existing_permission) {
+                    if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
+                        $team->removePermission($existing_permission['permission'], $existing_permission['module']);
+                    } else {
+                        unset($new_permissions[$existing_permission['permission']]);
+                    }
+                }
+                foreach ($new_permissions as $permission_key => $module) {
+                    $team->addPermission($permission_key, $module);
+                }
+                framework\Context::clearPermissionsCache();
+                framework\Context::cacheAllPermissions();
+            }
+
+            return $this->renderJSON([
+                'message' => ($is_new) ? $this->getI18n()->__('Team created') : $this->getI18n()->__('Team updated'),
+                'team' => $team->toJSON(),
+                'component' => $this->getComponentHTML('configuration/team', ['team' => $team])]
+            );
+        }
+
+        /**
+         * @Route(name="team_members", url="/teams/:team_id/members/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runTeamMembers(framework\Request $request): framework\JsonOutput
+        {
+            $team = tables\Teams::getTable()->selectById($request['team_id']);
+
+            if (!$team instanceof entities\Team) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This team does not exist')]);
+            }
+
+            if ($request->hasParameter('find_by')) {
+                $find_by = trim($request['find_by']);
+                if (!$find_by) {
+                    return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
+                }
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/findteammembers', ['team' => $team, 'find_by' => $find_by])]);
+            }
+
+            $user_id = $request['user_id'];
+            if ($request->isDelete()) {
+                $user = tables\Users::getTable()->selectById($user_id);
+
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+                }
+
+                $team->removeMember($user);
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The user has been removed from the team'), 'user_id' => $user->getID()]);
+            }
+
+            if (is_numeric($user_id) || $request->hasParameter('field')) {
+                $user = tables\Users::getTable()->selectById($user_id);
+            } else {
+                $user = new entities\User();
+                $user->setUsername($user_id);
+                $user->setRealname($user_id);
+                $user->setEmail($user_id);
+                $user->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                $password = entities\User::createPassword();
+                $user->setPassword($password);
+                $user->save();
+                $user->setActivated(false);
+                $user->save();
+            }
+
+            framework\Event::createNew('core', 'configurationActions::addTeamMember', $team)->trigger(['user' => $user]);
+
+            if ($request->hasParameter('field')) {
+                $text = '';
+                if ($request->getParameter('field') == 'team_lead') {
+                    $team->setTeamLead($user);
+                    $text = $this->getI18n()->__('No team lead assigned');
+                }
+
+                $team->save();
+                $content = ($user instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $user, 'size' => 'small']) : $text;
+
+                return $this->renderJSON([
+                    'content' => $content
+                ]);
+            }
+
+            if (!$user instanceof entities\User) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+            }
+
+            $team->addMember($user);
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/team_member', compact('team', 'user'))
+            ]);
+        }
+
+        /**
+         * @Route(name="client", url="/clients/:client_id/:csrf_token", methods="POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runEditClient(framework\Request $request): framework\JsonOutput
+        {
+            if (!$this->access_level == framework\Settings::ACCESS_FULL) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
+            }
+
+            try {
+                if ($request['client_id']) {
+                    $client = tables\Clients::getTable()->selectById($request['client_id']);
+                } else {
+                    $client = new entities\Client();
+                }
+            } catch (Exception $e) {}
+
+            if (!isset($client) || !$client instanceof entities\Client) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid client')]);
+            }
+
+            if ($request->isDelete()) {
+                if (entities\Project::getAllByClientID($client->getID()) !== null) {
+                    foreach (entities\Project::getAllByClientID($client->getID()) as $project) {
+                        $project->setClient(null);
+                        $project->save();
+                    }
+                }
+
+                $client->delete();
+
+                return $this->renderJSON(['success' => true, 'message' => $this->getI18n()->__('The client was deleted')]);
+            }
+
+            if (strtolower($request['client_name']) != strtolower($client->getName()) && entities\Client::doesClientNameExist(trim($request['client_name']))) {
+                throw new Exception($this->getI18n()->__("Please enter a client name that doesn't already exist"));
+            }
+
+            if ($request->hasParameter('name')) {
+                $client->setName($request['name']);
+                $client->setEmail($request['email']);
+                $client->setWebsite($request['website']);
+                $client->setTelephone($request['phone']);
+                $client->setFax($request['fax']);
+                $client->save();
+            }
+
+            $is_new = (!$client->getID());
+
+            if (!$is_new && $request->hasParameter('save_permissions')) {
+                $new_permissions = [];
+                foreach ($request['permissions'] ?: [] as $new_permission) {
+                    $permission_details = explode(',', $new_permission);
+                    $new_permissions[$permission_details[1]] = $permission_details[0];
+                }
+                foreach ($client->getPermissions() as $existing_permission) {
+                    if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
+                        $client->removePermission($existing_permission['permission'], $existing_permission['module']);
+                    } else {
+                        unset($new_permissions[$existing_permission['permission']]);
+                    }
+                }
+                foreach ($new_permissions as $permission_key => $module) {
+                    $client->addPermission($permission_key, $module);
+                }
+                framework\Context::clearPermissionsCache();
+                framework\Context::cacheAllPermissions();
+            }
+
+            return $this->renderJSON([
+                'message' => ($is_new) ? $this->getI18n()->__('Client created') : $this->getI18n()->__('Client updated'),
+                'client' => $client->toJSON(),
+                'component' => $this->getComponentHTML('configuration/client', ['client' => $client])]
+            );
+        }
+
+        /**
+         * @Route(name="client_members", url="/clients/:client_id/members/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runClientMembers(framework\Request $request): framework\JsonOutput
+        {
+            $client = tables\Clients::getTable()->selectById($request['client_id']);
+
+            if (!$client instanceof entities\Client) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This client does not exist')]);
+            }
+
+            if ($request->hasParameter('find_by')) {
+                $find_by = trim($request['find_by']);
+                if (!$find_by) {
+                    return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
+                }
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/findclientmembers', ['client' => $client, 'find_by' => $find_by])]);
+            }
+
+            $user_id = $request['user_id'];
+            if ($request->isDelete()) {
+                $user = tables\Users::getTable()->selectById($user_id);
+
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+                }
+
+                $client->removeMember($user);
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The user has been removed from the client'), 'user_id' => $user->getID()]);
+            }
+
+            if (is_numeric($user_id) || $request->hasParameter('field')) {
+                $user = tables\Users::getTable()->selectById($user_id);
+            } else {
+                $user = new entities\User();
+                $user->setUsername($user_id);
+                $user->setRealname($user_id);
+                $user->setEmail($user_id);
+                $user->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                $password = entities\User::createPassword();
+                $user->setPassword($password);
+                $user->save();
+                $user->setActivated(false);
+                $user->save();
+            }
+
+            framework\Event::createNew('core', 'configurationActions::addClientMember', $client)->trigger(['user' => $user]);
+
+            if ($request->hasParameter('field')) {
+                switch ($request->getParameter('field')) {
+                    case 'external_contact':
+                        $client->setExternalContact($user);
+                        $text = $this->getI18n()->__('No external contact assigned');
+                        break;
+                    case 'internal_contact':
+                    default:
+                        $client->setInternalContact($user);
+                        $text = $this->getI18n()->__('No internal contact assigned');
+                        break;
+                }
+                $client->save();
+                $content = ($user instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $user, 'size' => 'small']) : $text;
+
+                return $this->renderJSON([
+                    'content' => $content
+                ]);
+            }
+
+            if (!$user instanceof entities\User) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+            }
+
+            $client->addMember($user);
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/client_member', compact('client', 'user'))
+            ]);
+        }
+
+        /**
+         * @Route(name="roles_post", url="/roles", methods="POST")
+         *
+         * @param framework\Request $request
+         *
+         * @return framework\JsonOutput
+         */
+        public function runConfigurePostRoles(framework\Request $request): framework\JsonOutput
+        {
+            try {
+                $role = new entities\Role();
+                $role->updateFromRequest($request);
+                $role->saveFromRequest($request);
+            } catch (FormException $e) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/role', ['role' => $role]),
+                'message' => $this->getI18n()->__('Role created')
+            ]);
+        }
+
+        /**
+         * @Route(name="roles", url="/roles", methods="GET")
+         *
+         * @param framework\Request $request
+         * @return void
+         */
+        public function runConfigureRoles(framework\Request $request): void
+        {
+            $this->roles = entities\Role::getAll();
+        }
+
+        /**
+         * @Route(name="role", url="/configure/role/:role_id", methods="POST|DELETE")
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runEditRole(framework\Request $request): framework\JsonOutput
+        {
+            $role = ListTypes::getTable()->selectById($request['role_id']);
+
+            if (!$role instanceof entities\Role) {
+                $this->getResponse()->setHttpStatus(400);
                 return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid role')]);
             }
+
             if ($role->isSystemRole()) {
-                $access_level = $this->getAccessLevel($request['section'], 'core');
+                $access_level = framework\Settings::getConfigurationAccessLevel();
             } else {
                 $access_level = ($this->getUser()->canManageProject($role->getProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
             }
 
-            switch ($request['mode']) {
-                case 'edit':
-                    if (!$access_level == framework\Settings::ACCESS_FULL) {
-                        $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
-                    }
-                    if ($request->isPost()) {
-                        $role->setName($request['name']);
-                        $role->save();
-                        $new_permissions = [];
-                        foreach ($request['permissions'] ?: [] as $new_permission) {
-                            $permission_details = explode(',', $new_permission);
-                            $new_permissions[$permission_details[2]] = ['module' => $permission_details[0], 'target_id' => $permission_details[1]];
-                        }
-                        $existing_permissions = [];
-                        foreach ($role->getPermissions() as $existing_permission) {
-                            if (!array_key_exists($existing_permission->getPermission(), $new_permissions)) {
-                                $role->removePermission($existing_permission);
-                            } else {
-                                $existing_permissions[$existing_permission->getPermission()] = $new_permissions[$existing_permission->getPermission()];
-                                unset($new_permissions[$existing_permission->getPermission()]);
-                            }
-                        }
-                        foreach ($new_permissions as $permission_key => $details) {
-                            $p = new entities\RolePermission();
-                            $p->setModule($details['module']);
-                            $p->setPermission($permission_key);
-                            if ($details['target_id'])
-                                $p->setTargetID($details['target_id']);
-
-                            $role->addPermission($p);
-                        }
-                        foreach ($existing_permissions as $permission_key => $details) {
-                            $p = new entities\RolePermission();
-                            $p->setModule($details['module']);
-                            $p->setPermission($permission_key);
-                            if ($details['target_id'])
-                                $p->setTargetID($details['target_id']);
-
-                            tables\Permissions::getTable()->addRolePermission($role, $p);
-                        }
-                        framework\Context::clearPermissionsCache();
-
-                        framework\Context::cacheAllPermissions();
-
-                        return $this->renderJSON(['message' => $this->getI18n()->__('Permissions updated'), 'permissions_count' => count($request['permissions']), 'role_name' => $role->getName()]);
-                    }
-
-                    return $this->renderComponent('configuration/rolepermissionsedit', ['role' => $role]);
-                case 'delete':
-                    if (!$access_level == framework\Settings::ACCESS_FULL || !$request->isPost()) {
-                        $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => $this->getI18n()->__('This role cannot be removed')]);
-                    }
-                    $role->delete();
-
-                    return $this->renderJSON(['message' => $this->getI18n()->__('Role deleted')]);
+            if (!$access_level == framework\Settings::ACCESS_FULL) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
             }
-        }
 
-        public function runConfigureRoles(framework\Request $request)
-        {
             if ($request->isPost()) {
-                if (trim($request['role_name']) == '') {
-                    $this->getResponse()->setHttpStatus(400);
+                $role->updateFromRequest($request);
+                $role->saveFromRequest($request);
 
-                    return $this->renderJSON(['error' => $this->getI18n()->__('You have to specify a name for this role')]);
-                }
-                $role = new entities\Role();
-                $role->setName($request['role_name']);
-                $role->save();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/role', ['role' => $role])]);
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('Role updated'),
+                    'content' => $this->getComponentHTML('configuration/role', ['role' => $role])
+                ]);
             }
-            $this->roles = entities\Role::getAll();
+
+            if ($request->isDelete()) {
+                $role->delete();
+            }
+
+            return $this->renderJSON(['message' => $this->getI18n()->__('Role deleted')]);
         }
 
         public function runSiteIcons(framework\Request $request)
         {
-            if ($this->getAccessLevel($request['section'], 'core') == framework\Settings::ACCESS_FULL) {
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
                 if ($request->isPost()) {
                     switch ($request['small_icon_action']) {
                         case 'upload_file':
@@ -2560,6 +2600,31 @@
             }
 
             return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
+        }
+
+        /**
+         * @param string[] $permissions
+         * @param entities\Group $group
+         */
+        protected function updatePermissions($permissions, entities\Group $group): void
+        {
+            $new_permissions = [];
+            foreach ($permissions as $new_permission) {
+                $permission_details = explode(',', $new_permission);
+                $new_permissions[$permission_details[1]] = $permission_details[0];
+            }
+            foreach ($group->getPermissions() as $existing_permission) {
+                if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
+                    $group->removePermission($existing_permission['permission'], $existing_permission['module']);
+                } else {
+                    unset($new_permissions[$existing_permission['permission']]);
+                }
+            }
+            foreach ($new_permissions as $permission_key => $module) {
+                $group->addPermission($permission_key, $module);
+            }
+            framework\Context::clearPermissionsCache();
+            framework\Context::cacheAllPermissions();
         }
 
     }

@@ -2,17 +2,21 @@
 
     /**
      * @var \pachno\core\entities\Article $article
+     * @var \pachno\core\entities\Article[] $top_level_categories
      * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\entities\Project $selected_project
+     * @var int[] $parents
      */
 
     use pachno\core\entities\Article;
+    use pachno\core\entities\tables\Articles;
 
     if ($article->getID()) {
         $back_link = $article->getLink();
     } elseif ($article->getParentArticle() instanceof Article) {
         $back_link = $article->getParentArticle()->getLink();
     } else {
-        $back_link = \pachno\core\modules\publish\Publish::getArticleLink('Main Page', \pachno\core\framework\Context::getCurrentProject());
+        $back_link = Articles::getTable()->getOrCreateMainPage(\pachno\core\framework\Context::getCurrentProject());
     }
 
     $pachno_response->setTitle(__('Editing %article_name', array('%article_name' => $article->getName())));
@@ -28,30 +32,108 @@
             <div class="actions-container">
                 <div class="button-group">
                     <?php if (!isset($convert)): ?>
-                        <button class="secondary" type="button">
-                            <?= fa_image_tag('paperclip', ['class' => 'icon']); ?><span class="name"><?= __('Manage attachments'); ?></span><span id="number_of_attachments" class="count-badge"><?= count($article->getFiles()); ?></span>
+                        <button class="button secondary toggle-attachments-sidebar" type="button">
+                            <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Attachments'); ?></span>
+                            <span class="article-attachments-count count-badge"><?= count($article->getFiles()); ?></span>
                         </button>
+                        <?php if (!$article->isCategory() && !$article->isMainPage()): ?>
+                            <button class="button secondary toggle-category-sidebar" type="button">
+                                <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Categories'); ?></span>
+                                <span id="number_of_categories" class="count-badge"><?= count($article->getCategories()); ?></span>
+                            </button>
+                        <?php endif; ?>
                         <span class="separator"></span>
                     <?php endif; ?>
                     <button class="button icon secondary" type="button" onclick="$('#editor-container').toggleClass('wider');return false;"><?= fa_image_tag('arrows-alt-h'); ?></button>
-                    <span class="separator"></span>
-                    <?php if (!isset($convert)): ?>
-                        <button class="button icon secondary" type="button" onclick="$('#parent_selector_container').show();return false;"><?= fa_image_tag('file-export'); ?></button>
-                        <button class="button icon secondary" type="button" onclick="$('#category_selector_container').show();return false;"><?= fa_image_tag('layer-group'); ?></button>
-                        <span class="separator"></span>
-                    <?php endif; ?>
-                    <button class="button secondary" type="submit" onclick="$('#article_preview').value = 1;">
-                        <?= fa_image_tag('eye', ['class' => 'icon']); ?>
-                        <span class="name"><?= __('Preview'); ?></span>
-                    </button>
                     <button class="button primary enable-on-editor-ready" id="article-publish-button" disabled type="submit">
                         <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
                         <?php if (isset($convert)): ?>
                             <span><?= __('Convert page'); ?></span>
                         <?php else: ?>
-                            <span><?php echo ($article->getId()) ? __('Publish changes') : __('Publish page'); ?></span>
+                            <span><?php echo ($article->getId()) ? __('Save changes') : __('Save page'); ?></span>
                         <?php endif; ?>
                     </button>
+                    <div class="dropper-container">
+                        <a class="button dropper icon secondary"><?= fa_image_tag('ellipsis-v'); ?></a>
+                        <div class="dropdown-container">
+                            <div class="list-mode">
+                                <a href="javascript:void(0);" class="list-item" type="button" onclick="$('#parent_selector_container').show();return false;">
+                                    <?= fa_image_tag('file-export', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Move page'); ?></span>
+                                </a>
+                                <div class="list-item separator"></div>
+                                <?php if ($article->isMainPage()): ?>
+                                    <div class="list-item disabled">
+                                        <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                                        <span class="name"><?= __('This page cannot be deleted'); ?></span>
+                                    </div>
+                                <?php else: ?>
+                                    <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this page').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger disabled']); ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php if (!$article->isCategory() && !$article->isMainPage()): ?>
+            <div class="fullpage_backdrop docked-right" id="article-categories-sidebar" style="display: none;">
+                <div class="fullpage_backdrop_content">
+                    <div class="fullpage_backdrop_content backdrop_box medium">
+                        <div class="backdrop_detail_header">
+                            <?= fa_image_tag('angle-double-right', ['class' => 'icon closer toggle-category-sidebar']); ?>
+                            <span><?= __('Categories for this page'); ?></span>
+                        </div>
+                        <div id="backdrop_detail_content" class="backdrop_detail_content">
+                            <div class="list-mode">
+                                <div class="expandable-menu" id="article-0-children-container">
+                                    <?php foreach ($top_level_categories as $top_level_category): ?>
+                                        <?php include_component('publish/editcategorysidebarlink', [
+                                            'parents' => $parents,
+                                            'article' => $article,
+                                            'category' => $top_level_category]); ?>
+                                    <?php endforeach; ?>
+                                    <?php if ($pachno_user->canCreateCategoriesInProject(\pachno\core\framework\Context::getCurrentProject())): ?>
+                                        <?php include_component('publish/editcategorysidebaraddcategory', ['project' => $article->getProject()]); ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+        <div class="fullpage_backdrop docked-right" id="article-attachments-sidebar" style="display: none;">
+            <div class="fullpage_backdrop_content">
+                <div class="fullpage_backdrop_content backdrop_box medium">
+                    <div class="backdrop_detail_header">
+                        <?= fa_image_tag('angle-double-right', ['class' => 'icon closer toggle-attachments-sidebar']); ?>
+                        <span>
+                            <span><?= __('Attached files'); ?></span>
+                            <span class="count-badge article-attachments-count" id="article-attachments-count"><?= count($attachments); ?></span>
+                        </span>
+                        <?php if ($article->canEdit()): ?>
+                            <button class="button secondary highlight trigger-file-upload" type="button">
+                                <span class="name"><?php echo __('Add attachment'); ?></span>
+                            </button>
+                        <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
+                            <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <?php endif; ?>
+                    </div>
+                    <div id="backdrop_detail_content" class="backdrop_detail_content">
+                        <?php $attachments = $article->getFiles(); ?>
+                        <div id="article_attachments">
+                            <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
+                        </div>
+                        <div class="upload-container fixed-position hidden" id="upload_drop_zone">
+                            <div class="wrapper">
+                                <span class="image-container"><?= image_tag('/unthemed/icon-upload.png', [], true); ?></span>
+                                <span class="message"><?= $message ?? __('Drop the file to upload it'); ?></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,19 +149,6 @@
                 <span class="icon"><?= fa_image_tag('exclamation-triangle'); ?></span>
                 <span class="message"><?php echo $error; ?></span>
             </div>
-        <?php endif; ?>
-        <?php if (isset($preview) && $preview): ?>
-            <div class="message-box type-info">
-                <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
-                <span class="message">
-                    <?php echo __('This is a preview of the page'); ?><br>
-                    <b><?php echo __('The article has not been saved yet'); ?>
-                </span>
-                <span class="actions">
-                    <a href="#edit_article" class="button secondary highlight" onclick="$('#article_content').focus();"><?php echo __('Continue editing'); ?></a>
-                </span>
-            </div>
-            <?php include_component('articledisplay', array('article' => $article, 'show_article' => $preview, 'show_category_contains' => false, 'show_actions' => true, 'mode' => 'view')); ?>
         <?php endif; ?>
         <input type="hidden" name="preview" value="0" id="article_preview">
         <input type="hidden" name="article_id" value="<?php echo ($article->getId()) ? $article->getID() : 0; ?>">
@@ -132,11 +201,11 @@
             </div>
             <div class="article-name-container">
                 <input type="hidden" name="article_content_syntax" value="<?= $article->getContentSyntax(); ?>">
-                <input type="text" name="article_name" id="article_name" required value="<?= ($article->getName() !== 'Main Page') ? __e($article->getName()) : 'Overview'; ?>" placeholder="<?= __('Type the page title here'); ?>" <?php if ($article->isMainPage()) echo ' disabled'; ?>>
+                <input type="text" name="article_name" id="article_name" required value="<?= ($article->getName() !== 'Main Page') ? __e($article->getName()) : 'Overview'; ?>" placeholder="<?= ($article->isCategory()) ? __('Type the category title here') : __('Type the page title here'); ?>" <?php if ($article->isMainPage()) echo ' disabled'; ?>>
             </div>
             <?php if ($article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
                 <div class="editor-input-container-wrapper article">
-                    <div class="editor-input-container wysiwyg-editor" data-input-name="article_content" data-placeholder="<?= __("Click here to start writing. When writing, press [tab] to see writing options"); ?>"><?= $article->getContent(); ?></div>
+                    <div class="editor-input-container wysiwyg-editor" id="article-editor" data-article-id="<?= $article->getId(); ?>" data-input-name="article_content" data-placeholder="<?= __("Click here to start writing. When writing, press [tab] to see writing options"); ?>"><textarea><?= $article->getContent(); ?></textarea></div>
                 </div>
             <?php else: ?>
                 <?php include_component('main/textarea', [
@@ -158,25 +227,31 @@
             </span>
         </div>
     </form>
-    <div class="form-container" style="display: none;" id="parent_selector_container">
-        <form class="fullpage_backdrop" onsubmit="Pachno.Main.loadParentArticles(this);return false;" action="<?php echo make_url('publish_article_parents', array('article_id' => $article->getId())); ?>">
+    <div class="fullpage_backdrop" style="display: none;" id="parent_selector_container">
+        <div class="fullpage_backdrop_content">
             <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?php echo __('Move page'); ?></span>
                     <a href="javascript:void(0);" onclick="$('#parent_selector_container').hide();" class="closer"><?php echo fa_image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content">
-                    <div class="form-row unified">
-                        <input type="search" name="find_article" id="parent_article_name_search">
-                        <input type="submit" class="button secondary highlight" value="<?php echo __('Find'); ?>">
-                    </div>
-                    <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
-                    <div id="parent_articles_list" class="list-mode">
-
+                    <div class="form-container">
+                        <form id="move-page-form" action="<?php echo make_url('publish_article_parents', ['article_id' => $article->getId()]); ?>" data-simple-submit data-update-container="#parent_articles_list">
+                            <div class="form-row unified">
+                                <input type="search" name="find_article" id="parent_article_name_search">
+                                <button type="submit" class="button secondary highlight">
+                                    <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Find'); ?></span>
+                                    <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                                </button>
+                            </div>
+                            <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
+                            <div id="parent_articles_list" class="list-mode"></div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
     <input type="hidden" id="article_serialized" value="">
 </div>
@@ -187,31 +262,29 @@
             $publishButton.removeProp('disabled');
         <?php endif; ?>
 
+        $('body').on('click', '.toggle-category-sidebar', () => {
+            $('#article-categories-sidebar').toggle();
+        });
+
+        $('body').on('click', '.toggle-attachments-sidebar', () => {
+            $('#article-attachments-sidebar').toggle();
+        });
+
+        $('body').on('change', 'input[data-category-id]', function (event) {
+            $('#number_of_categories').html($('input[data-category-id]:checked').length);
+        });
+
+        if (!$('.wysiwyg-editor').length) {
+            $('.enable-on-editor-ready').removeAttr('disabled');
+        }
+
         const $form = $('#edit_article_form');
         const $nameInput = $('#article_name');
         $nameInput.focus();
         $form.on('submit', function(event) {
-            var ok = true;
-
             const $publishButton = $('#article-publish-button');
             $publishButton.prop('disabled', true);
             $form.addClass('submitting');
-
-            <?php if (\pachno\core\framework\Context::getModule('publish')->getSetting('require_change_reason') != 0): ?>
-            if ($('#article_preview').val() != 1 && $('#change_reason').val().length == 0) {
-                $('#change_reason').focus();
-                Pachno.UI.Message.error('<?php echo __('Comment required') ?>', '<?php echo __('Please provide a comment describing the edit.') ?>');
-                ok = false;
-            }
-            <?php endif; ?>
-            if (!ok) {
-                Event.stop(event);
-                event.preventDefault();
-                event.stopPropagation();
-                $form.removeClass('submitting');
-                $publishButton.removeProp('disabled');
-                return;
-            }
 
             Pachno.trigger(Pachno.EVENTS.formSubmit, { form_id: 'edit_article_form' })
                 .then(results => {
@@ -228,7 +301,7 @@
                         const form_element = results.find(result => result.form_data !== undefined && result.form_data.input_name === 'article_content');
                         if (form_element !== undefined) {
                             const article_content = JSON.stringify(form_element.form_data.data);
-                            options.additional_params = { article_content };
+                            options.data = { article_content };
                         }
                     <?php endif; ?>
 
@@ -236,6 +309,41 @@
                 })
             return false;
         });
+
+        const article = <?= json_encode($article->toJSON()); ?>;
+        <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
+        const uploader = new Uploader({
+            uploader_container: '#article-attachments-sidebar',
+            mode: 'list',
+            only_images: false,
+            type: '<?= \pachno\core\entities\File::TYPE_ATTACHMENT; ?>',
+            data: {
+                article_id: <?= $article->getID(); ?>
+            }
+        });
+
+        Pachno.on(Pachno.EVENTS.upload.complete, function (PachnoApplication, data) {
+            if (data.article_id != article.id)
+                return;
+
+            const count = parseInt($('.article-attachments-count').html());
+            $('.article-attachments-count').html(count + 1);
+        });
+        <?php endif; ?>
+
+        Pachno.on(Pachno.EVENTS.article.removeFile, function (PachnoApplication, data) {
+            if (data.article_id != article.id)
+                return;
+
+            $(`[data-attachment][data-file-id="${data.file_id}"]`).remove();
+            Pachno.UI.Dialog.dismiss();
+
+            Pachno.fetch(data.url, { method: 'DELETE' })
+                .then((json) => {
+                    $('.article-attachments-count').html(json.attachments);
+                })
+        });
+
     });
 
 </script>

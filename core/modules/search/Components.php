@@ -5,7 +5,7 @@
     use pachno\core\entities;
     use pachno\core\entities\tables;
     use pachno\core\framework;
-    use PHPExcel;
+    use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
     class Components extends framework\ActionComponent
     {
@@ -110,14 +110,9 @@
         {
             $this->custom_columns = entities\CustomDatatype::getAll();
             $this->cc = (isset($this->cc)) ? $this->cc : 0;
-            require realpath(PACHNO_VENDOR_PATH) . DS . 'phpoffice' . DS . 'phpexcel' . DS . 'Classes' . DS . 'PHPExcel.php';
-            $phpexcel = new PHPExcel();
-            foreach ($phpexcel->getAllSheets() as $index => $sheet) {
-                $phpexcel->removeSheetByIndex($index);
-            }
-
-            $this->phpexcel = $phpexcel;
-            $this->sheet = $phpexcel->createSheet();
+            $spreadsheet = new Spreadsheet();
+            $this->spreadsheet = $spreadsheet;
+            $this->sheet = $spreadsheet->getActiveSheet();
         }
 
         public function componentResults_todo()
@@ -164,7 +159,7 @@
         {
             $this->templates = entities\SavedSearch::getTemplates();
             $this->filters = $this->appliedfilters;
-            $date_types = [entities\CustomDatatype::DATE_PICKER, entities\CustomDatatype::DATETIME_PICKER];
+            $date_types = [entities\DatatypeBase::DATE_PICKER, entities\DatatypeBase::DATETIME_PICKER];
             $this->nondatecustomfields = entities\CustomDatatype::getAllExceptTypes($date_types);
             $this->datecustomfields = entities\CustomDatatype::getByFieldTypes($date_types);
             $i18n = framework\Context::getI18n();

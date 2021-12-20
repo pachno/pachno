@@ -1,7 +1,14 @@
 <?php
 
     use pachno\core\entities\DashboardView;
-    /** @var DashboardView $view */
+    use pachno\core\entities\User;
+    use pachno\core\framework\Response;
+
+    /**
+     * @var DashboardView $view
+     * @var User $pachno_user
+     * @var Response $pachno_response
+     */
 
 ?>
 <li id="dashboard_container_<?php echo $view->getID(); ?>" data-view-id="<?php echo $view->getID(); ?>" data-preloaded="<?php echo (int) $view->shouldBePreloaded(); ?>" class="dashboard_view_container">
@@ -11,14 +18,17 @@
             <div class="header">
                 <?php echo image_tag('icon_delete.png', array('class' => 'remover', 'onclick' => "Pachno.Main.Dashboard.removeView('click', this);")); ?>
                 <?php echo image_tag('icon_arrows_move.png', array('class' => 'mover dashboardhandle')); ?>
-                <?php if ($view->hasHeader()): ?>
-                    <?php echo $view->getHeader(); ?>
-                <?php else: ?>
-                    <span><?= $view->getTitle(); ?></span>
-                <?php endif; ?>
-                <?php if ($view->hasRSS()): ?>
-                    <?php echo link_tag($view->getRSSUrl(), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'image')); ?>
-                    <?php $pachno_response->addFeed($view->getRSSUrl(), $view->getTitle()); ?>
+                <span><?= $view->getTitle(); ?></span>
+                <?php if ($view->hasHeaderButton() || $view->hasRSS()): ?>
+                    <span class="button-container">
+                        <?php if ($view->hasHeaderButton()): ?>
+                            <?= $view->getHeaderButton(); ?>
+                        <?php endif; ?>
+                        <?php if ($view->hasRSS()): ?>
+                            <?php echo link_tag($view->getRSSUrl(), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'button secondary icon')); ?>
+                            <?php $pachno_response->addFeed($view->getRSSUrl(), $view->getTitle()); ?>
+                        <?php endif; ?>
+                    </span>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

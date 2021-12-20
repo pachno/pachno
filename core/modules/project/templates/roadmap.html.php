@@ -31,9 +31,6 @@
                 <div class="stripe-container">
                     <div class="stripe"></div>
                 </div>
-                <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
-                    <button class="button primary trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $selected_project->getID()]); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create milestone'); ?></span></button>
-                <?php endif; ?>
                 <div class="fancy-tabs" style="display: none;">
                     <span class="tab selected">
                         <span class="icon"><?= fa_image_tag('columns'); ?></span>
@@ -68,6 +65,31 @@
                             </div>
                         </div>
                     </div>
+                    <div class="fancy-dropdown-container from-left"">
+                        <div class="fancy-dropdown data-default-label="<?= __('Only active'); ?>">
+                            <label><?= __('State'); ?></label>
+                            <span class="value"><?php echo __('Only active'); ?></span>
+                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                            <div class="dropdown-container list-mode filter-values-container">
+                                <input type="radio" value="all" class="fancy-checkbox" name="milestone_state" id="filter_milestone_state_all">
+                                <label for="filter_milestone_state_all" class="list-item">
+                                    <?= fa_image_tag('list', ['class' => 'icon']); ?>
+                                    <span class="name value"><?= __('Show all') ?></span>
+                                </label>
+                                <div class="list-item separator"></div>
+                                <input type="radio" value="sprint" class="fancy-checkbox" name="milestone_state" id="filter_milestone_state_active" checked>
+                                <label for="filter_milestone_state_active" class="list-item">
+                                    <?= fa_image_tag('undo', ['class' => 'icon rotate-90']); ?>
+                                    <span class="name value"><?= __('Only active') ?></span>
+                                </label>
+                                <input type="radio" value="regular" class="fancy-checkbox" name="milestone_state" id="filter_milestone_state_closed">
+                                <label for="filter_milestone_state_closed" class="list-item">
+                                    <?= fa_image_tag('tasks', ['class' => 'icon']); ?>
+                                    <span class="name value"><?= __('Only closed') ?></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -82,8 +104,8 @@
                         <?= image_tag('/unthemed/no-roadmap.png', [], true); ?>
                     </div>
                     <div class="helper-text">
-                        <?= __('Plan ahead with confidence'); ?><br>
-                        <?= __('Track milestones and their progress'); ?>
+                        <span class="title"><?= __('Plan ahead with confidence'); ?></span>
+                        <span><?= __('Track milestones and their progress'); ?></span>
                     </div>
                 </div>
             </div>

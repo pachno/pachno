@@ -15,27 +15,27 @@
     class Response
     {
 
-        const DECORATE_NONE = 0;
+        public const DECORATE_NONE = 0;
 
-        const DECORATE_HEADER = 1;
+        public const DECORATE_HEADER = 1;
 
-        const DECORATE_FOOTER = 2;
+        public const DECORATE_FOOTER = 2;
 
-        const DECORATE_DEFAULT = 3;
+        public const DECORATE_DEFAULT = 3;
 
-        const DECORATE_CUSTOM = 4;
+        public const DECORATE_CUSTOM = 4;
 
-        const HTTP_STATUS_OK = 200;
+        public const HTTP_STATUS_OK = 200;
 
-        const HTTP_STATUS_FOUND = 302;
+        public const HTTP_STATUS_FOUND = 302;
 
-        const HTTP_STATUS_NOT_MODIFIED = 304;
+        public const HTTP_STATUS_NOT_MODIFIED = 304;
 
-        const HTTP_STATUS_BAD_REQUEST = 400;
+        public const HTTP_STATUS_BAD_REQUEST = 400;
 
-        const HTTP_STATUS_FORBIDDEN = 403;
+        public const HTTP_STATUS_FORBIDDEN = 403;
 
-        const HTTP_STATUS_NOT_FOUND = 404;
+        public const HTTP_STATUS_NOT_FOUND = 404;
 
         /**
          * The current page (used to identify the selected tab
@@ -70,7 +70,7 @@
          */
         protected $_javascripts = [
             'jquery.min',
-            'pachno/index'
+            'pachno/main'
         ];
 
         /**
@@ -175,7 +175,7 @@
             $this->setContentType('application/json');
             $this->setHttpStatus($code);
             $this->renderHeaders();
-            echo json_encode(['error' => $error]);
+            echo json_encode(['error' => $error], JSON_THROW_ON_ERROR);
             die();
         }
 
@@ -228,8 +228,6 @@
             $this->setDecoration(self::DECORATE_NONE);
             switch ($request_content_type) {
                 case 'xml':
-                    $this->setContentType('application/xml');
-                    break;
                 case 'rss':
                     $this->setContentType('application/xml');
                     break;
@@ -584,7 +582,7 @@
             setcookie($key, $value, [
                 'expires' => $expiration,
                 'path' => Context::getWebroot(),
-                'samesite' => 'None',
+                'samesite' => 'Lax',
                 'secure' => $secure
             ]);
 
@@ -604,7 +602,7 @@
             setcookie($key, '', [
                 'expires' => NOW - 36000,
                 'path' => (Context::getWebroot() != '/') ? Context::getWebroot() : '',
-                'samesite' => 'None',
+                'samesite' => 'Lax',
                 'secure' => $secure
             ]);
 

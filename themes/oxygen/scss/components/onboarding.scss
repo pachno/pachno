@@ -1,7 +1,7 @@
 @import "../variables";
 
 .onboarding {
-  font-size: 1.6em;
+  font-size: 1.35em;
   font-weight: $theme-font-weight-regular;
   color: rgba(0, 0, 0, 0.6);
   text-align: center;
@@ -12,12 +12,16 @@
   flex-direction: column;
   align-items: center;
 
+  &.hidden {
+    display: none;
+  }
+
   &.large {
     width: 500px;
 
     img {
       display: inline-block;
-      width: calc(100% - 50px);
+      width: 100%;
     }
   }
 
@@ -50,18 +54,20 @@
     display: inline-block;
     text-align: center;
     vertical-align: middle;
-    margin: 0 25px;
+    margin: 0;
+    width: 100%;
   }
 
   .image-container {
     border-radius: 100%;
-    padding: 65px;
+    padding: 55px;
     overflow: hidden;
     background-color: rgba(12, 137, 144, .1);
     width: 250px;
     height: 250px;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
   }
 
   &.medium {
@@ -85,6 +91,7 @@
     flex: 0 0 auto;
     margin: 1rem 0;
     justify-content: space-around;
+    font-size: .85em;
   }
 
   .content-container {

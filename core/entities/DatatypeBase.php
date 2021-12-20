@@ -25,6 +25,23 @@
      */
     abstract class DatatypeBase extends Keyable
     {
+        public const DATETIME_PICKER = 22;
+        public const INPUT_TEXTAREA_MAIN = 3;
+        public const MILESTONE_CHOICE = 20;
+        public const USER_CHOICE = 14;
+        public const STATUS_CHOICE = 13;
+        public const INPUT_TEXTAREA_SMALL = 4;
+        public const CALCULATED_FIELD = 18;
+        public const INPUT_TEXT = 2;
+        public const CLIENT_CHOICE = 21;
+        public const TEAM_CHOICE = 15;
+        public const BUILTIN = 0;
+        public const DROPDOWN_CHOICE_TEXT = 1;
+        public const COMPONENTS_CHOICE = 10;
+        public const EDITIONS_CHOICE = 12;
+        public const DATE_PICKER = 19;
+        public const RADIO_CHOICE = 5;
+        public const RELEASES_CHOICE = 8;
 
         /**
          * The name of the object
@@ -60,12 +77,34 @@
 
         public static function getAvailableFields($builtin_only = false)
         {
-            $builtin_types = ['shortname', 'description', 'reproduction_steps', 'status', 'category', 'resolution', 'priority', 'reproducability', 'percent_complete', 'severity', 'owned_by', 'assignee', 'edition', 'build', 'component', 'estimated_time', 'spent_time', 'milestone', 'user_pain', 'votes'];
+            $types = [
+                'shortname' => self::BUILTIN,
+                'description' => self::BUILTIN,
+                'reproduction_steps' => self::BUILTIN,
+                'status' => self::BUILTIN,
+                'category' => self::BUILTIN,
+                'resolution' => self::BUILTIN,
+                'priority' => self::BUILTIN,
+                'reproducability' => self::BUILTIN,
+                'severity' => self::BUILTIN,
+                'percent_complete' => self::BUILTIN,
+                'owned_by' => self::BUILTIN,
+                'assignee' => self::BUILTIN,
+                'edition' => self::BUILTIN,
+                'build' => self::BUILTIN,
+                'component' => self::BUILTIN,
+                'estimated_time' => self::BUILTIN,
+                'spent_time' => self::BUILTIN,
+                'milestone' => self::BUILTIN,
+                'user_pain' => self::BUILTIN,
+                'votes' => self::BUILTIN
+            ];
 
-            if ($builtin_only) return $builtin_types;
+            if ($builtin_only) return $types;
 
-            $customtypes = CustomDatatype::getAll();
-            $types = array_merge($builtin_types, array_keys($customtypes));
+            foreach (CustomDatatype::getAll() as $customDatatype) {
+                $types[$customDatatype->getKey()] = $customDatatype->getType();
+            }
 
             return $types;
         }
@@ -75,7 +114,7 @@
          *
          * @return string
          */
-        public function __toString()
+        public function __toString(): string
         {
             return $this->_name;
         }
@@ -88,14 +127,6 @@
         public function setItemtype($itemtype)
         {
             $this->_itemtype = $itemtype;
-        }
-
-        public function canUserSet(User $user)
-        {
-            $retval = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
-            $retval = ($retval === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $retval;
-
-            return ($retval !== null) ? $retval : Settings::isPermissive();
         }
 
         public function getPermissionsKey()

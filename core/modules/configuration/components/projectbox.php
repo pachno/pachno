@@ -12,7 +12,7 @@
         <?php if ($project->isArchived()): ?>
             <span class="status-badge"><span class="name"><?= __('ARCHIVED'); ?> </span></span>
         <?php endif; ?>
-        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>&nbsp;<span class="project_key" style="position: relative;">(<div class="tooltip leftie"><?= __('This is the project key, used in most places when accessing the project'); ?></div><?= $project->getKey(); ?>)</span>
+        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>&nbsp;<span class="count-badge"><?= $project->getKey(); ?></span>
     </div>
     <div class="column">
         <?php if ($project->getOwner() != null): ?>
@@ -35,7 +35,7 @@
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <?php if (!$project->isArchived()): ?>
-                            <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'project_config', 'project_id' => $project->getID())); ?>'">
+                            <a class="list-item" href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>">
                                 <?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? fa_image_tag('edit', ['class' => 'icon']) : fa_image_tag('info-circle', ['class' => 'icon']); ?>
                                 <span class="name"><?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? __('Edit project') : __('Show project details'); ?></span>
                             </a>

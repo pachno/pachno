@@ -245,7 +245,7 @@
          */
         public function setAllowedMethods($allowed_methods): void
         {
-            $methods = (!is_array($allowed_methods)) ? array_filter(explode(',', $allowed_methods), function ($element) {
+            $methods = (!is_array($allowed_methods)) ? array_filter(explode('|', $allowed_methods), function ($element) {
                 return strtolower(trim($element));
             }) : $allowed_methods;
 
@@ -398,7 +398,7 @@
             return [
                 'name' => $this->getName(),
                 'module' => $this->getModuleName(),
-                'action' => $this->getModuleAction()
+                'action' => $this->getNamespacedAction()
             ];
         }
 

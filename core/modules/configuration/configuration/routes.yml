@@ -6,13 +6,6 @@ configure:
       section: 0
     csrf_enabled: false
 
-configure_update_check:
-    route: /configure/check/updates
-    module: configuration
-    action: checkUpdates
-    parameters: [ ]
-    csrf_enabled: false
-
 configure_authentication:
     route: /configure/authentication
     module: configuration
@@ -171,6 +164,8 @@ configure_workflow_steps:
   route: /configure/workflows/:workflow_id/steps
   module: configuration
   action: configureWorkflowSteps
+  methods:
+    - GET
   parameters:
     config_module: core
     section: 1
@@ -188,7 +183,7 @@ configure_workflow_step:
     csrf_enabled: false
 
 configure_workflow_step_post:
-  route: /configure/workflows/:workflow_id/steps
+  route: /configure/workflows/:workflow_id/steps/:step_id
   module: configuration
   action: configureWorkflowStepPost
   methods:
@@ -322,22 +317,6 @@ configure_files:
     parameters:
       config_module: core
       section: 3
-    csrf_enabled: false
-
-configure_roles:
-    route: '/configure/roles/*'
-    module: configuration
-    action: configureRoles
-    parameters:
-      config_module: core
-      section: 5
-    csrf_enabled: false
-
-configure_role:
-    route: /configure/role/:role_id/:mode
-    module: configuration
-    action: configureRole
-    parameters: [ ]
     csrf_enabled: false
 
 configure_permissions:
@@ -645,47 +624,12 @@ configure_issuefields_delete_customtype:
       mode: delete
     csrf_enabled: false
 
-configure_users_find_user:
-    route: '/configure/users/find/users/*'
-    module: configuration
-    action: findUsers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_add_user:
-    route: /configure/users/add/user
-    module: configuration
-    action: addUser
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_edit_user_form:
-    route: /configure/users/edit/user/:user_id/form
-    module: configuration
-    action: getUserEditForm
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_add_group:
-    route: /configure/users/add/group
-    module: configuration
-    action: addGroup
-    parameters:
-      config_module: core
-      section: 2
-      mode: new
-    csrf_enabled: false
-
 configure_users_clone_group:
-    route: /configure/users/clone/group/:group_id
+    route: /configure/groups/:group_id/clone
     module: configuration
     action: addGroup
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 2
@@ -693,145 +637,11 @@ configure_users_clone_group:
     csrf_enabled: false
 
 configure_users_delete_group:
-    route: /configure/users/delete/group/:group_id
+    route: /configure/groups/:group_id
     module: configuration
     action: deleteGroup
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_get_group_members:
-    route: /configure/users/get/members/in/group/:group_id
-    module: configuration
-    action: getGroupMembers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_add_team:
-    route: /configure/users/add/team
-    module: configuration
-    action: addTeam
-    parameters:
-      config_module: core
-      section: 2
-      mode: new
-    csrf_enabled: false
-
-configure_users_clone_team:
-    route: /configure/users/clone/team/:team_id
-    module: configuration
-    action: addTeam
-    parameters:
-      config_module: core
-      section: 2
-      mode: clone
-    csrf_enabled: false
-
-configure_users_delete_team:
-    route: /configure/users/delete/team/:team_id/:csrf_token
-    module: configuration
-    action: deleteTeam
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_get_team_members:
-    route: /configure/users/get/members/in/team/:team_id
-    module: configuration
-    action: getTeamMembers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_remove_team_member:
-    route: /configure/users/remove/:user_id/from/team/:team_id/:csrf_token
-    module: configuration
-    action: removeTeamMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_add_team_member:
-    route: /configure/users/add/user/:user_id/to/team/:team_id/:csrf_token
-    module: configuration
-    action: addTeamMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_add_client:
-    route: /configure/users/add/client
-    module: configuration
-    action: addClient
-    parameters:
-      config_module: core
-      section: 2
-      mode: new
-    csrf_enabled: false
-
-configure_users_edit_client:
-    route: /configure/users/edit/client/:client_id
-    module: configuration
-    action: editClient
-    parameters:
-      config_module: core
-      section: 2
-      mode: edit
-    csrf_enabled: false
-
-configure_users_delete_client:
-    route: /configure/users/delete/client/:client_id/:csrf_token
-    module: configuration
-    action: deleteClient
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_get_client_members:
-    route: /configure/users/get/members/in/client/:client_id
-    module: configuration
-    action: getClientMembers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_remove_client_member:
-    route: /configure/users/remove/:user_id/from/client/:client_id/:csrf_token
-    module: configuration
-    action: removeClientMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_add_client_member:
-    route: /configure/users/add/user/:user_id/to/client/:client_id/:csrf_token
-    module: configuration
-    action: addClientMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_update_user:
-    route: /configure/users/update/user/:user_id
-    module: configuration
-    action: updateUser
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 2
@@ -855,33 +665,6 @@ configure_users_delete_user:
       section: 2
     csrf_enabled: false
 
-configure_users:
-    route: '/configure/users/*'
-    module: configuration
-    action: configureUsers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_teams:
-    route: '/configure/teams/*'
-    module: configuration
-    action: configureTeams
-    parameters:
-      config_module: core
-      section: 22
-    csrf_enabled: false
-
-configure_clients:
-    route: '/configure/clients/*'
-    module: configuration
-    action: configureClients
-    parameters:
-      config_module: core
-      section: 23
-    csrf_enabled: false
-
 configure_modules:
     route: /configure/modules
     module: configuration
@@ -891,56 +674,6 @@ configure_modules:
       section: 15
     csrf_enabled: false
 
-configure_disable_module:
-    route: /configure/modules/disable/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: disable
-    csrf_enabled: false
-
-configure_enable_module:
-    route: /configure/modules/enable/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: enable
-    csrf_enabled: false
-
-configure_uninstall_module:
-    route: /configure/modules/uninstall/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: uninstall
-    csrf_enabled: false
-
-configure_install_module:
-    route: /configure/modules/install/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: install
-    csrf_enabled: false
-
-configure_update_module:
-    route: /configure/modules/update
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: update
-    csrf_enabled: false
-
 configure_module:
     route: /configure/module/:config_module
     module: configuration
@@ -948,15 +681,6 @@ configure_module:
     parameters:
       config_module: core
       section: 15
-    csrf_enabled: false
-
-configure_get_permissions:
-    route: /configure/permissions/:permissions_type/for/:permissions_target_type/:permissions_target
-    module: configuration
-    action: getPermissions
-    parameters:
-      config_module: core
-      section: 5
     csrf_enabled: false
 
 configure_users_import_user:

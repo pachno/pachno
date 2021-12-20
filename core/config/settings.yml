@@ -2,3 +2,5 @@ core:
     debug: true
     log_file: ~
     minified_assets: false
+    base_pachno_url: "https://pach.no"
+    pachno_ssl_verify: false

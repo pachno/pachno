@@ -2,10 +2,14 @@
 
     namespace pachno\core\entities;
 
+    use b2db\AnnotationSet;
+    use b2db\Core;
     use b2db\Row;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\tables\Files;
+    use pachno\core\entities\tables\ScopedTable;
+    use pachno\core\entities\tables\ScopeHostnames;
     use pachno\core\framework;
     use pachno\core\framework\Settings;
 
@@ -59,6 +63,9 @@
 
         protected $_administrator = null;
 
+        /**
+         * @var string[]
+         */
         protected $_hostnames = null;
 
         protected $_is_secure = false;
@@ -118,17 +125,44 @@
         protected $_issues = null;
 
         /**
+         * @Relates(class="\pachno\core\entities\Article", collection=true, foreign_column="scope")
+         */
+        protected $_articles = null;
+
+        /**
          * Return all available scopes
          *
          * @return Scope[]
          */
-        static function getAll()
+        public static function getAll()
         {
             if (self::$_scopes === null) {
                 self::$_scopes = tables\Scopes::getTable()->selectAll();
             }
 
             return self::$_scopes;
+        }
+
+        /**
+         * @param int|int[] $scope_ids
+         * @throws \b2db\Exception
+         */
+        public static function deleteByScopeId($scope_ids)
+        {
+            $b2db_entities_path = PACHNO_CORE_PATH . 'entities' . DS . 'tables' . DS;
+            foreach (scandir($b2db_entities_path) as $filename) {
+                if (in_array($filename, ['.', '..']))
+                    continue;
+
+                $table_name = mb_substr($filename, 0, mb_strpos($filename, '.'));
+                if ($table_name != '' && $table_name !== 'ScopedTable') {
+                    $table_name = "\\pachno\\core\\entities\\tables\\{$table_name}";
+                    $table = Core::getTable($table_name);
+                    if ($table instanceof ScopedTable) {
+                        $table->deleteFromScope($scope_ids);
+                    }
+                }
+            }
         }
 
         /**
@@ -205,7 +239,7 @@
             return $this->_administrator;
         }
 
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             if (framework\Context::isCLI()) {
                 $this->_hostname = php_uname('n');
@@ -378,42 +412,16 @@
             return (int)$this->_b2dbLazyCount('_issues');
         }
 
-        protected function _preDelete()
+        public function getNumberOfArticles()
         {
-            $tables = [
-                '\pachno\core\entities\tables\IssueCustomFields',
-                '\pachno\core\entities\tables\IssueAffectsEdition',
-                '\pachno\core\entities\tables\IssueAffectsBuild',
-                '\pachno\core\entities\tables\IssueAffectsComponent',
-                '\pachno\core\entities\tables\IssueFiles',
-                '\pachno\core\entities\tables\IssueRelations',
-                '\pachno\core\entities\tables\IssuetypeSchemeLink',
-                '\pachno\core\entities\tables\IssuetypeSchemes',
-                '\pachno\core\entities\tables\IssueTypes',
-                '\pachno\core\entities\tables\ListTypes',
-                '\pachno\core\entities\tables\Issues',
-                '\pachno\core\entities\tables\Comments',
-                '\pachno\core\entities\tables\ProjectAssignedTeams',
-                '\pachno\core\entities\tables\ProjectAssignedUsers',
-                '\pachno\core\entities\tables\Components',
-                '\pachno\core\entities\tables\Editions',
-                '\pachno\core\entities\tables\Builds',
-                '\pachno\core\entities\tables\Files',
-                '\pachno\core\entities\tables\Milestones',
-                '\pachno\core\entities\tables\Issues',
-                '\pachno\core\entities\tables\Projects',
-                '\pachno\core\entities\tables\UserScopes',
-                '\pachno\core\entities\tables\Dashboards',
-                '\pachno\core\entities\tables\DashboardViews',
-                '\pachno\core\entities\tables\ScopeHostnames',
-                '\pachno\core\entities\tables\Settings'
-            ];
-            foreach ($tables as $table) {
-                $table::getTable()->deleteFromScope($this->getID());
-            }
+            return (int)$this->_b2dbLazyCount('_articles');
         }
 
-        protected function _postSave($is_new)
+        protected function _preDelete(): void
+        {
+        }
+
+        protected function _postSave(bool $is_new): void
         {
             tables\ScopeHostnames::getTable()->saveScopeHostnames($this->getHostnames(), $this->getID());
             // Load fixtures for this scope if it's a new scope
@@ -431,6 +439,9 @@
             }
         }
 
+        /**
+         * @return array<int, string>
+         */
         public function getHostnames()
         {
             $this->_populateHostnames();
@@ -471,9 +482,6 @@
             tables\WorkflowIssuetype::getTable()->loadFixtures($this, $multi_team_workflow, $multi_team_workflow_scheme);
             tables\WorkflowIssuetype::getTable()->loadFixtures($this, $balanced_workflow, $balanced_workflow_scheme);
             tables\WorkflowIssuetype::getTable()->loadFixtures($this, $simple_workflow, $simple_workflow_scheme);
-
-            // Set up left menu links
-            tables\Links::getTable()->loadFixtures($this);
         }
 
     }

@@ -36,6 +36,13 @@
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <div class="faded_out" style="padding: 5px 5px 10px 5px;"><?php echo __("Changes to issues, commits and other actions show up here"); ?></div>
+        <div class="onboarding medium">
+            <div class="image-container">
+                <?= image_tag('/unthemed/onboarding-recent-activities.png', [], true); ?>
+            </div>
+            <div class="helper-text">
+                <?php echo __("Changes to issues, commits and other actions show up here"); ?>
+            </div>
+        </div>
     <?php endif; ?>
 </div>

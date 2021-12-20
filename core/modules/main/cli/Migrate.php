@@ -6,22 +6,31 @@
     use pachno\core\entities\ArticleCategoryLink;
     use pachno\core\entities\Datatype;
     use pachno\core\entities\DatatypeBase;
+    use pachno\core\entities\Group;
     use pachno\core\entities\LogItem;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\Scope;
     use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\ArticleCategoryLinks;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\BuildFiles;
+    use pachno\core\entities\tables\Builds;
+    use pachno\core\entities\tables\Clients;
     use pachno\core\entities\tables\Files;
+    use pachno\core\entities\tables\Groups;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\IssueSpentTimes;
     use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\LogItems;
     use pachno\core\entities\tables\Modules;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\RolePermissions;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\Settings;
+    use pachno\core\entities\tables\Teams;
+    use pachno\core\entities\tables\UserCommits;
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\tables\UserSessions;
     use pachno\core\entities\tables\WorkflowSteps;
@@ -57,24 +66,67 @@
             $this->cliEcho('Users', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Users::getTable()->upgrade(tbg\tables\Users::getTable());
             UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
+            Permissions::getTable()->upgrade(tbg\tables\Permissions::getTable());
 
-            $this->cliMoveLeft(5);
-            $this->cliEcho('Files', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Teams', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Teams::getTable()->upgrade(tbg\tables\Teams::getTable());
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Clients', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Clients::getTable()->upgrade(tbg\tables\Clients::getTable());
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('UserCommits', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            UserCommits::getTable()->create();
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('BuildFiles', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            BuildFiles::getTable()->create();
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Files', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Files::getTable()->upgrade(tbg\tables\Files::getTable());
-            $this->cliMoveLeft(5);
-            $this->cliEcho('Projects', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Projects', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Projects::getTable()->upgrade(tbg\tables\Projects::getTable());
-            $this->cliMoveLeft(8);
-            $this->cliEcho('Articles', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Builds', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Builds::getTable()->upgrade(tbg\tables\Builds::getTable());
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Articles', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
-            $this->cliMoveLeft(8);
-            $this->cliEcho('Issues', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Issues', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Issues::getTable()->upgrade(tbg\tables\Issues::getTable());
-            $this->cliMoveLeft(6);
-            $this->cliEcho('AgileBoards', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('IssueSpentTimes', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            IssueSpentTimes::getTable()->upgrade(tbg\tables\IssueSpentTimes::getTable());
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('AgileBoards', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             AgileBoards::getTable()->upgrade(tbg\tables\AgileBoards::getTable());
             AgileBoards::getTable()->fixGuestBoards();
-            $this->cliMoveLeft(11);
+
+            $scopes = Scopes::getTable()->selectAll();
+            $cc = 1;
+            $delete_scopes = [];
+            foreach ($scopes as $scope) {
+                $this->cliMoveLeft();
+
+                $this->cliEcho("Verifying scopes: ", self::COLOR_WHITE, self::STYLE_BOLD);
+                $this->cliEcho("({$cc}/" . count($scopes) . ') ');
+                $this->cliEcho('[' . $scope->getID() . '] ', Command::COLOR_MAGENTA, Command::STYLE_BOLD);
+                $this->cliEcho(str_pad($scope->getName(), 60), Command::COLOR_WHITE, Command::STYLE_BOLD);
+                if (!$scope->getNumberOfProjects() || ($scope->getNumberOfIssues() < 4 && $scope->getNumberOfArticles() < (29 + $scope->getNumberOfProjects()))) {
+                    $delete_scopes[] = $scope->getID();
+                    $scope->delete();
+                }
+
+                $cc++;
+            }
+            $this->cliMoveLeft();
+            $this->cliEcho("Cleaning up: ", self::COLOR_WHITE, self::STYLE_BOLD);
+            Scope::deleteByScopeId($delete_scopes);
+            $this->cliEcho("100%", self::COLOR_GREEN);
+
+            $this->cliMoveLeft();
+            $this->cliEcho("Migrating tables: ", self::COLOR_WHITE, self::STYLE_BOLD);
             $this->cliEcho('ArticleCategoryLinks', self::COLOR_WHITE, self::STYLE_DEFAULT);
             ArticleCategoryLinks::getTable()->upgrade(tbg\tables\ArticleCategoryLinks::getTable());
             $this->cliMoveLeft(20);
@@ -111,8 +163,10 @@
             $scopes = Scopes::getTable()->selectAll();
             $cc = 1;
             $lines--;
+            $default_scope = Context::getScope();
 
             foreach ($scopes as $scope) {
+                Context::setScope($scope);
                 $this->cliLineUp($lines);
                 $this->cliMoveLeft();
 
@@ -127,9 +181,12 @@
 
                 $articles = Articles::getTable()->getLegacyArticles(null, $scope, false);
                 $this->migrateArticles($articles, null, $scope->getID());
+                $this->migratePermissions($scope);
                 $lines = 2;
                 $cc++;
             }
+
+            Context::setScope($default_scope);
 
             $this->cliLineUp();
             $this->cliClearLine();
@@ -229,6 +286,7 @@
                             $parent_article->setName($path);
                             $parent_article->setAuthor(0);
                             $parent_article->setIsCategory($set_category);
+                            $parent_article->setScope($scope_id);
                             $parent_article->save();
                             $parent_id = $parent_article->getID();
                         } else {
@@ -302,10 +360,6 @@
 //                if (stripos($articleCategoryLink->getCategoryName(), 'category:') === false) {
 //                    $articleCategoryLink->setCategoryName('Category:' . $articleCategoryLink->getCategoryName());
 //                }
-//                if ($project->getID() == 4) {
-//                    var_dump($articleCategoryLink);
-//                    die();
-//                }
 //                $categoryArticle = Articles::getTable()->getArticleByName($articleCategoryLink->getCategoryName(), $project_id, true, $scope_id);
 //                if (!$categoryArticle instanceof Article) {
 //                    $categoryArticle = new Article();
@@ -364,6 +418,7 @@
                         if ($article->getParentArticle() instanceof Article) {
                             if ($article->getParentArticle()->isCategory()) {
                                 $articleCategoryLink = new ArticleCategoryLink();
+                                $articleCategoryLink->setScope($scope_id);
                                 $articleCategoryLink->setArticle($article);
                                 $articleCategoryLink->setCategory($article->getParentArticle());
                                 $articleCategoryLink->save();
@@ -396,6 +451,34 @@
             }
 
             $this->cliClearLine();
+        }
+
+        protected function migratePermissions(Scope $scope)
+        {
+            $this->cliClearLine();
+            $this->cliMoveLeft();
+
+            $this->cliEcho('Migrating permissions ...');
+
+            $admin_group_setting = Settings::getTable()->getSetting(\pachno\core\framework\Settings::SETTING_ADMIN_GROUP, 'core', 0, $scope->getID());
+            $user_group_setting = Settings::getTable()->getSetting(\pachno\core\framework\Settings::SETTING_USER_GROUP, 'core', 0, $scope->getID());
+
+            $admin_group = Groups::getTable()->selectById($admin_group_setting->getValue());
+            $user_group = Groups::getTable()->selectById($user_group_setting->getValue());
+            $guest_group = Groups::getTable()->getByName('Guests', $scope->getID());
+
+            if ($guest_group instanceof Group) {
+                Permissions::getTable()->removeGroupPermission($guest_group->getID());
+            }
+            Permissions::getTable()->removeGroupPermission($admin_group->getID());
+            Permissions::getTable()->removeGroupPermission($user_group->getID());
+            Permissions::getTable()->deleteAllRolePermissions($scope->getID());
+
+            Permission::loadFixtures($scope, $user_group, $admin_group, $guest_group);
+
+            $this->cliClearLine();
+            $this->cliMoveLeft();
+            $this->cliEcho("Migrating permissions: 100%");
         }
 
         protected function migrateDataTypes(Scope $scope)

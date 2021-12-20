@@ -12,17 +12,17 @@
     class ArticleLinks extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'articlelinks';
+        public const B2DBNAME = 'articlelinks';
 
-        const ID = 'articlelinks.id';
+        public const ID = 'articlelinks.id';
 
-        const ARTICLE_NAME = 'articlelinks.article_name';
+        public const ARTICLE_NAME = 'articlelinks.article_name';
 
-        const LINK_ARTICLE_NAME = 'articlelinks.link_article_name';
+        public const LINK_ARTICLE_NAME = 'articlelinks.link_article_name';
 
-        const SCOPE = 'articlelinks.scope';
+        public const SCOPE = 'articlelinks.scope';
 
         public function deleteLinksByArticle($article_name)
         {
@@ -97,7 +97,7 @@
             return $names;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::ARTICLE_NAME, 300);

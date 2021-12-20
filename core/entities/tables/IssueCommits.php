@@ -17,17 +17,17 @@
     class IssueCommits extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'issuecommits';
+        public const B2DBNAME = 'issuecommits';
 
-        const ID = 'issuecommits.id';
+        public const ID = 'issuecommits.id';
 
-        const SCOPE = 'issuecommits.scope';
+        public const SCOPE = 'issuecommits.scope';
 
-        const ISSUE_NO = 'issuecommits.issue_no';
+        public const ISSUE_NO = 'issuecommits.issue_no';
 
-        const COMMIT_ID = 'issuecommits.commit_id';
+        public const COMMIT_ID = 'issuecommits.commit_id';
 
         /**
          * Get all rows by commit ID
@@ -90,7 +90,7 @@
             return $this->count($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('commit', self::COMMIT_ID);
             $this->addIndex('issue', self::ISSUE_NO);

@@ -23,29 +23,29 @@
     class Notifications extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 3;
+        public const B2DB_TABLE_VERSION = 3;
 
-        const B2DBNAME = 'notifications';
+        public const B2DBNAME = 'notifications';
 
-        const ID = 'notifications.id';
+        public const ID = 'notifications.id';
 
-        const SCOPE = 'notifications.scope';
+        public const SCOPE = 'notifications.scope';
 
-        const MODULE_NAME = 'notifications.module_name';
+        public const MODULE_NAME = 'notifications.module_name';
 
-        const NOTIFICATION_TYPE = 'notifications.notification_type';
+        public const NOTIFICATION_TYPE = 'notifications.notification_type';
 
-        const TARGET_ID = 'notifications.target_id';
+        public const TARGET_ID = 'notifications.target_id';
 
-        const TRIGGERED_BY_UID = 'notifications.triggered_by_user_id';
+        public const TRIGGERED_BY_UID = 'notifications.triggered_by_user_id';
 
-        const USER_ID = 'notifications.user_id';
+        public const USER_ID = 'notifications.user_id';
 
-        const IS_READ = 'notifications.is_read';
+        public const IS_READ = 'notifications.is_read';
 
-        const CREATED_AT = 'notifications.created_at';
+        public const CREATED_AT = 'notifications.created_at';
 
-        const SHOWN_AT = 'notifications.shown_at';
+        public const SHOWN_AT = 'notifications.shown_at';
 
         public function getCountsByUserIDAndGroupableMinutes($user_id, $minutes = 0)
         {
@@ -132,13 +132,18 @@
             return $this->populateFromResultset(($resultset->count()) ? $resultset : null);
         }
 
-        public function getByUserID($user_id)
+        /**
+         * @param $user_id
+         * @return ?Notification[]
+         */
+        public function getByUserID($user_id): ?array
         {
             $query = $this->getQuery();
             $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::TRIGGERED_BY_UID, $user_id, Criterion::NOT_EQUALS);
             $query->addOrderBy(self::ID, 'DESC');
+            $query->setLimit(100);
 
             return $this->select($query);
         }
@@ -218,7 +223,7 @@
             $this->rawDelete($query);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             switch ($old_table::B2DB_TABLE_VERSION) {
                 case 2:
@@ -229,7 +234,7 @@
             }
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('userid_targetid_notificationtype_scope', [self::USER_ID, self::TARGET_ID, self::NOTIFICATION_TYPE, self::SCOPE]);
         }

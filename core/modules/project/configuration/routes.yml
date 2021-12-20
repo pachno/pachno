@@ -22,7 +22,7 @@ configure_project_developers:
     csrf_enabled: false
 
 configure_project_set_leadby:
-    route: '/configure/project/:project_id/set/:field/*'
+    route: '/configure/project/:project_id/set/assignee/*'
     module: project
     action: setItemLead
     parameters:
@@ -48,7 +48,7 @@ configure_project_find_assignee:
     csrf_enabled: false
 
 configure_project_add_assignee:
-    route: '/configure/project/:project_id/add/:assignee_type/:assignee_id/*'
+    route: '/configure/project/:project_id/add/assignee'
     module: project
     action: assignToProject
     methods:
@@ -179,13 +179,6 @@ configure_project_component_delete:
       section: 10
     csrf_enabled: false
 
-project_getmenulinks:
-    route: /:project_key/menulinks
-    module: project
-    action: menuLinks
-    parameters: [ ]
-    csrf_enabled: false
-
 transition_issue:
     route: /:project_key/:issue_id/transition/:transition_id
     module: project
@@ -211,20 +204,6 @@ project_create_role:
     route: /:project_key/roles/new
     module: project
     action: addRole
-    parameters: [ ]
-    csrf_enabled: false
-
-project_releases:
-    route: /:project_key/releases
-    module: project
-    action: releases
-    parameters: [ ]
-    csrf_enabled: false
-
-project_release_center:
-    route: /:project_key/release_center
-    module: project
-    action: releaseCenter
     parameters: [ ]
     csrf_enabled: false
 
@@ -336,22 +315,6 @@ project_files:
     module: project
     action: files
     parameters: [ ]
-    csrf_enabled: false
-
-project_roadmap_upcoming:
-    route: /:project_key/roadmap/upcoming
-    module: project
-    action: roadmap
-    parameters:
-      mode: upcoming
-    csrf_enabled: false
-
-project_roadmap_all:
-    route: /:project_key/roadmap/all
-    module: project
-    action: roadmap
-    parameters:
-      mode: all
     csrf_enabled: false
 
 project_roadmap_milestone_details:

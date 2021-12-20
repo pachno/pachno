@@ -67,7 +67,6 @@ $actions = [
                             <span class="name"><?php echo __('Do nothing'); ?></span>
                         </label>
                         <?php foreach (Status::getAll() as $status_id => $status): ?>
-                            <?php if (!$status->canUserSet($pachno_user)) continue; ?>
                             <input name="status" id="bulk_action_set_status" class="fancy-checkbox" value="<?php echo $status_id; ?>">
                             <label for="bulk_action_set_status" class="list-item">
                                 <span class="name"><?php echo $status->getName(); ?></span>
@@ -87,7 +86,6 @@ $actions = [
                             <span class="name"><?php echo __('Do nothing'); ?></span>
                         </label>
                         <?php foreach (\pachno\core\entities\Resolution::getAll() as $resolution_id => $resolution): ?>
-                            <?php if (!$resolution->canUserSet($pachno_user)) continue; ?>
                             <input name="resolution" id="bulk_action_set_resolution" class="fancy-checkbox" value="<?php echo $resolution_id; ?>">
                             <label for="bulk_action_set_resolution" class="list-item">
                                 <span class="name"><?php echo $resolution->getName(); ?></span>
@@ -107,7 +105,6 @@ $actions = [
                             <span class="name"><?php echo __('Do nothing'); ?></span>
                         </label>
                         <?php foreach (\pachno\core\entities\Priority::getAll() as $priority_id => $priority): ?>
-                            <?php if (!$priority->canUserSet($pachno_user)) continue; ?>
                             <input name="priority" id="bulk_action_set_priority" class="fancy-checkbox" value="<?php echo $priority_id; ?>">
                             <label for="bulk_action_set_priority" class="list-item">
                                 <span class="name"><?php echo $priority->getName(); ?></span>
@@ -127,7 +124,6 @@ $actions = [
                             <span class="name"><?php echo __('Do nothing'); ?></span>
                         </label>
                         <?php foreach (\pachno\core\entities\Category::getAll() as $category_id => $category): ?>
-                            <?php if (!$category->canUserSet($pachno_user)) continue; ?>
                             <input name="category" id="bulk_action_set_category" class="fancy-checkbox" value="<?php echo $category_id; ?>">
                             <label for="bulk_action_set_category" class="list-item">
                                 <span class="name"><?php echo $category->getName(); ?></span>
@@ -147,7 +143,6 @@ $actions = [
                             <span class="name"><?php echo __('Do nothing'); ?></span>
                         </label>
                         <?php foreach (\pachno\core\entities\Severity::getAll() as $severity_id => $severity): ?>
-                            <?php if (!$severity->canUserSet($pachno_user)) continue; ?>
                             <input name="severity" id="bulk_action_set_severity" class="fancy-checkbox" value="<?php echo $severity_id; ?>">
                             <label for="bulk_action_set_severity" class="list-item">
                                 <span class="name"><?php echo $severity->getName(); ?></span>

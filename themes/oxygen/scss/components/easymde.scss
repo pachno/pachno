@@ -1,15 +1,20 @@
 @import "../variables";
 
 .syntax_md {
-  border: 1px solid $theme-primary;
-  border-radius: .25em;
+  &:not(.comment-container) {
+    border: 1px solid theme-primary-color-alpha(.4);
+    border-radius: .25em;
+  }
 
   .editor-toolbar {
     display: flex;
-    background-color: rgba(200, 200, 200, .3);
+    background-color: #FFF;
     padding: .4em;
     border-radius: .25em .25em 0 0;
-    border-bottom: 2px solid $theme-primary;
+    border-bottom: none;
+    box-shadow: 0 3px 3px -2px rgba(27, 27, 36, 0.1);
+    z-index: 1;
+    position: relative;
     align-items: center;
     justify-content: flex-start;
 
@@ -19,7 +24,7 @@
       color: $theme-text-color;
 
       &:hover {
-        background-color: $theme-primary;
+        background-color: $theme-primary-color;
         color: $theme-text-color-inverse;
       }
     }
@@ -31,15 +36,15 @@
       margin: 0 .35em 0 0;
       height: 70%;
       border-bottom: none;
-      border-right: 2px solid $theme-primary;
+      border-right: 2px solid rgba(225, 225, 225, 0.2);
     }
   }
 
   .editor-statusbar {
     font-size: .85em;
     padding: .5em;
-    border-top: 1px dotted $theme-primary;
-    background-color: rgba(200, 200, 200, .15);
+    border-top: 1px dotted $theme-primary-color;
+    background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: space-between;

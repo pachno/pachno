@@ -2,7 +2,7 @@ INSTALLATION
 ============
 
 NOTE: For the latest installation notes, troubleshooting and tips,
-visit the FAQ: https://projects.pachno.com/pachno/docs/FAQ
+visit the FAQ: https://projects.pach.no/pachno/docs/r/install
 
 GENERAL INSTALLATION NOTES
 --------------------------
@@ -46,7 +46,7 @@ main pachno/ directory.
 If you are using Apache, enable url rewriting (the installation routine will 
 help you complete the url rewriting setup), and if you're using IIS, Nginx or
 others, look at the examples included in the online documentation at
-https://projects.pachno.com/pachno/docs/FAQ
+https://projects.pach.no/pachno/docs/FAQ
 
 
 ### 5: Install via web

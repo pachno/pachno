@@ -6,6 +6,7 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\UserCommits;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\helpers\ContentParser;
@@ -37,17 +38,17 @@
         /**
          * Issue comment
          */
-        const TYPE_ISSUE = 1;
+        public const TYPE_ISSUE = 1;
 
         /**
          * Article comment
          */
-        const TYPE_ARTICLE = 2;
+        public const TYPE_ARTICLE = 2;
 
         /**
          * Commit comment
          */
-        const TYPE_COMMIT = 3;
+        public const TYPE_COMMIT = 3;
 
         protected static $_comment_count = [];
 
@@ -149,6 +150,8 @@
         protected $_replies;
 
         protected $_replies_count;
+
+        protected $_is_clone = false;
 
         /**
          * List of log items linked to this comment
@@ -285,6 +288,9 @@
                     case self::TYPE_ARTICLE:
                         $this->_target = tables\Articles::getTable()->selectById($this->_target_id);
                         break;
+                    case self::TYPE_COMMIT:
+                        $this->_target = tables\Commits::getTable()->selectById($this->_target_id);
+                        break;
                     default:
                         $event = Event::createNew('core', 'Comment::getTarget', $this);
                         $event->trigger();
@@ -368,17 +374,17 @@
          */
         public function canUserDeleteOwnComment()
         {
-            $retval = $this->_canPermissionOrSeeAndEditComments('candeletecommentsown');
+            $allowed = $this->_canPermissionOrSeeAndEditComments('candeletecommentsown');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($allowed !== null) ? $allowed : false;
         }
 
         protected function _canPermissionOrSeeAndEditComments($permission)
         {
-            $retval = $this->_permissionCheck($permission);
-            $retval = ($retval === null) ? $this->_permissionCheck('canpostandeditcomments', true) : $retval;
+            $allowed = $this->_permissionCheck($permission);
+            $allowed = ($allowed === null) ? $this->_permissionCheck('canpostandeditcomments', true) : $allowed;
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -393,10 +399,10 @@
          */
         protected function _permissionCheck($key, $exclusive = false)
         {
-            $retval = ($this->getPostedByID() == framework\Context::getUser()->getID() && !$exclusive) ? $this->_permissionCheckWithID($key . 'own') : null;
-            $retval = ($retval !== null) ? $retval : $this->_permissionCheckWithID($key);
+            $allowed = ($this->getPostedByID() == framework\Context::getUser()->getID() && !$exclusive) ? $this->_permissionCheckWithID($key . 'own') : null;
+            $allowed = ($allowed !== null) ? $allowed : $this->_permissionCheckWithID($key);
 
-            return ($retval !== null) ? $retval : null;
+            return ($allowed !== null) ? $allowed : null;
         }
 
         /**
@@ -409,10 +415,10 @@
          */
         protected function _permissionCheckWithID($key)
         {
-            $retval = framework\Context::getUser()->hasPermission($key, $this->getID(), 'core');
-            $retval = ($retval !== null) ? $retval : framework\Context::getUser()->hasPermission($key, 0, 'core');
+            $allowed = framework\Context::getUser()->hasPermission($key, $this->getID(), 'core');
+            $allowed = ($allowed !== null) ? $allowed : framework\Context::getUser()->hasPermission($key, 0, 'core');
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -423,17 +429,17 @@
         public function canUserDeleteComment()
         {
             if ($this->isSystemComment()) return false;
-            $retval = $this->_canPermissionOrSeeAndEditAllComments('candeletecomments');
+            $allowed = $this->_canPermissionOrSeeAndEditAllComments('candeletecomments');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($allowed !== null) ? $allowed : false;
         }
 
         protected function _canPermissionOrSeeAndEditAllComments($permission)
         {
-            $retval = $this->_permissionCheck($permission);
-            $retval = ($retval === null) ? $this->_permissionCheck('canpostseeandeditallcomments', true) : $retval;
+            $allowed = $this->_permissionCheck($permission);
+            $allowed = ($allowed === null) ? $this->_permissionCheck('canpostseeandeditallcomments', true) : $allowed;
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -470,9 +476,9 @@
          */
         public function canUserEditOwnComment()
         {
-            $retval = $this->_canPermissionOrSeeAndEditComments('caneditcommentsown');
+            $allowed = $this->_canPermissionOrSeeAndEditComments('caneditcommentsown');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($allowed !== null) ? $allowed : false;
         }
 
         /**
@@ -483,9 +489,9 @@
         public function canUserEditComment()
         {
             if ($this->isSystemComment()) return false;
-            $retval = $this->_canPermissionOrSeeAndEditAllComments('caneditcomments');
+            $allowed = $this->_canPermissionOrSeeAndEditAllComments('caneditcomments');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($allowed !== null) ? $allowed : false;
         }
 
         /**
@@ -495,27 +501,19 @@
          *
          * @return boolean
          */
-        public function isViewableByUser(User $user)
+        public function hasAccess(User $user)
         {
-            $can_view = false;
-
-            try {
-                // Show comment if valid user and...
-                if ($user instanceof User) {
-
-                    if ((!$this->isPublic() && $user->canSeeNonPublicComments()) // the comment is hidden and the user can see hidden comments
-                        || ($this->isPublic() && $user->canViewComments()) // OR the comment is public and  user can see public comments
-                        || ($this->postedByUser($user->getID()))) // OR the user posted the comment
-                    {
-                        $can_view = true;
-                    }//endif
-
-                }//endif
-            }//endtry
-            catch (Exception $e) {
+            if ($this->getPostedByID() == $user->getID()) {
+                return true;
             }
 
-            return $can_view;
+            $project = $this->getTarget()->getProject();
+
+            if (!$this->isPublic()) {
+                return $user->canSeeInternalComments($project);
+            }
+
+            return true;
         }
 
         public function isPublic()
@@ -674,7 +672,12 @@
             return $this->_getParser()->getMentions();
         }
 
-        protected function _preSave($is_new)
+        protected function _clone(): void
+        {
+            $this->_is_clone = true;
+        }
+
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -687,9 +690,9 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
-            if ($is_new) {
+            if (!$this->_is_clone && $is_new) {
                 $tty = $this->getTargetType();
                 $tid = $this->getTargetID();
                 if (array_key_exists($tty, self::$_comment_count) && array_key_exists($tid, self::$_comment_count[$tty]) && array_key_exists((int)$this->isSystemComment(), self::$_comment_count[$tty][$tid]))
@@ -704,28 +707,48 @@
                         }
                     }
                     if ($this->getTargetType() == self::TYPE_ISSUE) {
-                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES))
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES)) {
                             $this->getTarget()->addSubscriber($this->getPostedByID());
+                        }
                     }
                     if ($this->getTargetType() == self::TYPE_ARTICLE) {
-                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES))
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES)) {
                             $this->getTarget()->addSubscriber($this->getPostedByID());
+                        }
+                    }
+                    if ($this->getTargetType() == self::TYPE_COMMIT) {
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES)) {
+                            //$this->getTarget()->addSubscriber($this->getPostedByID());
+                        }
                     }
                     $this->_addTargetNotifications();
                 }
 
-                switch ($this->getTargetType()) {
-                    case self::TYPE_ISSUE:
-                        Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, ['issue' => $this->getTarget()])->trigger();
-                        break;
-                    case self::TYPE_ARTICLE:
-                        Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, ['article' => $this->getTarget()])->trigger();
-                        break;
-                    default:
-                        return;
-                }
+                $target_type_name = $this->getTargetTypeName();
+                Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, [$target_type_name => $this->getTarget()])->trigger();
             }
             $this->touchTargetIfItsIssue();
+        }
+
+        public function getTargetTypeName()
+        {
+            return self::getTargetTypeNameForType($this->_target_type);
+        }
+
+        public static function getTargetTypeNameForType($type)
+        {
+            switch ($type) {
+                case self::TYPE_ISSUE:
+                    return 'issue';
+                case self::TYPE_ARTICLE:
+                    return 'article';
+                case self::TYPE_COMMIT:
+                    return 'commit';
+                default:
+                    $event = Event::createNew('core', 'Comment::getTargetTypeName', $type);
+                    $event->trigger();
+                    return $event->getReturnValue();
+            }
         }
 
         public function getTargetID()
@@ -769,6 +792,9 @@
                     break;
                 case self::TYPE_ARTICLE:
                     $target_type_string = '_article_';
+                    break;
+                case self::TYPE_COMMIT:
+                    $target_type_string = '_commit_';
                     break;
             }
 
@@ -835,6 +861,11 @@
                             $this->_addNotificationIfNotNotified(Notification::TYPE_ARTICLE_COMMENTED, $user, $this->getPostedBy());
                         }
                         break;
+                    case self::TYPE_COMMIT:
+                        if ($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_SUBSCRIBED_DISCUSSIONS, false)->isOn()) {
+                            $this->_addNotificationIfNotNotified(Notification::TYPE_COMMIT_COMMENTED, $user, $this->getPostedBy());
+                        }
+                        break;
                 }
             }
         }
@@ -852,7 +883,7 @@
             $this->_posted_by = $var;
         }
 
-        protected function _postDelete()
+        protected function _postDelete(): void
         {
             $this->touchTargetIfItsIssue();
         }

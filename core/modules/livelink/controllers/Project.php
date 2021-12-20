@@ -5,12 +5,16 @@
     use pachno\core\entities\Branch;
     use pachno\core\entities\Comment;
     use pachno\core\entities\Commit;
+    use pachno\core\entities\Permission;
+    use pachno\core\entities\tables\BranchCommits;
     use pachno\core\entities\tables\Branches;
     use pachno\core\entities\tables\Comments;
     use pachno\core\entities\tables\Commits;
     use pachno\core\entities\tables\IssueCommits;
     use pachno\core\entities\tables\Issues;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\framework;
+    use pachno\core\helpers\Pagination;
     use pachno\core\helpers\ProjectActions;
     use pachno\core\modules\livelink\Livelink;
 
@@ -32,16 +36,22 @@
          */
         public function runPostProjectCommits(framework\Request $request)
         {
-            $branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
-            if (!$branch instanceof Branch) {
-                $this->return404('Invalid branch');
+            $selected_branch = $request['branch'];
+            if ($selected_branch !== '*') {
+                $branch = Branches::getTable()->getByBranchNameAndProject($selected_branch, $this->selected_project);
             }
+            if (!$branch instanceof Branch) {
+                return $this->return404('Invalid branch');
+            }
+
+            $total_commits_count = BranchCommits::getTable()->getPaginationItemCount($branch->getID());
+            $offset = $request['offset'];
 
             $commit = null;
             if ($request->hasParameter('from_commit')) {
-                $from_commit_ref = trim($request['from']);
+                $from_commit_ref = trim($request['from_commit']);
                 if (strlen($from_commit_ref) < 7) {
-                    $this->return404('Invalid commit ref');
+                    return $this->return404('Invalid commit ref');
                 }
 
                 $commit = Commits::getTable()->getCommitByHash($from_commit_ref, $this->selected_project);
@@ -52,10 +62,12 @@
 
                 return $ids;
             }, []);
+            $offset += count($commit_ids);
+
             $branch_points = Branches::getTable()->getByCommitsAndProject($commit_ids, $this->selected_project);
             Comments::getTable()->preloadCommentCounts(Comment::TYPE_COMMIT, $commit_ids);
 
-            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/projectcommitsbox', ['commits' => $commits, 'branches' => $branch_points, 'selected_project' => $this->selected_project, 'branch' => $branch])]);
+            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/projectcommitslist', ['commits' => $commits, 'total_commits_count' => $total_commits_count, 'offset' => $offset, 'branches' => $branch_points, 'selected_project' => $this->selected_project, 'branch' => $branch])]);
         }
 
         /**
@@ -67,10 +79,11 @@
          */
         public function runProjectCommits(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_commits'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
 
             $this->branches = Branches::getTable()->getByProject($this->selected_project);
             $this->is_importing = $this->getModule()->isProjectImportInProgress($this->selected_project);
+            $this->connector = $this->getModule()->getProjectConnector($this->selected_project);
         }
 
         /**
@@ -90,7 +103,7 @@
          */
         public function runProjectImportCommit(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_commits'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
 
             $this->commit = Commits::getTable()->getCommitByHash($request['commit_hash'], $this->selected_project);
             if (!$this->commit instanceof Commit || $this->commit->isImported()) {
@@ -124,21 +137,36 @@
          */
         public function runProjectCommit(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_commits'));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
+            $options = [
+                'project' => $this->selected_project
+            ];
 
             if ($request->hasParameter('branch')) {
-                $this->branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
-                if (!$this->branch instanceof Branch) {
+                $branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
+                if (!$branch instanceof Branch) {
                     $this->return404('Invalid branch');
                 }
+                $options['branch'] = $branch;
             }
 
-            $this->commit = Commits::getTable()->getCommitByHash($request['commit_hash'], $this->selected_project);
-            if (!$this->commit instanceof Commit) {
+            $commit = Commits::getTable()->getCommitByHash($request['commit_hash'], $this->selected_project);
+            if (!$commit instanceof Commit) {
                 $this->return404('Invalid commit');
             }
 
-            $this->is_importing = $this->getModule()->isProjectImportInProgress($this->selected_project);
+            if (!$commit->isImported()) {
+                $connector = $this->getModule()->getConnectorModule($this->getModule()->getProjectConnector($this->selected_project));
+                $connector->importSingleCommit($this->selected_project, $commit);
+            }
+
+            $options['is_importing'] = $this->getModule()->isProjectImportInProgress($this->selected_project);
+            $options['commit'] = $commit;
+
+            return $this->renderJSON([
+                'component' => $this->getComponentHTML('livelink/projectcommit', $options),
+                'commit' => $this->getComponentHTML('livelink/commitrow', $options),
+            ]);
         }
 
         /**
@@ -150,7 +178,7 @@
          */
         public function runProjectCommitsMore(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_commits') || $request->isPost());
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
 
             $branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
             if (!$branch instanceof Branch) {

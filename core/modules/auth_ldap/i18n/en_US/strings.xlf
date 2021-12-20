@@ -11,7 +11,7 @@
 
 <xliff version="1.2">
 
-    <file source-language="en" datatype="php" original="cli/Import.php">
+    <file source-language="en-US" datatype="php" original="cli/Import.php">
         <body>
             <trans-unit id="c2aaeb20ceb12d108a77c9383498a988">
                 <source>Import failed</source>
@@ -22,7 +22,7 @@
         </body>
     </file>
 
-    <file source-language="en" datatype="php" original="cli/Prune.php">
+    <file source-language="en-US" datatype="php" original="cli/Prune.php">
         <body>
             <trans-unit id="a7a7d550641f9a75e0ac85f8ea14b42c">
                 <source>Pruning failed</source>
@@ -33,7 +33,7 @@
         </body>
     </file>
 
-    <file source-language="en" datatype="php" original="templates/_settings.inc.php">
+    <file source-language="en-US" datatype="php" original="templates/_settings.inc.php">
         <body>
             <trans-unit id="37a03f17e0b79877922a2a83ec11b146">
                 <source>Use this page to set up the connection details for your LDAP or Active Directory server. It is highly recommended that you read the online help before use, as misconfiguration may prevent you from accessing configuration pages to rectify issues.</source>
@@ -179,7 +179,7 @@
         </body>
     </file>
 
-    <file source-language="en" datatype="php" original="Auth_ldap.php">
+    <file source-language="en-US" datatype="php" original="Auth_ldap.php">
         <body>
             <trans-unit id="2707a5331f4464f363081c0e4aeb9880">
                 <source>LDAP connection URI must be specified.</source>

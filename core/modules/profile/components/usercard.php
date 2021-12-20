@@ -7,7 +7,7 @@
      */
 
 ?>
-<div class="backdrop_box medium usercard" id="user_details_popup">
+<div class="backdrop_box medium usercard avatar-header" id="user_details_popup">
     <div class="backdrop_detail_header">
         <div class="avatar-container">
             <?php echo image_tag($user->getAvatarURL(false), array('alt' => ' '), true); ?>
@@ -32,7 +32,7 @@
                     <?= fa_image_tag('at', ['class' => 'icon']); ?>
                     <span class="name"><?php echo $user->getUsername(); ?></span>
                 </div>
-                <?php if ($user->isEmailPublic() || $pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+                <?php if ($user->isEmailPublic() || $pachno_user->canAccessConfigurationPage()): ?>
                     <a class="list-item" href="mailto:<?= $user->getEmail(); ?>">
                         <?= fa_image_tag('envelope', ['class' => 'icon']); ?>
                         <span class="name"><?= $user->getEmail(); ?></span>
@@ -42,7 +42,7 @@
                     <?= fa_image_tag('calendar', ['class' => 'icon']); ?>
                     <span class="name">
                         <?php if (!$user->getJoinedDate()): ?>
-                            <span class="description"><?php echo __('This user has been a member for a while'); ?></span>
+                            <span class="description"><?php echo __('This user has been a member since forever'); ?></span>
                         <?php else: ?>
                             <span class="description"><?php echo __('This user has been a member since %date', ['%date' => \pachno\core\framework\Context::getI18n()->formatTime($user->getJoinedDate(), 11)]); ?></span>
                         <?php endif; ?>
@@ -53,7 +53,7 @@
                         <?php endif; ?>
                     </span>
                 </div>
-                <?php if (\pachno\core\entities\User::isThisGuest() == false): ?>
+                <?php /*if (\pachno\core\entities\User::isThisGuest() == false): ?>
                     <div id="friends_message_<?php echo $user->getUsername(); ?>" style="padding: 10px 0 0 0; font-size: 0.75em;"></div>
                     <?php if ($user->getID() != \pachno\core\framework\Context::getUser()->getID() && !(\pachno\core\framework\Context::getUser()->isFriend($user)) && !$user->isGuest()): ?>
                             <div id="friends_link_<?php echo $user->getUsername(); ?>" class="friends_link">
@@ -66,15 +66,15 @@
                         </span>
                             </div>
                     <?php endif; ?>
-                <?php endif; ?>
+                <?php endif; */ ?>
                 <div class="header">
                     <h3><?= __('Recently reported issues'); ?></h3>
                 </div>
                 <?php if (count($issues)): ?>
                     <?php foreach ($issues as $issue): ?>
                         <?php if ($issue->hasAccess()): ?>
-                            <a class="list-item multiline" href="<?= make_url('project_dashboard', array('project_key' => $issue->getProject()->getKey())); ?>">
-                                <?= image_tag($issue->getProject()->getIconName(), ['class' => 'icon issuelog-project-logo', ['title' => $issue->getProject()->getName()]], true); ?>
+                            <a class="list-item multiline" href="<?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? $issue->getUrl() : '#'; ?>">
+                                <?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? image_tag($issue->getProject()->getIconName(), ['class' => 'icon issuelog-project-logo', ['title' => $issue->getProject()->getName()]], true) : fa_image_tag('file'); ?>
                                 <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'icon issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'icon issuetype-icon issuetype-unknown')]); ?>
                                 <span class="name">
                                     <span class="title"><?php echo pachno_truncateText($issue->getFormattedTitle(true), 100); ?></span>
@@ -103,8 +103,8 @@
         <?php endif; ?>
     </div>
     <div class="backdrop_buttons">
-        <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
-            <button class="button secondary trigger-backdrop" data-url="<?= make_url('configure_users_edit_user_form', ['user_id' => $user->getID()]); ?>">
+        <?php if ($pachno_user->canSaveConfiguration()): ?>
+            <button class="button secondary trigger-backdrop" data-url="<?= make_url('configure_user', ['user_id' => $user->getID()]); ?>">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span><?php echo __('Edit this user'); ?></span>
             </button>

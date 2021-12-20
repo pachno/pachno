@@ -26,17 +26,17 @@
     class EditionComponents extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'editioncomponents';
+        public const B2DBNAME = 'editioncomponents';
 
-        const ID = 'editioncomponents.id';
+        public const ID = 'editioncomponents.id';
 
-        const SCOPE = 'editioncomponents.scope';
+        public const SCOPE = 'editioncomponents.scope';
 
-        const EDITION = 'editioncomponents.edition';
+        public const EDITION = 'editioncomponents.edition';
 
-        const COMPONENT = 'editioncomponents.component';
+        public const COMPONENT = 'editioncomponents.component';
 
         public function getByEditionID($edition_id)
         {
@@ -98,7 +98,7 @@
             return $res;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::EDITION, Editions::getTable(), Editions::ID);

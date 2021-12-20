@@ -4,8 +4,10 @@
 
     use b2db\Row;
     use Exception;
+    use pachno\core\entities\tables\UserCommits;
     use pachno\core\entities\traits\Commentable;
     use pachno\core\framework\Context;
+    use pachno\core\framework\Settings;
     use pachno\core\helpers\Diffable;
     use pachno\core\helpers\TextParser;
     use pachno\core\modules\livelink\Livelink;
@@ -123,15 +125,27 @@
          */
         protected $_is_imported = false;
 
+        /**
+         * Array of users that are subscribed to this commit
+         *
+         * @var array
+         * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserCommits")
+         */
+        protected $_subscribers = null;
+
         protected $_structure;
 
         protected $_lines_removed;
 
         protected $_lines_added;
 
-        public function getTitle()
+        public function getTitle($full = false)
         {
             $lines = explode("\n", $this->getLog());
+
+            if ($full) {
+                return $lines[0];
+            }
 
             $title = substr($lines[0], 0, 60);
             if (strlen($lines[0]) > 60) $title .= '...';
@@ -159,11 +173,11 @@
             $this->_log = $log;
         }
 
-        public function getMessage()
+        public function getMessage($include_title = true)
         {
             $lines = explode("\n", $this->getLog());
 
-            if (count($lines) > 1) {
+            if (count($lines) > 1 || !$include_title) {
                 array_shift($lines);
 
                 return implode("\n", $lines);
@@ -446,8 +460,9 @@
             return $this->_lines_added;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
+            parent::_preSave($is_new);
             if ($is_new) {
                 if (!$this->_date) {
                     $this->_date = NOW;
@@ -511,7 +526,7 @@
          */
         public function getAuthor()
         {
-            return $this->_author;
+            return $this->_b2dbLazyLoad('_author');
         }
 
         /**
@@ -524,11 +539,34 @@
             $this->_author = $user;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 $this->_addNotifications();
             }
+        }
+
+        /**
+         * @return User[]
+         */
+        public function getMentionedUsers()
+        {
+            $users = [];
+            $parser = new TextParser($this->_log);
+            $parser->setOption('plain', true);
+            $parser->doParse();
+            if ($parser->hasMentions()) {
+                foreach ($parser->getMentions() as $user) {
+                    $users[$user->getID()] = $user;
+                }
+            }
+            foreach ($this->getComments() as $comment) {
+                foreach ($comment->getMentions() as $user) {
+                    $users[$user->getID()] = $user;
+                }
+            }
+
+            return $users;
         }
 
         public function _addNotifications()
@@ -550,10 +588,39 @@
             }
         }
 
-        protected function _construct(Row $row, $foreign_key = null)
+        protected function _construct(Row $row, string $foreign_key = null): void
         {
             parent::_construct($row, $foreign_key);
             $this->_num_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_COMMIT, $this->_id);
+        }
+
+        public function shouldAutomaticallySubscribeUser($user)
+        {
+            return false;
+        }
+
+        public function isSubscriber($user)
+        {
+            if (!$user instanceof User) return false;
+
+            $user_id = (string)$user->getID();
+            $subscribers = (array)$this->getSubscribers();
+            $new_subscribers = (array)$this->_new_subscribers;
+
+            return (bool)in_array($user_id, $new_subscribers) || (bool)array_key_exists($user_id, $subscribers);
+        }
+
+        public function getSubscribers()
+        {
+            $this->_b2dbLazyLoad('_subscribers');
+
+            return $this->_subscribers;
+        }
+
+        public function addSubscriber($user_id)
+        {
+            UserCommits::getTable()->addStarredCommit($user_id, $this->getID());
+            $this->_new_subscribers[] = $user_id;
         }
 
     }

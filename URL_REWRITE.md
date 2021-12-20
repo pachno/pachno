@@ -18,7 +18,7 @@ You can read more about setting up URL rewriting, here:
 * http://support.microsoft.com/kb/324000/ (IIS)
 
 We also provide documentation for setting up rewriting on other web servers
-at https://projects.pachno.com/pachno/docs/categories/howto
+at https://projects.pach.no/pachno/docs/categories/howto
 
 For Apache, it is enough that the rewrite module (mod_rewrite) is installed
 and enabled, and that the virtual host setup has set `AllowOverride All`

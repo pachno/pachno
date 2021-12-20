@@ -5,17 +5,28 @@
     use b2db\Criterion;
     use b2db\Query;
     use b2db\QueryColumnSort;
+    use b2db\Saveable;
     use b2db\Update;
+    use pachno\core\entities\ActivityType;
+    use pachno\core\entities\Category;
     use pachno\core\entities\Datatype;
     use pachno\core\entities\DatatypeBase;
+    use pachno\core\entities\Priority;
+    use pachno\core\entities\Reproducability;
+    use pachno\core\entities\Resolution;
+    use pachno\core\entities\Role;
+    use pachno\core\entities\Severity;
+    use pachno\core\entities\Status;
+    use pachno\core\entities\Tag;
     use pachno\core\framework;
 
     /**
      * List types table
      *
      * @method static ListTypes getTable()
-     * @method DatatypeBase[] select(Query $query, $join = 'all')
-     * @method DatatypeBase selectOne(Query $query, $join = 'all')
+     * @method DatatypeBase[]|Status[]|Category[]|Priority[]|Resolution[]|Role[]|Reproducability[]|Severity[]|ActivityType[]|Tag[] select(Query $query, $join = 'all')
+     * @method DatatypeBase|Status|Category|Priority|Resolution|Role|Reproducability|Severity|ActivityType|Tag selectOne(Query $query, $join = 'all')
+     * @method DatatypeBase|Status|Category|Priority|Resolution|Role|Reproducability|Severity|ActivityType|Tag selectById($id, Query $query = null, $join = 'all')
      *
      * @package pachno
      * @subpackage tables
@@ -28,25 +39,25 @@
     class ListTypes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'listtypes';
+        public const B2DBNAME = 'listtypes';
 
-        const ID = 'listtypes.id';
+        public const ID = 'listtypes.id';
 
-        const SCOPE = 'listtypes.scope';
+        public const SCOPE = 'listtypes.scope';
 
-        const NAME = 'listtypes.name';
+        public const NAME = 'listtypes.name';
 
-        const ITEMTYPE = 'listtypes.itemtype';
+        public const ITEMTYPE = 'listtypes.itemtype';
 
-        const ITEMDATA = 'listtypes.itemdata';
+        public const ITEMDATA = 'listtypes.itemdata';
 
-        const APPLIES_TO = 'listtypes.applies_to';
+        public const APPLIES_TO = 'listtypes.applies_to';
 
-        const APPLIES_TYPE = 'listtypes.applies_type';
+        public const APPLIES_TYPE = 'listtypes.applies_type';
 
-        const ORDER = 'listtypes.sort_order';
+        public const ORDER = 'listtypes.sort_order';
 
         protected static $_item_cache = null;
 
@@ -173,7 +184,7 @@
             }
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope', [self::SCOPE]);
         }

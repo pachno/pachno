@@ -21,7 +21,7 @@
      * @package pachno
      * @subpackage main
      *
-     * @Table(name="\pachno\core\entities\tables\IssueSpentTimes")
+     * @Table(name="\pachno\core\entities\tables\IssueTags")
      */
     class IssueTag extends IdentifiableScoped
     {
@@ -121,7 +121,7 @@
             return $this->_b2dbLazyLoad('_project_id');
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new && $this->_created_at == 0) {

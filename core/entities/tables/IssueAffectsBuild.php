@@ -30,21 +30,21 @@
     class IssueAffectsBuild extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issueaffectsbuild';
+        public const B2DBNAME = 'issueaffectsbuild';
 
-        const ID = 'issueaffectsbuild.id';
+        public const ID = 'issueaffectsbuild.id';
 
-        const SCOPE = 'issueaffectsbuild.scope';
+        public const SCOPE = 'issueaffectsbuild.scope';
 
-        const ISSUE = 'issueaffectsbuild.issue';
+        public const ISSUE = 'issueaffectsbuild.issue';
 
-        const BUILD = 'issueaffectsbuild.build';
+        public const BUILD = 'issueaffectsbuild.build';
 
-        const CONFIRMED = 'issueaffectsbuild.confirmed';
+        public const CONFIRMED = 'issueaffectsbuild.confirmed';
 
-        const STATUS = 'issueaffectsbuild.status';
+        public const STATUS = 'issueaffectsbuild.status';
 
         protected $_preloaded_values = null;
 
@@ -190,7 +190,7 @@
             return [$this->count($query), $this->count($query2)];
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addBoolean(self::CONFIRMED);
@@ -199,7 +199,7 @@
             parent::addForeignKeyColumn(self::STATUS, ListTypes::getTable(), ListTypes::ID);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('issue', self::ISSUE);
         }

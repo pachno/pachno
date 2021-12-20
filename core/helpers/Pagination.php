@@ -44,26 +44,26 @@
          * Default page to show in case the request did not specify a page.
          *
          */
-        const DEFAULT_PAGE = 1;
+        public const DEFAULT_PAGE = 1;
 
         /**
          * Default page size to use when displaying results.
          *
          */
-        const DEFAULT_PAGE_SIZE = 20;
+        public const DEFAULT_PAGE_SIZE = 20;
 
         /**
          * Available page sizes.
          *
          */
-        const AVAILABLE_PAGE_SIZES = [20, 50, 100, 250, 500];
+        public const AVAILABLE_PAGE_SIZES = [20, 50, 100, 250, 500];
 
         /**
          * Maximum number of page URLs to display in pagination. The limit excludes
          * special links for first, previous, next, and last page.
          *
          */
-        const PAGE_URL_LIMIT = 10;
+        public const PAGE_URL_LIMIT = 10;
 
 
         /**
@@ -154,8 +154,8 @@
             }
 
             // Extract the page number and page size from request.
-            $this->_page = intval($request->getParameter('page'));
-            $this->_page_size = intval($request->getParameter('page_size'));
+            $this->_page = (int) $request->getParameter('page');
+            $this->_page_size = (int) $request->getParameter('page_size');
 
             // Ensure page and page size are valid non-negative integer values.
             if ($this->_page < 1) {

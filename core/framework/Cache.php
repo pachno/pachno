@@ -14,32 +14,32 @@
     class Cache
     {
 
-        const KEY_SCOPES = '_scopes';
+        public const KEY_SCOPES = '_scopes';
 
-        const KEY_INTERNAL_MODULES = '_internal_modules';
+        public const KEY_INTERNAL_MODULES = '_internal_modules';
 
-        const KEY_CONFIGURATION = '_configuration';
+        public const KEY_CONFIGURATION = '_configuration';
 
-        const KEY_ROUTES_CACHE = '_all_routes';
+        public const KEY_ROUTES_CACHE = '_all_routes';
 
-        const KEY_COMPONENT_OVERRIDE_MAP_CACHE = '_component_override_map';
+        public const KEY_COMPONENT_OVERRIDE_MAP_CACHE = '_component_override_map';
 
-        const KEY_ANNOTATION_LISTENERS_CACHE = '_annotation_listeners';
+        public const KEY_ANNOTATION_LISTENERS_CACHE = '_annotation_listeners';
 
-        const KEY_PERMISSIONS_CACHE = '_permissions';
+        public const KEY_PERMISSIONS_CACHE = '_permissions';
 
-        const KEY_MAIN_MENU_LINKS = '_mainmenu_links';
+        public const KEY_MAIN_MENU_LINKS = '_mainmenu_links';
 
-        const KEY_I18N = '_i18n_';
+        public const KEY_I18N = '_i18n_';
 
-        const KEY_TEXTPARSER_ISSUE_REGEX = 'pachno\core\framework\helpers\TextParser::getIssueRegex';
+        public const KEY_TEXTPARSER_ISSUE_REGEX = 'pachno\core\framework\helpers\TextParser::getIssueRegex';
 
         /**
          * Cache types APC, filesystem (default)
          */
-        const TYPE_APC = 'apc';
+        public const TYPE_APC = 'apc';
 
-        const TYPE_FILE = 'file';
+        public const TYPE_FILE = 'file';
 
         protected $_enabled = true;
 

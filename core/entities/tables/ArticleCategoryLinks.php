@@ -23,14 +23,14 @@
     class ArticleCategoryLinks extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'articlecategories';
-        const ID = 'articlecategories.id';
-        const ARTICLE_ID = 'articlecategories.article_id';
-        const CATEGORY_ID = 'articlecategories.category_id';
-        const ARTICLE_NAME = 'articlecategories.article_name';
-        const CATEGORY_NAME = 'articlecategories.category_name';
-        const SCOPE = 'articlecategories.scope';
+        public const B2DB_TABLE_VERSION = 1;
+        public const B2DBNAME = 'articlecategories';
+        public const ID = 'articlecategories.id';
+        public const ARTICLE_ID = 'articlecategories.article_id';
+        public const CATEGORY_ID = 'articlecategories.category_id';
+        public const ARTICLE_NAME = 'articlecategories.article_name';
+        public const CATEGORY_NAME = 'articlecategories.category_name';
+        public const SCOPE = 'articlecategories.scope';
 
         /**
          * @param $article_id
@@ -182,9 +182,6 @@
                 $criteria->where(self::CATEGORY_NAME, ucfirst($project->getKey()) . ":%", Criterion::LIKE);
                 $criteria->or(self::CATEGORY_NAME, $project_key_normalized . ":%", Criterion::LIKE);
                 $query->where($criteria);
-                if ($project->getID() == 4) {
-                    var_dump($criteria);
-                }
             } else {
                 $query->where(self::CATEGORY_ID, 0);
             }
@@ -222,7 +219,7 @@
             return $res;
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             $this->updateCategoryNames();
         }

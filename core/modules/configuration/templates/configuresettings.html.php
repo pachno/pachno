@@ -43,10 +43,10 @@
                     </a>
                 </div>
                 <div id="settings_menu_panes">
-                    <div data-tab-id="general"><?php include_component('generalsettings', array('access_level' => $access_level)); ?></div>
-                    <div data-tab-id="reglang" style="display: none;"><?php include_component('languagesettings', array('access_level' => $access_level)); ?></div>
-                    <div data-tab-id="user" style="display: none;"><?php include_component('usersettings', array('access_level' => $access_level)); ?></div>
-                    <div data-tab-id="offline" style="display: none;"><?php include_component('offline', array('access_level' => $access_level)); ?></div>
+                    <div data-tab-id="general"><?php include_component('configuration/generalsettings', array('access_level' => $access_level)); ?></div>
+                    <div data-tab-id="reglang" style="display: none;"><?php include_component('configuration/languagesettings', array('access_level' => $access_level)); ?></div>
+                    <div data-tab-id="user" style="display: none;"><?php include_component('configuration/usersettings', array('access_level' => $access_level)); ?></div>
+                    <div data-tab-id="offline" style="display: none;"><?php include_component('configuration/offline', array('access_level' => $access_level)); ?></div>
                 </div>
                 <?php if ($access_level == Settings::ACCESS_FULL): ?>
                     <div class="form-row submit-container">

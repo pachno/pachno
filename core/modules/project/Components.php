@@ -22,8 +22,22 @@
             $this->issuetypes = $this->project->getIssuetypeScheme()->getReportableIssuetypes();
         }
 
-        public function componentMilestoneIssue()
+        public function componentSidebarLinks()
         {
+
+        }
+
+        public function componentProjectHeader()
+        {
+            $pagename_event = \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader::pagename', $this->project);
+            $pagename_event->setReturnValue(framework\Context::getModule('project')->getPageName());
+            $pagename_event->triggerUntilProcessed();
+            $this->pagename = $pagename_event->getReturnValue();
+        }
+
+        public function componentProjectDevelopers()
+        {
+            $this->user_group = framework\Settings::getDefaultGroup();
         }
 
         public function componentMilestoneVirtualStatusDetails()
@@ -48,6 +62,7 @@
 
         public function componentViewIssueCard()
         {
+            $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
             $this->set_field_route = framework\Context::getRouting()->generate('edit_issue', array('project_key' => $this->issue->getProject()->getKey(), 'issue_id' => $this->issue->getID()));
         }
 
@@ -61,7 +76,7 @@
             $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
         }
 
-        public function componentMilestone()
+        public function componentEditMilestone()
         {
             if (!isset($this->milestone)) {
                 $this->milestone = new Milestone();
@@ -69,7 +84,7 @@
             }
         }
 
-        public function componentMilestoneBox()
+        public function componentMilestone()
         {
             $this->board = $this->board ?? null;
             $this->include_counts = (isset($this->include_counts)) ? $this->include_counts : false;
@@ -192,7 +207,7 @@
             }
 
             foreach ($builds as $build) {
-                if ($build->isReleased() && $build->hasFile())
+                if ($build->isReleased() && $build->hasFiles())
                     $active_builds[$build->getEditionID()][] = $build;
             }
 
@@ -202,7 +217,6 @@
         public function componentEditProject()
         {
             $this->access_level = ($this->getUser()->canEditProjectDetails(framework\Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
-            $this->section = isset($this->section) ? $this->section : 'info';
             $this->roles = entities\Role::getAll();
             $assignee = $this->getUser();
             $this->assignee_name = $assignee->getRealname();
@@ -254,20 +268,25 @@
             $this->project_roles = entities\Role::getByProjectID($this->project->getID());
         }
 
-        public function componentBuildbox()
+        public function componentEditBuild()
         {
-            $this->access_level = ($this->getUser()->canManageProject(framework\Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
         }
 
-        public function componentBuild()
+        public function componentFindAssignee()
         {
-            if (!isset($this->build)) {
-                $this->build = new entities\Build();
-                $this->build->setProject(framework\Context::getCurrentProject());
-                $this->build->setName(framework\Context::getI18n()->__('%project_name version 0.0.0', ['%project_name' => $this->project->getName()]));
-                if (framework\Context::getRequest()->getParameter('edition_id') && $edition = entities\Edition::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('edition_id'))) {
-                    $this->build->setEdition($edition);
-                }
+            $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
+            $this->teams = tables\Teams::getTable()->quickfind($this->find_by);
+            $this->global_roles = entities\Role::getGlobalRoles();
+            $this->project_roles = entities\Role::getByProjectID($this->selected_project->getID());
+
+            if (filter_var($this->find_by, FILTER_VALIDATE_EMAIL) == $this->find_by) {
+                $this->email = $this->find_by;
+            }
+
+            if (!count($this->users) && isset($this->email)) {
+                $email_user = new entities\User();
+                $email_user->setEmail($this->email);
+                $this->email_user = $email_user;
             }
         }
 

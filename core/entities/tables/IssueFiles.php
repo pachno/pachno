@@ -22,36 +22,38 @@
 
         use FileLink;
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issuefiles';
+        public const B2DBNAME = 'issuefiles';
 
-        const ID = 'issuefiles.id';
+        public const ID = 'issuefiles.id';
 
-        const SCOPE = 'issuefiles.scope';
+        public const SCOPE = 'issuefiles.scope';
 
-        const UID = 'issuefiles.uid';
+        public const USER_ID = 'issuefiles.uid';
 
-        const ATTACHED_AT = 'issuefiles.attached_at';
+        public const ATTACHED_AT = 'issuefiles.attached_at';
 
-        const FILE_ID = 'issuefiles.file_id';
+        public const FILE_ID = 'issuefiles.file_id';
 
-        const ISSUE_ID = 'issuefiles.issue_id';
+        public const ISSUE_ID = 'issuefiles.issue_id';
 
         protected $_preloaded_issue_counts;
 
-        public function addByIssueIDandFileID($issue_id, $file_id, $insert = true)
+        public function addByIssueIDandFileID($issue_id, $file_id, $timestamp = null)
         {
             $query = $this->getQuery();
             $query->where(self::ISSUE_ID, $issue_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             if ($this->count($query) == 0) {
-                if (!$insert) return true;
-
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-                $insertion->add(self::ATTACHED_AT, NOW);
+                if ($timestamp === null) {
+                    $insertion->add(self::ATTACHED_AT, NOW);
+                } else {
+                    $insertion->add(self::ATTACHED_AT, $timestamp);
+                }
                 $insertion->add(self::ISSUE_ID, $issue_id);
                 $insertion->add(self::FILE_ID, $file_id);
                 $this->rawInsert($insertion);
@@ -148,23 +150,19 @@
             $query->where(self::ISSUE_ID, $issue_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($res = $this->rawSelectOne($query)) {
-                $this->rawDelete($query);
-            }
-
-            return $res;
+            $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
             parent::addForeignKeyColumn(self::ISSUE_ID, Issues::getTable(), Issues::ID);
             parent::addForeignKeyColumn(self::FILE_ID, Files::getTable(), Files::ID);
             parent::addInteger(self::ATTACHED_AT, 10);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('issueid', self::ISSUE_ID);
         }

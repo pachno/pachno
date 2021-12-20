@@ -3,7 +3,7 @@
     "header": {
       "text": {
         "type": "string",
-        "allowedTags": "i,u,a[href]"
+        "allowedTags": "i,u,a[href|rel|target]"
       },
       "level": {
         "type": "int",
@@ -13,16 +13,68 @@
     "warning": {
       "title": {
         "type": "string",
-        "allowedTags": "i,u,a[href]"
+        "allowedTags": "i,u,a[href|rel|target]"
       },
       "message": {
         "type": "string",
-        "allowedTags": "i,u,a[href]"
+        "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
       }
     },
     "delimiter": {},
     "code": {
       "code": "string"
+    },
+    "codeBlock": {
+      "text": "string",
+      "language": "string"
+    },
+    "image": {
+      "file": {
+        "type": "array",
+        "data": {
+          "id": {
+            "type": "string",
+            "required": false
+          },
+          "type": {
+            "type": "string",
+            "required": false
+          },
+          "content_type": {
+            "type": "string",
+            "required": false
+          },
+          "icon": {
+            "type": "string",
+            "required": false
+          },
+          "is_image": {
+            "type": "string",
+            "canBeOnly": ["1", "0"],
+            "required": false
+          },
+          "url": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "caption": {
+        "type": "string",
+        "required": false
+      },
+      "withBorder": {
+        "type": "boolean",
+        "required": false
+      },
+      "withBackground": {
+        "type": "boolean",
+        "required": false
+      },
+      "stretched": {
+        "type": "boolean",
+        "required": false
+      }
     },
     "link": {
       "link": {
@@ -42,7 +94,17 @@
     "paragraph": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u,a[href]"
+        "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source,p"
+      }
+    },
+    "alert": {
+      "type": {
+        "type": "string",
+        "canBeOnly": ["primary", "secondary", "info", "success", "warning", "danger", "light", "dark"]
+      },
+      "message": {
+        "type": "string",
+        "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source,p"
       }
     },
     "list": {
@@ -55,7 +117,27 @@
         "data": {
           "-": {
             "type": "string",
-            "allowedTags": "i,b,u"
+            "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+          }
+        }
+      }
+    },
+    "checklist": {
+      "items": {
+        "type": "array",
+        "data": {
+          "-": {
+            "type": "array",
+            "data": {
+              "text": {
+                "type": "string",
+                "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+              },
+              "checked": {
+                "type": "boolean",
+                "required": true
+              }
+            }
           }
         }
       }
@@ -63,7 +145,7 @@
     "quote": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u"
+        "allowedTags": "i,b,u,a[href|rel|target]"
       },
       "caption": {
         "type": "string"
@@ -74,25 +156,18 @@
       }
     },
     "table": {
-      "header": {
+      "content": {
         "type": "array",
-        "data": {
-          "description": {
-            "type": "string"
-          },
-          "author": {
-            "type": "string"
-          }
-        }
-      },
-      "rows": {
-        "type": "array",
+        "required": false,
         "data": {
           "-": {
             "type": "array",
+            "required": false,
             "data": {
               "-": {
-                "type": "string"
+                "type": "string",
+                "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source",
+                "required": false
               }
             }
           }

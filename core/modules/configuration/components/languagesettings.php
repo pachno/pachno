@@ -6,10 +6,14 @@
             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
             <div class="dropdown-container list-mode">
                 <?php foreach ($languages as $language_code => $language): ?>
-                    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" value="<?php echo $language_code; ?>" <?php if (\pachno\core\framework\Settings::getLanguage() == $language_code): ?> checked<?php endif; ?> class="fancy-checkbox">
-                    <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" class="list-item">
-                        <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
-                        <span class="name value"><?php echo $language; ?></span>
+                    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" value="<?php echo $language_code; ?>" <?php if (\pachno\core\framework\Settings::getLanguage() == $language_code): ?> checked<?php endif; ?> class="fancy-checkbox" <?php if (!$language['available']) echo 'disabled'; ?>>
+                    <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" class="list-item <?php if (!$language['available']) echo 'disabled'; ?>">
+                        <span class="name value">
+                            <?php echo $language['language']; ?>
+                        </span>
+                        <?php if (!$language['available']): ?>
+                            <span>(<?= __('Missing translations'); ?>)</span>
+                        <?php endif; ?>
                     </label>
                 <?php endforeach; ?>
             </div>
@@ -28,13 +32,11 @@
     <label for="server_timezone"><?php echo __('Server timezone'); ?></label>
     <div class="fancy-dropdown-container">
         <div class="fancy-dropdown">
-            <label><?php echo __('Interface language'); ?></label>
             <span class="value"></span>
             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
             <div class="dropdown-container list-mode">
                 <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE; ?>_0" value="0" <?php if (!\pachno\core\framework\Settings::getServerTimezoneIdentifier()): ?> checked<?php endif; ?> class="fancy-checkbox">
                 <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE; ?>_0" class="list-item">
-                    <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
                     <span class="name value"><?php echo __('Not set'); ?></span>
                 </label>
                 <div class="list-item filter-container">
@@ -44,7 +46,6 @@
                     <?php foreach ($timezones as $timezone => $description): ?>
                         <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE; ?>_<?= $timezone; ?>" value="<?php echo $timezone; ?>" <?php if (\pachno\core\framework\Settings::getServerTimezoneIdentifier() == $timezone): ?> checked<?php endif; ?> class="fancy-checkbox">
                         <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE; ?>_<?= $timezone; ?>" class="list-item">
-                            <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
                             <span class="name value"><?php echo $description; ?></span>
                         </label>
                     <?php endforeach; ?>

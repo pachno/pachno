@@ -36,11 +36,10 @@
             } else {
                 try {
                     if ($project_id)
-                        $this->selected_project = entities\Project::getB2DBTable()->selectById($project_id);
+                        $this->selected_project = tables\Projects::getTable()->selectById($project_id);
                     elseif ($project_key)
                         $this->selected_project = entities\Project::getByKey($project_key);
-                } catch (Exception $e) {
-                }
+                } catch (Exception $e) { }
             }
 
             if (!$this->selected_project instanceof entities\Project)
@@ -60,6 +59,23 @@
             framework\Logging::log('Loading issue');
 
             $issue = $this->_getIssueFromRequest($request);
+
+            if ($request->isDelete()) {
+                if (!$issue instanceof entities\Issue || !$issue->hasAccess()) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This issue does not exist')]);
+                }
+
+                if (!$issue->canDeleteIssue()) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('You are not allowed to delete this issue')]);
+                }
+
+                $issue->deleteIssue();
+                $issue->save();
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The issue has been deleted')]);
+            }
 
             if ($issue instanceof entities\Issue) {
                 if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
@@ -176,16 +192,20 @@
             } while ($found_issue instanceof entities\Issue && !$found_issue->hasAccess());
 
             if ($found_issue instanceof entities\Issue) {
-                $this->forward(framework\Context::getRouting()->generate('viewissue', ['project_key' => $found_issue->getProject()->getKey(), 'issue_no' => $found_issue->getFormattedIssueNo()]));
+                $this->forward($found_issue->getUrl());
             } else {
                 framework\Context::setMessage('issue_message', $this->getI18n()->__('There are no more issues in that direction.'));
-                $this->forward(framework\Context::getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                $this->forward($issue->getUrl());
             }
         }
 
-        protected function _checkProjectPageAccess($page)
+        /**
+         * @param $permission
+         * @return bool
+         */
+        protected function _checkProjectAccess($permission): bool
         {
-            return framework\Context::getUser()->hasProjectPageAccess($page, $this->selected_project);
+            return $this->getUser()->hasProjectPermission($permission, $this->selected_project);
         }
 
 

@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\Commit;
     use pachno\core\entities\Project;
 
@@ -21,27 +22,27 @@
     class Commits extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'commits';
+        public const B2DBNAME = 'commits';
 
-        const ID = 'commits.id';
+        public const ID = 'commits.id';
 
-        const SCOPE = 'commits.scope';
+        public const SCOPE = 'commits.scope';
 
-        const LOG = 'commits.log';
+        public const LOG = 'commits.log';
 
-        const OLD_REV = 'commits.old_rev';
+        public const OLD_REV = 'commits.old_rev';
 
-        const NEW_REV = 'commits.new_rev';
+        public const NEW_REV = 'commits.new_rev';
 
-        const AUTHOR = 'commits.author';
+        public const AUTHOR = 'commits.author';
 
-        const DATE = 'commits.date';
+        public const DATE = 'commits.date';
 
-        const DATA = 'commits.data';
+        public const DATA = 'commits.data';
 
-        const PROJECT_ID = 'commits.project_id';
+        public const PROJECT_ID = 'commits.project_id';
 
         /**
          * Get commit for a given commit id
@@ -95,7 +96,7 @@
             return (bool)$this->count($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('project', self::PROJECT_ID);
             $this->addIndex('project_commit', [self::PROJECT_ID, self::NEW_REV]);

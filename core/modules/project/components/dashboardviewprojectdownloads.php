@@ -26,12 +26,4 @@
             <?= __('But check back later.'); ?>
         </div>
     </div>
-    <?php if ($pachno_user->canEditProjectDetails($project) && $project->isBuildsEnabled()): ?>
-        <div class="button-container">
-            <a href="<?= make_url('project_release_center', ['project_key' => $project->getKey()]); ?>" class="button secondary project-quick-edit">
-                <?= fa_image_tag('cloud-download-alt', ['class' => 'icon']); ?>
-                <span><?= __('Manage project releases'); ?></span>
-            </a>
-        </div>
-    <?php endif; ?>
 <?php endif; ?>

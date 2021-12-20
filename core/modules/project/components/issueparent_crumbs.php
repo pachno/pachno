@@ -1,7 +1,25 @@
+<?php
+
+    use pachno\core\entities\Issue;
+
+    /**
+     * @var Issue $issue
+     */
+
+    $backdrop = $backdrop ?? false;
+
+?>
 <?php if ($p_issues = $issue->getParentIssues()): ?>
-    <?php include_component('project/issueparent_crumbs', array('issue' => array_shift($p_issues), 'parent' => true)); ?>
+    <?php include_component('project/issueparent_crumbs', ['issue' => array_shift($p_issues), 'parent' => true, 'backdrop' => $backdrop]); ?>
 <?php endif; ?>
-<span class="issue-state <?php echo $issue->isClosed() ? 'closed' : 'open'; ?>"><?php echo $issue->isClosed() ? __('Closed') : __('Open'); ?></span>
-<?php $it_string = (isset($parent) && $parent) ? __('%issuetype %issue_no', ['%issuetype' => (($issue->hasIssueType()) ? $issue->getIssueType()->getName() : __('Unknown issuetype')), '%issue_no' => $issue->getFormattedIssueNo(true)]) : $issue->getFormattedIssueNo(true); ?>
-<?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $it_string, array('title' => (isset($parent) && $parent) ? $it_string . ': ' . \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()) : '', 'class' => 'issue_number_link')); ?>
-<?php if (isset($parent) && $parent) echo '&nbsp;&raquo;&nbsp;'; ?>
+<?php if (isset($parent) && $parent): ?>
+    <span class="crumb-item">
+        <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+        <?php if ($backdrop): ?>
+            <a href="javascript:void(0);" class="trigger-backdrop issue_number_link" data-url="<?php echo $issue->getCardUrl(); ?>"><?= $issue->getFormattedTitle(true); ?></a>
+        <?php else: ?>
+            <?php echo link_tag($issue->getUrl(), $issue->getFormattedTitle(true), ['class' => 'issue_number_link']); ?>
+        <?php endif; ?>
+        <?php if (isset($parent) && $parent) echo '&nbsp;&raquo;&nbsp;'; ?>
+    </span>
+<?php endif; ?>

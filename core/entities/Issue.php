@@ -6,6 +6,9 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\Ownable;
+    use pachno\core\entities\tables\Issues;
+    use pachno\core\entities\tables\IssueTypes;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\traits\Commentable;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -33,8 +36,6 @@
      * @package pachno
      * @subpackage main
      *
-     * @method static tables\Issues getB2DBTable()
-     *
      * @Table(name="\pachno\core\entities\tables\Issues")
      */
     class Issue extends Ownable implements MentionableProvider, Attachable
@@ -47,18 +48,18 @@
          *
          * @static integer
          */
-        const STATE_OPEN = 0;
+        public const STATE_OPEN = 0;
 
         /**
          * Closed issue state
          *
          * @static integer
          */
-        const STATE_CLOSED = 1;
+        public const STATE_CLOSED = 1;
 
-        const COVER_STYLE_NONE = 'none';
-        const COVER_STYLE_SOLID = 'solid';
-        const COVER_STYLE_SHADED = 'shaded';
+        public const COVER_STYLE_NONE = 'none';
+        public const COVER_STYLE_SOLID = 'solid';
+        public const COVER_STYLE_SHADED = 'shaded';
 
         /**
          * @Column(type="string", name="name", length=1000)
@@ -121,21 +122,21 @@
         /**
          * The affected editions for this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_editions = null;
 
         /**
          * The affected builds for this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_builds = null;
 
         /**
          * The affected components for this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_components = null;
 
@@ -527,14 +528,14 @@
         /**
          * List of issues this issue depends on
          *
-         * @var array
+         * @var ?array
          */
         protected $_parent_issues;
 
         /**
          * List of issues that depends on this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_child_issues;
 
@@ -765,7 +766,7 @@
          *
          * @return Project
          */
-        public function getProject(): Project
+        public function getProject(): ?Project
         {
             return $this->_b2dbLazyLoad('_project_id');
         }
@@ -782,12 +783,6 @@
             Logging::log('checking access to issue ' . $this->getFormattedIssueNo());
             $i_id = $this->getID();
             $user = ($target_user === null) ? Context::getUser() : $target_user;
-            $specific_access = $user->hasPermission("canviewissue", $i_id, 'core');
-            if ($specific_access !== null) {
-                Logging::log('done checking, returning specific access ' . (($specific_access) ? 'allowed' : 'denied'));
-
-                return $specific_access;
-            }
             if ($this->getPostedByID() == $user->getID()) {
                 Logging::log('done checking, allowed since this user posted it');
 
@@ -803,22 +798,30 @@
 
                 return true;
             }
-            if ($user->hasPermission('canseegroupissues', 0, 'core') &&
+            if ($user->hasPermission(Permission::PERMISSION_ACCESS_GROUP_ISSUES) &&
                 $this->getPostedBy() instanceof User &&
                 $this->getPostedBy()->getGroupID() == $user->getGroupID()) {
                 Logging::log('done checking, allowed since this user is in same group as user that posted it');
 
                 return true;
             }
-            if ($user->hasPermission('canseeallissues', $this->getProjectID(), 'core') === true) {
+            if ($this->isLocked() && !$user->hasProjectPermission(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_ISSUES, $this->getProject())) {
+                Logging::log('done checking, not allowed to access internal issues');
 
-                if ($this->getProject()->hasAccess($user)) {
-                    Logging::log('done checking, allowed since this user may see all issues in this project');
-
-                    return true;
-                }
+                return false;
             }
-            if ($user->hasPermission('canseeallissues', 0, 'core') === false) {
+
+            if ($user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getProjectID()) === true) {
+                Logging::log('done checking, allowed since this user may see all issues in this project');
+
+                return true;
+            }
+            if ($user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $this->getProject()) === true) {
+                Logging::log('done checking, not allowed to access issues not posted by themselves');
+
+                return true;
+            }
+            if ($user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES) === false) {
                 Logging::log('done checking, not allowed to access issues not posted by themselves');
 
                 return false;
@@ -847,7 +850,7 @@
          */
         public function getFormattedIssueNo($link_formatted = false): string
         {
-            if ($this->getProject()->usePrefix()) {
+            if ($this->getProject() instanceof Project && $this->getProject()->usePrefix()) {
                 return $this->getProject()->getPrefix() . '-' . $this->getIssueNo();
             } else {
                 return (string) (($link_formatted) ? '#' : '') . $this->getIssueNo();
@@ -873,7 +876,7 @@
         {
             $this->_addChangedProperty('_issuetype', $issuetype_id);
             $project = $this->getProject();
-            $issueType = Issuetype::getB2DBTable()->selectById($issuetype_id);
+            $issueType = IssueTypes::getTable()->selectById($issuetype_id);
             if (!$issueType instanceof Issuetype || !$project instanceof Project) {
                 return;
             }
@@ -945,7 +948,7 @@
         /**
          * Return the current owner
          *
-         * @return common\Identifiable
+         * @return ?common\Identifiable
          */
         public function getOwner()
         {
@@ -1016,7 +1019,7 @@
         /**
          * Returns the category
          *
-         * @return Category
+         * @return ?Category
          */
         public function getCategory()
         {
@@ -1026,11 +1029,11 @@
         /**
          * Set the category
          *
-         * @param integer $category_id The category ID to change to
+         * @param int|Category|null $category The category ID to change to
          */
-        public function setCategory($category_id)
+        public function setCategory($category)
         {
-            $this->_addChangedProperty('_category', $category_id);
+            $this->_addChangedProperty('_category', $category);
         }
 
         /**
@@ -1252,7 +1255,7 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_initializeCustomfields();
             $this->_num_user_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_ISSUE, $this->_id);
@@ -1432,7 +1435,7 @@
 
         public function isWorkflowTransitionsAvailable()
         {
-            return $this->getProject()->isArchived() ? false : $this->_permissionCheck('cantransitionissue');
+            return $this->getProject()->isArchived() ? false : $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1440,23 +1443,24 @@
          * check for the equivalent "*own" permission if the issue is posted
          * by the same user
          *
-         * @param string $key The permission key to check for
-         * @param boolean $exclusive Whether to perform a similar check for "own"
+         * @param string $permission_key The permission key to check for
+         * @param string $check_own_permissions Whether to also do a check for if the user can perform the action on own issues
          *
          * @return boolean
          */
-        protected function _permissionCheck($key, $exclusive = false, $defaultPermissiveSetting = true)
+        protected function _permissionCheck($permission_key, $check_own_permissions = true)
         {
             if (Context::getUser()->isGuest()) return false;
-            if (isset($this->_can_permission_cache[$key])) return $this->_can_permission_cache[$key];
-            $permitted = ($this->isInvolved() && !$exclusive) ? $this->getProject()->permissionCheck($key . 'own', true) : null;
-            $permitted = ($permitted !== null) ? $permitted : $this->getProject()->permissionCheck($key, !$this->isInvolved());
 
-            if ($defaultPermissiveSetting) {
-                $permitted = ($permitted !== null) ? $permitted : Settings::isPermissive();
+            if (isset($this->_can_permission_cache[$permission_key])) return $this->_can_permission_cache[$permission_key];
+
+            $permitted = $this->getProject()->permissionCheck($permission_key);
+            if ($permitted === null && $check_own_permissions && $this->isInvolved()) {
+                $permitted = $this->getProject()->permissionCheck($permission_key . Permission::PERMISSION_OWN_SUFFIX);
             }
+            $permitted = $permitted ?? false;
 
-            $this->_can_permission_cache[$key] = $permitted;
+            $this->_can_permission_cache[$permission_key] = $permitted;
 
             return $permitted;
         }
@@ -1760,7 +1764,7 @@
          */
         public function canEditAccessPolicy()
         {
-            return $this->_permissionCheck('canlockandeditlockedissues', true);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC, false);
         }
 
         /**
@@ -1770,7 +1774,7 @@
          */
         public function canEditIssueDetails()
         {
-            return $this->_permissionCheck('caneditissuebasic');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1780,7 +1784,7 @@
          */
         public function canEditTitle()
         {
-            return $this->_permissionCheck('caneditissuetitle');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1790,7 +1794,7 @@
          */
         public function canEditIssuetype()
         {
-            return $this->_permissionCheck('caneditissuebasic');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1800,7 +1804,7 @@
          */
         public function canEditUserPain()
         {
-            return $this->_permissionCheck('caneditissueuserpain');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1810,7 +1814,7 @@
          */
         public function canEditDescription()
         {
-            return $this->_permissionCheck('caneditissuedescription');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1820,7 +1824,7 @@
          */
         public function canEditShortname()
         {
-            return $this->_permissionCheck('caneditissueshortname');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1830,7 +1834,7 @@
          */
         public function canEditReproductionSteps()
         {
-            return $this->_permissionCheck('caneditissuereproduction_steps');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1840,7 +1844,7 @@
          */
         public function canEditIssue()
         {
-            return $this->_permissionCheck('caneditissue', true);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES);
         }
 
         /**
@@ -1850,7 +1854,7 @@
          */
         public function canEditPostedBy()
         {
-            return $this->_permissionCheck('caneditissueposted_by');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1860,7 +1864,7 @@
          */
         public function canEditAssignee()
         {
-            return $this->_permissionCheck('caneditissueassigned_to');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1870,7 +1874,7 @@
          */
         public function canEditOwner()
         {
-            return $this->_permissionCheck('caneditissueowned_by');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1880,12 +1884,7 @@
          */
         public function canEditStatus()
         {
-            return $this->_canEditIssueField("status");
-        }
-
-        protected function _canEditIssueField($type)
-        {
-            return $this->_permissionCheck('caneditissue' . $type) || ($this->isInvolved() && $this->_permissionCheck("set_datatype_" . $type));
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1895,7 +1894,7 @@
          */
         public function canEditCategory()
         {
-            return $this->_canEditIssueField("category");
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1905,7 +1904,17 @@
          */
         public function canEditResolution()
         {
-            return $this->_canEditIssueField("resolution");
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
+        }
+
+        /**
+         * Return if the user can edit reproducability
+         *
+         * @return boolean
+         */
+        public function canEditBlockerStatus()
+        {
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1915,7 +1924,7 @@
          */
         public function canEditReproducability()
         {
-            return $this->_canEditIssueField("reproducability");
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1925,7 +1934,7 @@
          */
         public function canEditSeverity()
         {
-            return $this->_canEditIssueField("severity");
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1935,7 +1944,7 @@
          */
         public function canEditPriority()
         {
-            return $this->_canEditIssueField("priority");
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1945,7 +1954,7 @@
          */
         public function canEditEstimatedTime()
         {
-            return $this->_permissionCheck('caneditissueestimated_time');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1955,7 +1964,7 @@
          */
         public function canEditPercentage()
         {
-            return $this->_permissionCheck('caneditissuepercent_complete');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1965,7 +1974,7 @@
          */
         public function canEditMilestone()
         {
-            return $this->_permissionCheck('caneditissuemilestone');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1975,7 +1984,7 @@
          */
         public function canDeleteIssue()
         {
-            return $this->_permissionCheck('candeleteissues', false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_DELETE, false);
         }
 
         /**
@@ -1985,7 +1994,7 @@
          */
         public function canEditCustomFields($key = '')
         {
-            $permission_key = 'caneditissuecustomfields' . $key;
+            $permission_key = Permission::PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS . $key;
 
             return $this->_permissionCheck($permission_key);
         }
@@ -1997,7 +2006,7 @@
          */
         public function canCloseIssue()
         {
-            return $this->_permissionCheck('cancloseissues');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -2007,7 +2016,7 @@
          */
         public function canReopenIssue()
         {
-            return $this->_permissionCheck('canreopenissues');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -2017,7 +2026,7 @@
          */
         public function canPostComments()
         {
-            return $this->_permissionCheck('canpostcomments');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_COMMENTS) || $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS);
         }
 
         /**
@@ -2027,7 +2036,7 @@
          */
         public function canAttachFiles()
         {
-            return $this->_permissionCheck('canaddfilestoissues');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL);
         }
 
         /**
@@ -2037,7 +2046,7 @@
          */
         public function canAddRelatedIssues()
         {
-            return $this->_permissionCheck('canaddrelatedissues');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2047,7 +2056,7 @@
          */
         public function canEditAffectedComponents()
         {
-            return $this->_permissionCheck('canaddcomponents');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2057,7 +2066,7 @@
          */
         public function canEditAffectedEditions()
         {
-            return $this->_permissionCheck('canaddeditions');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2067,7 +2076,7 @@
          */
         public function canEditAffectedBuilds()
         {
-            return $this->_permissionCheck('canaddbuilds');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2077,7 +2086,21 @@
          */
         public function canRemoveAttachments()
         {
-            return $this->_permissionCheck('canremovefilesfromissues');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL, false);
+        }
+
+        public function canRemoveAttachment(User $user, File $file)
+        {
+            if ($this->canRemoveAttachments())
+                return true;
+
+            if ($user->canManageProject($this->getProject()))
+                return true;
+
+            if ($file->getID() == $user->getID())
+                return true;
+
+            return false;
         }
 
         /**
@@ -2087,29 +2110,7 @@
          */
         public function canAttachLinks()
         {
-            return $this->_permissionCheck('canaddlinkstoissues');
-        }
-
-        /**
-         * Return if the user can start working on the issue
-         *
-         * @return boolean
-         */
-        public function canStartWorkingOnIssue()
-        {
-            if ($this->isBeingWorkedOn()) return false;
-
-            return $this->canEditSpentTime();
-        }
-
-        /**
-         * Return whether or not this issue is being worked on by a user
-         *
-         * @return boolean
-         */
-        public function isBeingWorkedOn()
-        {
-            return ($this->getUserWorkingOnIssue() instanceof User) ? true : false;
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL);
         }
 
         /**
@@ -2129,7 +2130,7 @@
          */
         public function canEditSpentTime()
         {
-            return $this->_permissionCheck('caneditissuespent_time');
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TIME_TRACKING);
         }
 
         /**
@@ -2160,7 +2161,7 @@
         /**
          * Returns the editions for this issue
          *
-         * @return array Returns an array with 'edition' (Edition), 'status' (Datatype), 'confirmed' (boolean) and 'a_id'
+         * @return array<string, int|Edition>
          */
         public function getEditions()
         {
@@ -2169,15 +2170,19 @@
             return $this->_editions;
         }
 
+        public function getNumberOfAffectedItems(): int
+        {
+            $this->_populateAffected();
+            return count($this->_editions) + count($this->_components) + count($this->_builds);
+        }
+
         /**
          * Populates the affected items
          */
         protected function _populateAffected()
         {
-            if ($this->_editions === null && $this->_builds === null && $this->_components === null) {
+            if ($this->_editions === null) {
                 $this->_editions = [];
-                $this->_builds = [];
-                $this->_components = [];
 
                 if ($res = tables\IssueAffectsEdition::getTable()->getByIssueID($this->getID())) {
                     foreach ($res as $row) {
@@ -2195,6 +2200,10 @@
                         }
                     }
                 }
+            }
+
+            if ($this->_builds === null) {
+                $this->_builds = [];
 
                 if ($res = tables\IssueAffectsBuild::getTable()->getByIssueID($this->getID())) {
                     foreach ($res as $row) {
@@ -2212,6 +2221,10 @@
                         }
                     }
                 }
+            }
+
+            if ($this->_components === null) {
+                $this->_components = [];
 
                 if ($res = tables\IssueAffectsComponent::getTable()->getByIssueID($this->getID())) {
                     foreach ($res as $row) {
@@ -2257,7 +2270,7 @@
         /**
          * Returns the builds for this issue
          *
-         * @return array Returns an array with 'build' (\pachno\core\entities\Build), 'status' (\pachno\core\entities\Datatype), 'confirmed' (boolean) and 'a_id'
+         * @return array<string, int|Build>
          */
         public function getBuilds()
         {
@@ -2304,7 +2317,7 @@
         /**
          * Returns the components for this issue
          *
-         * @return array Returns an array with 'component' (\pachno\core\entities\Component), 'status' (\pachno\core\entities\Datatype), 'confirmed' (boolean) and 'a_id'
+         * @return array<string, int|Component>
          */
         public function getComponents()
         {
@@ -2369,29 +2382,17 @@
          * Attach a file to the issue
          *
          * @param File $file The file to attach
+         * @param null $timestamp
          */
-        public function attachFile(File $file, $file_comment = '', $file_description = '', $return_comment = false)
+        public function attachFile(File $file, $timestamp = null)
         {
-            $existed = !tables\IssueFiles::getTable()->addByIssueIDandFileID($this->getID(), $file->getID());
+            $existed = !tables\IssueFiles::getTable()->addByIssueIDandFileID($this->getID(), $file->getID(), $timestamp);
             if (!$existed) {
-                $comment = new Comment();
-                $comment->setPostedBy(Context::getUser()->getID());
-                $comment->setSystemComment(true);
-                $comment->setTargetID($this->getID());
-                $comment->setTargetType(Comment::TYPE_ISSUE);
-                if ($file_comment) {
-                    $comment->setContent(Context::getI18n()->__("A file was uploaded.%link_to_file \n\nThis comment was attached: %comment", ['%comment' => "\n\n" . $file_comment, '%link_to_file' => "\n\n[[File:{$file->getRealFilename()}|thumb|{$file_description}]]"]));
-                } else {
-                    $comment->setContent(Context::getI18n()->__('A file was uploaded.%link_to_file', ['%link_to_file' => "\n\n[[File:{$file->getRealFilename()}|thumb|{$file_description}]]"]));
-                }
-                $comment->save();
                 if ($this->_files !== null) {
                     $this->_files[$file->getID()] = $file;
                 }
                 $this->touch();
-                if ($return_comment) return $comment;
             }
-            if ($return_comment) return null;
         }
 
         public function touch($last_updated = null)
@@ -2401,6 +2402,15 @@
             foreach ($this->getParentIssues() as $parent_issue) {
                 tables\Issues::getTable()->touchIssue($parent_issue->getID(), $last_updated);
             }
+        }
+
+        public function clearCachedItems()
+        {
+            $this->_parent_issues = null;
+            $this->_child_issues = null;
+            $this->_editions = null;
+            $this->_components = null;
+            $this->_builds = null;
         }
 
         /**
@@ -2524,7 +2534,7 @@
                 $this->_votes = [];
                 if ($res = tables\Votes::getTable()->getByIssueId($this->getID())) {
                     while ($row = $res->getNextRow()) {
-                        $this->_votes[$row->get(tables\Votes::UID)] = $row->get(tables\Votes::VOTE);
+                        $this->_votes[$row->get(tables\Votes::USER_ID)] = $row->get(tables\Votes::VOTE);
                     }
                 }
             }
@@ -2709,7 +2719,7 @@
             $var_name = "_customfield{$key}";
             if (property_exists($this, $var_name)) {
                 $customtype = CustomDatatype::getByKey($key);
-                if ($customtype->getType() == CustomDatatype::CALCULATED_FIELD) {
+                if ($customtype->getType() == DatatypeBase::CALCULATED_FIELD) {
                     $result = null;
                     $options = $customtype->getOptions();
                     if (!empty($options)) {
@@ -2754,28 +2764,28 @@
                 } elseif ($this->$var_name && $customtype->hasPredefinedOptions() && !$this->$var_name instanceof common\Identifiable) {
                     try {
                         switch ($customtype->getType()) {
-                            case CustomDatatype::EDITIONS_CHOICE:
+                            case DatatypeBase::EDITIONS_CHOICE:
                                 $this->$var_name = tables\Editions::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::COMPONENTS_CHOICE:
+                            case DatatypeBase::COMPONENTS_CHOICE:
                                 $this->$var_name = tables\Components::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::RELEASES_CHOICE:
+                            case DatatypeBase::RELEASES_CHOICE:
                                 $this->$var_name = tables\Builds::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::MILESTONE_CHOICE:
+                            case DatatypeBase::MILESTONE_CHOICE:
                                 $this->$var_name = tables\Milestones::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::CLIENT_CHOICE:
+                            case DatatypeBase::CLIENT_CHOICE:
                                 $this->$var_name = tables\Clients::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::USER_CHOICE:
+                            case DatatypeBase::USER_CHOICE:
                                 $this->$var_name = tables\Users::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::TEAM_CHOICE:
+                            case DatatypeBase::TEAM_CHOICE:
                                 $this->$var_name = tables\Teams::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::STATUS_CHOICE:
+                            case DatatypeBase::STATUS_CHOICE:
                                 $this->$var_name = Status::getB2DBTable()->selectById($this->$var_name);
                                 break;
                         }
@@ -2852,12 +2862,11 @@
         /**
          * Remove a dependant issue
          *
-         * @param integer $issue_id The issue ID to remove
+         * @param Issue $related_issue The issue to remove
          */
-        public function removeDependantIssue($issue_id)
+        public function removeDependantIssue(Issue $related_issue): ?Issue
         {
-            if ($row = tables\IssueRelations::getTable()->getIssueRelation($this->getID(), $issue_id)) {
-                $related_issue = Issue::getB2DBTable()->selectById($issue_id);
+            if ($row = tables\IssueRelations::getTable()->getIssueRelation($this->getID(), $related_issue->getID())) {
                 $relation_id = $row->get(tables\IssueRelations::ID);
                 if ($row->get(tables\IssueRelations::PARENT_ID) == $this->getID()) {
                     $this->_removeChildIssue($related_issue, $relation_id);
@@ -2865,9 +2874,13 @@
                     $this->_removeParentIssue($related_issue, $relation_id);
                 }
                 $this->touch();
+                $this->clearCachedItems();
                 $related_issue->touch();
+                $related_issue->clearCachedItems();
                 tables\IssueRelations::getTable()->rawDeleteById($relation_id);
             }
+
+            return $related_issue;
         }
 
         /**
@@ -2958,26 +2971,21 @@
         /**
          * Returns an array with the estimated time
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return array
          */
-        public function getEstimatedTime($append_minutes = false, $subtract_hours = false)
+        public function getEstimatedTime()
         {
-            return ['months' => (int)$this->_estimated_months, 'weeks' => (int)$this->_estimated_weeks, 'days' => (int)$this->_estimated_days, 'hours' => (int)$this->getEstimatedHours($append_minutes), 'minutes' => (int)$this->getEstimatedMinutes($subtract_hours), 'points' => (int)$this->_estimated_points];
+            return ['months' => (int)$this->_estimated_months, 'weeks' => (int)$this->_estimated_weeks, 'days' => (int)$this->_estimated_days, 'hours' => (int)$this->getEstimatedHours(), 'minutes' => (int)$this->getEstimatedMinutes(), 'points' => (int)$this->_estimated_points];
         }
 
         /**
          * Returns the estimated hours
          *
-         * @param bool $append_minutes
-         *
          * @return integer
          */
-        public function getEstimatedHours($append_minutes = false): int
+        public function getEstimatedHours(): int
         {
-            return (int)$this->_estimated_hours + ($append_minutes ? (int)floor($this->getEstimatedMinutes() / 60) : 0);
+            return (int)$this->_estimated_hours;
         }
 
         /**
@@ -2993,15 +3001,11 @@
         /**
          * Returns the estimated minutes
          *
-         * @param bool $subtract_hours
-         *
          * @return integer
          */
-        public function getEstimatedMinutes($subtract_hours = false): int
+        public function getEstimatedMinutes(): int
         {
-            $minutes = (int)$this->_estimated_minutes;
-
-            return $subtract_hours ? $minutes % 60 : $minutes;
+            return (int)$this->_estimated_minutes;
         }
 
         /**
@@ -3017,14 +3021,11 @@
         /**
          * Returns an array with the spent time
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return array
          */
-        public function getSpentTime($append_minutes = false, $subtract_hours = false)
+        public function getSpentTime()
         {
-            return ['months' => (int)$this->_spent_months, 'weeks' => (int)$this->_spent_weeks, 'days' => (int)$this->_spent_days, 'hours' => (int)$this->getSpentHours($append_minutes), 'minutes' => (int)$this->getSpentMinutes($subtract_hours), 'points' => (int)$this->_spent_points];
+            return ['months' => (int)$this->_spent_months, 'weeks' => (int)$this->_spent_weeks, 'days' => (int)$this->_spent_days, 'hours' => (int)$this->getSpentHours(), 'minutes' => (int)$this->getSpentMinutes(), 'points' => (int)$this->_spent_points];
         }
 
         /**
@@ -3034,9 +3035,9 @@
          *
          * @return integer
          */
-        public function getSpentHours($append_minutes = false): int
+        public function getSpentHours(): int
         {
-            return (int)round($this->_spent_hours / 100, 2) + ($append_minutes ? (int)floor($this->getSpentMinutes() / 60) : 0);
+            return (int) $this->_spent_hours;
         }
 
         /**
@@ -3052,15 +3053,11 @@
         /**
          * Returns the spent minutes
          *
-         * @param bool $subtract_hours
-         *
          * @return integer
          */
-        public function getSpentMinutes($subtract_hours = false): int
+        public function getSpentMinutes(): int
         {
-            $minutes = (int)$this->_spent_minutes;
-
-            return $subtract_hours ? $minutes % 60 : $minutes;
+            return (int) $this->_spent_minutes;
         }
 
         /**
@@ -3236,9 +3233,9 @@
         /**
          * Returns the assigned milestone if any
          *
-         * @return Milestone
+         * @return ?Milestone
          */
-        public function getMilestone()
+        public function getMilestone(): ?Milestone
         {
             return $this->_b2dbLazyLoad('_milestone');
         }
@@ -3246,11 +3243,11 @@
         /**
          * Set the milestone
          *
-         * @param integer|Milestone $milestone_id The milestone id to assign
+         * @param int|Milestone|null $milestone The milestone id to assign
          */
-        public function setMilestone($milestone_id)
+        public function setMilestone($milestone)
         {
-            $this->_addChangedProperty('_milestone', $milestone_id);
+            $this->_addChangedProperty('_milestone', $milestone);
         }
 
         /**
@@ -3470,14 +3467,11 @@
         /**
          * Returns the estimated hours and minutes formatted
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return integer|string
          */
-        public function getEstimatedHoursAndMinutes($append_minutes = false, $subtract_hours = false)
+        public function getEstimatedHoursAndMinutes()
         {
-            return common\Timeable::formatHoursAndMinutes($this->getEstimatedHours($append_minutes), $this->getEstimatedMinutes($subtract_hours));
+            return common\Timeable::formatHoursAndMinutes($this->getEstimatedHours(), $this->getEstimatedMinutes());
         }
 
         /**
@@ -3493,29 +3487,23 @@
         /**
          * Returns the spent hours and minutes formatted
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return integer|string
          */
-        public function getSpentHoursAndMinutes($append_minutes = false, $subtract_hours = false)
+        public function getSpentHoursAndMinutes()
         {
-            return common\Timeable::formatHoursAndMinutes($this->getSpentHours($append_minutes), $this->getSpentMinutes($subtract_hours));
+            return common\Timeable::formatHoursAndMinutes($this->getSpentHours(), $this->getSpentMinutes());
         }
 
         /**
          * Returns an array with the spent time
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return array
          * @see getSpentTime()
          *
          */
-        public function getTimeSpent($append_minutes = false, $subtract_hours = false)
+        public function getTimeSpent()
         {
-            return $this->getSpentTime($append_minutes, $subtract_hours);
+            return $this->getSpentTime();
         }
 
         /**
@@ -3536,12 +3524,12 @@
         public function addAffectedBuild($build)
         {
             if ($this->getProject() && $this->getProject()->isBuildsEnabled()) {
-                $retval = tables\IssueAffectsBuild::getTable()->setIssueAffected($this->getID(), $build->getID());
-                if ($retval !== false) {
+                $affectedBuildId = tables\IssueAffectsBuild::getTable()->setIssueAffected($this->getID(), $build->getID());
+                if ($affectedBuildId !== false) {
                     $this->touch();
                     $this->addLogEntry(LogItem::ACTION_ISSUE_ADD_AFFECTED_ITEM, Context::getI18n()->__("'%release_name' added", ['%release_name' => $build->getName()]));
 
-                    return ['a_id' => $retval, 'build' => $build, 'confirmed' => 0, 'status' => null];
+                    return ['a_id' => $affectedBuildId, 'build' => $build, 'confirmed' => 0, 'status' => null];
                 }
                 foreach ($this->getChildIssues() as $issue) {
                     $issue->addAffectedBuild($build);
@@ -3561,12 +3549,12 @@
         public function addAffectedEdition($edition)
         {
             if ($this->getProject() && $this->getProject()->isEditionsEnabled()) {
-                $retval = tables\IssueAffectsEdition::getTable()->setIssueAffected($this->getID(), $edition->getID());
-                if ($retval !== false) {
+                $affectedEditionId = tables\IssueAffectsEdition::getTable()->setIssueAffected($this->getID(), $edition->getID());
+                if ($affectedEditionId !== false) {
                     $this->touch();
                     $this->addLogEntry(LogItem::ACTION_ISSUE_ADD_AFFECTED_ITEM, Context::getI18n()->__("'%edition_name' added", ['%edition_name' => $edition->getName()]));
 
-                    return ['a_id' => $retval, 'edition' => $edition, 'confirmed' => 0, 'status' => null];
+                    return ['a_id' => $affectedEditionId, 'edition' => $edition, 'confirmed' => 0, 'status' => null];
                 }
             }
 
@@ -3583,12 +3571,12 @@
         public function addAffectedComponent($component)
         {
             if ($this->getProject() && $this->getProject()->isComponentsEnabled()) {
-                $retval = tables\IssueAffectsComponent::getTable()->setIssueAffected($this->getID(), $component->getID());
-                if ($retval !== false) {
+                $affectedComponentId = tables\IssueAffectsComponent::getTable()->setIssueAffected($this->getID(), $component->getID());
+                if ($affectedComponentId !== false) {
                     $this->touch();
                     $this->addLogEntry(LogItem::ACTION_ISSUE_ADD_AFFECTED_ITEM, Context::getI18n()->__("'%component_name' added", ['%component_name' => $component->getName()]));
 
-                    return ['a_id' => $retval, 'component' => $component, 'confirmed' => 0, 'status' => null];
+                    return ['a_id' => $affectedComponentId, 'component' => $component, 'confirmed' => 0, 'status' => null];
                 }
             }
 
@@ -3602,8 +3590,6 @@
          *
          * @return boolean
          * @see removeAffectedComponent()
-         *
-         * @see removeAffectedItem()
          * @see removeAffectedBuild()
          */
         public function removeAffectedEdition($item)
@@ -3611,6 +3597,7 @@
             if (tables\IssueAffectsEdition::getTable()->deleteByIssueIDandEditionID($this->getID(), $item->getID())) {
                 $this->touch();
                 $this->addLogEntry(LogItem::ACTION_ISSUE_REMOVE_AFFECTED_ITEM, Context::getI18n()->__("'%item_name' removed", ['%item_name' => $item->getName()]));
+                $this->_editions = null;
 
                 return true;
             }
@@ -3625,8 +3612,6 @@
          *
          * @return boolean
          * @see removeAffectedComponent()
-         *
-         * @see removeAffectedItem()
          * @see removeAffectedEdition()
          */
         public function removeAffectedBuild($item)
@@ -3634,6 +3619,7 @@
             if (tables\IssueAffectsBuild::getTable()->deleteByIssueIDandBuildID($this->getID(), $item->getID())) {
                 $this->touch();
                 $this->addLogEntry(LogItem::ACTION_ISSUE_REMOVE_AFFECTED_ITEM, Context::getI18n()->__("'%item_name' removed", ['%item_name' => $item->getName()]));
+                $this->_builds = null;
 
                 return true;
             }
@@ -3648,8 +3634,6 @@
          *
          * @return boolean
          * @see removeAffectedBuild()
-         *
-         * @see removeAffectedItem()
          * @see removeAffectedEdition()
          */
         public function removeAffectedComponent($item)
@@ -3657,6 +3641,7 @@
             if (tables\IssueAffectsComponent::getTable()->deleteByIssueIDandComponentID($this->getID(), $item->getID())) {
                 $this->touch();
                 $this->addLogEntry(LogItem::ACTION_ISSUE_REMOVE_AFFECTED_ITEM, Context::getI18n()->__("'%item_name' removed", ['%item_name' => $item->getName()]));
+                $this->_components = null;
 
                 return true;
             }
@@ -3886,7 +3871,7 @@
                 if ($this->_files !== null) {
                     $this->_num_files = count($this->_files);
                 } else {
-                    $this->_num_files = File::countByIssueID($this->getID());
+                    $this->_num_files = tables\IssueFiles::getTable()->countByIssueID($this->getID());
                 }
             }
 
@@ -3929,7 +3914,7 @@
         protected function _populateFiles()
         {
             if ($this->_files === null) {
-                $this->_files = File::getByIssueID($this->getID());
+                $this->_files = tables\IssueFiles::getTable()->getByIssueID($this->getID());
             }
         }
 
@@ -3946,8 +3931,17 @@
             if (is_array($this->_files) && array_key_exists($file->getID(), $this->_files)) {
                 unset($this->_files[$file->getID()]);
             }
+            if ($this->_num_files !== null) {
+                $this->_num_files--;
+            }
+            if ($this->getCoverImageFile() instanceof File && $this->getCoverImageFile()->getId() == $file->getID()) {
+                $this->setCoverImageFile(null);
+                $this->save();
+            } else {
+                $this->touch();
+            }
+
             $file->delete();
-            $this->touch();
         }
 
         /**
@@ -3977,7 +3971,7 @@
          *
          * @return IssueSpentTime[]
          */
-        public function getSpentTimes()
+        public function getSpentTimes(): array
         {
             $this->_populateSpentTimes();
 
@@ -4124,11 +4118,11 @@
         /**
          * Set the resolution
          *
-         * @param integer $resolution_id The resolution ID you want to set it to
+         * @param int|Resolution|null $resolution The resolution ID you want to set it to
          */
-        public function setResolution($resolution_id)
+        public function setResolution($resolution)
         {
-            $this->_addChangedProperty('_resolution', $resolution_id);
+            $this->_addChangedProperty('_resolution', $resolution);
         }
 
         /**
@@ -4184,11 +4178,11 @@
         /**
          * Set the reproducability
          *
-         * @param integer $reproducability_id The reproducability id to change to
+         * @param int|Reproducability|null $reproducability The reproducability id to change to
          */
-        public function setReproducability($reproducability_id)
+        public function setReproducability($reproducability)
         {
-            $this->_addChangedProperty('_reproducability', $reproducability_id);
+            $this->_addChangedProperty('_reproducability', $reproducability);
         }
 
         /**
@@ -4204,7 +4198,7 @@
         /**
          * Returns the severity
          *
-         * @return Severity
+         * @return ?Severity
          */
         public function getSeverity()
         {
@@ -4214,11 +4208,11 @@
         /**
          * Set the severity
          *
-         * @param integer $severity_id The severity ID you want to set it to
+         * @param int|Severity|null $severity The severity ID you want to set it to
          */
-        public function setSeverity($severity_id)
+        public function setSeverity($severity)
         {
-            $this->_addChangedProperty('_severity', $severity_id);
+            $this->_addChangedProperty('_severity', $severity);
         }
 
         /**
@@ -4234,7 +4228,7 @@
         /**
          * Returns the priority
          *
-         * @return Priority
+         * @return ?Priority
          */
         public function getPriority(): ?Priority
         {
@@ -4244,11 +4238,11 @@
         /**
          * Set the priority
          *
-         * @param integer $priority_id The priority id to change to
+         * @param int|Priority|null $priority The priority id to change to
          */
-        public function setPriority($priority_id)
+        public function setPriority($priority)
         {
-            $this->_addChangedProperty('_priority', $priority_id);
+            $this->_addChangedProperty('_priority', $priority);
         }
 
         /**
@@ -4280,7 +4274,7 @@
          */
         public function isSpentTimeVisible()
         {
-            return (bool)($this->getProject()->canSeeTimeSpent() && ($this->isFieldVisible('spent_time') || $this->hasSpentTime()));
+            return (bool)($this->getProject()->canSeeTimeLogging() && ($this->isFieldVisible('spent_time') || $this->hasSpentTime()));
         }
 
         /**
@@ -4506,9 +4500,19 @@
             return (bool)($this->_pain_effect > 0);
         }
 
+        public function getUrl($relative = true)
+        {
+            return Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], $relative);
+        }
+
+        public function getCardUrl()
+        {
+            return Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]);
+        }
+
         public function toJSON($detailed = true)
         {
-            $return_values = [
+            $json = [
                 'id' => $this->getID(),
                 'issue_no' => $this->getFormattedIssueNo(true),
                 'state' => $this->getState(),
@@ -4516,21 +4520,47 @@
                 'deleted' => $this->isDeleted(),
                 'archived' => $this->isArchived(),
                 'blocking' => $this->isBlocking(),
+                'locked' => $this->isLocked(),
+                'editable' => $this->isEditable(),
                 'created_at' => $this->getPosted(),
+                'project' => $this->getProject()->toJSON(false),
                 'created_at_iso' => date('c', $this->getPosted()),
                 'updated_at' => $this->getLastUpdatedTime(),
                 'updated_at_iso' => date('c', $this->getLastUpdatedTime()),
+                'updated_at_datetime' => Context::getI18n()->formatTime($this->getLastUpdatedTime(), 24),
+                'updated_at_full' => Context::getI18n()->formatTime($this->getLastUpdatedTime(), 21),
+                'updated_at_friendly' => Context::getI18n()->formatTime($this->getLastUpdatedTime(), 20),
                 'title' => $this->getRawTitle(),
                 'cover_color' => $this->getCoverColor(),
                 'cover_style' => $this->getCoverStyle(),
+                'description' => $this->getDescription(),
+                'description_formatted' => $this->getParsedDescription(),
+                'reproduction_steps' => $this->getReproductionSteps(),
+                'reproduction_steps_formatted' => $this->getParsedReproductionSteps(),
                 'issue_type' => $this->getIssueType()->toJSON(false),
-                'cover_image_file_id' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->getID() : 0,
-                'cover_image_url' => ($this->getCoverImageFile() instanceof File) ? Context::getRouting()->generate('showfile', ['id' => $this->getCoverImageFile()->getID()]) : '',
-                'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
-                'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
-                'card_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]),
+                'time' => [
+                    'is_tracking' => $this->isTimeTracking(),
+                    'is_tracked_by' => array_map(fn($user) => $user->toJson(), $this->getTimeTrackingUsers()),
+                    'current_user_tracking' => ($this->isTimeTrackingCurrentUser()) ? $this->getTimeTrackingCurrentUser()->toJSON() : null,
+                    'spent' => [
+                        'values' => $this->getSpentTime(true, true),
+                        'formatted' => ($this->hasSpentTime()) ? self::getFormattedTime($this->getSpentTime(true, true)) : ''
+                    ],
+                    'estimated' => [
+                        'values' => $this->getEstimatedTime(),
+                        'formatted' => ($this->hasEstimatedTime()) ? self::getFormattedTime($this->getEstimatedTime()) : ''
+                    ],
+                ],
+                'cover_image' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->toJSON() : null,
+                'href' => $this->getUrl(),
+                'more_actions_url' => $this->getMoreActionsUrl(),
+                'choices_url' => $this->getDynamicChoicesUrl(),
+                'backdrop_url' => $this->getBackdropUrl(),
+                'save_url' => $this->getSaveUrl(),
+                'card_url' => $this->getCardUrl(),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
-                'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
+                'assigned_to' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
+                'owned_by' => ($this->getOwner() instanceof common\Identifiable) ? $this->getOwner()->toJSON() : null,
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
                 'category' => ($this->getCategory() instanceof common\Identifiable) ? $this->getCategory()->toJSON() : null,
                 'priority' => ($this->getPriority() instanceof common\Identifiable) ? $this->getPriority()->toJSON() : null,
@@ -4538,23 +4568,63 @@
                 'milestone' => ($this->getMilestone() instanceof common\Identifiable) ? $this->getMilestone()->toJSON() : null,
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
-                'tags' => []
+                'number_of_subscribers' => count($this->getSubscribers()),
+                'number_of_child_issues' => count($this->getChildIssues()),
+                'number_of_affected_items' => $this->getNumberOfAffectedItems(),
+                'tags' => [],
+                'transitions' => [],
+                'available_statuses' => [],
+                'affected_items' => [
+                    'builds' => [],
+                    'components' => [],
+                    'editions' => [],
+                ]
             ];
+
+            foreach ($this->getBuilds() as $data) {
+                $json['affected_items']['builds'][] = [
+                    'id' => $data['a_id'],
+                    'build' => $data['build']->toJSON()
+                ];
+            }
+
+            foreach ($this->getComponents() as $data) {
+                $json['affected_items']['components'][] = [
+                    'id' => $data['a_id'],
+                    'component' => $data['component']->toJSON()
+                ];
+            }
+
+            foreach ($this->getEditions() as $data) {
+                $json['affected_items']['editions'][] = [
+                    'id' => $data['a_id'],
+                    'edition' => $data['edition']->toJSON()
+                ];
+            }
+
+            foreach ($this->getAvailableStatuses() as $status) {
+                $json['available_statuses'][] = $status->toJSON();
+            }
+
+            foreach ($this->getAvailableWorkflowTransitions() as $transition) {
+                $json['transitions'][] = $transition->toJSON(false);
+            }
 
             if ($this->isChildIssue()) {
                 foreach ($this->getParentIssues() as $parentIssue) {
-                    $return_values['parent_issue_id'] = $parentIssue->getID();
+                    $json['parent_issue_id'] = $parentIssue->getID();
                 }
             }
 
             foreach ($this->getTags() as $tag) {
-                $return_values['tags'][] = $tag->toJSON(false);
+                $json['tags'][] = $tag->toJSON(false);
             }
 
             if ($detailed) {
-                $fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());
+                $fields = DatatypeBase::getAvailableFields();
+                $visible_fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());
 
-                foreach ($fields as $field => $details) {
+                foreach ($fields as $field => $field_type) {
                     $identifiable = true;
                     switch ($field) {
                         case 'shortname':
@@ -4572,6 +4642,11 @@
                         case 'owner':
                             $value = $this->getOwner();
                             break;
+                        case 'assignee':
+                            $value = $this->getAssignee();
+                            break;
+                        case 'milestone':
+                            $value = $this->getMilestone();
                             break;
                         case 'percent_complete':
                             $value = $this->getPercentCompleted();
@@ -4586,15 +4661,13 @@
                             $identifiable = false;
                             break;
                         case 'estimated_time':
-                            $value = $this->getEstimatedTime(true, true);
+                            $value = $this->getEstimatedTime();
                             $identifiable = false;
                             break;
                         case 'spent_time':
                             $value = $this->getSpentTime(true, true);
                             $identifiable = false;
                             break;
-                        case 'milestone':
-                        case 'assignee':
                         case 'build':
                         case 'edition':
                         case 'component':
@@ -4606,9 +4679,9 @@
                     }
                     if (isset($value)) {
                         if ($identifiable)
-                            $return_values[$field] = ($value instanceof common\Identifiable) ? $value->toJSON() : null;
+                            $json[$field] = ($value instanceof common\Identifiable) ? $value->toJSON() : null;
                         else
-                            $return_values[$field] = $value;
+                            $json[$field] = $value;
                     }
 
                 }
@@ -4618,11 +4691,12 @@
                     $comments[$comment->getCommentNumber()] = $comment->toJSON();
                 }
 
-                $return_values['comments'] = $comments;
-                $return_values['visible_fields'] = $fields;
+                $json['comments'] = $comments;
+                $json['visible_fields'] = $visible_fields;
+                $json['fields'] = $fields;
             }
 
-            return $return_values;
+            return $json;
         }
 
         /**
@@ -4792,16 +4866,6 @@
         }
 
         /**
-         * Return if the user can edit scrum color
-         *
-         * @return boolean
-         */
-        public function canEditColor()
-        {
-            return $this->_permissionCheck('caneditissuecolor');
-        }
-
-        /**
          * Get spent time units with points and their description.
          *
          * @return array
@@ -4883,11 +4947,47 @@
         }
 
         /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getSaveUrl(): string
+        {
+            return Context::getRouting()->generate('edit_issue', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getBackdropUrl(): string
+        {
+            return Context::getRouting()->generate('get_partial_for_backdrop', ['key' => '%key%', 'issue_id' => $this->getID()]);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getDynamicChoicesUrl(): string
+        {
+            return Context::getRouting()->generate('issue_load_dynamic_choices', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getMoreActionsUrl(): string
+        {
+            return Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]);
+        }
+
+        /**
          * Save changes made to the issue since last time
          *
          * @return boolean
          */
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -4898,8 +4998,10 @@
                 if (!$this->_last_updated) $this->_last_updated = NOW;
                 if (!$this->_posted_by) $this->_posted_by = Context::getUser();
 
-                $step = $this->getProject()->getWorkflowScheme()->getWorkflowForIssuetype($this->getIssueType())->getFirstStep();
-                $step->applyToIssue($this);
+                if (!$this->getStatus() instanceof Status) {
+                    $step = $this->getProject()->getWorkflowScheme()->getWorkflowForIssuetype($this->getIssueType())->getFirstStep();
+                    $step->applyToIssue($this);
+                }
 
                 return;
             }
@@ -4907,7 +5009,7 @@
             $this->_last_updated = NOW;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             $this->_saveCustomFieldValues();
 
@@ -4964,41 +5066,39 @@
                 $this->getMilestone()->updateStatus();
                 $this->getMilestone()->save();
             }
-
-            return true;
         }
 
         protected function _saveCustomFieldValues()
         {
             foreach (CustomDatatype::getAll() as $key => $customdatatype) {
                 switch ($customdatatype->getType()) {
-                    case CustomDatatype::INPUT_TEXT:
-                    case CustomDatatype::INPUT_TEXTAREA_SMALL:
-                    case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                    case CustomDatatype::DATE_PICKER:
-                    case CustomDatatype::DATETIME_PICKER:
+                    case DatatypeBase::INPUT_TEXT:
+                    case DatatypeBase::INPUT_TEXTAREA_SMALL:
+                    case DatatypeBase::INPUT_TEXTAREA_MAIN:
+                    case DatatypeBase::DATE_PICKER:
+                    case DatatypeBase::DATETIME_PICKER:
                         $option_id = $this->getCustomField($key);
                         tables\IssueCustomFields::getTable()->saveIssueCustomFieldValue($option_id, $customdatatype->getID(), $this->getID());
                         break;
-                    case CustomDatatype::EDITIONS_CHOICE:
-                    case CustomDatatype::COMPONENTS_CHOICE:
-                    case CustomDatatype::RELEASES_CHOICE:
-                    case CustomDatatype::MILESTONE_CHOICE:
-                    case CustomDatatype::STATUS_CHOICE:
-                    case CustomDatatype::USER_CHOICE:
-                    case CustomDatatype::TEAM_CHOICE:
-                    case CustomDatatype::CLIENT_CHOICE:
+                    case DatatypeBase::EDITIONS_CHOICE:
+                    case DatatypeBase::COMPONENTS_CHOICE:
+                    case DatatypeBase::RELEASES_CHOICE:
+                    case DatatypeBase::MILESTONE_CHOICE:
+                    case DatatypeBase::STATUS_CHOICE:
+                    case DatatypeBase::USER_CHOICE:
+                    case DatatypeBase::TEAM_CHOICE:
+                    case DatatypeBase::CLIENT_CHOICE:
                         $option_object = null;
                         try {
                             switch ($customdatatype->getType()) {
-                                case CustomDatatype::EDITIONS_CHOICE:
-                                case CustomDatatype::COMPONENTS_CHOICE:
-                                case CustomDatatype::RELEASES_CHOICE:
-                                case CustomDatatype::MILESTONE_CHOICE:
-                                case CustomDatatype::CLIENT_CHOICE:
-                                case CustomDatatype::STATUS_CHOICE:
-                                case CustomDatatype::USER_CHOICE:
-                                case CustomDatatype::TEAM_CHOICE:
+                                case DatatypeBase::EDITIONS_CHOICE:
+                                case DatatypeBase::COMPONENTS_CHOICE:
+                                case DatatypeBase::RELEASES_CHOICE:
+                                case DatatypeBase::MILESTONE_CHOICE:
+                                case DatatypeBase::CLIENT_CHOICE:
+                                case DatatypeBase::STATUS_CHOICE:
+                                case DatatypeBase::USER_CHOICE:
+                                case DatatypeBase::TEAM_CHOICE:
                                     $option_object = $this->getCustomField($key);
                                     break;
                             }
@@ -5207,7 +5307,7 @@
                                 break;
                             case '_issuetype':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Issuetype::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = IssueTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Unknown');
                                 }
@@ -5253,7 +5353,6 @@
                                             $old_time[$time_unit] = $this->{'_spent_' . $time_unit};
                                         }
                                     }
-                                    $old_time['hours'] = round($old_time['hours'] / 100, 2);
                                     $old_formatted_time = (array_sum($old_time) > 0) ? Issue::getFormattedTime($old_time) : Context::getI18n()->__('No time spent');
                                     $new_formatted_time = ($this->hasSpentTime()) ? Issue::getFormattedTime($this->getSpentTime()) : Context::getI18n()->__('No time spent');
                                     $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_TIME_SPENT, $old_formatted_time . ' &rArr; ' . $new_formatted_time, serialize($old_time), serialize($this->getSpentTime()));
@@ -5301,49 +5400,49 @@
                                     $customdatatype = CustomDatatype::getByKey($key);
 
                                     switch ($customdatatype->getType()) {
-                                        case CustomDatatype::INPUT_TEXT:
+                                        case DatatypeBase::INPUT_TEXT:
                                             $new_value = ($this->getCustomField($key) != '') ? $this->getCustomField($key) : Context::getI18n()->__('Unknown');
                                             $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_CUSTOMFIELD, $key . ': ' . $new_value, $original_value, $compare_value);
                                             break;
-                                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
-                                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
+                                        case DatatypeBase::INPUT_TEXTAREA_SMALL:
+                                        case DatatypeBase::INPUT_TEXTAREA_MAIN:
                                             $new_value = ($this->getCustomField($key) != '') ? $this->getCustomField($key) : Context::getI18n()->__('Unknown');
                                             $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_CUSTOMFIELD, $key . ': ' . $new_value, $original_value, $compare_value);
                                             break;
-                                        case CustomDatatype::EDITIONS_CHOICE:
-                                        case CustomDatatype::COMPONENTS_CHOICE:
-                                        case CustomDatatype::RELEASES_CHOICE:
-                                        case CustomDatatype::MILESTONE_CHOICE:
-                                        case CustomDatatype::STATUS_CHOICE:
-                                        case CustomDatatype::TEAM_CHOICE:
-                                        case CustomDatatype::USER_CHOICE:
-                                        case CustomDatatype::CLIENT_CHOICE:
+                                        case DatatypeBase::EDITIONS_CHOICE:
+                                        case DatatypeBase::COMPONENTS_CHOICE:
+                                        case DatatypeBase::RELEASES_CHOICE:
+                                        case DatatypeBase::MILESTONE_CHOICE:
+                                        case DatatypeBase::STATUS_CHOICE:
+                                        case DatatypeBase::TEAM_CHOICE:
+                                        case DatatypeBase::USER_CHOICE:
+                                        case DatatypeBase::CLIENT_CHOICE:
                                             $old_object = null;
                                             $new_object = null;
                                             try {
                                                 switch ($customdatatype->getType()) {
-                                                    case CustomDatatype::EDITIONS_CHOICE:
+                                                    case DatatypeBase::EDITIONS_CHOICE:
                                                         $old_object = Edition::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::COMPONENTS_CHOICE:
+                                                    case DatatypeBase::COMPONENTS_CHOICE:
                                                         $old_object = Component::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::RELEASES_CHOICE:
+                                                    case DatatypeBase::RELEASES_CHOICE:
                                                         $old_object = Build::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::MILESTONE_CHOICE:
+                                                    case DatatypeBase::MILESTONE_CHOICE:
                                                         $old_object = Milestone::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::STATUS_CHOICE:
+                                                    case DatatypeBase::STATUS_CHOICE:
                                                         $old_object = Status::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::TEAM_CHOICE:
+                                                    case DatatypeBase::TEAM_CHOICE:
                                                         $old_object = Team::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::USER_CHOICE:
+                                                    case DatatypeBase::USER_CHOICE:
                                                         $old_object = User::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::CLIENT_CHOICE:
+                                                    case DatatypeBase::CLIENT_CHOICE:
                                                         $old_object = Client::getB2DBTable()->selectById($original_value);
                                                         break;
                                                 }
@@ -5351,14 +5450,14 @@
                                             }
                                             try {
                                                 switch ($customdatatype->getType()) {
-                                                    case CustomDatatype::EDITIONS_CHOICE:
-                                                    case CustomDatatype::COMPONENTS_CHOICE:
-                                                    case CustomDatatype::RELEASES_CHOICE:
-                                                    case CustomDatatype::MILESTONE_CHOICE:
-                                                    case CustomDatatype::STATUS_CHOICE:
-                                                    case CustomDatatype::TEAM_CHOICE:
-                                                    case CustomDatatype::USER_CHOICE:
-                                                    case CustomDatatype::CLIENT_CHOICE:
+                                                    case DatatypeBase::EDITIONS_CHOICE:
+                                                    case DatatypeBase::COMPONENTS_CHOICE:
+                                                    case DatatypeBase::RELEASES_CHOICE:
+                                                    case DatatypeBase::MILESTONE_CHOICE:
+                                                    case DatatypeBase::STATUS_CHOICE:
+                                                    case DatatypeBase::TEAM_CHOICE:
+                                                    case DatatypeBase::USER_CHOICE:
+                                                    case DatatypeBase::CLIENT_CHOICE:
                                                         $new_object = $this->getCustomField($key);
                                                         break;
                                                 }
@@ -5517,7 +5616,7 @@
          *
          * @return string
          */
-        public static function getFormattedTime($time, $strict = true)
+        public static function getFormattedTime($time, $strict = true, $include_placeholder = true)
         {
             $values = [];
             $i18n = Context::getI18n();
@@ -5537,16 +5636,16 @@
             if (array_key_exists('minutes', $time) && ($time['minutes'] > 0 || !$strict)) {
                 $values[] = ($time['minutes'] == 1) ? $i18n->__('1 minute') : $i18n->__('%number_of minutes', ['%number_of' => $time['minutes']]);
             }
-            $retval = join(', ', $values);
+            $text = join(', ', $values);
 
             if (array_key_exists('points', $time) && ($time['points'] > 0 || !$strict)) {
                 if (!empty($values)) {
-                    $retval .= ' / ';
+                    $text .= ' / ';
                 }
-                $retval .= ($time['points'] == 1) ? $i18n->__('1 point') : $i18n->__('%number_of points', ['%number_of' => $time['points']]);
+                $text .= ($time['points'] == 1) ? $i18n->__('1 point') : $i18n->__('%number_of points', ['%number_of' => $time['points']]);
             }
 
-            return ($retval != '') ? $retval : $i18n->__('No time');
+            return ($text != '' || !$include_placeholder) ? $text : $i18n->__('No time');
         }
 
         public function checkTaskStates()
@@ -5723,13 +5822,17 @@
             return $this->_description_parser;
         }
 
-        public function getParsedDescription($options)
+        public function getParsedDescription($options = [])
         {
             return $this->_getParsedText($this->getDescription(), $this->getDescriptionSyntax(), $options, '_description_parser');
         }
 
         protected function _getParsedText($text, $syntax, $options = [], $parser_ref = null)
         {
+            if (!isset($options['issue'])) {
+                $options['issue'] = $this;
+            }
+
             switch ($syntax) {
                 default:
                 case Settings::SYNTAX_PT:
@@ -5805,7 +5908,7 @@
             return $this->_reproduction_steps_parser;
         }
 
-        public function getParsedReproductionSteps($options)
+        public function getParsedReproductionSteps($options = [])
         {
             return $this->_getParsedText($this->getReproductionSteps(), $this->getReproductionStepsSyntax(), $options, '_reproduction_steps_parser');
         }
@@ -5969,7 +6072,7 @@
 
         public function isChildIssue()
         {
-            return (bool)count($this->getParentIssues());
+            return (bool) count($this->getParentIssues());
         }
 
         /**
@@ -5982,6 +6085,120 @@
             if (!is_numeric($syntax)) $syntax = Settings::getSyntaxValue($syntax);
 
             $this->_addChangedProperty('_reproduction_steps_syntax', $syntax);
+        }
+
+        public function getChoiceValues($field)
+        {
+            $json = [
+                'choices' => []
+            ];
+
+            switch ($field) {
+                case 'status':
+                    $choices = ($this->getProject()->useStrictWorkflowMode()) ? $this->getProject()->getAvailableStatuses() : $this->getAvailableStatuses();
+                    break;
+                case 'issuetype':
+                    $choices = $this->getProject()->getIssuetypeScheme()->getIssuetypes();
+                    break;
+                case 'category':
+                    if ($this->isUpdateable() && $this->canEditCategory()) {
+                        $choices = Category::getAll();
+                    }
+                    break;
+                case 'resolution':
+                    if ($this->isUpdateable() && $this->canEditResolution()) {
+                        $choices = Resolution::getAll();
+                    }
+                    break;
+                case 'priority':
+                    if ($this->isUpdateable() && $this->canEditPriority()) {
+                        $choices = Priority::getAll();
+                    }
+                    break;
+                case 'reproducability':
+                    if ($this->isUpdateable() && $this->canEditReproducability()) {
+                        $choices = Reproducability::getAll();
+                    }
+                    break;
+                case 'severity':
+                    if ($this->isUpdateable() && $this->canEditSeverity()) {
+                        $choices = Severity::getAll();
+                    }
+                    break;
+                case 'milestone':
+                    if ($this->isUpdateable() && $this->canEditMilestone()) {
+                        $choices = $this->getProject()->getMilestonesForIssues();
+                    }
+                    break;
+                default:
+                    foreach (CustomDatatype::getAll() as $key => $customdatatype) {
+                        if ($key != $field) {
+                            continue;
+                        }
+
+                        if ($customdatatype->hasCustomOptions()) {
+                            $choices = $customdatatype->getOptions();
+                        } elseif ($customdatatype->hasPredefinedOptions()) {
+                            $choices = $customdatatype->getOptions();
+                        }
+                    }
+            }
+
+            if (isset($choices)) {
+                foreach($choices as $choice) {
+                    $json['choices'][] = $choice->toJSON();
+                }
+            }
+
+            return $json;
+        }
+
+        public function isTimeTracking(): bool
+        {
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public function isTimeTrackingCurrentUser(): bool
+        {
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted() && $spentTime->getUser()->getID() === Context::getUser()->getID()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public function getTimeTrackingCurrentUser(): ?IssueSpentTime
+        {
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted() && $spentTime->getUser()->getID() === Context::getUser()->getID()) {
+                    return $spentTime;
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * @return array<User>
+         */
+        public function getTimeTrackingUsers(): array
+        {
+            $users = [];
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted()) {
+                    $users[$spentTime->getUser()->getID()] = $spentTime->getUser();
+                }
+            }
+
+            return array_values($users);
         }
 
     }

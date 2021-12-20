@@ -8,7 +8,7 @@
     class Reproducability extends Datatype
     {
 
-        const ITEMTYPE = Datatype::REPRODUCABILITY;
+        public const ITEMTYPE = Datatype::REPRODUCABILITY;
 
         protected static $_items = null;
 

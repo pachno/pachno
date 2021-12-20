@@ -7,14 +7,17 @@
     use pachno\core\entities\Comment;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use pachno\core\framework\Request;
+    use pachno\core\framework\Settings;
 
     /**
      * actions for the publish module
      *
      * @property Article $article
+     * @property Article[] $articles
      * @property Project $selected_project
      *
      * @Routes(name_prefix="publish_")
@@ -48,21 +51,17 @@
                 }
             }
 
-            $this->article = Articles::getTable()->selectById($article_id);
-//            }
-//            elseif ($this->article_name)
-//            {
-//                $this->article = Articles::getTable()->getArticleByName($this->article_name);
-//            }
+            if ($article_id) {
+                $this->article = Articles::getTable()->selectById($article_id);
+            }
 
             if (!$this->article instanceof Article) {
                 $this->article = new Article();
                 $this->article->setProject($this->selected_project);
                 $this->article->setName($article_name);
-                if ($request->hasParameter('parent_article_id')) {
-                    $this->article->setParentArticle(Articles::getTable()->selectById($request['parent_article_id']));
-                }
             }
+
+            framework\Context::getModule('publish')->setCurrentArticle($this->article);
         }
 
         public function runSpecialArticle(Request $request)
@@ -77,7 +76,29 @@
         /**
          * Show an article
          *
-         * @Route(name="project_redirect_articles", url="/:project_key/r/docs")
+         * @Route(name="global_redirect_articles", url="/docs/r")
+         * @param Request $request
+         */
+        public function runGlobalRedirectArticles(Request $request)
+        {
+            $this->redirect('redirectarticles');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="global_redirect_article", url="/docs/r/:slug")
+         * @param Request $request
+         */
+        public function runGlobalRedirectArticle(Request $request)
+        {
+            $this->redirect('redirectarticle');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="project_redirect_articles", url="/:project_key/docs/r")
          * @param Request $request
          */
         public function runProjectRedirectArticles(Request $request)
@@ -88,11 +109,95 @@
         /**
          * Show an article
          *
-         * @Route(name="redirect_articles", url="/r/docs")
+         * @Route(name="project_redirect_article", url="/:project_key/docs/r/:slug")
          * @param Request $request
          */
+        public function runProjectRedirectArticle(Request $request)
+        {
+            $this->redirect('redirectarticle');
+        }
+
+        /**
+         * @Route(name="edit_redirect_article", url="/docs/r/:article_id/edit", methods="POST")
+         * Redirect article
+         *
+         * @param Request $request
+         */
+        public function runRedirectArticle(Request $request)
+        {
+            if ($request->isPost()) {
+                if ($request['article_id']) {
+                    $article = Articles::getTable()->selectById($request['article_id']);
+                } else {
+                    $article = new Article();
+                    if ($request['project_id']) {
+                        $article->setProject($request['project_id']);
+                    }
+                }
+
+                $article->setRedirectSlug($request['slug']);
+                $article->setRedirectArticle($request['redirect_article_id']);
+                $article->save();
+
+                return $this->renderJSON([
+                    'content' => $this->getComponentHTML('publish/redirectarticle', ['article' => $article])
+                ]);
+            }
+
+            $slug = $request['slug'];
+            $article = Articles::getTable()->getArticleBySlug($slug);
+
+            if ($article instanceof Article && $article->getRedirectArticle() instanceof Article) {
+                return $this->forward($article->getRedirectArticle()->getLink());
+            }
+
+            return $this->return404();
+        }
+
+        /**
+         * @Route(name="find_redirect_articles", url="/docs/r/:article_id/find", methods="POST")
+         * @param Request $request
+         * @return framework\JsonOutput
+         */
+        public function runFindRedirectArticleTargets(Request $request): framework\JsonOutput
+        {
+            if (!trim($request['find'])) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['errors' => ['find' => $this->getI18n()->__('Please enter something to search for')]]);
+            }
+
+            $articles = Articles::getTable()->findArticlesContaining($request['find']);
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('publish/redirectarticletargets', ['articles' => $articles])
+            ]);
+        }
+
         public function runRedirectArticles(Request $request)
         {
+            $this->articles = Articles::getTable()->getRedirectArticles(framework\Context::getCurrentProject());
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="global_articles", url="/docs")
+         * @param Request $request
+         */
+        public function runArticle(Request $request)
+        {
+            return $this->redirect('showarticle');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="global_article", url="/docs/:article_id/:article_name")
+         * @param Request $request
+         */
+        public function runGlobalArticle(Request $request)
+        {
+            return $this->redirect('showarticle');
         }
 
         /**
@@ -109,7 +214,7 @@
         /**
          * Show an article
          *
-         * @Route(name="article", url="/docs/:article_id/:article_name")
+         * @Route(name="article", url="/docs/:article_id/:article_name", methods="GET")
          * @param Request $request
          */
         public function runShowArticle(Request $request)
@@ -149,6 +254,7 @@
                         $this->error = framework\Context::getI18n()->__('There was an error trying to show this revision');
                     }
                     $this->comment_count = Comment::countComments($this->article->getID(), Comment::TYPE_ARTICLE);
+                    $this->attachments = $this->article->getFiles();
                 }
             }
         }
@@ -222,30 +328,36 @@
         /**
          * Delete an article
          *
-         * @Route(name="article_delete", url="/docs/:article_id/delete")
+         * @Route(name="article_delete", url="/docs/:article_id", methods="DELETE")
          * @param Request $request
          */
         public function runDeleteArticle(Request $request)
         {
             try {
                 if (!$this->article instanceof Article) {
-                    throw new Exception($this->getI18n()->__('This article does not exist'));
+                    throw new Exception($this->getI18n()->__('This page does not exist'));
                 }
-                if (!framework\Context::getModule('publish')->canUserDeleteArticle($this->article)) {
+                if (!framework\Context::getModule('publish')->canUserEditArticle($this->article)) {
                     throw new Exception($this->getI18n()->__('You do not have permission to delete this article'));
                 }
-                if (!$request['article_name']) {
-                    throw new Exception($this->getI18n()->__('Please specify an article name'));
+                $parent_article = $this->article->getParentArticle();
+                if ($parent_article instanceof Article) {
+                    $forward_url = $parent_article->getLink();
                 } else {
-                    Article::deleteByName($request['article_name']);
+                    $main_article = Articles::getTable()->getOrCreateMainPage($this->article->getProject());
+                    $forward_url = $main_article->getLink();
                 }
+                $this->article->delete();
+                $options = ($this->article->isRedirect()) ? ['message' => $this->getI18n()->__('The named link was deleted')] : ['forward' => $forward_url];
+
+                return $this->renderJSON($options);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
                 return $this->renderJSON(['title' => $this->getI18n()->__('An error occured'), 'error' => $e->getMessage()]);
             }
 
-            return $this->renderJSON(['message' => $this->getI18n()->__('The article was deleted')]);
+            return $this->renderJSON(['message' => $this->getI18n()->__('The page was deleted')]);
         }
 
         /**
@@ -256,7 +368,7 @@
          */
         public function runGetAvailableParents(Request $request)
         {
-            $articles = Articles::getTable()->findArticles($this->article, $request['find_article'], $this->article->getProject());
+            $articles = Articles::getTable()->findArticles($request['find_article'], $this->article->getProject(), $this->article);
 
             $parent_articles = [];
             foreach ($articles as $article) {
@@ -280,7 +392,9 @@
             });
             $article = $this->article;
 
-            return $this->renderJSON(['list' => $this->getComponentHTML('publish/getavailableparents', compact('parent_articles', 'article_counts', 'article'))]);
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('publish/getavailableparents', compact('parent_articles', 'article_counts', 'article'))
+            ]);
         }
 
         /**
@@ -302,60 +416,119 @@
          */
         public function runEditArticle(Request $request)
         {
-            if (!$this->article) {
-                $this->article = new Article();
-                if ($this->selected_project instanceof Project) {
-                    $this->article->setProject($this->selected_project);
-                }
-            }
             if (!$this->article->canEdit()) {
                 framework\Context::setMessage('publish_article_error', framework\Context::getI18n()->__('You do not have permission to edit this article'));
                 $this->forward($this->article->getLink());
             }
 
+            if ($request['copy']) {
+                $new_article = $this->article->copy((bool) $request['copy_attachments'], (bool) $request['copy_comments'], (bool) $request['copy_child_articles']);
+                framework\Context::setMessage('publish_article_message', framework\Context::getI18n()->__('The page has been copied'));
+                return $this->renderJSON(['forward' => $new_article->getLink()]);
+            }
+
             if ($request['convert']) {
-                $this->article->setContentSyntax(framework\Settings::SYNTAX_EDITOR_JS);
-                $json = ['time' => $this->article->getLastUpdatedDate() * 1000, 'blocks' => [
-                    ['type' => 'paragraph', 'data' => ['text' => $this->article->getContent()]]
-                ], 'version' => '2.17.0'];
-                $this->article->setContent(json_encode($json));
+                $this->article->convert();
                 $this->convert = true;
             }
 
+            if ($request['update']) {
+                switch ($request['article_action']) {
+                    case 'update-checklist-item':
+                        $this->article->updateChecklistItem($request['block_index'], $request['list_index'], (bool) $request['checked']);
+                        $this->article->save();
+                        break;
+                }
+
+                return $this->renderJSON($this->article->toJSON());
+            }
+
+            if ($request->hasParameter('is_category')) {
+                $this->article->setIsCategory($request['is_category']);
+            }
+            if ($request->hasParameter('parent_article_id')) {
+                $this->article->setParentArticle(Articles::getTable()->selectById($request['parent_article_id']));
+                if ($this->article->getParentArticle() instanceof Article && $this->article->getParentArticle()->isCategory()) {
+                    $this->article->setIsCategory(true);
+                }
+            }
+            if ($request->hasParameter('category_id')) {
+                $this->article->addCategory($request['category_id'], false);
+            }
+
             if ($request->isPost()) {
-                $this->preview = (bool) $request['preview'];
-                $this->change_reason = $request['change_reason'];
                 try {
                     if ($request['article_name'] && $this->article->getName() !== 'Main Page') {
                         $this->article->setName($request['article_name']);
                         $this->article->setParentArticle($request['parent_article_id']);
                     }
-                    $this->article->setContentSyntax($request['article_content_syntax']);
+                    $this->article->setContentSyntax($request->getParameter('article_content_syntax', Settings::SYNTAX_EDITOR_JS));
                     $this->article->setContent($request->getRawParameter('article_content'));
 
                     if (!trim($this->article->getName()))
-                        throw new Exception(framework\Context::getI18n()->__('You need to specify a valid article name'));
-
-                    if (!$this->preview && framework\Context::getModule('publish')->getSetting('require_change_reason') == 1 && (!$this->change_reason || trim($this->change_reason) == ''))
-                        throw new Exception(framework\Context::getI18n()->__('You have to provide a reason for the changes'));
+                        throw new Exception(framework\Context::getI18n()->__('You need to specify a valid page name'));
 
                     if ($this->article->getID() && $this->article->getLastUpdatedDate() != $request['last_modified'])
-                        throw new Exception(framework\Context::getI18n()->__('The file has been modified since you last opened it'));
+                        throw new Exception(framework\Context::getI18n()->__('The page has been modified since you last opened it'));
 
-                    if (!$this->preview) {
-                        $this->article->doSave([], $request['change_reason']);
-                        framework\Context::setMessage('publish_article_message', framework\Context::getI18n()->__('The article was saved'));
-                        return $this->renderJSON(['forward' => $this->article->getLink()]);
+                    if ($request->hasParameter('project_id')) {
+                        $this->article->setProject($request['project_id']);
+                    } else {
+                        $this->article->setProject(framework\Context::getCurrentProject());
                     }
+
+                    $this->article->save();
+
+                    if ($request->hasParameter('return_value')) {
+                        switch ($request->getParameter('return_value')) {
+                            case 'sidebarlink':
+                                return $this->renderJSON(['component' => $this->getComponentHTML('publish/sidebarlink', [
+                                    'parents' => [],
+                                    'article' => $this->article,
+                                    'is_selected' => false,
+                                    'main_article' => $this->article])]);
+                                break;
+                            case 'category_sidebar':
+                                $options = [
+                                    'parents' => [],
+                                    'category' => $this->article
+                                ];
+
+                                return $this->renderJSON(['component' => $this->getComponentHTML('publish/editcategorysidebarlink', $options)]);
+                                break;
+                        }
+                    }
+
+                    $categories = $request->getParameter('categories', []);
+                    foreach ($this->article->getCategories() as $categoryLink) {
+                        if (!in_array($categoryLink->getID(), $categories)) {
+                            $categoryLink->delete();
+                        } elseif (array_key_exists($categoryLink->getID(), $categories)) {
+                            unset($categories[$categoryLink->getID()]);
+                        }
+                    }
+                    foreach ($categories as $category_id) {
+                        $this->article->addCategory($category_id);
+                    }
+
+                    framework\Context::setMessage('publish_article_message', $this->article->isCategory() ? framework\Context::getI18n()->__('The category was saved') : framework\Context::getI18n()->__('The page was saved'));
+                    return $this->renderJSON(['forward' => $this->article->getLink()]);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
                     return $this->renderJSON(['error' => $e->getMessage()]);
                 }
             }
+
+            $this->attachments = $this->article->getFiles();
+            $this->parents = $this->article->getCategoryParentsArray();
+            $top_level_categories = Articles::getTable()->getSidebarArticles(true, $this->article->getProject());
+            usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
+            $this->top_level_categories = $top_level_categories;
+
         }
 
         /**
-         * Show an article
+         * Submenu for article children
          *
          * @Route(name="api_article_menu", url="/docs-api/:article_id/menu/:selected_article_id")
          * @param Request $request
@@ -365,7 +538,7 @@
             $main_article = $this->article;
             $selected_article = Articles::getTable()->selectById($request['selected_article_id']);
 
-            $menu = $this->getComponentHTML('publish/manualsidebarlinkchildren', [
+            $menu = $this->getComponentHTML('publish/sidebarlinkchildren', [
                 'main_article' => $main_article,
                 'article' => $selected_article,
                 'is_selected' => false,
@@ -374,6 +547,31 @@
                 'loaded' => true,
                 'has_children' => $main_article->hasChildren(),
                 'children' => $main_article->getChildren()
+            ]);
+
+            return $this->renderJSON(['menu' => $menu]);
+        }
+
+        /**
+         * Submenu for article categories
+         *
+         * @Route(name="api_article_categories", url="/docs-api/:article_id/categories/:selected_category_id")
+         * @param Request $request
+         */
+        public function runGetCategoriesMenu(Request $request)
+        {
+            $article = $this->article;
+            $category = Articles::getTable()->selectById($request['selected_category_id']);
+
+            $menu = $this->getComponentHTML('publish/editcategorysidebarlinkchildren', [
+                'category' => $category,
+                'article' => $article,
+                'is_selected' => false,
+                'is_parent' => false,
+                'parents' => [],
+                'loaded' => true,
+                'has_children' => $category->hasChildren(),
+                'children' => $category->getChildren()
             ]);
 
             return $this->renderJSON(['menu' => $menu]);
@@ -391,7 +589,7 @@
         /**
          * Toggle favourite article (starring)
          *
-         * @Route(name="toggle_favourite_article", url="/docs/:article_id/:user_id")
+         * @Route(name="toggle_favourite_article", url="/toggle_favourite_article/:article_id/:user_id")
          * @param Request $request
          */
         public function runToggleFavouriteArticle(Request $request)
@@ -411,7 +609,7 @@
 
             // Retrieve article and user from database, making sure they exist.
             $article = Articles::getTable()->selectById($article_id);
-            $user = User::getB2DBTable()->selectById($user_id);
+            $user = Users::getTable()->selectById($user_id);
 
             if (!$article instanceof Article || !$user instanceof User) {
                 // Try not to reveal any additional information to caller about existence of user/article.
@@ -428,15 +626,17 @@
             }
 
             if ($user->isArticleStarred($article_id)) {
-                $retval = !$user->removeStarredArticle($article_id);
+                $user->removeStarredArticle($article_id);
+                $starred = false;
             } else {
-                $retval = $user->addStarredArticle($article_id);
+                $user->addStarredArticle($article_id);
+                $starred = true;
                 if ($user->getID() != $this->getUser()->getID()) {
                     framework\Event::createNew('core', 'article_subscribe_user', $article, compact('user'))->trigger();
                 }
             }
 
-            return $this->renderText(json_encode(['starred' => $retval, 'subscriber' => $this->getComponentHTML('publish/articlesubscriber', ['user' => $user, 'article' => $article])]));
+            return $this->renderJSON(['starred' => $starred, 'subscriber' => $this->getComponentHTML('publish/articlesubscriber', ['user' => $user, 'article' => $article])]);
         }
 
         protected function _getArticleNameDetails($article_name)

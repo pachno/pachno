@@ -2,22 +2,27 @@
 
     namespace pachno\core\entities;
 
+    use pachno\core\entities\common\FormObject;
     use pachno\core\entities\tables\Permissions;
+    use pachno\core\entities\tables\Projects;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Request;
     use pachno\core\modules\publish\Publish;
 
     /**
      * @Table(name="\pachno\core\entities\tables\ListTypes")
      */
-    class Role extends Datatype
+    class Role extends Datatype implements FormObject
     {
 
-        const ITEMTYPE = Datatype::ROLE;
+        public const ITEMTYPE = Datatype::ROLE;
 
         protected static $_items = null;
 
         protected $_itemtype = Datatype::ROLE;
 
         /**
+         * @var Permission[]
          * @Relates(class="\pachno\core\entities\RolePermission", collection=true, foreign_column="role_id")
          */
         protected $_permissions = null;
@@ -28,65 +33,39 @@
         {
             $roles = [];
             $roles['Developer'] = [
-                ['permission' => 'page_project_allpages_access'],
-                ['permission' => 'canseeproject'],
-                ['permission' => 'canseeprojecthierarchy'],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'canseetimespent'],
-                ['permission' => 'canlockandeditlockedissues'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'caneditissue'],
-                ['permission' => 'caneditissuecustomfields'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
-                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
-                ['permission' => Publish::PERMISSION_DELETE_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_DEVELOPER],
+                ['permission' => Permission::PERMISSION_MANAGE_PROJECT_LOCK_ISSUES],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_PROJECT_CREATE_ISSUES],
             ];
             $roles['Project manager'] = [
-                ['permission' => 'page_project_allpages_access'],
-                ['permission' => 'canseeproject'],
-                ['permission' => 'canseeprojecthierarchy'],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'canseetimespent'],
-                ['permission' => 'canlockandeditlockedissues'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'caneditissue'],
-                ['permission' => 'caneditissuecustomfields'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
-                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
-                ['permission' => Publish::PERMISSION_DELETE_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_MANAGE_PROJECT],
+                ['permission' => Permission::PERMISSION_PROJECT_CREATE_ISSUES],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION],
             ];
             $roles['Tester'] = [
-                ['permission' => 'page_project_allpages_access'],
-                ['permission' => 'canseeproject'],
-                ['permission' => 'canseeprojecthierarchy'],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'canseetimespent'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'caneditissuecustomfields'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostandeditcomments'],
-                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
-                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES],
+                ['permission' => Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_OWN],
             ];
             $roles['Documentation editor'] = [
-                ['permission' => 'page_project_allpages_access'],
-                ['permission' => 'canseeproject'],
-                ['permission' => 'canseeprojecthierarchy'],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'canseetimespent'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostandeditcomments'],
-                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
-                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES_COMMENTS],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION],
             ];
 
             foreach ($roles as $name => $permissions) {
-                $role = new Role();
+                $role = new self();
                 $role->setName($name);
                 $role->setScope($scope);
                 $role->save();
@@ -117,9 +96,9 @@
          *
          * @return Role[]
          */
-        public static function getAll()
+        public static function getAll(): array
         {
-            return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, null);
+            return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, 0);
         }
 
         /**
@@ -127,9 +106,10 @@
          *
          * @return Role[]
          */
-        public static function getGlobalRoles()
+        public static function getGlobalRoles(): array
         {
             $roles = self::getAll();
+
             $global_roles = [];
             foreach ($roles as $id => $role) {
                 if ($role->isSystemRole()) {
@@ -145,7 +125,7 @@
          *
          * @return Role[]
          */
-        public static function getByProjectID($project_id)
+        public static function getByProjectID($project_id): array
         {
             return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, $project_id);
         }
@@ -158,11 +138,18 @@
         /**
          * Return the associated project if any
          *
-         * @return Project
+         * @return ?Project
          */
-        public function getProject()
+        public function getProject(): ?Project
         {
-            return ($this->getItemdata()) ? Project::getB2DBTable()->selectById((int)$this->getItemdata()) : null;
+            return ($this->getItemdata()) ? Projects::getTable()->selectById((int)$this->getItemdata()) : null;
+        }
+
+        public function getProjectId(): int
+        {
+            $project = $this->getProject();
+
+            return ($project instanceof Project) ? $project->getID() : 0;
         }
 
         public function setProject($project)
@@ -189,9 +176,11 @@
          */
         public function removePermission(RolePermission $permission)
         {
-            $this->_populatePermissions();
             $permission_id = $permission->getID();
-            unset($this->_permissions[$permission_id]);
+            if (is_array($this->_permissions)) {
+                unset($this->_permissions[$permission_id]);
+            }
+
             tables\Permissions::getTable()->deleteRolePermission($this->getID(), $permission->getModule(), $permission->getPermission());
             $permission->delete();
         }
@@ -200,13 +189,6 @@
         {
             if ($this->_permissions === null) {
                 $this->_b2dbLazyLoad('_permissions');
-            }
-        }
-
-        public function addPermissions($permissions)
-        {
-            foreach ($permissions as $permission) {
-                $this->addPermission($permission);
             }
         }
 
@@ -240,12 +222,60 @@
             return $this->_number_of_users;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\Permissions::getTable()->deleteRolePermissions($this->getID());
             tables\RolePermissions::getTable()->clearPermissionsForRole($this->getID());
             tables\ProjectAssignedTeams::getTable()->deleteByRoleID($this->getID());
             tables\ProjectAssignedUsers::getTable()->deleteByRoleID($this->getID());
+        }
+
+        public function updateFromRequest(Request $request)
+        {
+            $this->setName($request['name']);
+            $this->setProject($request['project_id']);
+        }
+
+        public function saveFromRequest(Request $request)
+        {
+            $this->save();
+            $new_permissions = [];
+            foreach ($request['permissions'] ?: [] as $new_permission) {
+                $permission_details = explode(',', $new_permission);
+                $new_permissions[$permission_details[2]] = ['module' => $permission_details[0], 'target_id' => $permission_details[1]];
+            }
+            $existing_permissions = [];
+            foreach ($this->getPermissions() as $existing_permission) {
+                if (!array_key_exists($existing_permission->getPermission(), $new_permissions)) {
+                    $this->removePermission($existing_permission);
+                } else {
+                    $existing_permissions[$existing_permission->getPermission()] = $new_permissions[$existing_permission->getPermission()];
+                    unset($new_permissions[$existing_permission->getPermission()]);
+                }
+            }
+            foreach ($new_permissions as $permission_key => $details) {
+                $p = new RolePermission();
+                $p->setModule($details['module']);
+                $p->setPermission($permission_key);
+                if ($details['target_id']) {
+                    $p->setTargetID($details['target_id']);
+                }
+
+                $this->addPermission($p);
+            }
+            foreach ($existing_permissions as $permission_key => $details) {
+                $p = new RolePermission();
+                $p->setModule($details['module']);
+                $p->setPermission($permission_key);
+                if ($details['target_id']) {
+                    $p->setTargetID($details['target_id']);
+                }
+
+                tables\Permissions::getTable()->addRolePermission($this, $p);
+            }
+
+            Context::clearPermissionsCache();
+            Context::cacheAllPermissions();
         }
 
     }

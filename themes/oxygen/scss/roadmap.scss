@@ -2,6 +2,7 @@
 #project_planning {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 
 #project_roadmap {
@@ -9,12 +10,12 @@
   flex: 1 1 auto;
   flex-direction: column;
 
-  .indicator {
+  > .indicator {
     display: none;
   }
 
   &.loading {
-    .indicator {
+    > .indicator {
       display: block;
     }
   }
@@ -31,7 +32,7 @@
 }
 
 .milestone-container {
-  flex: 0 0 300px;
+  flex: 0 0 350px;
   display: flex;
   flex-direction: row;
   justify-content: stretch;
@@ -56,24 +57,49 @@
     color: #141823;
     transition: box-shadow .25s ease-in-out;
 
+    .indicator {
+      display: none;
+      margin-left: auto;
+      color: $theme-text-color-lighter;
+    }
+
+    &.loading {
+      .indicator {
+        display: inline-block;
+      }
+
+      .header {
+        .info {
+          > span {
+            &:last-child {
+              margin-left: .35em;
+            }
+          }
+        }
+      }
+    }
+
     .header {
       display: flex;
       flex-direction: column;
+      border-bottom: 1px solid rgba(100, 100, 100, 0.2);
+      box-sizing: border-box;
 
       .name {
         font-size: 1.3em;
         font-weight: $theme-font-weight-bold;
         padding: .5em;
         line-height: 1em;
+        box-sizing: border-box;
       }
 
       .info {
-        padding: .5em;
+        padding: .65em;
         font-weight: $theme-font-weight-bold;
-        border-bottom: 1px solid rgba(100, 100, 100, 0.2);
         color: $theme-text-color-lightest;
         display: flex;
         flex-direction: row;
+        box-sizing: border-box;
 
         > span {
           flex: 0 0 auto;
@@ -81,6 +107,154 @@
           &:last-child {
             margin-left: auto;
           }
+        }
+      }
+
+      .percent-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        box-sizing: border-box;
+        padding: .65em;
+
+        .percent-header {
+          font-weight: $theme-font-weight-bold;
+          font-size: 1em;
+          box-sizing: border-box;
+          padding: 0 0 .35em 0;
+        }
+
+        .percent_unfilled {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: stretch;
+          flex: 1 1 auto;
+          height: 10px;
+
+          .percent_filled {
+            flex: 0 0 auto;
+            min-width: 1%;
+            height: 100%;
+          }
+        }
+      }
+    }
+
+    .issues {
+      display: flex;
+      flex-direction: column;
+
+      .milestone-issue {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        cursor: pointer;
+        font-size: .9em;
+
+        &.with-cover {
+          padding-top: 0;
+
+          .issue-header {
+            padding: 4.5em 0 0 0;
+            background-position: center top;
+            background-size: cover;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            border-radius: 0;
+            align-items: flex-start;
+
+            .issue-number {
+              padding: .25em .5em;
+              background-color: rgba(0, 0, 0, .5);
+              color: #FFF;
+              font-weight: $theme-font-weight-bold;
+            }
+
+            .issue-title {
+              background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .7) 60%);
+              color: #FFF;
+              padding: 1em .5em .5em .5em;
+              width: 100%;
+            }
+          }
+        }
+
+        &.issue_closed {
+          .issue-header {
+            text-decoration: line-through;
+          }
+        }
+
+        .issue-header {
+          display: flex;
+          flex-direction: column;
+          padding: .3em .75em;
+
+          .dropper-container {
+            display: none;
+          }
+
+          .issue-number {
+            font-size: .9em;
+            font-weight: $theme-font-weight-light;
+          }
+
+          .issue-title {
+            font-size: 1.2em;
+            font-weight: $theme-font-weight-regular;
+          }
+        }
+
+        .issue-info {
+          padding: .5em .75em;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+
+          &:empty {
+            padding: 0;
+          }
+
+          .attachments {
+            padding: .25em .5em;
+            border-radius: .25em;
+            align-items: center;
+            justify-content: flex-start;
+            display: flex;
+            flex-direction: row;
+            background: rgba(200, 200, 200, .2);
+            color: $theme-text-color-lighter;
+            font-size: .9em;
+            font-weight: $theme-font-weight-regular;
+            margin-right: .5em;
+
+            &.hidden {
+              display: none;
+            }
+
+            .fas,
+            .far {
+              + span {
+                margin-left: .25em;
+              }
+            }
+          }
+
+          .status-badge {
+            padding: .3em .5em;
+          }
+
+          .assignee {
+            margin-left: auto;
+          }
+        }
+
+        + .milestone-issue {
+          border-top: 1px solid rgba(100, 100, 100, 0.2);
         }
       }
     }

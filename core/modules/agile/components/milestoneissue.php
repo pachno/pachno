@@ -35,7 +35,7 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
         </div>
         <div class="issue-link-container">
             <div class="issue-link">
-                <a href="<?= make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())); ?>" title="<?= $issue->getFormattedTitle(); ?>" target="_blank">
+                <a href="<?= $issue->getUrl(); ?>" title="<?= $issue->getFormattedTitle(); ?>" target="_blank">
                     <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
                     <span><?= $issue->getFormattedTitle(true); ?></span>
                 </a>
@@ -50,7 +50,7 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
                 <?php endforeach; ?>
                 <div class="issue_estimates">
                     <div class="issue_estimate points" style="<?php if (!$issue->getEstimatedPoints() && !$issue->getSpentPoints()) echo 'display: none;'; ?>"><?php if ($issue->getSpentPoints()): ?><span title="<?php echo __('Spent points'); ?>"><?php echo $issue->getSpentPoints(); ?></span>/<?php endif; ?><span title="<?php echo __('Estimated points'); ?>"><?php echo $issue->getEstimatedPoints(); ?></span></div>
-                    <div class="issue_estimate hours" style="<?php if (!$issue->getEstimatedHoursAndMinutes(true, true) && !$issue->getSpentHoursAndMinutes(true, true)) echo 'display: none;'; ?>"><?php if ($issue->getSpentHoursAndMinutes(true, true)): ?><span title="<?php echo __('Spent hours'); ?>"><?php echo $issue->getSpentHoursAndMinutes(true, true); ?></span>/<?php endif; ?><span title="<?php echo __('Estimated hours'); ?>"><?php echo $issue->getEstimatedHoursAndMinutes(true, true); ?></span></div>
+                    <div class="issue_estimate hours" style="<?php if (!$issue->getEstimatedHoursAndMinutes() && !$issue->getSpentHoursAndMinutes()) echo 'display: none;'; ?>"><?php if ($issue->getSpentHoursAndMinutes()): ?><span title="<?php echo __('Spent hours'); ?>"><?php echo $issue->getSpentHoursAndMinutes(); ?></span>/<?php endif; ?><span title="<?php echo __('Estimated hours'); ?>"><?php echo $issue->getEstimatedHoursAndMinutes(); ?></span></div>
                 </div>
                 <?php /* if ($board->getEpicIssuetypeID() && $issue->hasParentIssuetype($board->getEpicIssuetypeID())): ?>
                     <?php foreach ($issue->getParentIssues() as $parent): ?>

@@ -13,7 +13,10 @@
     <span class="separator"><?= fa_image_tag('chevron-right'); ?></span>
 <?php endif; ?>
 <?php if ($include_link): ?>
-    <a href="<?= $article->getLink(); ?>" class="article-name"><?= $article->getName(); ?></a>
+    <a href="<?= $article->getLink(); ?>" class="article-name">
+        <?php if ($article->isCategory()) echo fa_image_tag('layer-group', ['class' => 'icon']); ?>
+        <span><?= $article->getName(); ?></span>
+    </a>
 <?php else: ?>
     <span class="article-name"><?= $article->getName(); ?></span>
 <?php endif; ?>

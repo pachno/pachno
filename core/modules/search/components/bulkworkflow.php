@@ -2,7 +2,7 @@
 <div class="backdrop_box medium" id="viewissue_add_item_div">
     <div class="backdrop_detail_header">
         <span><?php echo __('Perform workflow step'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="header"><?php echo __('%number_of issues selected', array('%number_of' => count($issues))); ?></div>

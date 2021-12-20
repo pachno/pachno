@@ -27,21 +27,21 @@
     class UserArticles extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'userarticles';
+        public const B2DBNAME = 'userarticles';
 
-        const ID = 'userarticles.id';
+        public const ID = 'userarticles.id';
 
-        const SCOPE = 'userarticles.scope';
+        public const SCOPE = 'userarticles.scope';
 
-        const ARTICLE = 'userarticles.article';
+        public const ARTICLE_ID = 'userarticles.article';
 
-        const UID = 'userarticles.uid';
+        public const USER_ID = 'userarticles.uid';
 
-        public function _setupIndexes()
+        public function _setupIndexes(): void
         {
-            $this->_addIndex('uid_scope', [self::UID, self::SCOPE]);
+            $this->_addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
         }
 
         public function getUserIDsByArticleID($article_id)
@@ -49,11 +49,11 @@
             $uids = [];
             $query = $this->getQuery();
 
-            $query->where(self::ARTICLE, $article_id);
+            $query->where(self::ARTICLE_ID, $article_id);
 
             if ($res = $this->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $uid = $row->get(self::UID);
+                    $uid = $row->get(self::USER_ID);
                     $uids[$uid] = $uid;
                 }
             }
@@ -68,11 +68,11 @@
 
             if (count($old_watchers)) {
                 $insertion = new Insertion();
-                $insertion->add(self::ARTICLE, $to_article_id);
+                $insertion->add(self::ARTICLE_ID, $to_article_id);
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 foreach ($old_watchers as $uid) {
                     if (!in_array($uid, $new_watchers)) {
-                        $insertion->add(self::UID, $uid);
+                        $insertion->add(self::USER_ID, $uid);
                         $this->rawInsert($insertion);
                     }
                 }
@@ -82,9 +82,9 @@
         public function getUserStarredArticles($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->join(tables\Articles::getTable(), Articles::ID, self::ARTICLE);
+            $query->join(tables\Articles::getTable(), Articles::ID, self::ARTICLE_ID);
             $query->where(Articles::DELETED, 0);
 
             $res = $this->select($query);
@@ -95,8 +95,8 @@
         public function addStarredArticle($user_id, $article_id)
         {
             $insertion = new Insertion();
-            $insertion->add(self::ARTICLE, $article_id);
-            $insertion->add(self::UID, $user_id);
+            $insertion->add(self::ARTICLE_ID, $article_id);
+            $insertion->add(self::USER_ID, $user_id);
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
 
             $this->rawInsert($insertion);
@@ -105,8 +105,8 @@
         public function removeStarredArticle($user_id, $article_id)
         {
             $query = $this->getQuery();
-            $query->where(self::ARTICLE, $article_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::ARTICLE_ID, $article_id);
+            $query->where(self::USER_ID, $user_id);
 
             $this->rawDelete($query);
 
@@ -116,17 +116,17 @@
         public function hasStarredArticle($user_id, $article_id)
         {
             $query = $this->getQuery();
-            $query->where(self::ARTICLE, $article_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::ARTICLE_ID, $article_id);
+            $query->where(self::USER_ID, $user_id);
 
             return $this->count($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::ARTICLE, Articles::getTable(), Articles::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::ARTICLE_ID, Articles::getTable(), Articles::ID);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
         }
 
     }

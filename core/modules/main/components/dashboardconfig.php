@@ -1,3 +1,10 @@
+<?php
+
+    /**
+     * @var \pachno\core\entities\Dashboard $dashboard
+     */
+
+?>
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo __('Configure dashboard'); ?></span>
@@ -6,7 +13,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <ul id="views_list" style="float: left; margin: 0; padding: 0; list-style: none;" class="sortable">
-        <?php foreach ($dashboardViews as $view): ?>
+        <?php foreach ($dashboard->getViews() as $view): ?>
             <li id="view_<?php echo $view->getDetail(); ?>" class="rounded_box mediumgrey">
                 <span class="dashboard_view_data" id="<?php echo $view->getDetail(); ?>_<?php echo $view->getType(); ?>"><?php echo ($view->getType()) ? __($views[$view->getType()][$view->getDetail()]) : __('...Select a view...'); ?></span>
                 <?php echo javascript_link_tag(image_tag('tabmenu_dropdown.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').toggleClass('verylightyellow');this.up('li').toggleClass('mediumgrey');")); ?>

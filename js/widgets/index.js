@@ -11,6 +11,7 @@ import 'simplebar';
 import 'simplebar/dist/simplebar.css';
 import 'air-datepicker/dist/js/datepicker';
 import 'air-datepicker/dist/js/i18n/datepicker.en';
+import hljs from 'highlight.js';
 
 export const EVENTS = {
     update: 'widgets-update'
@@ -34,6 +35,7 @@ const updateWidgets = function () {
 
         Pachno.trigger(EVENTS.update);
 
+        hljs.highlightAll();
         resolve();
     });
 }
@@ -44,6 +46,7 @@ const clearPopupsAndButtons = function (event) {
             return;
         }
     }
+
     $('.dropper.active').removeClass('active');
     $('.fancy-dropdown.active').removeClass('active');
 }
@@ -54,11 +57,18 @@ const toggleExpander = function (event) {
     $(this).closest('.expandable').toggleClass('expanded');
 };
 
-const toggleSidebar = function (event) {
+const toggleSidebarCollapsed = function (event) {
     event.stopPropagation();
     event.preventDefault();
 
     $(this).closest('.sidebar').toggleClass('collapsed');
+};
+
+const toggleSidebar = function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    $('.sidebar').toggleClass('collapsed');
 };
 
 const toggleDropper = function (e) {
@@ -92,8 +102,9 @@ const setupListeners = function () {
     const $body = $('body');
 
     $body.on('click', '.expandable .expander', toggleExpander);
-    $body.on('click', '.sidebar .collapser a', toggleSidebar);
+    $body.on('click', '.sidebar .collapser a', toggleSidebarCollapsed);
     $body.on('click', '.dropper', toggleDropper);
+    $body.on('click', '.menu-toggler', toggleSidebar);
 
     $body.on("click", function (e) {
         if (['INPUT'].indexOf(e.target.nodeName) !== -1) {
@@ -102,7 +113,7 @@ const setupListeners = function () {
             return;
         } else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick')) {
             return;
-        } else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick')) {
+        } else if (e.target && e.target.classList.contains('dropper')) {
             return;
         }
 

@@ -2,27 +2,25 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criteria;
     use b2db\Criterion;
     use b2db\Query;
     use b2db\QueryColumnSort;
     use b2db\Row;
+    use b2db\Saveable;
+    use b2db\Table;
     use b2db\Update;
-
-    /**
-     * Issue spent times table
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage tables
-     */
+    use pachno\core\entities\IssueSpentTime;
+    use pachno\core\framework\Context;
 
     /**
      * Issue spent times table
      *
      * @package pachno
      * @subpackage tables
+     *
+     * @method IssueSpentTime selectById($id, Query $query = null, $join = 'all')
+     * @method IssueSpentTime[] select(Query $query, $join = 'all')
      *
      * @Table(name="issue_spenttimes")
      * @Entity(class="\pachno\core\entities\IssueSpentTime")
@@ -30,34 +28,41 @@
     class IssueSpentTimes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'issue_spenttimes';
+        public const B2DBNAME = 'issue_spenttimes';
 
-        const ID = 'issue_spenttimes.id';
+        public const ID = 'issue_spenttimes.id';
 
-        const SCOPE = 'issue_spenttimes.scope';
+        public const SCOPE = 'issue_spenttimes.scope';
 
-        const ISSUE_ID = 'issue_spenttimes.issue_id';
+        public const ISSUE_ID = 'issue_spenttimes.issue_id';
 
-        const EDITED_BY = 'issue_spenttimes.edited_by';
+        public const EDITED_BY = 'issue_spenttimes.edited_by';
 
-        const EDITED_AT = 'issue_spenttimes.edited_at';
+        public const EDITED_AT = 'issue_spenttimes.edited_at';
 
-        const SPENT_MONTHS = 'issue_spenttimes.spent_months';
+        public const SPENT_MONTHS = 'issue_spenttimes.spent_months';
 
-        const SPENT_WEEKS = 'issue_spenttimes.spent_weeks';
+        public const SPENT_WEEKS = 'issue_spenttimes.spent_weeks';
 
-        const SPENT_DAYS = 'issue_spenttimes.spent_days';
+        public const SPENT_DAYS = 'issue_spenttimes.spent_days';
 
-        const SPENT_HOURS = 'issue_spenttimes.spent_hours';
+        public const SPENT_HOURS = 'issue_spenttimes.spent_hours';
 
-        const SPENT_MINUTES = 'issue_spenttimes.spent_minutes';
+        public const SPENT_MINUTES = 'issue_spenttimes.spent_minutes';
 
-        const SPENT_POINTS = 'issue_spenttimes.spent_points';
+        public const SPENT_POINTS = 'issue_spenttimes.spent_points';
 
-        const ACTIVITY_TYPE = 'issue_spenttimes.activity_type';
+        public const ACTIVITY_TYPE = 'issue_spenttimes.activity_type';
 
+        /**
+         * @param $startdate
+         * @param $enddate
+         * @param $issue_ids
+         * @return int[][]|int[]
+         * @throws \b2db\Exception
+         */
         public function getSpentTimesByDateAndIssueIDs($startdate, $enddate, $issue_ids)
         {
             $points_retarr = [];
@@ -250,6 +255,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::ISSUE_ID, $issue_id);
+            $query->where('issue_spenttimes.completed', true);
             $query->addSelectionColumn(self::SPENT_POINTS, 'points', Query::DB_SUM);
             $query->addSelectionColumn(self::SPENT_MINUTES, 'minutes', Query::DB_SUM);
             $query->addSelectionColumn(self::SPENT_HOURS, 'hours', Query::DB_SUM);
@@ -269,6 +275,46 @@
             $update->add(self::ACTIVITY_TYPE, $new_activity_type_id);
 
             $this->rawUpdate($update, $query);
+        }
+
+        protected function migrateData(Table $old_table): void
+        {
+            $update = new Update();
+            $update->add('issue_spenttimes.completed', true);
+
+            $this->rawUpdate($update);
+        }
+
+        public function getAutoTimersByUserId($user_id)
+        {
+            $query = $this->getQuery();
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.completed', false);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $query->where($criteria);
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.paused', true);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $criteria->and('issue_spenttimes.completed', false);
+            $query->or($criteria);
+
+            return $this->select($query);
+        }
+
+        public function countAutoTimersByUserId($user_id)
+        {
+            $query = $this->getQuery();
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.completed', false);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $query->where($criteria);
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.paused', true);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $criteria->and('issue_spenttimes.completed', false);
+            $query->or($criteria);
+
+            return $this->count($query);
         }
 
     }

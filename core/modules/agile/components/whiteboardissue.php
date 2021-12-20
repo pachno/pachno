@@ -14,7 +14,7 @@
     <?php //include_component('agile/colorpicker', array('issue' => $issue)); ?>
     <div class="issue_estimates">
         <div class="issue_estimate points" style="<?php if (!$issue->getEstimatedPoints() && !$issue->getSpentPoints()) echo 'display: none;'; ?>"><?php if ($issue->getSpentPoints()): ?><span title="<?php echo __('Spent points'); ?>"><?php echo $issue->getSpentPoints(); ?></span>/<?php endif; ?><span title="<?php echo __('Estimated points'); ?>"><?php echo $issue->getEstimatedPoints(); ?></span></div>
-        <div class="issue_estimate hours" style="<?php if (!$issue->getEstimatedHoursAndMinutes(true, true) && !$issue->getSpentHoursAndMinutes(true, true)) echo 'display: none;'; ?>"><?php if ($issue->getSpentHoursAndMinutes(true, true)): ?><span title="<?php echo __('Spent hours'); ?>"><?php echo $issue->getSpentHoursAndMinutes(true, true); ?></span>/<?php endif; ?><span title="<?php echo __('Estimated hours'); ?>"><?php echo $issue->getEstimatedHoursAndMinutes(true, true); ?></span></div>
+        <div class="issue_estimate hours" style="<?php if (!$issue->getEstimatedHoursAndMinutes() && !$issue->getSpentHoursAndMinutes()) echo 'display: none;'; ?>"><?php if ($issue->getSpentHoursAndMinutes()): ?><span title="<?php echo __('Spent hours'); ?>"><?php echo $issue->getSpentHoursAndMinutes(); ?></span>/<?php endif; ?><span title="<?php echo __('Estimated hours'); ?>"><?php echo $issue->getEstimatedHoursAndMinutes(); ?></span></div>
     </div>
     <?php if ($issue->getPriority() instanceof \pachno\core\entities\Priority): ?>
         <div class="priority priority_<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getValue() : 0; ?>" title="<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? __($issue->getPriority()->getName()) : __('Priority not set'); ?>"><?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getAbbreviation() : '-'; ?></div>
@@ -30,10 +30,10 @@
         <?php endif; ?>
     </div>
     <?php /* if ($issue->hasChildIssues()): ?>
-         link_tag(make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())), $issue->getFormattedTitle(true, false), array('title' => $issue->getFormattedTitle(), 'target' => '_blank', 'class' => 'issue_header'))
+         link_tag($issue->getUrl(), $issue->getFormattedTitle(true, false), array('title' => $issue->getFormattedTitle(), 'target' => '_blank', 'class' => 'issue_header'))
         <ol class="child-issues">
             <?php foreach ($issue->getChildIssues() as $child_issue): ?>
-                <li title="<?php echo __e($child_issue->getFormattedTitle()); ?>" class="<?php if ($child_issue->isClosed()) echo 'closed'; ?>"><?php echo link_tag(make_url('viewissue', array('issue_no' => $child_issue->getFormattedIssueNo(), 'project_key' => $child_issue->getProject()->getKey())), $child_issue->getFormattedTitle(true), array('title' => $child_issue->getFormattedTitle(), 'target' => '_blank')); ?></li>
+                <li title="<?php echo __e($child_issue->getFormattedTitle()); ?>" class="<?php if ($child_issue->isClosed()) echo 'closed'; ?>"><?php echo link_tag($chile_issue->getUrl(), $child_issue->getFormattedTitle(true), array('title' => $child_issue->getFormattedTitle(), 'target' => '_blank')); ?></li>
             <?php endforeach; ?>
         </ol>
     <?php endif; */ ?>
@@ -50,7 +50,7 @@
                 <?php if ($swimlane->getBoard()->getEpicIssuetypeID() && $issue->hasParentIssuetype($swimlane->getBoard()->getEpicIssuetypeID())): ?>
                     <?php foreach ($issue->getParentIssues() as $parent): ?>
                         <?php if ($parent->getIssueType()->getID() == $swimlane->getBoard()->getEpicIssuetypeID()): ?>
-                            <?php echo link_tag(make_url('viewissue', array('issue_no' => $parent->getFormattedIssueNo(), 'project_key' => $parent->getProject()->getKey())), $parent->getShortname(), array('title' => $parent->getFormattedTitle(), 'target' => '_blank', 'class' => 'epic_badge', 'style' => 'background-color: ' . $parent->getCoverColor().'; color: ' . $parent->getAgileTextColor(), 'data-parent-epic-id' => $parent->getID())); ?>
+                            <?php echo link_tag($parent->getUrl(), $parent->getShortname(), array('title' => $parent->getFormattedTitle(), 'target' => '_blank', 'class' => 'epic_badge', 'style' => 'background-color: ' . $parent->getCoverColor().'; color: ' . $parent->getAgileTextColor(), 'data-parent-epic-id' => $parent->getID())); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>

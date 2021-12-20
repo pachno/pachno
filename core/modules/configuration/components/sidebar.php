@@ -14,17 +14,33 @@
             <?php else: ?>
                 <?php $url = make_url($info['route']); ?>
             <?php endif;?>
-            <a href="<?= $url; ?>" class="list-item<?php if ($is_selected): ?> selected<?php endif; ?>">
-                <?php if (isset($info['fa_icon'])): ?>
-                    <?php $style = (isset($info['fa_color'])) ? 'color: ' . $info['fa_color'] : ''; ?>
-                    <?= fa_image_tag($info['fa_icon'], ['style' => $style, 'class' => 'icon'], $info['fa_style']); ?>
-                <?php elseif (isset($info['module']) && $info['module'] != 'core'): ?>
-                    <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon'], false, $info['module']); ?>
-                <?php else: ?>
-                    <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon']); ?>
-                <?php endif; ?>
-                <span class="name"><?= $info['description']; ?></span>
-            </a>
+            <?php if (isset($info['disabled']) && $info['disabled']): ?>
+                <div class="list-item disabled" title="<?= __('This configuration section has been disabled in this release'); ?>">
+                    <?php if (isset($info['fa_icon'])): ?>
+                        <?php $style = (isset($info['fa_color'])) ? 'color: ' . $info['fa_color'] : ''; ?>
+                        <?= fa_image_tag($info['fa_icon'], ['style' => $style, 'class' => 'icon'], $info['fa_style']); ?>
+                    <?php elseif (isset($info['module']) && $info['module'] != 'core'): ?>
+                        <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon'], false, $info['module']); ?>
+                    <?php else: ?>
+                        <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon']); ?>
+                    <?php endif; ?>
+                    <span class="name">
+                        <?= $info['description']; ?>
+                    </span>
+                </div>
+            <?php else: ?>
+                <a href="<?= $url; ?>" class="list-item<?php if ($is_selected): ?> selected<?php endif; ?>">
+                    <?php if (isset($info['fa_icon'])): ?>
+                        <?php $style = (isset($info['fa_color'])) ? 'color: ' . $info['fa_color'] : ''; ?>
+                        <?= fa_image_tag($info['fa_icon'], ['style' => $style, 'class' => 'icon'], $info['fa_style']); ?>
+                    <?php elseif (isset($info['module']) && $info['module'] != 'core'): ?>
+                        <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon'], false, $info['module']); ?>
+                    <?php else: ?>
+                        <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon']); ?>
+                    <?php endif; ?>
+                    <span class="name"><?= $info['description']; ?></span>
+                </a>
+            <?php endif;?>
         <?php endforeach;?>
     <?php endforeach;?>
     </div>

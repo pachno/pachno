@@ -27,28 +27,27 @@
     class AgileBoard extends IdentifiableScoped
     {
 
-        const TYPE_GENERIC = 0;
+        public const TYPE_GENERIC = 0;
 
-        const TYPE_SCRUM = 1;
+        public const TYPE_SCRUM = 1;
 
-        const TYPE_KANBAN = 2;
+        public const TYPE_KANBAN = 2;
 
-        const SWIMLANES_NONE = '';
+        public const SWIMLANES_NONE = '';
+        public const SWIMLANES_ISSUES = 'issues';
+        public const SWIMLANES_GROUPING = 'grouping';
+        public const SWIMLANES_EXPEDITE = 'expedite';
 
-        const SWIMLANES_ISSUES = 'issues';
+        public const SWIMLANE_IDENTIFIER_ISSUETYPE = 'issuetype';
 
-        const SWIMLANES_GROUPING = 'grouping';
-
-        const SWIMLANES_EXPEDITE = 'expedite';
-
-        const BACKGROUND_COLOR_DEFAULT = '#0C8990';
-        const BACKGROUND_COLOR_ONE = '#7d7c84';
-        const BACKGROUND_COLOR_TWO = '#00aa7f';
-        const BACKGROUND_COLOR_THREE = '#d62246';
-        const BACKGROUND_COLOR_FOUR = '#4b1d3f';
-        const BACKGROUND_COLOR_FIVE = '#dbd56e';
-        const BACKGROUND_COLOR_SIX = '#88ab75';
-        const BACKGROUND_COLOR_SEVEN = '#de8f6e';
+        public const BACKGROUND_COLOR_DEFAULT = '#00ADC7';
+        public const BACKGROUND_COLOR_ONE = '#7d7c84';
+        public const BACKGROUND_COLOR_TWO = '#00aa7f';
+        public const BACKGROUND_COLOR_THREE = '#d62246';
+        public const BACKGROUND_COLOR_FOUR = '#4b1d3f';
+        public const BACKGROUND_COLOR_FIVE = '#dbd56e';
+        public const BACKGROUND_COLOR_SIX = '#88ab75';
+        public const BACKGROUND_COLOR_SEVEN = '#de8f6e';
 
         /**
          * The name of the board
@@ -134,7 +133,7 @@
          * @var integer
          * @Column(type="integer", length=10)
          */
-        protected $_type = self::TYPE_SCRUM;
+        protected $_type = self::TYPE_GENERIC;
 
         /**
          * Whether to use swimlanes
@@ -150,17 +149,17 @@
          * Swimlane type
          *
          * @var string
-         * @Column(type="string", length=50, default="issuetype")
+         * @Column(type="string", length=50, default="")
          */
-        protected $_swimlane_type = self::SWIMLANES_ISSUES;
+        protected $_swimlane_type = self::SWIMLANES_NONE;
 
         /**
          * Swimlane identifier field
          *
          * @var string
-         * @Column(type="string", length=50, default="issuetype")
+         * @Column(type="string", length=50, default="")
          */
-        protected $_swimlane_identifier = "issuetype";
+        protected $_swimlane_identifier = "";
 
         /**
          * Swimlane field value
@@ -490,6 +489,17 @@
             return (count($this->getSwimlaneFieldValues()) > 0);
         }
 
+        public function isIssuetypeSwimlaneIdentifier(Issuetype $issuetype)
+        {
+            if ($this->getSwimlaneType() != self::SWIMLANES_ISSUES)
+                return false;
+
+            if ($this->getSwimlaneIdentifier() != self::SWIMLANE_IDENTIFIER_ISSUETYPE)
+                return false;
+
+            return in_array($issuetype->getID(), $this->getSwimlaneFieldValues());
+        }
+
         public function hasIssueFieldValue($value)
         {
             return in_array($value, $this->getIssueFieldValues());
@@ -577,7 +587,7 @@
                             $swimlanes[] = ['identifiables' => 0];
                         } else {
                             foreach ($items as $item) {
-                                $swimlanes[] = ['identifiables' => $item];
+                                $swimlanes[] = ['identifiables' => [$item->getID() => $item]];
                             }
                             $swimlanes[] = ['identifiables' => 0];
                         }
@@ -585,11 +595,11 @@
                     case self::SWIMLANES_ISSUES:
                         $issues = ($milestone instanceof Milestone) ? $milestone->getIssues() : $this->getBacklogSearchObject()->getIssues();
                         foreach ($issues as $issue) {
-                            if ($issue->isChildIssue()) {
-                                foreach ($issue->getParentIssues() as $parent) {
-                                    if ($parent->getIssueType()->getID() != $this->getEpicIssuetypeID()) continue 2;
-                                }
-                            }
+                            if ($issue->isChildIssue())
+                                continue;
+
+                            if ($issue->getIssueType()->getID() == $this->getEpicIssuetypeID())
+                                continue;
 
                             if (in_array($issue->getIssueType()->getID(), $this->getSwimlaneFieldValues())) {
                                 $swimlanes[] = ['identifiables' => $issue];
@@ -710,7 +720,7 @@
             $json['report_issue_url'] = Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $this->getProject()->getId()]) . '?board_id=' . $this->getID();
             $json['swimlane_type'] = $this->getSwimlaneType();
             $json['swimlane_identifier'] = $this->getSwimlaneIdentifier();
-            $json['swimlane_field_values'] = $this->getSwimlaneFieldValues();
+            $json['swimlane_field_values'] = array_values($this->getSwimlaneFieldValues());
             $json['columns'] = [];
             foreach ($this->getColumns() as $column) {
                 $json['columns'][] = $column->toJSON();

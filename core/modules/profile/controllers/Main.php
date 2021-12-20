@@ -11,7 +11,7 @@
     /**
      * actions for the user module
      *
-     * @Routes(name_prefix="profile_")
+     * @Routes(name_prefix="profile_", url_prefix="/account")
      */
     class Main extends framework\Action
     {
@@ -19,12 +19,12 @@
         /**
          * "My account" page
          *
-         * @Route(name="account", url="/account/*")
+         * @Route(name="account", url="/")
          * @param Request $request
          */
         public function runAccount(Request $request)
         {
-            $this->forward403unless($this->getUser()->hasPageAccess('account'));
+            $this->forward403if($this->getUser()->isGuest());
             $categories = entities\Category::getAll();
             $projects = [];
             $project_subscription_key = Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS;
@@ -195,6 +195,60 @@
             $this->selected_tab = 'profile';
             if ($this->rsskey_generated)
                 $this->selected_tab = 'security';
+        }
+
+        /**
+         * Add a new application password
+         *
+         * @Route(name="add_application_password", url="/passwords/:csrf_token", methods="POST")
+         * @CsrfProtected
+         * @param Request $request
+         */
+        public function runAddPassword(Request $request)
+        {
+            if (!$this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_ACCOUNT)) {
+                return $this->renderJSON(['You do not have access to this page']);
+                $this->getResponse()->setHttpStatus(400);
+            }
+
+            $name = trim($request['name']);
+            if (!$name) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter a valid name')]);
+            }
+
+            framework\Logging::log('Adding new application password for user.', 'account', framework\Logging::LEVEL_INFO);
+            $password = new entities\ApplicationPassword();
+            $password->setUser($this->getUser());
+            $password->setName($name);
+            $visible_password = strtolower(entities\User::createPassword());
+            // Internally creates a hash from this visible password & crypts that hash for storage
+            $password->setPassword($visible_password);
+            $password->save();
+
+            return $this->renderJSON(['content' => $this->getComponentHTML('profile/applicationpassword', ['password' => $visible_password])]);
+        }
+
+        /**
+         * Remove application password
+         *
+         * @Route(name="remove_application_password", url="/passwords/:id/:csrf_token", methods="DELETE")
+         * @CsrfProtected
+         * @param Request $request
+         */
+        public function runAccountRemovePassword(Request $request)
+        {
+            $passwords = $this->getUser()->getApplicationPasswords();
+            foreach ($passwords as $password) {
+                if ($password->getID() == $request['id']) {
+                    $password->delete();
+
+                    return $this->renderJSON(['message' => $this->getI18n()->__('The application password has been deleted')]);
+                }
+            }
+
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $this->getI18n()->__('Cannot delete this application-specific password')]);
         }
 
     }

@@ -197,7 +197,7 @@
          */
         public function preExecute(framework\Request $request, $action)
         {
-            $this->forward403unless(Context::getUser()->hasPageAccess('search') && Context::getUser()->canSearchForIssues());
+            $this->forward403unless(Context::getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_SEARCH));
 
             if ($project_key = $request['project_key']) {
                 $project = entities\Project::getByKey($project_key);
@@ -208,7 +208,7 @@
             }
 
             if ($project instanceof entities\Project) {
-                $this->forward403unless(Context::getUser()->hasProjectPageAccess('project_issues', $project));
+                $this->forward403unless(Context::getUser()->hasProjectPermission(entities\Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $project));
                 Context::getResponse()->setPage('project_issues');
                 Context::setCurrentProject($project);
             }
@@ -233,7 +233,7 @@
          */
         public function runQuickSearch(framework\Request $request)
         {
-            if ($this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS)) {
+            if ($this->getUser()->canAccessConfigurationPage()) {
                 $this->found_users = tables\Users::getTable()->findInConfig($this->searchterm, 10, false);
                 $this->found_teams = tables\Teams::getTable()->quickfind($this->searchterm);
                 $this->found_clients = tables\Clients::getTable()->quickfind($this->searchterm);
@@ -300,7 +300,7 @@
                 $issues = $this->search_object->getQuickfoundIssues();
                 $issue = array_shift($issues);
                 if ($issue instanceof entities\Issue) {
-                    return $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                    return $this->forward($issue->getUrl());
                 }
             }
             $this->search_error = Context::getMessageAndClear('search_error');
@@ -317,7 +317,7 @@
                         if (!$this->search_object instanceof entities\SavedSearch || !$this->search_object->getB2DBID())
                             throw new Exception('not a saved search');
 
-                        if ($this->search_object->getUserID() == Context::getUser()->getID() || $this->search_object->isPublic() && Context::getUser()->canCreatePublicSearches()) {
+                        if ($this->search_object->getUserID() == Context::getUser()->getID() || ($this->search_object->isPublic() && Context::getUser()->canCreatePublicSearches($this->search_object->getProject()))) {
                             $this->search_object->delete();
 
                             return $this->renderJSON(['failed' => false, 'message' => Context::getI18n()->__('The saved search was deleted successfully')]);
@@ -358,7 +358,7 @@
         {
             $this->getResponse()->setDecoration(framework\Response::DECORATE_NONE);
 
-            return $this->renderJSON([
+            $json = [
                 'content' => $this->getComponentHTML('search/issues_paginated', ['search_object' => $this->search_object, 'cc' => 1, 'prevgroup_id' => null]),
                 'default_columns' => entities\SavedSearch::getDefaultVisibleColumns(),
                 'available_columns' => entities\SavedSearch::getAvailableColumns(),
@@ -366,8 +366,15 @@
                 'applied_filters' => array_keys($this->search_object->getFilters()),
                 'template' => entities\SavedSearch::getTemplate($this->search_object->getTemplateName()),
                 'template_parameter' => $this->search_object->getTemplateParameter(),
-                'num_issues' => $this->search_object->getTotalNumberOfIssues()
-            ]);
+                'num_issues' => $this->search_object->getTotalNumberOfIssues(),
+                'issues' => [],
+            ];
+
+            foreach ($this->search_object->getIssues() as $issue) {
+                $json['issues'][] = $issue->toJSON(false);
+            }
+
+            return $this->renderJSON($json);
         }
 
         public function runAddFilter(framework\Request $request)

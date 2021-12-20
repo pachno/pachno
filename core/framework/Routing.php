@@ -438,9 +438,9 @@
          *
          * @param string $url The url to retrieve details from
          *
-         * @return Route
+         * @return ?Route
          */
-        public function getRouteFromUrl($url)
+        public function getRouteFromUrl(string $url): ?Route
         {
             Logging::log("URL is '" . htmlentities($url, ENT_COMPAT, 'utf-8') . "'", 'routing');
             // an URL should start with a '/', mod_rewrite doesn't respect that, but no-mod_rewrite version does.
@@ -521,20 +521,6 @@
          */
         public function generate($name, $params = [], $relative = true, $querydiv = '/', $divider = '/', $equals = '/')
         {
-            if (mb_substr($name, 0, 1) == '@') {
-                $name = mb_substr($name, 1);
-                $details = explode('?', $name);
-                $name = array_shift($details);
-                if (count($details)) {
-                    $param_details = array_shift($details);
-                    $param_details = explode('&', $param_details);
-                    foreach ($param_details as $detail) {
-                        $param_detail = explode('=', $detail);
-                        if (count($param_detail) > 1)
-                            $params[$param_detail[0]] = $param_detail[1];
-                    }
-                }
-            }
             if (!isset($this->routes[$name])) {
                 Logging::log("The route '$name' does not exist", 'routing', Logging::LEVEL_FATAL);
                 throw new InvalidRouteException("The route '$name' does not exist");

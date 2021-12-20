@@ -4,6 +4,10 @@
 
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\common\Timeable;
+    use pachno\core\entities\tables\ListTypes;
+    use pachno\core\entities\tables\Milestones;
+    use pachno\core\entities\tables\Teams;
+    use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\framework\Request;
@@ -29,45 +33,53 @@
     class WorkflowTransitionAction extends IdentifiableScoped
     {
 
-        const ACTION_ASSIGN_ISSUE_SELF = 'assign_self';
+        public const ACTION_ASSIGN_ISSUE_SELF = 'assign_self';
 
-        const ACTION_ASSIGN_ISSUE = 'assign_user';
+        public const ACTION_ASSIGN_ISSUE = 'assign_user';
 
-        const ACTION_CLEAR_ASSIGNEE = 'clear_assignee';
+        public const ACTION_CLEAR_ASSIGNEE = 'clear_assignee';
 
-        const ACTION_SET_DUPLICATE = 'set_duplicate';
+        public const ACTION_SET_DUPLICATE = 'set_duplicate';
 
-        const ACTION_CLEAR_DUPLICATE = 'clear_duplicate';
+        public const ACTION_CLEAR_DUPLICATE = 'clear_duplicate';
 
-        const ACTION_SET_RESOLUTION = 'set_resolution';
+        public const ACTION_SET_RESOLUTION = 'set_resolution';
 
-        const ACTION_CLEAR_RESOLUTION = 'clear_resolution';
+        public const ACTION_CLEAR_RESOLUTION = 'clear_resolution';
 
-        const ACTION_SET_STATUS = 'set_status';
+        public const ACTION_SET_STATUS = 'set_status';
 
-        const ACTION_SET_MILESTONE = 'set_milestone';
+        public const ACTION_SET_MILESTONE = 'set_milestone';
 
-        const ACTION_CLEAR_MILESTONE = 'clear_milestone';
+        public const ACTION_CLEAR_MILESTONE = 'clear_milestone';
 
-        const ACTION_SET_PRIORITY = 'set_priority';
+        public const ACTION_SET_PRIORITY = 'set_priority';
 
-        const ACTION_CLEAR_PRIORITY = 'clear_priority';
+        public const ACTION_CLEAR_PRIORITY = 'clear_priority';
 
-        const ACTION_SET_PERCENT = 'set_percent';
+        public const ACTION_SET_CATEGORY = 'set_category';
 
-        const ACTION_CLEAR_PERCENT = 'clear_percent';
+        public const ACTION_CLEAR_CATEGORY = 'clear_category';
 
-        const ACTION_SET_REPRODUCABILITY = 'set_reproducability';
+        public const ACTION_SET_SEVERITY = 'set_severity';
 
-        const ACTION_CLEAR_REPRODUCABILITY = 'clear_reproducability';
+        public const ACTION_CLEAR_SEVERITY = 'clear_severity';
 
-        const ACTION_USER_START_WORKING = 'user_start_working';
+        public const ACTION_SET_PERCENT = 'set_percent';
 
-        const ACTION_USER_STOP_WORKING = 'user_stop_working';
+        public const ACTION_CLEAR_PERCENT = 'clear_percent';
 
-        const CUSTOMFIELD_CLEAR_PREFIX = 'customfield_clear_';
+        public const ACTION_SET_REPRODUCABILITY = 'set_reproducability';
 
-        const CUSTOMFIELD_SET_PREFIX = 'customfield_set_';
+        public const ACTION_CLEAR_REPRODUCABILITY = 'clear_reproducability';
+
+        public const ACTION_USER_START_WORKING = 'user_start_working';
+
+        public const ACTION_USER_STOP_WORKING = 'user_stop_working';
+
+        public const CUSTOMFIELD_CLEAR_PREFIX = 'customfield_clear_';
+
+        public const CUSTOMFIELD_SET_PREFIX = 'customfield_set_';
 
         protected static $_available_actions = null;
 
@@ -119,11 +131,15 @@
                 $initial_list['special'][self::ACTION_USER_STOP_WORKING] = $i18n->__('Stop logging time and optionally add time spent');
                 $initial_list['clear'][self::ACTION_CLEAR_ASSIGNEE] = $i18n->__('Clear issue assignee');
                 $initial_list['clear'][self::ACTION_CLEAR_PRIORITY] = $i18n->__('Clear issue priority');
+                $initial_list['clear'][self::ACTION_CLEAR_SEVERITY] = $i18n->__('Clear issue severity');
+                $initial_list['clear'][self::ACTION_CLEAR_CATEGORY] = $i18n->__('Clear issue category');
                 $initial_list['clear'][self::ACTION_CLEAR_PERCENT] = $i18n->__('Clear issue percent');
                 $initial_list['clear'][self::ACTION_CLEAR_REPRODUCABILITY] = $i18n->__('Clear issue reproducability');
                 $initial_list['clear'][self::ACTION_CLEAR_RESOLUTION] = $i18n->__('Clear issue resolution');
                 $initial_list['clear'][self::ACTION_CLEAR_MILESTONE] = $i18n->__('Clear issue milestone');
                 $initial_list['set'][self::ACTION_SET_PRIORITY] = $i18n->__('Set issue priority');
+                $initial_list['set'][self::ACTION_SET_SEVERITY] = $i18n->__('Set issue severity');
+                $initial_list['set'][self::ACTION_SET_CATEGORY] = $i18n->__('Set issue category');
                 $initial_list['set'][self::ACTION_SET_PERCENT] = $i18n->__('Set issue percent');
                 $initial_list['set'][self::ACTION_SET_REPRODUCABILITY] = $i18n->__('Set issue reproducability');
                 $initial_list['set'][self::ACTION_SET_RESOLUTION] = $i18n->__('Set issue resolution');
@@ -194,6 +210,10 @@
                     return __('Clear issue assignee');
                 case self::ACTION_CLEAR_PRIORITY:
                     return __('Clear issue priority');
+                case self::ACTION_CLEAR_SEVERITY:
+                    return __('Clear issue severity');
+                case self::ACTION_CLEAR_CATEGORY:
+                    return __('Clear issue category');
                 case self::ACTION_CLEAR_PERCENT:
                     return __('Clear issue percent completed');
                 case self::ACTION_CLEAR_REPRODUCABILITY:
@@ -255,6 +275,8 @@
                 case self::ACTION_ASSIGN_ISSUE_SELF:
                 case self::ACTION_CLEAR_ASSIGNEE:
                 case self::ACTION_CLEAR_PRIORITY:
+                case self::ACTION_CLEAR_SEVERITY:
+                case self::ACTION_CLEAR_CATEGORY:
                 case self::ACTION_CLEAR_PERCENT:
                 case self::ACTION_CLEAR_REPRODUCABILITY:
                 case self::ACTION_CLEAR_RESOLUTION:
@@ -278,37 +300,61 @@
                     $issue->setAssignee(framework\Context::getUser());
                     break;
                 case self::ACTION_SET_STATUS:
-                    if ($this->getTargetValue())
-                        $issue->setStatus(Status::getB2DBTable()->selectById((int)$this->getTargetValue()));
-                    else
+                    if ($this->getTargetValue()) {
+                        $issue->setStatus(ListTypes::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
                         $issue->setStatus($request['status_id']);
+                    }
                     break;
                 case self::ACTION_CLEAR_MILESTONE:
                     $issue->setMilestone(null);
                     break;
                 case self::ACTION_SET_MILESTONE:
-                    if ($this->getTargetValue())
-                        $issue->setMilestone(Milestone::getB2DBTable()->selectById((int)$this->getTargetValue()));
-                    else
+                    if ($this->getTargetValue()) {
+                        $issue->setMilestone(Milestones::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
                         $issue->setMilestone($request['milestone_id']);
+                    }
                     break;
                 case self::ACTION_CLEAR_PRIORITY:
                     $issue->setPriority(null);
                     break;
                 case self::ACTION_SET_PRIORITY:
-                    if ($this->getTargetValue())
-                        $issue->setPriority(Priority::getB2DBTable()->selectById((int)$this->getTargetValue()));
-                    else
+                    if ($this->getTargetValue()) {
+                        $issue->setPriority(ListTypes::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
                         $issue->setPriority($request['priority_id']);
+                    }
+                    break;
+                case self::ACTION_CLEAR_SEVERITY:
+                    $issue->setSeverity(null);
+                    break;
+                case self::ACTION_SET_SEVERITY:
+                    if ($this->getTargetValue()) {
+                        $issue->setSeverity(ListTypes::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
+                        $issue->setSeverity($request['severity_id']);
+                    }
+                    break;
+                case self::ACTION_CLEAR_CATEGORY:
+                    $issue->setCategory(null);
+                    break;
+                case self::ACTION_SET_CATEGORY:
+                    if ($this->getTargetValue()) {
+                        $issue->setCategory(ListTypes::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
+                        $issue->setCategory($request['category_id']);
+                    }
                     break;
                 case self::ACTION_CLEAR_PERCENT:
                     $issue->setPercentCompleted(0);
                     break;
                 case self::ACTION_SET_PERCENT:
-                    if ($this->getTargetValue())
-                        $issue->setPercentCompleted((int)$this->getTargetValue());
-                    else
-                        $issue->setPercentCompleted((int)$request['percent_complete_id']);
+                    if ($this->getTargetValue()) {
+                        $issue->setPercentCompleted((int) $this->getTargetValue());
+                    } else {
+                        $issue->setPercentCompleted((int) $request['percent_complete_id']);
+                    }
                     break;
                 case self::ACTION_CLEAR_DUPLICATE:
                     $issue->setDuplicateOf(null);
@@ -320,19 +366,21 @@
                     $issue->setResolution(null);
                     break;
                 case self::ACTION_SET_RESOLUTION:
-                    if ($this->getTargetValue())
-                        $issue->setResolution(Resolution::getB2DBTable()->selectById((int)$this->getTargetValue()));
-                    else
+                    if ($this->getTargetValue()) {
+                        $issue->setResolution(ListTypes::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
                         $issue->setResolution($request['resolution_id']);
+                    }
                     break;
                 case self::ACTION_CLEAR_REPRODUCABILITY:
                     $issue->setReproducability(null);
                     break;
                 case self::ACTION_SET_REPRODUCABILITY:
-                    if ($this->getTargetValue())
-                        $issue->setReproducability(Reproducability::getB2DBTable()->selectById((int)$this->getTargetValue()));
-                    else
+                    if ($this->getTargetValue()) {
+                        $issue->setReproducability(ListTypes::getTable()->selectById((int) $this->getTargetValue()));
+                    } else {
                         $issue->setReproducability($request['reproducability_id']);
+                    }
                     break;
                 case self::ACTION_CLEAR_ASSIGNEE:
                     $issue->clearAssignee();
@@ -341,19 +389,19 @@
                     if ($this->getTargetValue()) {
                         $target_details = explode('_', $this->_target_value);
                         if ($target_details[0] == 'user') {
-                            $assignee = User::getB2DBTable()->selectById((int)$target_details[1]);
+                            $assignee = Users::getTable()->selectById((int) $target_details[1]);
                         } else {
-                            $assignee = Team::getB2DBTable()->selectById((int)$target_details[1]);
+                            $assignee = Teams::getTable()->selectById((int) $target_details[1]);
                         }
                         $issue->setAssignee($assignee);
                     } else {
                         $assignee = null;
                         switch ($request['assignee_type']) {
                             case 'user':
-                                $assignee = User::getB2DBTable()->selectById((int)$request['assignee_id']);
+                                $assignee = Users::getTable()->selectById((int) $request['assignee_id']);
                                 break;
                             case 'team':
-                                $assignee = Team::getB2DBTable()->selectById((int)$request['assignee_id']);
+                                $assignee = Teams::getTable()->selectById((int) $request['assignee_id']);
                                 break;
                         }
                         if ((bool)$request->getParameter('assignee_teamup', false) && $assignee instanceof User && $assignee->getID() != framework\Context::getUser()->getID()) {
@@ -370,11 +418,12 @@
                     break;
                 case self::ACTION_USER_START_WORKING:
                     $issue->clearUserWorkingOnIssue();
-                    if ($issue->getAssignee() instanceof Team && $issue->getAssignee()->isOndemand()) {
-                        $members = $issue->getAssignee()->getMembers();
+                    $assignee = $issue->getAssignee();
+                    if ($assignee instanceof Team && $assignee->isOndemand()) {
+                        $members = $assignee->getMembers();
                         $issue->startWorkingOnIssue(array_shift($members));
-                    } elseif ($issue->getAssignee() instanceof User) {
-                        $issue->startWorkingOnIssue($issue->getAssignee());
+                    } elseif ($assignee instanceof User) {
+                        $issue->startWorkingOnIssue($assignee);
                     }
                     break;
                 case self::ACTION_USER_STOP_WORKING:
@@ -415,10 +464,11 @@
                     } elseif (strpos($this->_action_type, self::CUSTOMFIELD_SET_PREFIX) === 0) {
                         $customkey = substr($this->_action_type, strlen(self::CUSTOMFIELD_SET_PREFIX));
 
-                        if ($this->getTargetValue())
+                        if ($this->getTargetValue()) {
                             $issue->setCustomField($customkey, $this->getTargetValue());
-                        else
+                        } else {
                             $issue->setCustomField($customkey, $request[$customkey . '_id']);
+                        }
                     } else {
                         $event = new Event('core', 'WorkflowTransitionAction::perform', $issue, ['request' => $request]);
                         $event->triggerUntilProcessed();
@@ -455,6 +505,12 @@
                 case self::ACTION_SET_PRIORITY:
                     return (bool)Priority::has($this->_target_value);
                     break;
+                case self::ACTION_SET_SEVERITY:
+                    return (bool)Severity::has($this->_target_value);
+                    break;
+                case self::ACTION_SET_CATEGORY:
+                    return (bool)Category::has($this->_target_value);
+                    break;
                 case self::ACTION_SET_STATUS:
                     return (bool)Status::has($this->_target_value);
                     break;
@@ -488,8 +544,14 @@
                 case self::ACTION_SET_PRIORITY:
                     return (bool)$request->hasParameter('priority_id');
                     break;
+                case self::ACTION_SET_SEVERITY:
+                    return (bool)$request->hasParameter('severity_id');
+                    break;
+                case self::ACTION_SET_CATEGORY:
+                    return (bool)$request->hasParameter('category_id');
+                    break;
                 case self::ACTION_SET_STATUS:
-                    return (bool)$request->hasParameter('status_id') && ($status = Status::getB2DBTable()->selectById((int)$request->getParameter('status_id'))) instanceof Status && $status->canUserSet(framework\Context::getUser());
+                    return (bool)$request->hasParameter('status_id');
                     break;
                 case self::ACTION_SET_REPRODUCABILITY:
                     return (bool)$request->hasParameter('reproducability_id');
@@ -514,6 +576,12 @@
                 case self::ACTION_SET_PRIORITY:
                     return Priority::getAll();
 
+                case self::ACTION_SET_SEVERITY:
+                    return Severity::getAll();
+
+                case self::ACTION_SET_CATEGORY:
+                    return Category::getAll();
+
                 case self::ACTION_SET_PERCENT:
                     return range(1, 100);
 
@@ -525,7 +593,7 @@
 
                 default:
                     if ($this->isCustomAction()) {
-                        if ($this->getCustomField()->getType() != CustomDatatype::CALCULATED_FIELD) {
+                        if ($this->getCustomField()->getType() != DatatypeBase::CALCULATED_FIELD) {
                             return $this->getCustomField()->getOptions();
                         }
                     }
@@ -558,13 +626,24 @@
             switch ($this->getActionType()) {
                 case self::ACTION_SET_STATUS:
                 case self::ACTION_SET_PRIORITY:
+                case self::ACTION_SET_SEVERITY:
+                case self::ACTION_SET_CATEGORY:
                 case self::ACTION_SET_PERCENT:
                 case self::ACTION_SET_RESOLUTION:
                 case self::ACTION_SET_REPRODUCABILITY:
                     return true;
                 default:
-                    return ($this->isCustomAction() && $this->getCustomField()->getType() != CustomDatatype::CALCULATED_FIELD);
+                    return ($this->isCustomAction() && $this->getCustomField()->getType() != DatatypeBase::CALCULATED_FIELD);
             }
+        }
+
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['type'] = $this->getActionType();
+            $json['value'] = $this->getTargetValue();
+
+            return $json;
         }
 
     }

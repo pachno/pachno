@@ -10,7 +10,7 @@
     class Category extends common\Colorizable
     {
 
-        const ITEMTYPE = Datatype::CATEGORY;
+        public const ITEMTYPE = Datatype::CATEGORY;
 
         protected $_itemtype = Datatype::CATEGORY;
 
@@ -39,9 +39,7 @@
          */
         public function hasAccess($target_user = null)
         {
-            $user = ($target_user === null) ? framework\Context::getUser() : $target_user;
-
-            return $this->canUserSet($user);
+            return true;
         }
 
     }

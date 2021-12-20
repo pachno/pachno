@@ -28,31 +28,31 @@
     class SavedSearch extends IdentifiableScoped
     {
 
-        const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES = 1;
+        public const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES = 1;
 
-        const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS = 12;
+        public const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS = 12;
 
-        const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES = 2;
+        public const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES = 2;
 
-        const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS = 13;
+        public const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS = 13;
 
-        const PREDEFINED_SEARCH_PROJECT_WISHLIST = 10;
+        public const PREDEFINED_SEARCH_PROJECT_WISHLIST = 10;
 
-        const PREDEFINED_SEARCH_PROJECT_MILESTONE_TODO = 6;
+        public const PREDEFINED_SEARCH_PROJECT_MILESTONE_TODO = 6;
 
-        const PREDEFINED_SEARCH_PROJECT_MOST_VOTED = 7;
+        public const PREDEFINED_SEARCH_PROJECT_MOST_VOTED = 7;
 
-        const PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH = 8;
+        public const PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH = 8;
 
-        const PREDEFINED_SEARCH_PROJECT_REPORTED_LAST_NUMBEROF_TIMEUNITS = 9;
+        public const PREDEFINED_SEARCH_PROJECT_REPORTED_LAST_NUMBEROF_TIMEUNITS = 9;
 
-        const PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES = 3;
+        public const PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES = 3;
 
-        const PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES = 4;
+        public const PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES = 4;
 
-        const PREDEFINED_SEARCH_MY_REPORTED_ISSUES = 5;
+        public const PREDEFINED_SEARCH_MY_REPORTED_ISSUES = 5;
 
-        const PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES = 11;
+        public const PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES = 11;
 
         /**
          * The name of the saved search
@@ -330,10 +330,10 @@
         {
             $i18n = framework\Context::getI18n();
             $templates = [];
-            $templates['results_normal'] = ['title' => $i18n->__('Standard'), 'icon' => 'list', 'description' => $i18n->__('Standard search results'), 'grouping' => true, 'parameter' => false];
-            $templates['results_todo'] = ['title' => $i18n->__('Todo-list'), 'icon' => 'clipboard-check', 'description' => $i18n->__('Todo-list with progress indicator'), 'grouping' => false, 'parameter' => false];
-            $templates['results_votes'] = ['title' => $i18n->__('Voting results'), 'icon' => 'vote-yea', 'description' => $i18n->__('Most voted-for issues'), 'grouping' => false, 'parameter' => false];
-            $templates['results_userpain_singlepainthreshold'] = ['title' => $i18n->__('User pain with threshold'), 'icon' => 'meh', 'description' => $i18n->__('User pain indicator with custom single bug pain threshold'), 'grouping' => false, 'parameter' => true, 'parameter_header' => $i18n->__('User pain threshold'), 'parameter_text' => $i18n->__('Pain threshold (0 - 100)')];
+            $templates['results_normal'] = ['name' => 'results_normal', 'title' => $i18n->__('Standard'), 'icon' => 'list', 'description' => $i18n->__('Standard search results'), 'grouping' => true, 'parameter' => false];
+            $templates['results_todo'] = ['name' => 'results_todo', 'title' => $i18n->__('Todo-list'), 'icon' => 'clipboard-check', 'description' => $i18n->__('Todo-list with progress indicator'), 'grouping' => false, 'parameter' => false];
+            $templates['results_votes'] = ['name' => 'results_votes', 'title' => $i18n->__('Voting results'), 'icon' => 'vote-yea', 'description' => $i18n->__('Most voted-for issues'), 'grouping' => false, 'parameter' => false];
+            $templates['results_userpain_singlepainthreshold'] = ['name' => 'results_userpain_singlepainthreshold', 'title' => $i18n->__('User pain with threshold'), 'icon' => 'meh', 'description' => $i18n->__('User pain indicator with custom single bug pain threshold'), 'grouping' => false, 'parameter' => true, 'parameter_header' => $i18n->__('User pain threshold'), 'parameter_text' => $i18n->__('Pain threshold (0 - 100)')];
             if (!$display_only) {
                 $templates['results_rss'] = $i18n->__('RSS feed');
             }
@@ -712,7 +712,7 @@
             $this->_templateparameter = $template_parameter;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             $this->_sortfields = $this->getSortFieldsAsString();
@@ -829,7 +829,7 @@
             return ['title', 'assigned_to', 'status', 'resolution', 'last_updated', 'comments'];
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             foreach ($this->getFilters() as $filter) {
                 $filter->setSearchId($this);

@@ -7,6 +7,9 @@
     use b2db\Update;
     use Exception;
     use GuzzleHttp\Client as GuzzleClient;
+    use Nadar\PhpComposerReader\ComposerReader;
+    use Nadar\PhpComposerReader\Package;
+    use Nadar\PhpComposerReader\RequireSection;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Modules;
     use pachno\core\framework;
@@ -87,14 +90,33 @@
 
         protected $_has_config_settings = false;
 
+        protected $_has_composer_dependencies = false;
+
+        protected $_composer_name = '';
+
+        public static function canInstallModules(): bool
+        {
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+
+            if (!$reader->canRead()) {
+                return false;
+            }
+
+            if (!$reader->canWrite()) {
+                return false;
+            }
+
+            return true;
+        }
+
         /**
          * Installs a module
          *
          * @param string $module_name the module key
          *
-         * @return boolean Whether the install succeeded or not
+         * @return Module The module after it is installed
          */
-        public static function installModule($module_name, $scope = null)
+        public static function installModule(string $module_name, Scope $scope = null): framework\interfaces\ModuleInterface
         {
             $scope_id = ($scope) ? $scope->getID() : framework\Context::getScope()->getID();
             if (!framework\Context::getScope() instanceof Scope) throw new Exception('No scope??');
@@ -104,7 +126,13 @@
             try {
                 $module = tables\Modules::getTable()->installModule($module_name, $scope_id);
                 $module->install($scope_id);
-                $transaction->commitAndEnd();
+                if (framework\Context::getScope()->isDefault()) {
+                    if ($module instanceof self && $module->hasComposerDependencies()) {
+                        $module->addSectionsToComposerJson();
+                    }
+                }
+                $transaction->commit();
+                framework\Context::addModule($module, $module_name);
             } catch (Exception $e) {
                 $transaction->rollback();
                 throw $e;
@@ -139,74 +167,61 @@
         }
 
         /**
-         * @param $module_key
+         * @param string $module_key
          *
          * @throws framework\exceptions\ModuleDownloadException
          */
-        public static function downloadModule($module_key)
+        public static function downloadModule(string $module_key)
         {
-            self::downloadPlugin('addon', $module_key);
+            $client = new \GuzzleHttp\Client([
+                'base_uri' => framework\Context::getBaseOnlineUrl(),
+                'verify' => framework\Context::getOnlineVerifySsl(),
+                'http_errors' => false
+            ]);
+            $filename = PACHNO_CACHE_PATH . 'module_' . $module_key . '.zip';
+            $response = $client->get('/modules/' . $module_key . '/download');
+            if ($response->getStatusCode() != 200) {
+                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
+            }
+            file_put_contents($filename, $response->getBody());
+            self::extractModuleArchive($module_key);
         }
 
-        /**
-         * @param $plugin_type
-         * @param $plugin_key
-         *
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadPlugin($plugin_type, $plugin_key)
+        protected static function recursiveRemoveDirectory($directory)
         {
-            try {
-                $client = new GuzzleClient(['base_uri' => 'https://pachno.com']);
-                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
-
-                if ($response->getStatusCode() === 200) {
-                    $plugin_json = json_decode($response->getBody());
+            foreach (glob("{$directory}/*") as $file) {
+                if (is_dir($file)) {
+                    self::recursiveRemoveDirectory($file);
+                } else {
+                    unlink($file);
                 }
-            } catch (Exception $e) {
             }
-
-            if (isset($plugin_json) && $plugin_json !== false) {
-                $filename = PACHNO_CACHE_PATH . $plugin_type . '_' . $plugin_json->key . '.zip';
-                $response = $client->get($plugin_json->download);
-                if ($response->getStatusCode() != 200) {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
-                }
-                file_put_contents($filename, $response->getBody());
-                $module_zip = new ZipArchive();
-                $module_zip->open($filename);
-                switch ($plugin_type) {
-                    case 'addon':
-                        $target_folder = PACHNO_MODULES_PATH;
-                        break;
-                    case 'theme':
-                        $target_folder = PACHNO_PATH . 'themes';
-                        break;
-                }
-                if (!is_writable($target_folder)) {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::READONLY_TARGET);
-                }
-                $module_zip->extractTo(realpath($target_folder));
-                $module_zip->close();
-            } else {
-                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND);
-            }
+            rmdir($directory);
         }
 
-        /**
-         * @param $module_key
-         *
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadTheme($theme_key)
+        public static function extractModuleArchive(string $module_key)
         {
-            self::downloadPlugin('theme', $theme_key);
+            $filename = PACHNO_CACHE_PATH . 'module_' . $module_key . '.zip';
+            $module_zip = new ZipArchive();
+            $module_zip->open($filename);
+            if (!is_writable(PACHNO_MODULES_PATH)) {
+                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::READONLY_TARGET);
+            }
+
+            if (file_exists(PACHNO_MODULES_PATH . $module_key)) {
+                self::recursiveRemoveDirectory(PACHNO_MODULES_PATH . $module_key);
+            }
+
+            if (!$module_zip->extractTo(realpath(PACHNO_MODULES_PATH))) {
+                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::EXTRACT_ERROR);
+            }
+            $module_zip->close();
         }
 
         /**
          * Class constructor
          */
-        final public function _construct(Row $row, $foreign_key = null)
+        final public function _construct(Row $row, string $foreign_key = null): void
         {
             if ($this->_version != $row->get(tables\Modules::VERSION)) {
                 throw new Exception('This module must be upgraded to the latest version');
@@ -289,13 +304,69 @@
         {
         }
 
+        public function addSectionsToComposerJson()
+        {
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+            $repositories = $reader->contentSection('repositories', null);
+            $found = false;
+            foreach ($repositories as $repository) {
+                if ($repository['type'] === 'path' && $repository['url'] === 'modules/' . $this->getName()) {
+                    $found = true;
+                }
+            }
+            if (!$found) {
+                $repositories[] = [
+                    'type' => 'path',
+                    'url' => 'modules/' . $this->getName()
+                ];
+                $reader->updateSection('repositories', $repositories);
+                $reader->save();
+            }
+            $require_section = new RequireSection($reader);
+            $found = false;
+            foreach ($require_section as $package) {
+                if ($package->name === $this->getComposerName()) {
+                    $found = true;
+                }
+            }
+            if (!$found) {
+                $new_package = new Package($reader, $this->getComposerName(), '@dev');
+                $require_section->add($new_package)->save();
+            }
+        }
+
+        public function removeSectionsFromComposerJson()
+        {
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+            $repositories = $reader->contentSection('repositories', null);
+            foreach ($repositories as $index => $repository) {
+                if ($repository['type'] === 'path' && $repository['url'] === 'modules/' . $this->getName()) {
+                    unset($repositories[$index]);
+                }
+            }
+            $reader->updateSection('repositories', $repositories);
+            $reader->save();
+
+            $require_section = new RequireSection($reader);
+            foreach ($require_section as $package) {
+                if ($package->name === $this->getComposerName()) {
+                    $require_section->remove($this->getComposerName())->save();
+                    break;
+                }
+            }
+        }
+
         final public function uninstall($scope = null)
         {
-            if ($this->isCore()) {
-                throw new Exception('Cannot uninstall core modules');
-            }
             $this->_uninstall();
             $this->delete();
+            if ($this->hasComposerDependencies()) {
+                $this->removeSectionsFromComposerJson();
+            }
+            $this->_id = 0;
+            $this->_enabled = false;
+            framework\Context::unloadModule($this->getName());
+
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
             framework\Settings::deleteModuleSettings($this->getName(), $scope);
             framework\Context::deleteModulePermissions($this->getName(), $scope);
@@ -307,7 +378,7 @@
         {
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return $this->_name;
         }
@@ -533,6 +604,16 @@
         public function postAccountSettings(framework\Request $request)
         {
 
+        }
+
+        public function getComposerName()
+        {
+            return $this->_composer_name;
+        }
+
+        public function hasComposerDependencies()
+        {
+            return $this->_has_composer_dependencies;
         }
 
     }

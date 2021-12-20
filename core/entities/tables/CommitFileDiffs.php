@@ -13,12 +13,12 @@
     class CommitFileDiffs extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'commitfile_diffs';
+        public const B2DBNAME = 'commitfile_diffs';
 
-        const ID = 'commitfile_diffs.id';
+        public const ID = 'commitfile_diffs.id';
 
-        const SCOPE = 'commitfile_diffs.scope';
+        public const SCOPE = 'commitfile_diffs.scope';
 
     }

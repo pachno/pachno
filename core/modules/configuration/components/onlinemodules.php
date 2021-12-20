@@ -1,9 +1,18 @@
 <?php if (!count($modules)): ?>
-    <div class="faded_out"><?php echo __('No modules found'); ?></div>
+    <div class="form-container">
+        <div class="form-row">
+            <div class="helper-text">
+                <div class="image-container"><?= image_tag('/unthemed/configuration_modules.png', [], true); ?></div>
+                <span class="description">
+                    <?= __('There was an error retrieving featured modules from pach.no - local modules can be managed from the list below.'); ?>
+                </span>
+            </div>
+        </div>
+    </div>
 <?php else: ?>
-    <ul class="featured modules-list plugins-list">
+    <div class="modules-list plugins-list">
         <?php foreach ($modules as $onlinemodule): ?>
             <?php include_component('configuration/onlinemodule', compact('onlinemodule')); ?>
         <?php endforeach; ?>
-    </ul>
+    </div>
 <?php endif; ?>

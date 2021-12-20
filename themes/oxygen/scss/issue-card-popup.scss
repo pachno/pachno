@@ -1,36 +1,66 @@
-@import 'variables';
+@import "variables";
+@import "widgets/workflow-actions";
+@import "components/issue-fields-list";
+@import "components/issue-details";
+@import 'components/issue-title';
 
 #issue-card-popup {
-  .backdrop_detail_header {
+  > .backdrop_detail_header {
     text-transform: none;
     align-items: center;
+    font-weight: $theme-font-weight-regular;
 
-    span {
+    .workflow-actions-container {
+      font-size: .75em;
+      margin-right: auto;
+      padding-left: .5em;
+    }
+
+    > a.button {
+      font-size: .75em;
+    }
+
+    > span {
       flex: 0 0 auto;
       padding: 0;
+      font-weight: $theme-font-weight-regular;
 
       &.issue-state {
-        padding: .15em .25em;
+        padding: 0.15em 0.25em;
         &:not(:first-child) {
-          margin-left: .35em;
+          margin-left: 0.35em;
         }
 
         + a {
-          margin-left: .25em;
+          margin-left: 0.25em;
         }
       }
     }
 
+    @include workflow-actions-container(flex-start);
+
+    .indicator {
+      display: none;
+      margin-right: 0.35em;
+      margin-left: 0.35em;
+
+      &.active {
+        display: inline-flex;
+      }
+    }
+
     .dropper-container {
-      margin-right: .35em;
+      margin-right: 0.35em;
+      margin-left: 0.35em;
+      font-size: .75em;
     }
 
     > span {
       flex: 1 1 auto;
 
       &.title-crumbs {
-        padding: .75em;
-        font-size: .75em;
+        padding: 0.75em;
+        font-size: 0.75em;
         font-weight: $theme-font-weight-light;
         display: flex;
         align-items: center;
@@ -41,93 +71,246 @@
         }
       }
     }
-  }
 
-  .backdrop_detail_content {
-    .form-container {
-      .row {
-        height: auto;
+    .toggle-favourite {
+      margin: 0 .35em;
 
-        .column {
-          flex-direction: row;
-          flex-wrap: wrap;
-
-          .form-row {
-            width: 100%;
-            padding: 0 .5em;
-            height: auto;
-
-            &.header {
-              color: rgba(0, 0, 0, 0.6);
-
-              .icon {
-                color: #c8c8c8;
-              }
-            }
-
-            &:not(.header) {
-              + .form-row {
-                margin-top: 1em;
-              }
-            }
-
-            .name-input-enhance {
-              font-weight: $theme-font-weight-bold;
-            }
-          }
-        }
-
-        &[data-simple-submit] {
-          .formatted-text-container {
-            min-height: 7em;
-            border-radius: .5em;
-            padding: .5em;
-            width: 100%;
-            box-sizing: border-box;
-            font-family: $theme-font-family;
-            font-weight: $theme-font-weight-light;
-
-            &:hover {
-              background-color: rgba(0, 0, 0, .05);
-              cursor: pointer;
-            }
-          }
-
-          .editor-container {
-            height: 1px;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity .25s ease-in-out;
-            width: 100%;
-          }
-
-          .form-row.submit-container {
-            height: 1px;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity .25s ease-in-out;
-          }
-
-          &.editing {
-            .formatted-text-container {
-              display: none;
-            }
-
-            .editor-container {
-              height: auto;
-              opacity: 1;
-              min-height: 15em;
-            }
-
-            .form-row.submit-container {
-              height: auto;
-              opacity: 1;
-              overflow: visible;
-            }
-          }
-        }
+      .subscribed,
+      .unsubscribed {
+        font-size: 1.15em;
       }
     }
   }
 
+  > .backdrop_detail_content {
+    .content {
+      &.with-cover {
+        padding: 0;
+
+        .title-container {
+          padding: 15em 0 0 0;
+          background-position: center top;
+          background-size: cover;
+          background-repeat: no-repeat;
+          overflow: hidden;
+          border-radius: 0 5px 0 0;
+          align-items: flex-start;
+          color: #FFF;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+
+          .title-crumbs {
+            .crumb-item {
+              > a {
+                &,
+                &:hover {
+                  color: #FFF;
+                }
+              }
+            }
+          }
+
+          .title-content {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            box-sizing: border-box;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .7) 60%);
+            width: 100%;
+            padding: 1em;
+
+            .title-name {
+              color: #FFF;
+
+              input {
+                color: #FFF;
+                background: transparent;
+
+                &:hover {
+                  color: #FFF;
+                }
+
+                &:focus {
+                  &,
+                  &:hover {
+                    color: #FFF;
+                    background-color: transparent;
+                    border-color: $theme-primary-color;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .issue-details,
+        > .comments {
+          padding: 0 1em;
+        }
+
+        .status-field {
+          padding: 1em 1em 0 1em;
+        }
+      }
+    }
+    .issue-state {
+      flex: 0 0 auto;
+      padding: 0.15em 0.25em;
+      &:not(:first-child) {
+        margin-left: 0.35em;
+      }
+
+      + a {
+        margin-left: 0.25em;
+      }
+    }
+
+    @include issue-title();
+
+    #status-field {
+      .dropdown-container {
+        left: 0;
+        right: auto;
+      }
+    }
+
+    .title-container {
+      padding: 0 0 .35em 0;
+      box-sizing: border-box;
+    }
+
+    .status-field {
+      margin-bottom: 1.5em;
+    }
+
+    .is-closed,
+    .not-editable {
+      color: rgb(150, 150, 150);
+      margin: 0 1em 0 0;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      position: relative;
+      font-size: 1.1em;
+
+      .fas {
+        margin-right: 0.35em;
+      }
+
+      .tooltip {
+        margin-top: 2em;
+      }
+    }
+
+    .created-times {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 0 0 auto;
+      margin: 0 0 0 0.3em;
+      font-size: 0.8rem;
+
+      color: rgba(0, 0, 0, 0.4);
+
+      div + div {
+        margin-left: 1.5em;
+      }
+
+      label {
+        text-transform: none;
+        color: rgba(0, 0, 0, 0.4);
+        font-weight: $theme-font-weight-regular;
+        cursor: default;
+      }
+    }
+
+    .posted-by-container {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      position: relative;
+
+      .value {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+
+    @include issue-fields-list-container();
+
+    .sidebar {
+      .fields-list-container {
+        > .header {
+          padding: 0 .25em .5em .75em;
+          font-size: .9em;
+
+          span {
+            &.icon {
+              flex: 0 0 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              .fas,
+              .far {
+                flex: 0 0 auto;
+              }
+            }
+          }
+
+          > .name {
+            font-size: 1em;
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+
+    h5 {
+      .not-editable {
+        font-size: 0.8em;
+      }
+    }
+
+    @include issue-details();
+
+    .fields-list-container {
+      flex: 1 1 auto;
+
+      li {
+        &.issue-field {
+          display: flex;
+
+          &.hidden {
+            display: none;
+          }
+
+          .fancy-dropdown-container {
+            flex: 1 1 auto;
+
+            .fancy-dropdown {
+              border-radius: 0;
+            }
+          }
+        }
+
+        .field-container {
+          border-radius: 0;
+        }
+      }
+    }
+
+    .comments {
+      margin-top: 1em;
+      border-top: 1px solid rgba(200, 200, 200, 0.3);
+
+      .comment-container {
+        box-shadow: none;
+      }
+    }
+  }
 }

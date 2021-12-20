@@ -1,33 +1,25 @@
-<?php 
+<?php
 
-    $pachno_response->setTitle(__('Frontpage'));
+    use pachno\core\entities\Dashboard;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Response;
+    /**
+     * @var Response $pachno_response
+     * @var User $pachno_user
+     * @var Dashboard $dashboard
+     */
 
-/**
- * @var \pachno\core\entities\User $pachno_user
- * @var \pachno\core\helpers\Pagination $active_pagination
- * @var \pachno\core\helpers\Pagination $archived_pagination
- * @var \pachno\core\entities\Project[] $active_projects
- * @var \pachno\core\entities\Project[] $archived_projects
- * @var int $active_project_count
- * @var int $archived_project_count
- * @var bool $show_project_config_link
- * @var bool $show_project_list
- */
+    $pachno_response->setTitle(__('Dashboard'));
+    $pachno_response->addFeed(make_url('my_reported_issues', ['format' => 'rss']), __('Issues reported by me'));
+    $pachno_response->addFeed(make_url('my_assigned_issues', ['format' => 'rss']), __('Open issues assigned to you'));
+    $pachno_response->addFeed(make_url('my_teams_assigned_issues', ['format' => 'rss']), __('Open issues assigned to your teams'));
 
 ?>
+<?php include_component('main/hideableInfoBoxModal', ['key' => 'dashboard_didyouknow', 'title' => __('Get started using Pachno'), 'template' => 'main/profile_dashboard']); ?>
 <div class="content-with-sidebar">
-    <nav class="sidebar">
-        <?php include_component('main/menulinks', array('links' => $links, 'target_type' => 'main_menu', 'target_id' => 0, 'title' => __('Quick links'))); ?>
-        <?php \pachno\core\framework\Event::createNew('core', 'index_left')->trigger(); ?>
-        <?php if (!$pachno_user->isGuest()): ?>
-            <?php include_component('main/onboarding_invite'); ?>
-        <?php endif; ?>
-    </nav>
-    <div class="main_area frontpage">
-        <?php \pachno\core\framework\Event::createNew('core', 'index_right_top')->trigger(); ?>
-        <?php if ($show_project_list): ?>
-            <?php include_component('main/projectlist', ['list_mode' => 'all', 'admin' => false]); ?>
-        <?php endif; ?>
-        <?php \pachno\core\framework\Event::createNew('core', 'index_right_bottom')->trigger(); ?>
+    <div class="main_area">
+        <?php \pachno\core\framework\Event::createNew('core', 'dashboard_main_top')->trigger(); ?>
+        <?php include_component($dashboard->getLayout(), compact('dashboard')); ?>
+        <?php \pachno\core\framework\Event::createNew('core', 'dashboard_main_bottom')->trigger(); ?>
     </div>
 </div>

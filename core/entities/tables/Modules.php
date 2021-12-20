@@ -33,28 +33,28 @@
     class Modules extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'modules';
+        public const B2DBNAME = 'modules';
 
-        const ID = 'modules.id';
+        public const ID = 'modules.id';
 
-        const MODULE_NAME = 'modules.name';
+        public const MODULE_NAME = 'modules.name';
 
-        const MODULE_LONGNAME = 'modules.module_longname';
+        public const MODULE_LONGNAME = 'modules.module_longname';
 
-        const ENABLED = 'modules.enabled';
+        public const ENABLED = 'modules.enabled';
 
-        const VERSION = 'modules.version';
+        public const VERSION = 'modules.version';
 
-        const CLASSNAME = 'modules.classname';
+        public const CLASSNAME = 'modules.classname';
 
-        const SCOPE = 'modules.scope';
+        public const SCOPE = 'modules.scope';
 
-        public function getAll()
+        public function getByScopeId($scope_id)
         {
             $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where(self::SCOPE, $scope_id);
             $modules = [];
 
             if ($res = $this->rawSelect($query)) {
@@ -68,6 +68,11 @@
             }
 
             return $modules;
+        }
+
+        public function getAll()
+        {
+            return $this->getByScopeId(framework\Context::getScope()->getID());
         }
 
         public function getAllNames()
@@ -137,7 +142,12 @@
             return $this->rawDelete($query);
         }
 
-        public function installModule($identifier, $scope)
+        /**
+         * @param $identifier
+         * @param $scope
+         * @return Module|framework\CoreModule
+         */
+        public function installModule($identifier, $scope): framework\interfaces\ModuleInterface
         {
             $core_classname = "\\pachno\\core\\modules\\" . $identifier . "\\" . ucfirst($identifier);
             if (class_exists($core_classname)) {

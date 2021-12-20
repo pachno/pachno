@@ -13,11 +13,11 @@
      */
     class CheckForUpdates extends Command
     {
-        const UPTODATE = 0;
+        public const UPTODATE = 0;
 
-        const OUTDATED = 1;
+        public const OUTDATED = 1;
 
-        const ERROR = 2;
+        public const ERROR = 2;
 
         public function do_execute()
         {
@@ -35,7 +35,7 @@
                 if ($update_available) {
                     $uptodate = false;
                     $title = framework\Context::getI18n()->__('Pachno is out of date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pachno.com.', ['%ver' => $latest_version->nicever]);
+                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pach.no', ['%ver' => $latest_version->nicever]);
                     $title_color = "yellow";
                     $exit_code = self::OUTDATED;
                 } else {
