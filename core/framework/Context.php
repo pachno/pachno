@@ -1010,10 +1010,10 @@
          */
         public static function getUninstalledModules()
         {
-            $module_path_handle = opendir(PACHNO_MODULES_PATH);
+            $module_path_handle = opendir(PACHNO_INTERNAL_MODULES_PATH);
             $modules = [];
             while ($module_name = readdir($module_path_handle)) {
-                if (is_dir(PACHNO_MODULES_PATH . $module_name) && file_exists(PACHNO_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php')) {
+                if (is_dir(PACHNO_INTERNAL_MODULES_PATH . $module_name) && file_exists(PACHNO_INTERNAL_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php')) {
                     if (self::isModuleLoaded($module_name))
                         continue;
 
