@@ -104,7 +104,7 @@
          * 2FA token
          *
          * @var string
-         * @Column(type="string", length="200")
+         * @Column(type="string", length="200", name="two_factor_token")
          */
         protected $_2fa_token = '';
 
