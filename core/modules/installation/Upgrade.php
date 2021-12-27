@@ -8,6 +8,7 @@
     use pachno\core\framework;
     use pachno\core\framework\cli\Command;
     use pachno\core\modules\installation\entities\upgrade_1_0_0\tables\LivelinkImports;
+    use pachno\core\modules\installation\entities\upgrade_1_0_2\tables\Users;
 
     class Upgrade
     {
@@ -24,6 +25,16 @@
             \pachno\core\entities\tables\LivelinkImports::getTable()->upgrade(LivelinkImports::getTable());
 
             $this->current_version = '1.0.1';
+
+            return true;
+        }
+
+        protected function _upgradeFrom1_0_2(framework\Request $request = null): bool
+        {
+            $this->cliEchoUpgradeTable(Users::getTable());
+            \pachno\core\entities\tables\Users::getTable()->upgrade(Users::getTable());
+
+            $this->current_version = '1.0.3';
 
             return true;
         }
@@ -59,6 +70,8 @@
             switch ($this->current_version) {
                 case '1.0.0':
                     $this->_upgradeFrom1_0_0($request);
+                case '1.0.2':
+                    $this->_upgradeFrom1_0_2($request);
             }
 
             framework\Context::loadModules();
