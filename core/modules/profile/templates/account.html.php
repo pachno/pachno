@@ -191,7 +191,7 @@
                 <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                     <?= \pachno\core\helpers\TextParser::parseText(Settings::get('changedetails_message'), false, null, array('embedded' => true)); ?>
                 <?php else: ?>
-                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account', ['mode' => 'information']); ?>" data-simple-submit method="post" id="profile_information_form">
+                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account'); ?>?mode=information" data-simple-submit method="post" id="profile_information_form">
                         <div class="row">
                             <div class="column large">
                                 <div class="form-row header"><h3><?= __('About yourself'); ?></h3></div>
@@ -371,7 +371,7 @@
                 </div>
             </div>
             <div id="tab_notificationsettings_pane" data-tab-id="notificationsettings" style="display: none;" class="form-container">
-                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account', ['mode' => 'settings']); ?>" method="post" id="profile_notificationsettings_form" data-simple-submit>
+                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account'); ?>?mode=notificationsettings" method="post" id="profile_notificationsettings_form" data-simple-submit>
                     <div class="form-row">
                         <h3><?= __('Subscriptions'); ?></h3>
                         <div class="helper-text"><?= __('Pachno can subscribe you to issues, articles and other items in the system, so you can receive notifications when they are updated. Please select when you would like Pachno to subscribe you.'); ?></div>

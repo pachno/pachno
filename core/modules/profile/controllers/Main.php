@@ -89,16 +89,6 @@
                         $this->getUser()->save();
 
                         return $this->renderJSON(['message' => framework\Context::getI18n()->__('Profile information saved')]);
-                        break;
-                    case 'settings':
-                        $this->getUser()->setPreferredWikiSyntax($request['syntax_articles']);
-                        $this->getUser()->setPreferredIssuesSyntax($request['syntax_issues']);
-                        $this->getUser()->setPreferredCommentsSyntax($request['syntax_comments']);
-                        $this->getUser()->setKeyboardNavigationEnabled($request['enable_keyboard_navigation']);
-                        $this->getUser()->save();
-
-                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('Profile settings saved')]);
-                        break;
                     case 'notificationsettings':
                         $this->getUser()->setDesktopNotificationsNewTabEnabled($request['enable_desktop_notifications_new_tab']);
                         foreach ($subscriptionssettings as $setting => $description) {
@@ -161,7 +151,6 @@
                         $this->getUser()->save();
 
                         return $this->renderJSON(['message' => framework\Context::getI18n()->__('Notification settings saved')]);
-                        break;
                     case 'module':
                         foreach (framework\Context::getAllModules() as $modules) {
                             foreach ($modules as $module_name => $module) {
