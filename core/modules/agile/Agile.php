@@ -233,15 +233,7 @@
             $event->setProcessed();
         }
 
-        protected function _initialize()
-        {
-        }
-
         protected function _addAvailablePermissions()
-        {
-        }
-
-        protected function _addListeners()
         {
         }
 

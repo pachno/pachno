@@ -496,14 +496,6 @@
             return '#555';
         }
 
-        protected function _initialize()
-        {
-            if ($this->isEnabled() && $this->getSetting('allow_camelcase_links')) {
-                TextParser::addRegex('/(?<![\!|\"|\[|\>|\/\:])\b[A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', [$this, 'getArticleLinkTag']);
-                TextParser::addRegex('/(?<!")\![A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', [$this, 'stripExclamationMark']);
-            }
-        }
-
         protected function _addAvailablePermissions()
         {
         }

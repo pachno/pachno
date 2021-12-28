@@ -135,9 +135,11 @@
         }
 
         protected function _addListeners() {}
+        protected function _initialize() {}
 
         public function initialize()
         {
+            $this->_initialize();
             $this->_addListeners();
         }
 

@@ -42,14 +42,6 @@
             return framework\Context::getModule('api');
         }
 
-        protected function _initialize()
-        {
-        }
-
-        protected function _addListeners()
-        {
-        }
-
         protected function _install($scope)
         {
         }
