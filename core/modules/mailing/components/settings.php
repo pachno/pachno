@@ -227,11 +227,15 @@
                 </div>
                 <div class="form-row">
                     <div class="helper-text">
-                        <?= __('Click the "%send_test_email"-button to send a test email to your current email-address (%email)', ['%send_test_email' => __('Send test email'), '%email' => $pachno_user->getEmail()]); ?>
+                        <?php if ($pachno_user->getEmail()): ?>
+                            <?= __('Click the "%send_test_email"-button to send a test email to your current email-address (%email)', ['%send_test_email' => __('Send test email'), '%email' => $pachno_user->getEmail()]); ?>
+                        <?php else: ?>
+                            <?= __('You can send a test email to your registered email address by adding an email address in your account profile settings'); ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-row submit-container">
-                    <button type="submit" class="button primary">
+                    <button type="submit" class="button primary" <?php if (!$pachno_user->getEmail()) echo 'disabled'; ?>>
                         <?= fa_image_tag('paper-plane', ['class' => 'icon'], 'far'); ?>
                         <span><?= __('Send test email'); ?></span>
                         <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>

@@ -82,6 +82,11 @@
          */
         public function runTestEmail(Request $request)
         {
+            if (!trim($this->getUser()->getEmail())) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['message' => $this->getI18n()->__('Please add an email address to your profile and try again')]);
+            }
+
             try {
                 $result = $this->getModule()->sendTestEmail($this->getUser()->getEmail());
                 if ($result) {
