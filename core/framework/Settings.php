@@ -848,7 +848,7 @@
 
         public static function isUploadsEnabled()
         {
-            return (bool)(Context::getScope()->isUploadsEnabled() && self::get(self::SETTING_ENABLE_UPLOADS));
+            return (bool) (Context::getScope()->isUploadsEnabled() && self::get(self::SETTING_ENABLE_UPLOADS));
         }
 
         public static function isUploadsImageCachingEnabled()

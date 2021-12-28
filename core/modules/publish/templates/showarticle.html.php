@@ -5,8 +5,9 @@
     use pachno\core\framework\Context;
     use pachno\core\entities\Article;
     use pachno\core\framework\Response;
+use pachno\core\framework\Settings;
 
-    /**
+/**
      * @var Article $article
      * @var Response $pachno_response
      * @var User $pachno_user
@@ -119,12 +120,12 @@
                             <span><?php echo __('Attachments'); ?></span>
                             <span class="count-badge" id="article-attachments-count"><?= count($attachments); ?></span>
                         </span>
-                        <?php if ($article->canEdit()): ?>
+                        <?php if ($article->canEdit() && Settings::isUploadsEnabled()): ?>
                             <button class="button secondary trigger-file-upload">
                                 <span class="name"><?php echo __('Add attachment'); ?></span>
                             </button>
-                        <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
-                            <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <?php elseif (!Settings::isUploadsEnabled()): ?>
+                            <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Add attachment'); ?></button>
                         <?php endif; ?>
                     </h4>
                     <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
@@ -169,7 +170,7 @@
             $('body').on('click', '.trigger-copy-popup', () => $('#copy_article_form_container').show() );
 
             const article = <?= json_encode($article->toJSON()); ?>;
-            <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
+            <?php if (Settings::isUploadsEnabled() && $article->canEdit()): ?>
                 const uploader = new Uploader({
                     uploader_container: '#article_attachments',
                     mode: 'list',

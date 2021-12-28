@@ -10,8 +10,9 @@
 
     use pachno\core\entities\Article;
     use pachno\core\entities\tables\Articles;
+use pachno\core\framework\Settings;
 
-    if ($article->getID()) {
+if ($article->getID()) {
         $back_link = $article->getLink();
     } elseif ($article->getParentArticle() instanceof Article) {
         $back_link = $article->getParentArticle()->getLink();
@@ -114,12 +115,12 @@
                             <span><?= __('Attached files'); ?></span>
                             <span class="count-badge article-attachments-count" id="article-attachments-count"><?= count($attachments); ?></span>
                         </span>
-                        <?php if ($article->canEdit()): ?>
+                        <?php if ($article->canEdit() && Settings::isUploadsEnabled()): ?>
                             <button class="button secondary highlight trigger-file-upload" type="button">
                                 <span class="name"><?php echo __('Add attachment'); ?></span>
                             </button>
-                        <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
-                            <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <?php elseif (!Settings::isUploadsEnabled()): ?>
+                            <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Add attachment'); ?></button>
                         <?php endif; ?>
                     </div>
                     <div id="backdrop_detail_content" class="backdrop_detail_content">
@@ -156,7 +157,7 @@
         <input type="hidden" name="last_modified" value="<?php echo ($article->getId()) ? $article->getPostedDate() : 0; ?>">
         <input type="hidden" name="article_type" value="<?php echo $article->getArticleType(); ?>">
         <div class="editor-container" id="editor-container">
-            <?php if ($article->getContentSyntax() !== \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
+            <?php if ($article->getContentSyntax() !== Settings::SYNTAX_EDITOR_JS): ?>
                 <div class="message-box type-warning">
                     <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
                     <span class="message">
@@ -167,7 +168,7 @@
                     <a href="?convert=true" class="button secondary highlight"><?php echo __('Start conversion'); ?></a>
                 </span>
                 </div>
-                <?php if ($article->getContentSyntax() !== \pachno\core\framework\Settings::SYNTAX_MD): ?>
+                <?php if ($article->getContentSyntax() !== Settings::SYNTAX_MD): ?>
                     <div class="message-box type-warning">
                         <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
                         <span class="message">
@@ -203,7 +204,7 @@
                 <input type="hidden" name="article_content_syntax" value="<?= $article->getContentSyntax(); ?>">
                 <input type="text" name="article_name" id="article_name" required value="<?= ($article->getName() !== 'Main Page') ? __e($article->getName()) : 'Overview'; ?>" placeholder="<?= ($article->isCategory()) ? __('Type the category title here') : __('Type the page title here'); ?>" <?php if ($article->isMainPage()) echo ' disabled'; ?>>
             </div>
-            <?php if ($article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
+            <?php if ($article->getContentSyntax() == Settings::SYNTAX_EDITOR_JS): ?>
                 <div class="editor-input-container-wrapper article">
                     <div class="editor-input-container wysiwyg-editor" id="article-editor" data-article-id="<?= $article->getId(); ?>" data-input-name="article_content" data-placeholder="<?= __("Click here to start writing. When writing, press [tab] to see writing options"); ?>"><textarea><?= $article->getContent(); ?></textarea></div>
                 </div>
@@ -257,7 +258,7 @@
 </div>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, () => {
-        <?php if ($article->getContentSyntax() != \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
+        <?php if ($article->getContentSyntax() != Settings::SYNTAX_EDITOR_JS): ?>
             const $publishButton = $('#article-publish-button');
             $publishButton.removeProp('disabled');
         <?php endif; ?>
@@ -293,7 +294,7 @@
                         form: 'edit_article_form'
                     };
 
-                    <?php if ($article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
+                    <?php if ($article->getContentSyntax() == Settings::SYNTAX_EDITOR_JS): ?>
                         if (results === undefined) {
                             return;
                         }
@@ -311,7 +312,7 @@
         });
 
         const article = <?= json_encode($article->toJSON()); ?>;
-        <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
+        <?php if (Settings::isUploadsEnabled() && $article->canEdit()): ?>
         const uploader = new Uploader({
             uploader_container: '#article-attachments-sidebar',
             mode: 'list',

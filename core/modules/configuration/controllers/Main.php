@@ -1002,6 +1002,7 @@
             $this->uploads_enabled = framework\Context::getScope()->isUploadsEnabled();
             if ($this->uploads_enabled && $request->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
+                framework\Settings::saveSetting(framework\Settings::SETTING_ENABLE_UPLOADS, framework\Context::getRequest()->getParameter('enable_uploads'));
                 if ($request['enable_uploads']) {
                     if (framework\Context::getScope()->isDefault()) {
                         $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_storage', 'upload_localpath'];
@@ -1021,7 +1022,6 @@
 
                         framework\Settings::saveSetting('upload_allow_image_caching', framework\Context::getRequest()->getParameter('upload_allow_image_caching'));
                         framework\Settings::saveSetting('upload_delivery_use_xsend', framework\Context::getRequest()->getParameter('upload_delivery_use_xsend'));
-                        framework\Settings::saveSetting('enable_uploads', framework\Context::getRequest()->getParameter('enable_uploads'));
                     } else {
                         $settings = ['upload_restriction_mode', 'upload_extensions_list'];
                         framework\Settings::copyDefaultScopeSetting('upload_localpath');
