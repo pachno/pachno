@@ -947,10 +947,10 @@
                 if ($user->isActivated()) {
                     framework\Context::setMessage('auto_password', $password);
 
-                    return $this->renderJSON(['loginmessage' => $i18n->__('After pressing %continue, you need to set your password.', ['%continue' => $i18n->__('Continue')]), 'one_time_password' => $password, 'activated' => true]);
+                    return $this->renderJSON(['registered' => true, 'loginmessage' => $i18n->__('After pressing %continue, you need to set your password.', ['%continue' => $i18n->__('Continue')]), 'one_time_password' => $password, 'activated' => true]);
                 }
 
-                return $this->renderJSON(['loginmessage' => $i18n->__('The account has now been registered - check your email inbox for the activation email. Please be patient - this email can take up to two hours to arrive.'), 'activated' => false]);
+                return $this->renderJSON(['registered' => true, 'loginmessage' => $i18n->__('The account has now been registered - check your email inbox for the activation email. Please be patient - this email can take up to two hours to arrive.'), 'activated' => false]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 

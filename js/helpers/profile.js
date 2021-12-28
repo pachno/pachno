@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import Pachno from "../classes/pachno";
+import generatePassword from 'generation-passwordjs';
 
 const showLogin = function () {
     const $trigger = $(this);
@@ -92,6 +93,18 @@ const setupListeners = function () {
     const $body = $('body');
     $body.on('click', Pachno.TRIGGERS.showLogin, showLogin)
     $body.on('click', ".trigger-invite-user", inviteUser);
+    $body.on('click', '.trigger-suggest-password', () => { Pachno.trigger(Pachno.EVENTS.profile.suggestPassword) });
+
+    Pachno.on(Pachno.EVENTS.profile.suggestPassword, function (PachnoApplication, data) {
+        let suggested_password = generatePassword({
+            characterAmount: 20,
+            includeUppercase: true,
+            includeNumbers: true,
+            includeSymbols: true,
+        });
+        $('#suggested-password').html(suggested_password);
+        $('#suggest-password-box').removeClass('hidden');
+    });
 
     Pachno.on(Pachno.EVENTS.profile.twofactor.triggerDisable, function (PachnoApplication, data) {
         const url = data.url;

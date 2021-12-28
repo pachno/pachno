@@ -34,8 +34,22 @@
     color: #FFF;
     background: $theme-color-info;
 
-    .command_box {
-      background-color: rgba(100, 100, 100, .3);
+    a {
+      &,
+      &:hover {
+        color: #FFF;
+        font-weight: $theme-font-weight-heavy;
+        text-decoration: none;
+        border-bottom: 1px dotted #FFF;
+      }
+    }
+  }
+
+  .command_box {
+    background-color: rgba(100, 100, 100, .3);
+
+    &.focus {
+      font-size: 1.1em;
     }
   }
 

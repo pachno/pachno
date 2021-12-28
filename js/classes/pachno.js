@@ -61,6 +61,7 @@ class PachnoApplication {
                 generatePassword: 'configuration-generate-password'
             },
             profile: {
+                suggestPassword: 'profile-suggest-password',
                 twofactor: {
                     triggerDisable: 'profile-2fa-trigger-disable'
                 },

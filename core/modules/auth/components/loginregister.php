@@ -46,12 +46,12 @@
                         </div>
                     </form>
                 </div>
-                <div style="display: none;" id="register_confirmation" class="form-container hidden">
+                <div id="register_confirmation" class="form-container hidden">
                     <div class="form-row header">
                         <h3><?php echo __('Thank you for registering!'); ?></h3>
                     </div>
                     <div class="form-row">
-                        <span class="helper-text" id="register_message"></span>
+                        <h3 id="register_message"></h3>
                     </div>
                     <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('auth_login'); ?>" method="post" id="register_auto_form" onsubmit="Pachno.Main.Login.registerAutologin('<?php echo make_url('auth_login'); ?>'); return false;">
                         <input id="register_username_hidden" name="username" type="hidden" value="">
@@ -73,3 +73,22 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
+        const json = data.json;
+        const $form = $(`#${data.form}`);
+        if (data.form == 'register_form' && json.registered) {
+            if (json.activated) {
+                $('#register_username_hidden').val($('#fieldusername').val());
+                $('#register_password_hidden').val(json.one_time_password);
+                $('#register_auto_form').show();
+            } else {
+                $('#register_confirm_back').show();
+            }
+            $('#register_message').html(json.loginmessage);
+            $('#register_container').addClass('hidden');
+            $('#register_confirmation').removeClass('hidden');
+        }
+    });
+
+</script>

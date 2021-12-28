@@ -44,6 +44,12 @@
                                             <span class="message"><?= __('Remember to set a password before you continue, or you may be locked out of your account'); ?></span>
                                         </div>
                                     <?php endif; ?>
+                                    <div class="message-box type-info hidden" id="suggest-password-box">
+                                        <?= fa_image_tag('fingerprint', ['class' => 'icon large']); ?>
+                                        <span class="message">
+                                            <span><?= __("Here's a password you can use: %suggestion. Remember to save the password somewhere safe - preferrably a password wallet such as %bitwarden or similar - before you continue.", ['%bitwarden' => '<a href="https://www.bitwarden.com" target="_blank">BitWarden</a>', '%suggestion' => '<span id="suggested-password" class="command_box focus"></span>']); ?></span>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="form-row" data-field="new_password_1">
                                     <label for="new_password_1"><?= ($has_autopassword) ? __('Password') : __('New password'); ?></label>
@@ -58,6 +64,10 @@
                             <?php endif; ?>
                         <?php if (!Settings::isUsingExternalAuthenticationBackend()): ?>
                             <div class="form-row submit-container">
+                                <button type="button" class="secondary trigger-suggest-password">
+                                    <?= fa_image_tag('lightbulb', ['class' => 'icon'], 'far'); ?>
+                                    <span>Suggest a password</span>
+                                </button>
                                 <button type="submit" class="button primary">
                                     <span><?= ($has_autopassword) ? __('Set password') : __('Change password'); ?></span>
                                     <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>

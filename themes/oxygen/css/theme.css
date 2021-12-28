@@ -9310,8 +9310,15 @@ textarea.markItUpEditor:focus {
     border-color: transparent;
     color: #FFF;
     background: #0cd8b6; }
-    .message-box.type-info .command_box {
-      background-color: rgba(100, 100, 100, 0.3); }
+    .message-box.type-info a, .message-box.type-info a:hover {
+      color: #FFF;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px dotted #FFF; }
+  .message-box .command_box {
+    background-color: rgba(100, 100, 100, 0.3); }
+    .message-box .command_box.focus {
+      font-size: 1.1em; }
   .message-box.cdx-alert-primary, .message-box.cdx-alert-secondary, .message-box.cdx-alert-info, .message-box.cdx-alert-success, .message-box.cdx-alert-warning, .message-box.cdx-alert-danger, .message-box.cdx-alert-light, .message-box.cdx-alert-dark {
     border: none; }
   .message-box .fas,
