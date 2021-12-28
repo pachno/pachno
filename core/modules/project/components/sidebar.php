@@ -65,6 +65,11 @@
                     <?= fa_image_tag('question-circle', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Help / FAQ'); ?></span>
                 </a>
+                <div class="list-item separator"></div>
+                <a href="javascript:void(0);" data-tab-target="danger-zone" class="tab-switcher-trigger list-item danger <?php if ($selected_tab == 'danger-zone') echo 'selected'; ?>">
+                    <?= fa_image_tag('exclamation-triangle', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Danger zone'); ?></span>
+                </a>
             </div>
         <?php else: ?>
             <?php include_component('project/sidebarlinks', ['project' => Context::getCurrentProject()]); ?>

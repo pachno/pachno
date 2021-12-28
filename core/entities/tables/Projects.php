@@ -28,7 +28,7 @@
      * @subpackage tables
      *
      * @method static Projects getTable() Retrieves an instance of this table
-     * @method Project selectById(integer $id) Retrieves a project
+     * @method Project|null selectById(integer $id) Retrieves a project
      * @method Project[] select(Query $query, $join = 'all')
      *
      * @Table(name="projects")

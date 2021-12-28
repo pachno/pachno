@@ -774,11 +774,11 @@
         /**
          * Whether or not the current or target user can access the issue
          *
-         * @param null $target_user
+         * @param ?User $target_user
          *
          * @return boolean
          */
-        public function hasAccess($target_user = null)
+        public function hasAccess(User $target_user = null): bool
         {
             Logging::log('checking access to issue ' . $this->getFormattedIssueNo());
             $i_id = $this->getID();

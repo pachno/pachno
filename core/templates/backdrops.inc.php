@@ -61,15 +61,12 @@
 </div>
 <div class="fullpage_backdrop" id="dialog_backdrop_modal" style="display: none;">
     <div id="dialog_backdrop_modal_content" class="fullpage_backdrop_content">
-        <div class="backdrop_box small">
+        <div class="backdrop_box mediumsmall">
             <div class="backdrop_detail_header"><span id="dialog_modal_title"></span></div>
-            <div class="backdrop_detail_content">
-                <p id="dialog_modal_content"></p>
-            </div>
-            <div class="backdrop_details_submit">
-                <span class="explanation"></span>
-                <div class="dialog-query-buttons">
-                    <a href="javascript:void(0)" id="dialog_okay" onclick="Pachno.UI.Dialog.dismissModal();" class="button primary"><?php echo __('Okay'); ?></a>
+            <div class="backdrop_detail_content dialog">
+                <div id="dialog_modal_content" class="content"></div>
+                <div class="backdrop_buttons">
+                    <a href="javascript:void(0)" id="dialog_okay" class="button primary"><?php echo __('Okay'); ?></a>
                 </div>
             </div>
         </div>

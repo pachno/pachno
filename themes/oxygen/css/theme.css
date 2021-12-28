@@ -6523,6 +6523,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .header-banner .button-group {
       padding: 0 1.5em 1.5em 1.5em;
       justify-content: flex-end;
+      align-content: center;
       box-sizing: border-box; }
       .list-mode .header-banner .button-group button + button,
       .list-mode .header-banner .button-group button + .button,

@@ -114,12 +114,18 @@ const UI = {
             $('#dialog_backdrop').addClass('submitting');
         },
 
-        showModal: (title, content) => {
+        showModal: (title, content, options) => {
             UI.Message.clear();
             $('#dialog_modal_title').html(title);
             $('#dialog_modal_content').html(content);
             $('#dialog_backdrop_modal_content').show();
             $('#dialog_backdrop_modal').show();
+            $('#dialog_okay').off('click');
+            if (options !== undefined && options.url !== undefined) {
+                $('#dialog_okay').attr('href', options.url);
+            } else {
+                $('#dialog_okay').on('click', UI.Dialog.dismissModal);
+            }
         },
 
         dismiss: () => {

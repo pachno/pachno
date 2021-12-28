@@ -18,6 +18,7 @@
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
     use pachno\core\modules\main\cli\entities\tbg\tables\Teams;
+    use pachno\core\modules\project\Project;
     use RuntimeException;
 
     /**
@@ -781,22 +782,26 @@
         public function runDeleteProject(framework\Request $request)
         {
             $i18n = framework\Context::getI18n();
+            $project = tables\Projects::getTable()->selectByID($request['project_id']);
 
-            if ($this->access_level == framework\Settings::ACCESS_FULL) {
+            if ($this->access_level == framework\Settings::ACCESS_FULL || ($project instanceof entities\Project && $this->getUser()->canEditProjectDetails($project))) {
+                if (!$project instanceof entities\Project) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $i18n->__('This project does not exist')]);
+                }
+
                 try {
-                    $theProject = entities\Project::getB2DBTable()->selectByID($request['project_id']);
-                    $theProject->setDeleted();
-                    $theProject->save();
+                    $project->setDeleted();
+                    $project->save();
 
-                    return $this->renderJSON(['title' => $i18n->__('The project was deleted'), 'total_count' => entities\Project::getProjectsCount(), 'more_available' => framework\Context::getScope()->hasProjectsAvailable()]);
+                    return $this->renderJSON(['message' => $i18n->__('The project was deleted'), 'total_count' => entities\Project::getProjectsCount(), 'more_available' => framework\Context::getScope()->hasProjectsAvailable()]);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
-
                     return $this->renderJSON(['error' => $i18n->__('An error occured') . ': ' . $e->getMessage()]);
                 }
             }
-            $this->getResponse()->setHttpStatus(400);
 
+            $this->getResponse()->setHttpStatus(400);
             return $this->renderJSON(["error" => $i18n->__("You don't have access to remove projects")]);
         }
 

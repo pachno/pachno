@@ -40,6 +40,9 @@
         <div data-tab-id="faq" class="configuration-content centered" <?php if ($selected_tab != 'faq'): ?> style="display: none;"<?php endif; ?>>
             <?php include_component('project/projectfaq', ['project' => $selected_project]); ?>
         </div>
+        <div data-tab-id="danger-zone" class="configuration-content centered" <?php if ($selected_tab != 'danger-zone'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectdangerzone', ['project' => $selected_project]); ?>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
