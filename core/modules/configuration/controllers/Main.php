@@ -2213,24 +2213,8 @@
                 $team->save();
             }
 
-            if (!$is_new && $request->hasParameter('save_permissions')) {
-                $new_permissions = [];
-                foreach ($request['permissions'] ?: [] as $new_permission) {
-                    $permission_details = explode(',', $new_permission);
-                    $new_permissions[$permission_details[1]] = $permission_details[0];
-                }
-                foreach ($team->getPermissions() as $existing_permission) {
-                    if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
-                        $team->removePermission($existing_permission['permission'], $existing_permission['module']);
-                    } else {
-                        unset($new_permissions[$existing_permission['permission']]);
-                    }
-                }
-                foreach ($new_permissions as $permission_key => $module) {
-                    $team->addPermission($permission_key, $module);
-                }
-                framework\Context::clearPermissionsCache();
-                framework\Context::cacheAllPermissions();
+            if (!$is_new) {
+                $this->updatePermissions($request['permissions'] ?: [], $team);
             }
 
             return $this->renderJSON([
@@ -2378,24 +2362,8 @@
 
             $is_new = (!$client->getID());
 
-            if (!$is_new && $request->hasParameter('save_permissions')) {
-                $new_permissions = [];
-                foreach ($request['permissions'] ?: [] as $new_permission) {
-                    $permission_details = explode(',', $new_permission);
-                    $new_permissions[$permission_details[1]] = $permission_details[0];
-                }
-                foreach ($client->getPermissions() as $existing_permission) {
-                    if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
-                        $client->removePermission($existing_permission['permission'], $existing_permission['module']);
-                    } else {
-                        unset($new_permissions[$existing_permission['permission']]);
-                    }
-                }
-                foreach ($new_permissions as $permission_key => $module) {
-                    $client->addPermission($permission_key, $module);
-                }
-                framework\Context::clearPermissionsCache();
-                framework\Context::cacheAllPermissions();
+            if (!$is_new) {
+                $this->updatePermissions($request['permissions'] ?: [], $client);
             }
 
             return $this->renderJSON([
@@ -2609,24 +2577,28 @@
 
         /**
          * @param string[] $permissions
-         * @param entities\Group $group
+         * @param entities\common\Permissible $target
          */
-        protected function updatePermissions($permissions, entities\Group $group): void
+        protected function updatePermissions($permissions, entities\common\Permissible $target): void
         {
             $new_permissions = [];
             foreach ($permissions as $new_permission) {
                 $permission_details = explode(',', $new_permission);
                 $new_permissions[$permission_details[1]] = $permission_details[0];
             }
-            foreach ($group->getPermissions() as $existing_permission) {
+            foreach ($target->getPermissions() as $existing_permission) {
+                if ($existing_permission['target_id']) {
+                    continue;
+                }
+
                 if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
-                    $group->removePermission($existing_permission['permission'], $existing_permission['module']);
+                    $target->removePermission($existing_permission['permission'], $existing_permission['module']);
                 } else {
                     unset($new_permissions[$existing_permission['permission']]);
                 }
             }
             foreach ($new_permissions as $permission_key => $module) {
-                $group->addPermission($permission_key, $module);
+                $target->addPermission($permission_key, $module);
             }
             framework\Context::clearPermissionsCache();
             framework\Context::cacheAllPermissions();

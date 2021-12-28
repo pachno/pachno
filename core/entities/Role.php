@@ -192,7 +192,7 @@
             }
         }
 
-        public function hasPermission($permission_key, $module = 'core', $target_id = null)
+        public function hasPermission($permission_key, $target_id = null, $module = 'core')
         {
             foreach ($this->getPermissions() as $role_permission) {
                 if ($role_permission->getPermission() == $permission_key && $role_permission->getModule() == $module && $role_permission->getTargetID() == $target_id) return true;

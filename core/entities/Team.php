@@ -350,7 +350,7 @@
                 $this->_permission_keys = [];
 
                 foreach ($this->_permissions as $permission) {
-                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = true;
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = ['module' => $permission->getModuleName(), 'permission' => $permission->getPermissionName(), 'target_id' => $permission->getTargetId()];;
                 }
             }
         }

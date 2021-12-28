@@ -120,7 +120,7 @@
                 </div>
             </div>
             <div data-tab-id="permissions" class="form-container" style="display: none;">
-                <form action="<?php echo make_url('configure_team', ['team_id' => $team->getID(), 'save_permissions' => '1']); ?>" id="edit_team_permissions_form" method="post" data-simple-submit>
+                <form action="<?php echo make_url('configure_team', ['team_id' => $team->getID()]); ?>" id="edit_team_permissions_form" method="post" data-simple-submit>
                     <div class="form-row">
                         <div class="list-mode">
                             <div class="interactive_menu_values filter_existing_values">

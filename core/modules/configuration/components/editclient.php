@@ -162,7 +162,7 @@
                 </div>
             </div>
             <div data-tab-id="permissions" class="form-container" style="display: none;">
-                <form action="<?= make_url('configure_client', ['client_id' => $client->getID(), 'save_permissions' => '1']); ?>" id="edit_client_permissions_form" method="post" data-simple-submit>
+                <form action="<?= make_url('configure_client', ['client_id' => $client->getID()]); ?>" id="edit_client_permissions_form" method="post" data-simple-submit>
                     <div class="form-row">
                         <div class="helper-text">
                             <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_client_permissions.png', [], true); ?></div>
