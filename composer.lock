@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "848f4ce617b161b0d592fd652e942fc9",
+    "content-hash": "b4901c96bafd30885ab5edac556e254b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1372,27 +1372,29 @@
         },
         {
             "name": "pachno/b2db",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pachno/b2db.git",
-                "reference": "f776706f83e0b0e798b677e91ad46ae6acf3482a"
+                "reference": "a7909b78d82311868b447253f1e3dd0eee651d21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pachno/b2db/zipball/f776706f83e0b0e798b677e91ad46ae6acf3482a",
-                "reference": "f776706f83e0b0e798b677e91ad46ae6acf3482a",
+                "url": "https://api.github.com/repos/pachno/b2db/zipball/a7909b78d82311868b447253f1e3dd0eee651d21",
+                "reference": "a7909b78d82311868b447253f1e3dd0eee651d21",
                 "shasum": ""
             },
             "require": {
-                "ext-apcu": "*",
                 "ext-mbstring": "*",
                 "ext-pdo": "*",
                 "ext-reflection": "*",
-                "php": ">=7.4.0"
+                "php": "^7.4|^8.0|^8.1"
             },
             "require-dev": {
                 "phpstan/phpstan": "^0.12.88"
+            },
+            "suggest": {
+                "ext-apcu": "APCu extension to allow apc caching"
             },
             "type": "library",
             "autoload": {
@@ -1420,9 +1422,9 @@
                 "postgres"
             ],
             "support": {
-                "source": "https://github.com/pachno/b2db/tree/v1.0.3"
+                "source": "https://github.com/pachno/b2db/tree/v1.0.4"
             },
-            "time": "2021-06-22T08:03:29+00:00"
+            "time": "2022-01-03T11:06:37+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -5119,6 +5121,7 @@
         "php": "^7.4|^8.0",
         "lib-pcre": "8.*|10.*",
         "ext-gd": "*",
+        "ext-dom": "*",
         "ext-curl": "*",
         "ext-pdo": "*",
         "ext-iconv": "*",
