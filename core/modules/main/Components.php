@@ -29,6 +29,10 @@
      * @property entities\LogItem $item
      * @property entities\IssueSpentTime $entry
      * @property entities\IssueSpentTime[] $timers
+     * @property entities\Dashboard $dashboard
+     * @property array<string, array<int, array<array<string, mixed>>>> $views
+     * @property int $dashboard_id
+     * @property int $target_type
      *
      */
     class Components extends framework\ActionComponent

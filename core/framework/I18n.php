@@ -101,9 +101,9 @@
                 Logging::log("Done Initiating", 'i18n');
             }
             if ($this->_strings === null) {
-                if (Context::getCache()->fileHas(Cache::KEY_I18N . 'strings_' . $this->_language, false)) {
+                if (Context::getCache()->has(Cache::KEY_I18N . 'strings_' . $this->_language, false)) {
                     Logging::log('Trying cached strings');
-                    $strings = Context::getCache()->fileGet(Cache::KEY_I18N . 'strings_' . $this->_language, false);
+                    $strings = Context::getCache()->get(Cache::KEY_I18N . 'strings_' . $this->_language, false);
                     $this->_strings = (is_array($strings)) ? $strings : null;
                 }
                 if ($this->_strings === null) {
@@ -113,7 +113,7 @@
                         $this->loadStrings($module_name);
                     }
                     if (is_array($this->_strings)) {
-                        Context::getCache()->fileAdd(Cache::KEY_I18N . 'strings_' . $this->_language, $this->_strings, false);
+                        Context::getCache()->add(Cache::KEY_I18N . 'strings_' . $this->_language, $this->_strings, false);
                     }
                 }
             }
@@ -395,7 +395,6 @@
                     $tstring = strftime('%a, %d %b %Y %H:%M:%S ', $tstamp);
 
                     return ($tstring);
-                    break;
                 case 22:
                     $tstring = strftime($this->getDateTimeFormat(15), $tstamp);
                     break;

@@ -10,6 +10,7 @@
     use pachno\core\entities\tables;
     use pachno\core\entities\User;
     use pachno\core\entities\Userstate;
+    use pachno\core\framework\exceptions\SettingsException;
 
     /**
      * Settings class

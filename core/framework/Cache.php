@@ -11,8 +11,12 @@
      * @package pachno
      * @subpackage core
      */
-    class Cache
+    abstract class Cache
     {
+
+        public const DRIVER_APCU = 'apcu';
+
+        public const DRIVER_FILESYSTEM = 'filesystem';
 
         public const KEY_SCOPES = '_scopes';
 
@@ -34,259 +38,123 @@
 
         public const KEY_TEXTPARSER_ISSUE_REGEX = 'pachno\core\framework\helpers\TextParser::getIssueRegex';
 
-        /**
-         * Cache types APC, filesystem (default)
-         */
-        public const TYPE_APC = 'apc';
+        protected bool $_enabled = true;
 
-        public const TYPE_FILE = 'file';
+        protected bool $_logging = false;
 
-        protected $_enabled = true;
+        protected string $_type = self::DRIVER_FILESYSTEM;
 
-        protected $_logging = false;
-
-        /**
-         * Cache type [apc|file].
-         * If APC is present, it will be automatically set to APC [apc].
-         * If no opcache present, it will fall back to caching into filesystem [file]
-         */
-        protected $_type;
-
-        protected $_prefix;
+        protected string $_prefix = '';
 
         /**
          * container holding already loaded classes from filesystem so each cached file is loaded only once and later served from memory
+         * @var mixed[]
          */
-        protected $loaded = [];
+        protected array $loaded = [];
 
-        public function __construct()
-        {
-            if (Context::isCLI()) {
-                $this->disable();
-            } else {
-                if (!file_exists(PACHNO_CACHE_PATH))
-                    if (!is_writable(dirname(PACHNO_CACHE_PATH))
-                        || !mkdir(PACHNO_CACHE_PATH))
-                        throw new exceptions\CacheException('The cache directory is not writable', exceptions\CacheException::NO_FOLDER);
-
-                if (!is_writable(PACHNO_CACHE_PATH))
-                    throw new exceptions\CacheException('The cache directory is not writable', exceptions\CacheException::NOT_WRITABLE);
-            }
-        }
-
-        public function disable()
-        {
-            $this->_enabled = false;
-        }
-
+        abstract public function __construct();
+    
         /**
          * Retrieve an item from the cache
          *
-         * @param string $key
-         * @param boolean $prepend_scope [optional] Whether to append scope id (for non-global cache keys)
+         * @param string $key Unique key of the element to look up
+         * @param bool $prepend_scope Whether to append scope id (for non-global cache keys)
          *
-         * @return mixed
+         * @return ?mixed
          */
-        public function get($key, $prepend_scope = true)
-        {
-            if (!$this->isEnabled())
-                return null;
-
-            $success = false;
-
-            switch ($this->_type) {
-                case self::TYPE_APC:
-                    $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-                    $var = apc_fetch($key, $success);
-                    break;
-                case self::TYPE_FILE:
-                default:
-                    $var = $this->fileGet($key, $prepend_scope);
-                    $success = !empty($var);
-            }
-
-            return ($success) ? $var : null;
-        }
-
-        public function isEnabled()
-        {
-            return (Context::isCLI()) ? false : $this->_enabled;
-        }
-
-        protected function getScopedKeyIfAppliccable($key, $prepend_scope)
-        {
-            $scope_id = (Context::getScope() instanceof Scope) ? Context::getScope()->getID() : '';
-            $key = $this->_prefix . $key;
-
-            return ($prepend_scope) ? "{$key}.{$scope_id}" : $key;
-        }
-
-        public function fileGet($key, $prepend_scope = true)
-        {
-            if (!$this->isEnabled())
-                return null;
-
-            $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-            if (!$this->fileHas($key, $prepend_scope, true))
-                return null;
-
-            if (array_key_exists($key, $this->loaded)) {
-                return $this->loaded[$key];
-            }
-
-            $filename = $this->_getFilenameForKey($key);
-            if (!file_exists($filename))
-                throw new Exception("$filename - $key");
-            $this->loaded[$key] = unserialize(file_get_contents($filename));
-
-            return $this->loaded[$key];
-        }
-
-        public function fileHas($key, $prepend_scope = true, $scoped = false)
-        {
-            if (!$this->isEnabled())
-                return false;
-
-            $key = (!$scoped) ? $this->getScopedKeyIfAppliccable($key, $prepend_scope) : $key;
-            $filename = $this->_getFilenameForKey($key);
-
-            return (array_key_exists($key, $this->loaded) || file_exists($filename));
-        }
-
-        protected function _getFilenameForKey($key)
-        {
-            $key = $this->getKeyHash($key);
-
-            return PACHNO_CACHE_PATH . $key . '.cache';
-        }
-
-        /**
-         * Some keys have insuitable format for filepath, we must purify keys
-         * To prevent from accidentally filtering into two the same keys, we must also add hash calculated from original key
-         *
-         * @param string $key
-         */
-        protected function getKeyHash($key)
-        {
-            $key = preg_replace('/[^a-zA-Z0-9_\-]/', '-', $key);
-
-            return $key . '-' . substr(md5(serialize($key)), 0, 5);
-        }
-
+        abstract public function get(string $key, bool $prepend_scope = true);
+    
+        abstract public function getCacheType(): string;
+    
         /**
          * Check if an item is in the cache
          *
-         * @param string $key
-         * @param boolean $prepend_scope [optional] Whether to append scope id (for non-global cache keys)
+         * @param string $key Unique key of the element to look up
+         * @param bool $prepend_scope Whether to append scope id (for non-global cache keys)
          *
-         * @return boolean
+         * @return bool
          */
-        public function has($key, $prepend_scope = true)
+        abstract public function has(string $key, bool $prepend_scope = true): bool;
+    
+        /**
+         * @param string $key
+         * @param mixed $value
+         * @param bool $prepend_scope [optional] Whether to append scope id (for non-global cache keys)
+         *
+         * @return bool
+         */
+        abstract public function add(string $key, $value, bool $prepend_scope = true): bool;
+
+        /**
+         * @param string $key Unique key of the element to look up
+         * @param bool $prepend_scope [optional] Whether to append scope id (for non-global cache keys)
+         * @param bool $force
+         *
+         * @return void
+         */
+        abstract public function delete(string $key, bool $prepend_scope = true, bool $force = false): void;
+    
+        /**
+         * @param string $key The cache key to scope
+         * @param bool $prepend_scope Whether to prepend scope to the cache key
+         *
+         * @return string
+         */
+        protected function getScopedKeyIfApplicable(string $key, bool $prepend_scope): string
         {
-            if (!$this->isEnabled())
+            $scope_id = (Context::getScope() instanceof Scope) ? Context::getScope()->getID() : '';
+            $key = $this->_prefix . $key;
+        
+            return ($prepend_scope) ? "{$key}.{$scope_id}" : $key;
+        }
+    
+        /**
+         * Enable or disable the caching
+         *
+         * @return void
+         */
+        public function disable(): void
+        {
+            $this->_enabled = false;
+        }
+    
+        /**
+         * Returns whether the cache is enabled or not
+         *
+         * @return bool
+         */
+        public function isEnabled(): bool
+        {
+            if (Context::isCLI()) {
                 return false;
-
-            $success = false;
-
-            switch ($this->_type) {
-                case self::TYPE_APC:
-                    $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-                    apc_fetch($key, $success);
-                    break;
-                case self::TYPE_FILE:
-                default:
-                    $success = $this->fileHas($key, $prepend_scope);
             }
-
-            return $success;
+        
+            return $this->_enabled;
         }
-
-        public function add($key, $value, $prepend_scope = true)
-        {
-            if (!$this->isEnabled())
-                return false;
-
-            switch ($this->_type) {
-                case self::TYPE_APC:
-                    $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-                    apc_store($key, $value);
-                    break;
-                case self::TYPE_FILE:
-                default:
-                    $this->fileAdd($key, $value, $prepend_scope);
-            }
-
-            if ($this->_logging)
-                Logging::log('Caching value for key "' . $key . '"', 'cache');
-
-            return true;
-        }
-
-        public function fileAdd($key, $value, $prepend_scope = true)
-        {
-            if (!$this->isEnabled())
-                return false;
-
-            $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-            $filename = $this->_getFilenameForKey($key);
-            $new = !file_exists($filename);
-            file_put_contents($filename, serialize($value));
-            if ($new)
-                chmod($filename, 0666);
-            $this->loaded[$key] = $value;
-        }
-
-        public function checkEnabled()
-        {
-            if ($this->_enabled) {
-                $this->_type = function_exists('apc_add') ? self::TYPE_APC : self::TYPE_FILE;
-            }
-        }
-
-        public function getCacheType()
-        {
-            return $this->_type;
-        }
-
-        public function setPrefix($prefix)
+    
+        /**
+         * Sets a global cache key prefix used when storing elements in the cache
+         *
+         * @param string $prefix
+         * @return void
+         */
+        public function setPrefix(string $prefix): void
         {
             $this->_prefix = $prefix;
         }
-
-        public function clearCacheKeys($keys)
+    
+        /**
+         * Clears a specific list of cache key entries
+         *
+         * @param string[] $keys List of keys to clear
+         *
+         * @return void
+         */
+        public function clearCacheKeys(array $keys): void
         {
             foreach ($keys as $key) {
                 $this->delete($key);
-                $this->fileDelete($key);
             }
-        }
-
-        public function delete($key, $prepend_scope = true, $force = false)
-        {
-            if (!$force && !$this->isEnabled())
-                return false;
-
-            switch ($this->_type) {
-                case self::TYPE_APC:
-                    $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-                    apc_delete($key);
-                    break;
-                case self::TYPE_FILE:
-                default:
-                    $this->fileDelete($key, $prepend_scope);
-            }
-        }
-
-        public function fileDelete($key, $prepend_scope = true, $force = false)
-        {
-            if (!$force && !$this->isEnabled())
-                return false;
-
-            $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-            $filename = $this->_getFilenameForKey($key);
-            if (file_exists($filename))
-                unlink($filename);
-            unset($this->loaded[$key]);
         }
 
     }

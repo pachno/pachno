@@ -3,7 +3,11 @@
     use pachno\core\entities\AgileBoard;
     use pachno\core\entities\Milestone;
     use pachno\core\entities\Project;
-
+    
+    /**
+     * @var Milestone $milestone
+     */
+    
     if (isset($board))
     {
         switch ($board->getType())
@@ -39,4 +43,4 @@
         $options['board'] = $board;
     }
 
-    include_component('project/milestone', $options);
+    include_component('project/editmilestone', $options);

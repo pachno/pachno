@@ -59,9 +59,6 @@
     <a href="javascript:void(0);<?php // echo make_url('project_team', array('project_key' => $project->getKey())); ?>" class="list-item disabled tooltip-container <?php if ($pachno_response->getPage() == 'project_team') echo 'selected'; ?>">
         <?= fa_image_tag('users', ['class' => 'icon']); ?>
         <span class="name"><?= __('Team overview'); ?></span>
-        <span class="tooltip from-above">
-            <?= __('This functionality is not available in the alpha'); ?>
-        </span>
     </a>
     <?php Event::createNew('core', 'project_sidebar_links_team')->trigger(array('submenu' => false)); ?>
 <?php endif; */ ?>

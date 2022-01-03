@@ -112,7 +112,7 @@
          *
          * @param framework\Request $request
          */
-        public function runVerify2FA(framework\Request $request)
+        public function runVerify2FA(framework\Request $request): framework\JsonOutput
         {
             $user = entities\tables\Users::getTable()->getByUsername($request['username']);
             $user_session = $this->getUser()->getUserSession($request['session_token']);

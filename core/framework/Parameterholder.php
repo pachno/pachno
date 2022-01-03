@@ -20,21 +20,21 @@
             return $this->_property_list;
         }
 
-        public function offsetUnset($key)
+        public function offsetUnset(mixed $offset): void
         {
-            if (array_key_exists($key, $this->_property_list)) {
-                unset($this->_property_list[$key]);
+            if (array_key_exists($offset, $this->_property_list)) {
+                unset($this->_property_list[$offset]);
             }
         }
 
-        public function offsetSet($key, $value)
+        public function offsetSet(mixed $offset, mixed $value): void
         {
-            $this->__set($key, $value);
+            $this->__set($offset, $value);
         }
 
-        public function offsetGet($key)
+        public function offsetGet(mixed $offset): mixed
         {
-            return $this->__get($key);
+            return $this->__get($offset);
         }
 
         public function __get($property)
@@ -54,12 +54,12 @@
 
         public function __isset($key)
         {
-            return (array_key_exists($key, $this->_property_list)) ? true : false;
+            return array_key_exists($key, $this->_property_list);
         }
 
-        public function offsetExists($key)
+        public function offsetExists(mixed $offset): bool
         {
-            return $this->__isset($key);
+            return $this->__isset($offset);
         }
 
     }
