@@ -39,7 +39,7 @@
                 return;
             }
 
-            $this->extractAndGenerate(PACHNO_PATH);
+            $this->extractAndGenerate(PACHNO_PATH . DS . 'core');
 
 //            $modules = $this->getModules();
 //
@@ -61,7 +61,7 @@
 
             if ($this->getProvidedArgument(2) != '-v') {
                 $this->cliEcho("\nFinding files to process for ");
-                $this->cliEcho($module_name, "yellow");
+                $this->cliEcho($module_name, "yellow", 'bold');
                 $this->cliEcho(" module ... ");
             }
 
