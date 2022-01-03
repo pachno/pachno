@@ -1294,7 +1294,7 @@
 
                 if ($language == 'html4strict') $language = 'html';
 
-                if (!in_array($language, $highlighter->listLanguages())) {
+                if (!in_array($language, Highlighter::listRegisteredLanguages())) {
                     $language = 'javascript';
                 }
 

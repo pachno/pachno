@@ -2241,30 +2241,6 @@
             return $this->renderJSON(['state' => $request['state']]);
         }
 
-        public function runGetUploadStatus(Request $request)
-        {
-            $id = $request->getParameter('upload_id', 0);
-
-            framework\Logging::log('requesting status for upload with id ' . $id);
-            $status = framework\Context::getRequest()->getUploadStatus($id);
-            framework\Logging::log('status was: ' . (int)$status['finished'] . ', pct: ' . (int)$status['percent']);
-            if (array_key_exists('file_id', $status) && $request['mode'] == 'issue') {
-                $file = tables\Files::getTable()->selectById($status['file_id']);
-                $status['content_uploader'] = $this->getComponentHTML('main/attachedfile', ['base_id' => 'uploaded_files', 'mode' => 'issue', 'issue_id' => $request['issue_id'], 'file' => $file]);
-                $status['content_inline'] = $this->getComponentHTML('main/attachedfile', ['base_id' => 'viewissue_files', 'mode' => 'issue', 'issue_id' => $request['issue_id'], 'file' => $file]);
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $status['attachmentcount'] = count($issue->getFiles()) + count($issue->getLinks());
-            } elseif (array_key_exists('file_id', $status) && $request['mode'] == 'article') {
-                $file = tables\Files::getTable()->selectById($status['file_id']);
-                $status['content_uploader'] = $this->getComponentHTML('main/attachedfile', ['base_id' => 'article_' . mb_strtolower($request['article_name']) . '_files', 'mode' => 'article', 'article_name' => $request['article_name'], 'file' => $file]);
-                $status['content_inline'] = $this->getComponentHTML('main/attachedfile', ['base_id' => 'article_' . mb_strtolower($request['article_name']) . '_files', 'mode' => 'article', 'article_name' => $request['article_name'], 'file' => $file]);
-                $article = entities\Article::getByName($request['article_name']);
-                $status['attachmentcount'] = count($article->getFiles());
-            }
-
-            return $this->renderJSON($status);
-        }
-
         public function runUpdateAttachments(Request $request)
         {
             switch ($request['target']) {

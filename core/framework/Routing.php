@@ -62,6 +62,7 @@
          */
         public function loadRoutes($skip_cache = false)
         {
+            Logging::log(($skip_cache) ? 'Force skip routes cache' : 'Not force skipping route cache');
             if ($skip_cache || !$this->hasCachedRoutes()) {
                 $this->loadRoutesFromFiles();
                 if (!$skip_cache) {
@@ -76,6 +77,7 @@
         {
             if ($this->has_cached_routes === null) {
                 if (Context::isInstallmode()) {
+                    Logging::log('We are install mode');
                     $this->has_cached_routes = false;
                 } else {
                     $this->has_cached_routes = Context::getCache()->has(Cache::KEY_ROUTES_CACHE);
@@ -85,6 +87,8 @@
                         Logging::log('Routes are not cached', 'routing');
                     }
                 }
+            } else {
+                Logging::log('Routes cached is set to ' . (($this->has_cached_routes) ? 'true' : 'false'), 'routing');
             }
 
             return $this->has_cached_routes;
@@ -348,11 +352,8 @@
 
         public function cache()
         {
-            Context::getCache()->fileAdd(Cache::KEY_ROUTES_CACHE, $this->getRoutes());
             Context::getCache()->add(Cache::KEY_ROUTES_CACHE, $this->getRoutes());
-            Context::getCache()->fileAdd(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE, $this->getComponentOverrideMap());
             Context::getCache()->add(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE, $this->getComponentOverrideMap());
-            Context::getCache()->fileAdd(Cache::KEY_ANNOTATION_LISTENERS_CACHE, $this->getAnnotationListeners());
             Context::getCache()->add(Cache::KEY_ANNOTATION_LISTENERS_CACHE, $this->getAnnotationListeners());
         }
 
@@ -406,19 +407,6 @@
             $routes = $cache->get(Cache::KEY_ROUTES_CACHE);
             $component_override_map = $cache->get(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE);
             $annotation_listeners = $cache->get(Cache::KEY_ANNOTATION_LISTENERS_CACHE);
-
-            if ($routes === null) {
-                Logging::log('Loading routes from disk cache', 'routing');
-                $routes = $cache->fileGet(Cache::KEY_ROUTES_CACHE);
-            }
-            if ($component_override_map === null) {
-                Logging::log('Loading component override mappings from disk cache', 'routing');
-                $component_override_map = $cache->fileGet(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE);
-            }
-            if ($annotation_listeners === null) {
-                Logging::log('Loading event listeners from disk cache', 'routing');
-                $annotation_listeners = $cache->fileGet(Cache::KEY_ANNOTATION_LISTENERS_CACHE);
-            }
 
             if ($routes === null || $component_override_map === null || $annotation_listeners === null) {
                 throw new exceptions\CacheException('There is an issue with the cache. Clear the cache and try again.');

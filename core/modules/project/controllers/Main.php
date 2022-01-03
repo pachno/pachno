@@ -22,6 +22,7 @@
      *
      * @Routes(name_prefix="project_", url_prefix="/:project_key")
      *
+     * @property entities\Dashboard $dashboard
      * @property entities\Client $selected_client
      * @property entities\Build[][] $active_builds
      * @property entities\Build[][] $archived_builds
@@ -44,13 +45,9 @@
         {
             $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
-            if ($request->isPost() && $request['setup_default_dashboard'] && $this->getUser()->canEditProjectDetails($this->selected_project)) {
-                tables\DashboardViews::getTable()->setDefaultViews($this->selected_project->getID(), entities\DashboardView::TYPE_PROJECT);
-                $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]));
-            }
             if ($request['dashboard_id']) {
                 foreach ($this->selected_project->getDashboards() as $db) {
-                    if ($db->getID() == (int)$request['dashboard_id']) {
+                    if ($db->getID() == (int) $request['dashboard_id']) {
                         $dashboard = $db;
                         break;
                     }

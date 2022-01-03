@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Query;
+    use b2db\Saveable;
     use pachno\core\entities\Dashboard;
     use pachno\core\framework\Context;
 
@@ -20,6 +21,8 @@
      * User dashboards table
      *
      * @method Dashboard[] select(Query $query, $join = 'all')
+     * @method Dashboard selectById($id, Query $query = null, $join = 'all')
+     *
      * @method static Dashboards getTable()
      *
      * @Table(name="dashboards")

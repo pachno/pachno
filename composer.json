@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "pachno/b2db": "^1.0",
+        "pachno/b2db": "^1.0.4",
         "swiftmailer/swiftmailer": "^6.0",
         "webit/eval-math": "^1.0",
         "mustangostang/spyc": "^0.6",
@@ -31,6 +31,7 @@
         "ramsey/uuid": "^4.2",
         "erusev/parsedown": "^1.7",
         "ext-gd": "*",
+        "ext-dom": "*",
         "ext-curl": "*",
         "ext-PDO": "*",
         "ext-iconv": "*",

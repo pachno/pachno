@@ -272,24 +272,29 @@
             return false;
         }
 
-        public static function getAvailableViews($target_type)
+        /**
+         * @param int $target_type
+         *
+         * @return array<string, array<int, array<array<string, mixed>>>>
+         */
+        public static function getAvailableViews(int $target_type): array
         {
             $i18n = framework\Context::getI18n();
-            $searches = ['info' => [], 'searches' => []];
+            $views = ['info' => [], 'searches' => []];
             switch ($target_type) {
                 case self::TYPE_USER:
-                    $searches['info'][self::VIEW_LOGGED_ACTIONS] = [0 => ['title' => $i18n->__("What you've done recently"), 'description' => $i18n->__('A widget that shows your most recent actions, such as issue edits, wiki edits and more')]];
-                    $searches['info'][self::VIEW_RECENT_COMMENTS] = [0 => ['title' => $i18n->__('Recent comments'), 'description' => $i18n->__('Shows a list of your most recent comments')]];
-                    $searches['searches'][self::VIEW_PREDEFINED_SEARCH] = [SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES => ['title' => $i18n->__('Issues reported by me'), 'description' => $i18n->__('Shows a list of all issues you have reported, across all projects')],
+                    $views['info'][self::VIEW_LOGGED_ACTIONS] = [0 => ['title' => $i18n->__("What you've done recently"), 'description' => $i18n->__('A widget that shows your most recent actions, such as issue edits, wiki edits and more')]];
+                    $views['info'][self::VIEW_RECENT_COMMENTS] = [0 => ['title' => $i18n->__('Recent comments'), 'description' => $i18n->__('Shows a list of your most recent comments')]];
+                    $views['searches'][self::VIEW_PREDEFINED_SEARCH] = [SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES => ['title' => $i18n->__('Issues reported by me'), 'description' => $i18n->__('Shows a list of all issues you have reported, across all projects')],
                         SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES => ['title' => $i18n->__('Open issues assigned to me'), 'description' => $i18n->__('Shows a list of all issues assigned to you')],
                         SavedSearch::PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES => ['title' => $i18n->__('Open issues owned by me'), 'description' => $i18n->__('Shows a list of all issues owned by you')],
                         SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES => ['title' => $i18n->__('Open issues assigned to my teams'), 'description' => $i18n->__('Shows all issues assigned to any of your teams')]];
-                    $searches['info'][self::VIEW_PROJECTS] = [0 => ['title' => $i18n->__("Your projects"), 'description' => $i18n->__('A widget that shows projects you are involved in')]];
-                    $searches['info'][self::VIEW_MILESTONES] = [0 => ['title' => $i18n->__("Upcoming milestones / sprints"), 'description' => $i18n->__('A widget that shows all upcoming milestones or sprints for any projects you are involved in')]];
-                    $searches['info'][self::VIEW_TIMERS] = [0 => ['title' => $i18n->__("Active timers"), 'description' => $i18n->__('A widget that shows all ongoing issue timers')]];
+                    $views['info'][self::VIEW_PROJECTS] = [0 => ['title' => $i18n->__("Your projects"), 'description' => $i18n->__('A widget that shows projects you are involved in')]];
+                    $views['info'][self::VIEW_MILESTONES] = [0 => ['title' => $i18n->__("Upcoming milestones / sprints"), 'description' => $i18n->__('A widget that shows all upcoming milestones or sprints for any projects you are involved in')]];
+                    $views['info'][self::VIEW_TIMERS] = [0 => ['title' => $i18n->__("Active timers"), 'description' => $i18n->__('A widget that shows all ongoing issue timers')]];
                     break;
                 case self::TYPE_PROJECT:
-                    $searches['statistics'] = [];
+                    $views['statistics'] = [];
                     $issuetype_icons = [];
                     framework\Context::loadLibrary('ui');
                     foreach (Issuetype::getAll() as $id => $issuetype) {
@@ -299,25 +304,25 @@
                         ];
                     }
 
-                    $searches['info'][self::VIEW_PROJECT_INFO] = [0 => ['title' => $i18n->__('About this project'), 'has_title' => false, 'description' => $i18n->__('Basic project information widget, showing project name, important people and links')]];
-                    $searches['info'][self::VIEW_PROJECT_TEAM] = [0 => ['title' => $i18n->__('Project team'), 'description' => $i18n->__('A widget with information about project developers and the project team and their respective project roles')]];
-                    $searches['info'][self::VIEW_PROJECT_CLIENT] = [0 => ['title' => $i18n->__('Project client'), 'description' => $i18n->__('Shows information about the associated project client (if any)')]];
-                    $searches['info'][self::VIEW_PROJECT_SUBPROJECTS] = [0 => ['title' => $i18n->__('Subprojects'), 'description' => $i18n->__('Lists all subprojects of this project, with quick links to report an issue, open the project wiki and more')]];
-                    $searches['info'][self::VIEW_PROJECT_RECENT_ACTIVITIES] = [0 => ['title' => $i18n->__('Recent activities'), 'description' => $i18n->__('Displays project timeline')]];
-                    $searches['info'][self::VIEW_PROJECT_UPCOMING] = [0 => ['title' => $i18n->__('Upcoming milestones and deadlines'), 'description' => $i18n->__('A widget showing a list of upcoming milestones and deadlines for the next three weeks')]];
-                    $searches['info'][self::VIEW_PROJECT_DOWNLOADS] = [0 => ['title' => $i18n->__('Latest downloads'), 'description' => $i18n->__('Lists recent downloads released in the release center')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_LAST15] = [0 => ['title' => $i18n->__('Graph of closed vs open issues'), 'description' => $i18n->__('Shows a line graph comparing closed vs open issues for the past 15 days')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_PRIORITY] = [0 => ['title' => $i18n->__('Statistics by priority'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by priority')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_SEVERITY] = [0 => ['title' => $i18n->__('Statistics by severity'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by severity')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_CATEGORY] = [0 => ['title' => $i18n->__('Statistics by category'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by category')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_STATUS] = [0 => ['title' => $i18n->__('Statistics by status'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by status')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_RESOLUTION] = [0 => ['title' => $i18n->__('Statistics by resolution'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by resolution')]];
-                    $searches['statistics'][self::VIEW_PROJECT_STATISTICS_WORKFLOW_STEP] = [0 => ['title' => $i18n->__('Statistics by workflow step'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by current workflow step')]];
-                    $searches['searches'][self::VIEW_PROJECT_RECENT_ISSUES] = $issuetype_icons;
+                    $views['info'][self::VIEW_PROJECT_INFO] = [0 => ['title' => $i18n->__('About this project'), 'has_title' => false, 'description' => $i18n->__('Basic project information widget, showing project name, important people and links')]];
+                    $views['info'][self::VIEW_PROJECT_TEAM] = [0 => ['title' => $i18n->__('Project team'), 'description' => $i18n->__('A widget with information about project developers and the project team and their respective project roles')]];
+                    $views['info'][self::VIEW_PROJECT_CLIENT] = [0 => ['title' => $i18n->__('Project client'), 'description' => $i18n->__('Shows information about the associated project client (if any)')]];
+                    $views['info'][self::VIEW_PROJECT_SUBPROJECTS] = [0 => ['title' => $i18n->__('Subprojects'), 'description' => $i18n->__('Lists all subprojects of this project, with quick links to report an issue, open the project wiki and more')]];
+                    $views['info'][self::VIEW_PROJECT_RECENT_ACTIVITIES] = [0 => ['title' => $i18n->__('Recent activities'), 'description' => $i18n->__('Displays project timeline')]];
+                    $views['info'][self::VIEW_PROJECT_UPCOMING] = [0 => ['title' => $i18n->__('Upcoming milestones and deadlines'), 'description' => $i18n->__('A widget showing a list of upcoming milestones and deadlines for the next three weeks')]];
+                    $views['info'][self::VIEW_PROJECT_DOWNLOADS] = [0 => ['title' => $i18n->__('Latest downloads'), 'description' => $i18n->__('Lists recent downloads released in the release center')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_LAST15] = [0 => ['title' => $i18n->__('Graph of closed vs open issues'), 'description' => $i18n->__('Shows a line graph comparing closed vs open issues for the past 15 days')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_PRIORITY] = [0 => ['title' => $i18n->__('Statistics by priority'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by priority')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_SEVERITY] = [0 => ['title' => $i18n->__('Statistics by severity'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by severity')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_CATEGORY] = [0 => ['title' => $i18n->__('Statistics by category'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by category')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_STATUS] = [0 => ['title' => $i18n->__('Statistics by status'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by status')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_RESOLUTION] = [0 => ['title' => $i18n->__('Statistics by resolution'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by resolution')]];
+                    $views['statistics'][self::VIEW_PROJECT_STATISTICS_WORKFLOW_STEP] = [0 => ['title' => $i18n->__('Statistics by workflow step'), 'description' => $i18n->__('Displays a bar graph of open and closed issues grouped by current workflow step')]];
+                    $views['searches'][self::VIEW_PROJECT_RECENT_ISSUES] = $issuetype_icons;
                     break;
             }
 
-            return $searches;
+            return $views;
         }
 
         public function getTargetType()

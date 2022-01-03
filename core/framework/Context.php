@@ -563,9 +563,6 @@
             self::getCache()->delete(Cache::KEY_ROUTES_CACHE, true, true);
             self::getCache()->delete(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE, true, true);
             self::getCache()->delete(Cache::KEY_ANNOTATION_LISTENERS_CACHE, true, true);
-            self::getCache()->fileDelete(Cache::KEY_ROUTES_CACHE, true, true);
-            self::getCache()->fileDelete(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE, true, true);
-            self::getCache()->fileDelete(Cache::KEY_ANNOTATION_LISTENERS_CACHE, true, true);
         }
 
         /**
@@ -575,21 +572,30 @@
          */
         public static function getCache()
         {
-            if (!self::$_cache) {
-                self::$_cache = new Cache();
+            if (!self::$_cache instanceof Cache) {
+                $temp_cache = new FileCache();
+                $configuration = $temp_cache->get(Cache::KEY_CONFIGURATION, false);
+                if (!is_array($configuration)) {
+                    $config_filename = PACHNO_CONFIGURATION_PATH . "settings.yml";
+                    $configuration = Spyc::YAMLLoad($config_filename);
+                    $temp_cache->add(Cache::KEY_CONFIGURATION, $configuration, false);
+                }
+                
+                if (array_key_exists('cache', $configuration)) {
+                    $cache_driver = $configuration['cache']['driver'];
+                } else {
+                    $cache_driver = 'filesystem';
+                }
+                
+                switch ($cache_driver) {
+                    case 'filesystem':
+                    default:
+                        self::$_cache = new FileCache();
+                        break;
+                }
             }
 
             return self::$_cache;
-        }
-
-        public static function clearMenuLinkCache()
-        {
-            if (!self::getCache()->isEnabled())
-                return;
-            foreach ([Cache::KEY_MAIN_MENU_LINKS] as $key) {
-                self::getCache()->delete($key);
-                self::getCache()->fileDelete($key);
-            }
         }
 
         public static function loadEventListeners($event_listeners)
@@ -885,7 +891,7 @@
                 self::$_permissions = $permissions;
                 Logging::log('Using cached permissions');
             } else {
-                if (self::isInstallmode() || !$permissions = self::getCache()->fileGet(Cache::KEY_PERMISSIONS_CACHE)) {
+                if (self::isInstallmode() || !$permissions = self::getCache()->get(Cache::KEY_PERMISSIONS_CACHE)) {
                     Logging::log('starting to cache access permissions');
                     if ($res = Permissions::getTable()->getAll()) {
                         while ($row = $res->getNextRow()) {
@@ -903,7 +909,7 @@
                     }
                     Logging::log('done (starting to cache access permissions)');
                     if (!self::isInstallmode())
-                        self::getCache()->fileAdd(Cache::KEY_PERMISSIONS_CACHE, self::$_permissions);
+                        self::getCache()->add(Cache::KEY_PERMISSIONS_CACHE, self::$_permissions);
                 } else {
                     self::$_permissions = $permissions;
                 }
@@ -1095,7 +1101,6 @@
         public static function clearPermissionsCache()
         {
             self::getCache()->delete(Cache::KEY_PERMISSIONS_CACHE, true, true);
-            self::getCache()->fileDelete(Cache::KEY_PERMISSIONS_CACHE, true, true);
         }
 
         /**
@@ -1347,8 +1352,8 @@
          * uid/gid/tid/client_id, which in turns weights more than specific rule result
          * (allowed/denied).
          *
-         * @param permission array An array defining permission. Must include the following keys: uid (user ID), gid (group ID), tid (team ID), client_id (client ID), and allowed (true/false).
-         * @param target_id mixed Either a non-negative integer or string designating target to which the permission applies. 0 means global target.
+         * @param array $permission An array defining permission. Must include the following keys: uid (user ID), gid (group ID), tid (team ID), client_id (client ID), and allowed (true/false).
+         * @param mixed $target_id Either a non-negative integer or string designating target to which the permission applies. 0 means global target.
          *
          * @return integer A non-negative integer denoting weight of permission.
          */
@@ -1611,9 +1616,8 @@
                 if (!self::isReadySetup()) {
                     self::getCache()->disable();
                 } else {
-                    self::getCache()->checkEnabled();
                     if (self::getCache()->isEnabled()) {
-                        Logging::log((self::getCache()->getCacheType() == Cache::TYPE_APC) ? 'Caching enabled: APC, filesystem' : 'Caching enabled: filesystem');
+                        Logging::log('Caching enabled: ' . self::getCache()->getCacheType());
                     } else {
                         Logging::log('No caching available');
                     }
@@ -1669,7 +1673,7 @@
                     self::loadModules();
                 }
 
-                self::getRouting()->loadRoutes(!self::isInstallmode());
+                self::getRouting()->loadRoutes(self::isInstallmode());
 
                 Logging::log('...done');
                 Logging::log('...done initializing');
@@ -1728,10 +1732,6 @@
             Logging::log('Loading configuration from cache', 'core');
             if (self::isReadySetup()) {
                 $configuration = self::getCache()->get(Cache::KEY_CONFIGURATION, false);
-                if (!$configuration) {
-                    Logging::log('Loading configuration from disk cache', 'core');
-                    $configuration = self::getCache()->fileGet(Cache::KEY_CONFIGURATION, false);
-                }
             }
 
             if (!self::isInstallmode() || !isset($configuration) || !$configuration) {
@@ -1746,7 +1746,6 @@
                 $configuration = array_merge($config, $b2db_config);
 
                 if (self::isReadySetup()) {
-                    self::getCache()->fileAdd(Cache::KEY_CONFIGURATION, $configuration, false);
                     self::getCache()->add(Cache::KEY_CONFIGURATION, $configuration, false);
                 }
             }
