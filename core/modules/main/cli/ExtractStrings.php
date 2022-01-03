@@ -51,13 +51,13 @@
         }
 
         /**
-         * @param $path Path to search for the source strings
+         * @param string $path Path to search for the source strings
          * @param null $module The module key or null for core
          */
-        protected function extractAndGenerate($path, $module = null)
+        protected function extractAndGenerate(string $path, string $module = null)
         {
 
-            $module_name = (!isset($module)) ? 'core' : $module;
+            $module_name = $module ?? 'core';
 
             if ($this->getProvidedArgument(2) != '-v') {
                 $this->cliEcho("\nFinding files to process for ");
