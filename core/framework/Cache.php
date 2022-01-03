@@ -47,8 +47,8 @@
         protected string $_prefix = '';
 
         /**
-         * container holding already loaded classes from filesystem so each cached file is loaded only once and later served from memory
-         * @var mixed[]
+         * container holding entries already cached
+         * @var array<int, mixed>
          */
         protected array $loaded = [];
 
