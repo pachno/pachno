@@ -280,7 +280,7 @@
             return $this->getParameter('format', 'html');
         }
 
-        public function offsetExists(mixed $offset): bool
+        public function offsetExists($offset)
         {
             return $this->hasParameter($offset);
         }
@@ -297,12 +297,12 @@
             return array_key_exists($offset, $this->_request_parameters);
         }
 
-        public function offsetGet(mixed $offset): mixed
+        public function offsetGet($offset)
         {
             return $this->getParameter($offset);
         }
 
-        public function offsetSet(mixed $offset, mixed $value): void
+        public function offsetSet($offset, $value)
         {
             $this->setParameter($offset, $value);
         }
@@ -318,7 +318,7 @@
             $this->_request_parameters[$key] = $value;
         }
 
-        public function offsetUnset(mixed $offset): void
+        public function offsetUnset($offset)
         {
             $this->setParameter($offset, null);
         }
