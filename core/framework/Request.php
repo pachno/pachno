@@ -292,7 +292,7 @@
          *
          * @return boolean
          */
-        public function hasParameter(mixed $offset): bool
+        public function hasParameter($offset)
         {
             return array_key_exists($offset, $this->_request_parameters);
         }
