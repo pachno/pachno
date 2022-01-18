@@ -126,7 +126,6 @@ class Board {
         } else {
             $('#whiteboard').show();
         }
-
     }
 
     updateBoardClass() {
