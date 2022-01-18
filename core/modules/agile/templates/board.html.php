@@ -64,13 +64,16 @@
             <div class="search-and-filters-strip">
                 <div class="search-strip" id="project_planning_action_strip">
                     <input type="search" class="planning_filter_title" id="planning_filter_title_input" disabled placeholder="<?php echo __('Filter issues by title'); ?>">
-                    <?php if ($board->getProject()->isBuildsEnabled()): ?>
-                        <a class="button" id="releases_toggler_button" href="javascript:void(0);" onclick="$(this).toggleClass('button-pressed');$('#builds-list').toggleClass('expanded');"><?php echo __('Releases'); ?></a>
+                    <?php /* if ($board->getProject()->isBuildsEnabled()): ?>
+                        <a class="button" id="releases_toggler_button" style="display: none;" href="javascript:void(0);" onclick="$(this).toggleClass('button-pressed');$('#builds-list').toggleClass('expanded');"><?php echo __('Releases'); ?></a>
                     <?php endif; ?>
                     <?php if ($board->getEpicIssuetypeID()): ?>
-                        <button class="button" id="epics_toggler_button" onclick="$(this).toggleClass('button-pressed');$('#epics-list').toggleClass('expanded');" disabled><?php echo __('Epics'); ?></button>
-                    <?php endif; ?>
-                    <?php echo javascript_link_tag($newmilestonelabel, ['class' => 'button', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', ['key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()])."');"]); ?>
+                        <button class="button" id="epics_toggler_button" style="display: none;" onclick="$(this).toggleClass('button-pressed');$('#epics-list').toggleClass('expanded');" disabled><?php echo __('Epics'); ?></button>
+                    <?php endif; */ ?>
+                    <button class="button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()]); ?>">
+                        <span class="name label-generic label-kanban"><?= __('New milestone'); ?></span>
+                        <span class="name label-scrum"><?= __('Add new sprint'); ?></span>
+                    </button>
                     <?php echo image_tag('spinning_16.gif', ['id' => 'retrieve_indicator', 'class' => 'indicator', 'style' => 'display: none;']); ?>
                     <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
                         <div class="dropper-container settings">

@@ -1,10 +1,12 @@
 import $ from 'jquery';
 import Sortable from 'sortablejs';
 import Milestone, {Templates as MilestoneTemplates} from "@/classes/milestone";
-import {BoardTypes} from "@/classes/board";
+import {BoardTypes, SwimlaneTypes} from "@/classes/board";
 import UI from "@/helpers/ui";
 import Pachno from "@/classes/pachno";
 import {debounce} from "@/tools/tools";
+import {Templates} from "@/classes/issue";
+import Swimlane from "@/classes/swimlane";
 
 class Backlog {
     constructor(board_json) {
@@ -61,12 +63,30 @@ class Backlog {
 //         });
 //     }
 // };
-
+        this.updateBoardClass();
         this.setupListeners();
     }
 
+    updateBoardClass() {
+        const $container = $('#content_container');
+        $container.removeClass('type-generic');
+        $container.removeClass('type-kanban');
+        $container.removeClass('type-scrum');
+        switch (parseInt(this.board_json.type)) {
+            case BoardTypes.SCRUM:
+                $container.addClass('type-scrum');
+                break;
+            case BoardTypes.KANBAN:
+                $container.addClass('type-kanban');
+                break;
+            case BoardTypes.GENERIC:
+                $container.addClass('type-generic');
+                break;
+        }
+    }
+
     boardType() {
-        switch (this.board_json.type) {
+        switch (parseInt(this.board_json.type)) {
             case BoardTypes.KANBAN:
                 return 'kanban';
             case BoardTypes.SCRUM:
@@ -74,6 +94,17 @@ class Backlog {
             default:
             case BoardTypes.GENERIC:
                 return 'generic';
+        }
+    }
+
+    addIssue(issue_json) {
+        const issue = Pachno.addIssue(issue_json, undefined, Templates.row);
+        for (const milestone of this.milestones) {
+            if (milestone.has(issue)) {
+                milestone.addIssue(issue);
+                milestone.verifyIssues();
+                break;
+            }
         }
     }
 
@@ -263,6 +294,13 @@ class Backlog {
         Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
             const json = data.json;
             switch (data.form) {
+                case 'edit-agileboard-form':
+                    backlog.board_json = json.board;
+                    backlog.updateBoardClass();
+                    break;
+                case 'report_issue_form':
+                    backlog.addIssue(json.issue);
+                    break;
                 case 'mark_milestone_finished_form':
                     const $existing_milestone = $(`[data-milestone][data-milestone-id="${json.milestone.id}"]`);
 
@@ -289,12 +327,8 @@ class Backlog {
         });
 
         Pachno.on(Pachno.EVENTS.issue.updateJsonComplete, (_, issue) => {
-            let found = false;
             for (const milestone of backlog.milestones) {
-                let updated = milestone.addOrRemove(issue, !found);
-                if (found === false) {
-                    found = updated;
-                }
+                milestone.addOrRemove(issue);
                 milestone.verifyIssues();
             }
 

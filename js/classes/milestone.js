@@ -80,19 +80,24 @@ class Milestone {
         this.issues.push(issue);
     }
 
-    addOrRemove(issue, add = true) {
-        if (issue.milestone?.id == this.id) {
-            this.issues = this.issues.filter(existing_issue => existing_issue.id != issue.id);
-            issue.element.remove();
-        } else if (add) {
-            let found = this.issues.some(existing_issue => existing_issue.id == issue.id);
-            if (!found) {
-                this.issues.push(issue);
-            }
-            return true;
-        }
+    has(issue) {
+        return this.issues.some(existing_issue => existing_issue.id == issue.id);
+    }
 
-        return false;
+    matches(issue) {
+        return parseInt(issue.milestone?.id) == this.id;
+    }
+
+    addOrRemove(issue) {
+        if (!this.matches(issue)) {
+            if (this.has(issue)) {
+                this.issues = this.issues.filter(existing_issue => existing_issue.id != issue.id);
+                issue.processed = false;
+            }
+        } else if (!this.has(issue) && this.matches(issue)) {
+            issue.processed = false;
+            this.issues.push(issue);
+        }
     }
 
     addPlaceholderIssues() {
