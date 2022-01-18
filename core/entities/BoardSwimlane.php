@@ -195,7 +195,9 @@
                 $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => [Issue::STATE_CLOSED, Issue::STATE_OPEN]]));
                 $this->_search_object->setFilter('deleted', SearchFilter::createFilter('deleted', ['o' => '=', 'v' => false]));
 //                $this->_search_object->setFilter('archived', SearchFilter::createFilter('archived', ['o' => '=', 'v' => false]));
-                $this->_search_object->setFilter('issuetype', SearchFilter::createFilter('issuetype', ['o' => '!=', 'v' => $this->getBoard()->getEpicIssuetypeID()]));
+                if ($this->getBoard()->getEpicIssuetypeID()) {
+                    $this->_search_object->setFilter('issuetype', SearchFilter::createFilter('issuetype', ['o' => '!=', 'v' => $this->getBoard()->getEpicIssuetypeID()]));
+                }
                 if ($column_id === null) {
                     $this->_search_object->setFilter('status', SearchFilter::createFilter('status', ['o' => '=', 'v' => $this->getBoard()->getStatusIds()]));
                 } else {

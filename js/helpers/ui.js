@@ -324,6 +324,9 @@ const submitForm = function ($form, options = {}) {
             }
 
             Pachno.trigger(Pachno.EVENTS.formSubmitResponse, { form: $form.attr('id'), json });
+        })
+        .catch((error) => {
+            console.error(error);
         });
 };
 

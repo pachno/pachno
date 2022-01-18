@@ -347,7 +347,7 @@
                 <target>Keine Bahnen benutzen</target>
             </trans-unit>
             <trans-unit id="9ccce55c21e547cdcf976351112f555c">
-                <source>The board has a swimlane for each issue of one or more issue type(s).</source>
+                <source>The board has a swimlane for each issue of one or more issue type(s)</source>
                 <target>Die Übersicht hat eine Bahn für jeden Fall eines Falltyps (oder mehrerer Falltypen).</target>
             </trans-unit>
             <trans-unit id="4691406763677aef735c90c78fd2d5ea">
@@ -355,7 +355,7 @@
                 <target>Falldetail Bahnen</target>
             </trans-unit>
             <trans-unit id="a119c8b7aeed47b34eaed0496fafafcd">
-                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together.</source>
+                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together</source>
                 <target>Die Übersicht ist in Bahnen gruppiert, in welchen Fälle mit derselben Charakteristik zusammengruppiert werden.</target>
             </trans-unit>
             <trans-unit id="223b1c2b471954744f980e99fa13f3be">

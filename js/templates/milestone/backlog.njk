@@ -1,0 +1,90 @@
+<div id="milestone_{{ milestone.id }}" class="milestone-box {% if milestone.id %}draggable{% endif %} {% if milestone.visible_in_roadmap %}available{% else %}unavailable{% endif %} {% if milestone.reached %}closed{% else %}open{% endif %}" data-milestone data-milestone-id="{{ milestone.id }}">
+    <div class="header {% if not milestone.id %}backlog{% endif %}" id="milestone_{{ milestone.id }}_header">
+        <div class="main-details">
+            <div class="name-container">
+                <span class="name">
+                    <span>{{ milestone.name }}</span>
+                </span>
+                {% if milestone.id %}
+                    <div class="percentage">
+                        <div class="filler" id="milestone_{{ milestone.id }}_percentage_filler" style="transform: scaleX({% if milestone.percent_complete < 100 %}0.{{ milestone.percent_complete }}{% else %}1{% endif %});"></div>
+                    </div>
+                {% endif %}
+            </div>
+            {% if milestone.id %}
+                <div class="dates">
+                    {{ UI.fa_image_tag('calendar-alt', {}, 'far') | safe }}
+                    {% if (milestone.starting_date or milestone.scheduled_date) %}
+                        {% if milestone.starting_date %}
+                            <span class="start-date">{{ milestone.starting_date }}</span>
+                        {% endif %}
+                        {% if (milestone.starting_date and milestone.scheduled_date) %}
+                            {{ UI.fa_image_tag('arrow-alt-circle-right', {}, 'far') | safe }}
+                        {% endif %}
+                        {% if milestone.scheduled_date %}
+                            <span class="end-date">{{ milestone.scheduled_date }}</span>
+                        {% endif %}
+                    {% else %}
+                        {{ T.agile.backlog.milestone_unscheduled }}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="milestone-counts-container">
+            <div class="count">
+                <span id="milestone_{{ milestone.id }}_issues_count">
+                    {{ milestone.issues_count_open }}{% if milestone.issues_count_closed > 0 %}&nbsp;({{ milestone.issues_count_closed }}){% endif %}
+                </span>
+                <span>{{ T.agile.backlog.milestone_header_issues }}</span>
+            </div>
+            <div class="count">
+                <span id="milestone_{{ milestone.id }}_points_count" class="issue_estimates">{% if milestone.points.spent + milestone.points.estimated > 0 %}{{ milestone.points.spent }} / {{ milestone.points.estimated }}{% else %}0{% endif %}</span>
+                <span class="issue_estimates">{{ T.agile.backlog.milestone_header_points }}</span>
+            </div>
+            <div class="count">
+                <span id="milestone_{{ milestone.id }}_hours_count" class="issue_estimates">{% if milestone.hours.estimated + milestone.hours.spent > 0 %}{{ milestone.hours_estimated_formatted }} / {{ milestone.hours_spent_formatted }}{% else %}0{% endif %}</span>
+                <span class="issue_estimates">{{ T.agile.backlog.milestone_header_hours }}</span>
+            </div>
+        </div>
+        {% if milestone.id %}
+            <div class="actions-container">
+                <input type="checkbox" class="fancy-checkbox trigger-show-issues" value="{{ milestone.id }}" name="show_issues" id="milestone-{{ milestone.id }}-show-issues-checkbox" {% if not milestone.is_closed and (milestone.issues_count_closed + milestone.issues_count_open > 0) %}checked{% endif %}>
+                <label class="button secondary toggle-issues" for="milestone-{{ milestone.id }}-show-issues-checkbox">
+                    <span class="icon">{{ UI.fa_image_tag('toggle-on', {classes: 'checked'}) | safe }}{{ UI.fa_image_tag('toggle-off', {classes: 'unchecked'}) | safe }}</span>
+                    <span>{{ T.agile.backlog.milestone_header_show_issues }}</span>
+                </label>
+                <div class="dropper-container">
+                    <button class="dropper secondary icon">{{ UI.fa_image_tag('ellipsis-v') | safe }}</button>
+                    <div class="dropdown-container" id="milestone_{{ milestone.id }}_moreactions">
+                        <div class="list-mode">
+                            <a href="#echo make_url project_milestone_details" class="list-item">
+                                <span class="icon">{{ UI.fa_image_tag('columns') | safe }}</span>
+                                <span class="name">{{ T.agile.backlog.milestone_show_overview }}</span>
+                            </a>
+                            {% if milestone.can_edit %}
+                                <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="{{ milestone.mark_finished_url }}">
+                                    <span class="icon">{{ UI.fa_image_tag('flag-checkered') | safe }}</span>
+                                    <span class="name">{{ T.agile.backlog.milestone_mark_as_finished }}</span>
+                                </a>
+                                <div class="list-item separator"></div>
+                                <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="{{ milestone.backdrop_url }}">
+                                    <span class="icon">{{ UI.fa_image_tag('edit') | safe }}</span>
+                                    <span class="name">{{ T.agile.backlog.milestone_edit }}</span>
+                                </a>
+                                <div class="list-item separator"></div>
+                                <a href="javascript:void(0);" class="list-item trigger-delete-milestone" data-milestone-id="{{ milestone.id }}" data-url="{{ milestone.url }}">
+                                    <span class="icon">{{ UI.fa_image_tag('times') | safe }}</span>
+                                    <span class="name">{{ T.agile.backlog.milestone_delete }}</span>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="milestone-issues-container {% if milestone.issues_count == 0 %}empty{% endif %}{% if milestone.is_closed or (milestone.issues_count_closed + milestone.issues_count_open == 0) %}collapsed{% endif %}">
+        <div id="milestone_{{ milestone.id }}_issues" class="milestone-issues hide-closed issues jsortable intersortable"></div>
+        <div class="milestone_error_issues" style="display: none;" id="milestone_{{ milestone.id }}_message"></div>
+    </div>
+</div>

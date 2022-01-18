@@ -46,7 +46,7 @@
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                             <div class="dropdown-container list-mode">
-                                <input class="fancy-checkbox" type="radio" name="type" value="<?php echo AgileBoard::TYPE_GENERIC; ?>" id="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_GENERIC; ?>" <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'checked'; ?>>
+                                <input class="fancy-checkbox trigger-whiteboard-type-change" type="radio" name="type" value="<?php echo AgileBoard::TYPE_GENERIC; ?>" id="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_GENERIC; ?>" <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'checked'; ?>>
                                 <label for="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_GENERIC; ?>" class="list-item multiline">
                                     <span class="icon"><?php echo fa_image_tag('columns'); ?></span>
                                     <span class="name">
@@ -56,7 +56,7 @@
                                         </span>
                                     </span>
                                 </label>
-                                <input class="fancy-checkbox" type="radio" name="type" value="<?php echo AgileBoard::TYPE_SCRUM; ?>" id="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_SCRUM; ?>" <?php if ($board->getType() == AgileBoard::TYPE_SCRUM) echo 'checked'; ?>>
+                                <input class="fancy-checkbox trigger-whiteboard-type-change" type="radio" name="type" value="<?php echo AgileBoard::TYPE_SCRUM; ?>" id="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_SCRUM; ?>" <?php if ($board->getType() == AgileBoard::TYPE_SCRUM) echo 'checked'; ?>>
                                 <label for="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_SCRUM; ?>" class="list-item multiline">
                                     <span class="icon"><?php echo fa_image_tag('redo-alt'); ?></span>
                                     <span class="name">
@@ -66,11 +66,11 @@
                                         </span>
                                     </span>
                                 </label>
-                                <input class="fancy-checkbox" type="radio" name="type" value="<?php echo AgileBoard::TYPE_KANBAN; ?>" id="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_KANBAN; ?>" <?php if ($board->getType() == AgileBoard::TYPE_KANBAN) echo 'checked'; ?>>
-                                <label for="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_KANBAN; ?>" class="list-item multiline">
+                                <input class="fancy-checkbox trigger-whiteboard-type-change" type="radio" name="type" value="<?php echo AgileBoard::TYPE_KANBAN; ?>" id="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_KANBAN; ?>" <?php if ($board->getType() == AgileBoard::TYPE_KANBAN) echo 'checked'; ?> disabled>
+                                <label for="agileboard_type_checkbox_<?php echo AgileBoard::TYPE_KANBAN; ?>" class="list-item multiline disabled">
                                     <span class="icon"><?php echo fa_image_tag('th-list'); ?></span>
                                     <span class="name">
-                                        <span class="title value"><?php echo __('Kanban board'); ?></span>
+                                        <span class="title value"><?php echo __('Kanban board'); ?><span class="count-badge"><?= __('Disabled in this release'); ?></span></span>
                                         <span class="description">
                                             <?php echo __('A Kanban-style board with workload limits.'); ?>
                                         </span>
@@ -129,7 +129,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="column">
+                        <div class="column <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'hidden'; ?>" id="edit_agile_board_epic_issue_type_column">
                             <div class="form-row">
                                 <div class="fancy-dropdown-container from-bottom">
                                     <div class="fancy-dropdown" data-default-label="<?= __('Pick an issue type'); ?>">
@@ -141,6 +141,7 @@
                                             <label for="epic_issuetype_id_0" class="list-item">
                                                 <span class="name value"><?php echo __("Don't use epics"); ?></span>
                                             </label>
+                                            <div class="list-item separator"></div>
                                             <?php foreach ($issuetypes as $issuetype): ?>
                                                 <input type="radio" value="<?php echo $issuetype->getID(); ?>" name="epic_issuetype_id" id="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="fancy-checkbox" <?php if ($board->getEpicIssuetypeID() == $issuetype->getID()) echo 'checked'; ?>>
                                                 <label for="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="list-item">
@@ -164,7 +165,6 @@
                                             <?php foreach ($issuetypes as $issuetype): ?>
                                                 <input type="checkbox" value="<?php echo $issuetype->getID(); ?>" name="task_issuetype_id" id="task_issuetype_id_<?php echo $issuetype->getID(); ?>" class="fancy-checkbox" <?php if ($board->getTaskIssuetypeID() == $issuetype->getID()) echo 'checked'; ?>>
                                                 <label for="task_issuetype_id_<?php echo $issuetype->getID(); ?>" class="list-item">
-                                                    <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                                     <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                                     <span class="name value"><?php echo __($issuetype->getName()); ?></span>
                                                 </label>
@@ -190,12 +190,21 @@
                                         <span class="icon"><?= fa_image_tag('ban'); ?></span>
                                         <span class="name value"><?php echo __("Don't use swimlanes"); ?></span>
                                     </label>
+                                    <div class="list-item separator"></div>
+                                    <input type="radio" name="use_swimlane" value="<?= AgileBoard::SWIMLANES_EPICS; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->usesSwimlanes() && $board->getSwimlaneType() == AgileBoard::SWIMLANES_EPICS) echo ' checked'; ?> id="agileboard_use_swimlane_<?= $board->getId(); ?>_<?= AgileBoard::SWIMLANES_EPICS; ?>">
+                                    <label for="agileboard_use_swimlane_<?= $board->getId(); ?>_<?= AgileBoard::SWIMLANES_EPICS; ?>" class="list-item multiline">
+                                        <span class="icon large"><?= image_tag('/unthemed/icon_issue_swimlanes.png', [], true); ?></span>
+                                        <span class="name">
+                                            <span class="title value"><?php echo __('Epics swimlanes'); ?></span>
+                                            <span class="description"><?php echo __('The board has a swimlane for each epic with issues assigned in the selected milestone'); ?></span>
+                                        </span>
+                                    </label>
                                     <input type="radio" name="use_swimlane" value="<?= AgileBoard::SWIMLANES_ISSUES; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->usesSwimlanes() && $board->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES) echo ' checked'; ?> id="agileboard_use_swimlane_<?= $board->getId(); ?>_<?= AgileBoard::SWIMLANES_ISSUES; ?>">
                                     <label for="agileboard_use_swimlane_<?= $board->getId(); ?>_<?= AgileBoard::SWIMLANES_ISSUES; ?>" class="list-item multiline">
                                         <span class="icon large"><?= image_tag('/unthemed/icon_issue_swimlanes.png', [], true); ?></span>
                                         <span class="name">
                                             <span class="title value"><?php echo __('Issue swimlanes'); ?></span>
-                                            <span class="description"><?php echo __('The board has a swimlane for each issue of one or more issue type(s).'); ?></span>
+                                            <span class="description"><?php echo __('The board has a swimlane for each issue of one or more issue type(s)'); ?></span>
                                         </span>
                                     </label>
                                     <input type="radio" name="use_swimlane" value="<?= AgileBoard::SWIMLANES_GROUPING; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->usesSwimlanes() && $board->getSwimlaneType() == AgileBoard::SWIMLANES_GROUPING) echo ' checked'; ?> id="agileboard_use_swimlane_<?= $board->getId(); ?>_<?= AgileBoard::SWIMLANES_GROUPING; ?>">
@@ -203,7 +212,7 @@
                                         <span class="icon large"><?= image_tag('/unthemed/icon_issue_details_swimlanes.png', [], true); ?></span>
                                         <span class="name">
                                             <span class="title value"><?php echo __('Issue detail swimlanes'); ?></span>
-                                            <span class="description"><?php echo __('The board is grouped in swimlanes where issues that share the same characteristics are grouped together.'); ?></span>
+                                            <span class="description"><?php echo __('The board is grouped in swimlanes where issues that share the same characteristics are grouped together'); ?></span>
                                         </span>
                                     </label>
                                     <input type="radio" name="use_swimlane" value="<?= AgileBoard::SWIMLANES_EXPEDITE; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->usesSwimlanes() && $board->getSwimlaneType() == AgileBoard::SWIMLANES_EXPEDITE) echo ' checked'; ?> id="agileboard_use_swimlane_<?= $board->getId(); ?>_<?= AgileBoard::SWIMLANES_EXPEDITE; ?>">
@@ -231,7 +240,6 @@
                                         <?php foreach ($issuetypes as $issuetype): ?>
                                             <input type="checkbox" class="fancy-checkbox" name="swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_details[<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>][<?= $issuetype->getId(); ?>]" value="<?= $issuetype->getId(); ?>" id="filter_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>_<?= $issuetype->getId(); ?>" <?php if ($board->hasSwimlaneFieldValue($issuetype->getID())) echo ' checked'; ?>>
                                             <label for="filter_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_<?= AgileBoard::SWIMLANE_IDENTIFIER_ISSUETYPE; ?>_<?= $issuetype->getId(); ?>" class="list-item">
-                                                <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                                 <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                                 <span class="name value"><?php echo __($issuetype->getName()); ?></span>
                                             </label>
@@ -387,6 +395,15 @@
         const $selected_item = $(this);
         $('#agileboard-swimlane-details-container').children().hide();
         $('#agileboard_swimlane_' + $selected_item.val() + '_container').show();
+    });
+    $('body').off('click', '.trigger-whiteboard-type-change');
+    $('body').on('click', '.trigger-whiteboard-type-change', function () {
+        const $selected_item = $(this);
+        if ($selected_item.val() == '<?= AgileBoard::TYPE_GENERIC; ?>') {
+            $('#edit_agile_board_epic_issue_type_column').addClass('hidden');
+        } else {
+            $('#edit_agile_board_epic_issue_type_column').removeClass('hidden');
+        }
     });
     $('body').off('click', '.trigger-toggle-swimlane-expedite-details');
     $('body').on('click', '.trigger-toggle-swimlane-expedite-details', function () {

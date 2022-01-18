@@ -688,6 +688,7 @@
                     $this->_comment_number = tables\Comments::getTable()->getNextCommentNumber($this->_target_id, $this->_target_type);
                 }
             }
+            $this->_updated = time();
         }
 
         protected function _postSave(bool $is_new): void

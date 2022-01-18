@@ -4,15 +4,18 @@ import Swimlane from "./swimlane";
 import UI from "../helpers/ui";
 import Pachno from "./pachno";
 import {watchIssuePopupForms} from "../helpers/issues";
+import {Templates} from "./issue";
+import backlog from "@/classes/backlog";
 
 export const SwimlaneTypes = {
     NONE: '',
     ISSUES: 'issues',
     GROUPING: 'grouping',
-    EXPEDITE: 'expedite'
+    EXPEDITE: 'expedite',
+    EPICS: 'epics'
 };
 
-const BoardTypes = {
+export const BoardTypes = {
     GENERIC: 0,
     SCRUM: 1,
     KANBAN: 2
@@ -30,6 +33,8 @@ class Board {
         this.swimlane_identifier = undefined;
         this.swimlane_field_values = undefined;
         this.report_issue_url = undefined;
+        this.sort_milestones_url = undefined;
+        this.epic_issue_type_id = undefined;
 
         /**
          * Swimlanes
@@ -39,26 +44,40 @@ class Board {
         this.columns = undefined;
         this.users = new Set();
 
-        this.selected_milestone_id = 0;
+        const is_scrum = parseInt(board_json.type) == BoardTypes.SCRUM;
+
+        if (is_scrum) {
+            const $selectedInput = $('input[name=selected_milestone]:checked');
+            this.selected_milestone_id = ($selectedInput.length) ? parseInt($selectedInput.val()) : 0;
+        } else {
+            this.selected_milestone_id = undefined;
+        }
+
+        /**
+         * @type {Milestone}
+         */
+        this.selected_milestone = undefined;
 
         this.updateSelectedMilestone();
 
-        this.setJson(board_json);
+        this.setJson(board_json, !is_scrum);
         this.setupListeners();
 
         $('#planning_indicator').hide();
         $('#planning_filter_title_input').prop('disabled', false);
     }
 
-    setJson(board_json) {
-        let fetchSwimlanes = (this.type !== board_json.type || this.swimlane_type !== board_json.swimlane_type || this.swimlane_identifier !== board_json.swimlane_identifier || this.swimlane_field_values.length !== board_json.swimlane_field_values.length);
-        if (!fetchSwimlanes) {
-            if (this.swimlane_field_values.length || board_json.swimlane_field_values.length) {
-                let difference = this.swimlane_field_values
-                    .filter(x => !board_json.swimlane_field_values.includes(x))
-                    .concat(board_json.swimlane_field_values.filter(x => !this.swimlane_field_values.includes(x)));
+    setJson(board_json, fetchSwimlanes = true) {
+        if (fetchSwimlanes === true) {
+            fetchSwimlanes = (this.type !== board_json.type || this.swimlane_type !== board_json.swimlane_type || this.swimlane_identifier !== board_json.swimlane_identifier || this.swimlane_field_values.length !== board_json.swimlane_field_values.length);
+            if (!fetchSwimlanes) {
+                if (this.swimlane_field_values.length || board_json.swimlane_field_values.length) {
+                    let difference = this.swimlane_field_values
+                        .filter(x => !board_json.swimlane_field_values.includes(x))
+                        .concat(board_json.swimlane_field_values.filter(x => !this.swimlane_field_values.includes(x)));
 
-                fetchSwimlanes = difference.length > 0;
+                    fetchSwimlanes = difference.length > 0;
+                }
             }
         }
 
@@ -73,12 +92,14 @@ class Board {
         this.swimlane_field_values = board_json.swimlane_field_values;
         this.columns = board_json.columns;
         this.report_issue_url = board_json.report_issue_url;
+        this.sort_milestones_url = board_json.sort_milestones_url;
+        this.epic_issue_type_id = board_json.epic_issue_type_id;
 
         this.updateBackgroundColor();
         this.updateBoardClass();
         this.updateVisibleWhiteboard();
 
-        if (fetchSwimlanes && this.columns.length) {
+        if (fetchSwimlanes && this.columns.length && (this.selected_milestone_id || this.type !== BoardTypes.SCRUM)) {
             this.fetchSwimlanes();
         } else {
             $('#whiteboard_indicator').hide();
@@ -91,6 +112,7 @@ class Board {
         $('#onboarding-no-milestones').addClass('hidden');
         $('#onboarding-no-active-sprint').addClass('hidden');
         $('#whiteboard').hide();
+        $('.add_column_milestone_id').val(selected_milestone_id);
         if ((!this.columns || !this.columns.length) || (selected_milestone_id === 0 && this.type === BoardTypes.SCRUM)) {
             if (selected_milestone_id === 0 && this.type === BoardTypes.SCRUM) {
                 if ($('#selected_milestone_input > .list-item').length > 3) {
@@ -123,6 +145,18 @@ class Board {
                 $container.addClass('type-generic');
                 break;
         }
+
+        const $milestone_0_checkbox = $('#selected_milestone_0_generic');
+        const $milestone_0_label = $('label[for="selected_milestone_0_generic"]');
+        if (this.type == BoardTypes.SCRUM) {
+            $milestone_0_checkbox.attr('disabled', true);
+            $milestone_0_label.addClass('disabled');
+            $milestone_0_label.find('.name').html(Pachno.T.agile.choose_sprint_label);
+        } else {
+            $milestone_0_checkbox.removeAttr('disabled');
+            $milestone_0_label.removeClass('disabled');
+            $milestone_0_label.find('.name').html(Pachno.T.agile.no_milestone_label);
+        }
     }
 
     updateSelectedMilestone(trigger_reload = false) {
@@ -136,7 +170,7 @@ class Board {
         }
 
         this.updateVisibleWhiteboard();
-        if (this.selected_milestone_id !== previous_milestone_id && trigger_reload) {
+        if (this.selected_milestone_id !== previous_milestone_id && trigger_reload && (this.type !== BoardTypes.SCRUM || this.selected_milestone_id !== 0)) {
             this.fetchSwimlanes();
         }
     }
@@ -155,16 +189,23 @@ class Board {
         $('#whiteboard_indicator').show();
         if (this.selected_milestone_id !== 0 || this.type !== BoardTypes.SCRUM) {
             Pachno.fetch(`${this.whiteboardUrl}&milestone_id=${this.selected_milestone_id}`, { method: 'GET' })
-                .then((json) => this.setSwimlanes(json.swimlanes));
+                .then((json) => {
+                    this.setMilestone(json.milestone);
+                    this.setSwimlanes(json.swimlanes);
+                });
         } else {
             $('#whiteboard_indicator').hide();
         }
     }
 
+    setMilestone(milestone_json) {
+        this.selected_milestone = new Milestone(milestone_json);
+    }
+
     setSwimlanes(swimlanes) {
         const $whiteboard_indicator = $('#whiteboard_indicator');
         if (swimlanes.length) {
-            this.swimlanes = swimlanes.map(json => new Swimlane(json, this.id, this.selected_milestone_id));
+            this.swimlanes = swimlanes.map(json => new Swimlane(json, this, this.selected_milestone_id));
             this.updateWhiteboard();
         } else {
             this.swimlanes = swimlanes;
@@ -284,6 +325,7 @@ class Board {
     }
 
     verifyIssues() {
+        let column_issues = 0;
         for (const column of this.columns) {
             const isInColumn = function (issue) { return issue.status.id && column.status_ids.includes(issue.status.id)};
             let num_issues = {};
@@ -324,6 +366,27 @@ class Board {
             if ($primary_count.length) {
                 $primary_count.html(count_total);
             }
+            column_issues += count_total;
+        }
+
+        if (this.swimlane_type == SwimlaneTypes.ISSUES || this.swimlane_type == SwimlaneTypes.EPICS) {
+            for (const swimlane of this.swimlanes) {
+                column_issues += 1;
+            }
+            column_issues -= 1;
+        }
+
+        const $milestoneUnhandledWarningContainer = $('#milestone-issues-unhandled');
+        const $milestoneConfigurationWarningContainer = $('#milestone-issues-unconfigured');
+        $milestoneUnhandledWarningContainer.addClass('hidden');
+        $milestoneConfigurationWarningContainer.addClass('hidden');
+
+        if (this.swimlane_type != SwimlaneTypes.NONE && column_issues < this.selected_milestone.issues_count - this.swimlanes.length - 1) {
+            $milestoneConfigurationWarningContainer.find('.number_of_issues').html(this.selected_milestone.issues_count - column_issues);
+            $milestoneConfigurationWarningContainer.removeClass('hidden');
+        } else if (column_issues < this.selected_milestone.issues_count) {
+            $milestoneUnhandledWarningContainer.find('.number_of_issues').html(this.selected_milestone.issues_count - column_issues);
+            $milestoneUnhandledWarningContainer.removeClass('hidden');
         }
     }
 
@@ -436,7 +499,7 @@ class Board {
     }
 
     addIssue(issue_json) {
-        const issue = Pachno.addIssue(issue_json, this.id);
+        const issue = Pachno.addIssue(issue_json, this.id, Templates.card);
         if (this.swimlane_type === SwimlaneTypes.ISSUES && this.swimlane_identifier === "issuetype" && this.swimlane_field_values.includes(issue.issue_type.id)) {
             const swimlane = new Swimlane({
                 issues: [],
@@ -446,7 +509,7 @@ class Board {
                 has_identifiables: true,
                 identifier_issue: issue_json,
                 identifier: 'swimlane_' + issue.id
-            }, this.id, this.selected_milestone_id);
+            }, this, this.selected_milestone_id);
 
             this.swimlanes.splice(this.swimlanes.length - 1, 0, swimlane);
         } else {
@@ -461,12 +524,14 @@ class Board {
 
     addColumn(column, swimlanes) {
         this.columns.push(column);
-        if (this.swimlanes === undefined || !this.swimlanes.length) {
-            this.setSwimlanes(swimlanes);
-        } else {
-            for (const swimlane of swimlanes) {
-                const board_swimlane = this.swimlanes.find(lane => lane.identifier == swimlane.identifier);
-                board_swimlane.addIssues(swimlane.issues);
+        if (swimlanes !== undefined) {
+            if (this.swimlanes === undefined || !this.swimlanes.length) {
+                this.setSwimlanes(swimlanes);
+            } else {
+                for (const swimlane of swimlanes) {
+                    const board_swimlane = this.swimlanes.find(lane => lane.identifier == swimlane.identifier);
+                    board_swimlane.addIssues(swimlane.issues);
+                }
             }
         }
         for (const column of this.columns) {
@@ -710,9 +775,13 @@ class Board {
                 if (swimlane.identifier_issue && swimlane.identifier_issue.id === issue.id)
                     return;
 
-                let updated = swimlane.addOrRemove(issue, !found);
-                if (found === false) {
-                    found = updated;
+                if (issue.milestone?.id == board.selected_milestone_id) {
+                    let updated = swimlane.addOrRemove(issue, !found);
+                    if (found === false) {
+                        found = updated;
+                    }
+                } else {
+                    swimlane.removeIssue(issue);
                 }
             }
 

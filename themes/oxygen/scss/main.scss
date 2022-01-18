@@ -1898,16 +1898,6 @@ table.issue_affects td img {
   margin-top: 0;
 }
 
-.milestone_include_issues {
-  border: 1px solid rgba(100, 100, 100, 0.3);
-  background-color: #f7f4df;
-  padding: 6px;
-  font-weight: $theme-font-weight-regular;
-  font-size: 1.1em;
-  margin: 20px 5px;
-  color: rgba(0, 0, 0, 0.6);
-}
-
 #project_planning.issue_title_filtered .milestone_issue,
 #project_planning.issue_title_filtered .whiteboard-issue {
   display: none;

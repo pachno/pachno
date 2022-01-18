@@ -181,6 +181,14 @@
       }
     }
 
+    + .fancy-dropdown-container {
+      margin: .5em 1em;
+    }
+
+    + input[type=text] {
+      margin: .5em 1em;
+    }
+
     .dropper-container {
       box-sizing: border-box;
       border-left: 1px solid rgba(100, 100, 100, .1);
@@ -260,6 +268,11 @@
       .icon:not(.time-tracking-icon) {
         //margin-right: .5em;
         font-size: 1.2em;
+        &.large {
+          + span.name {
+            padding-left: .5em;
+          }
+        }
       }
       span.name {
         flex: 1 1 auto;
@@ -463,6 +476,7 @@
 
       &.large {
         flex: 0 0 36px;
+        display: flex;
       }
 
       img:not(.avatar) {

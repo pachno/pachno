@@ -13,6 +13,8 @@
         public const ITEMTYPE = Datatype::CATEGORY;
 
         protected $_itemtype = Datatype::CATEGORY;
+        
+        protected $json;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -41,5 +43,14 @@
         {
             return true;
         }
-
+        
+        public function toJSON($detailed = true)
+        {
+            if (!is_array($this->json)) {
+                $this->json = parent::toJSON($detailed);
+            }
+            
+            return $this->json;
+        }
+    
     }

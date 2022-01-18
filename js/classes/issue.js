@@ -6,13 +6,21 @@ import {TYPES as QuicksearchTypes} from "./quicksearch";
 import {getEditor} from "../widgets/editor";
 import dayjs from "dayjs";
 import {SwimlaneTypes} from "./board";
+const issueRowTemplate = require('@/templates/issue/row.njk');
+const issuePlaceholderTemplate = require('@/templates/issue/placeholder.njk');
+
+export const Templates = {
+    card: 'card',
+    row: 'row',
+    placeholder: 'placeholder'
+};
 
 class Issue {
-    constructor(json, board_id, create_element = true) {
+    constructor(json, board_id, element_template) {
         this.board_id = board_id;
         this.updateFromJson(json);
-        if (create_element) {
-            this.element = this.createHtmlElement();
+        if (element_template !== undefined) {
+            this.element = this.createHtmlElement(element_template);
         }
         this.clone_element = undefined;
         this.event_throttled = false;
@@ -137,6 +145,7 @@ class Issue {
         this.issue_type = json.issue_type;
         this.milestone = json.milestone;
         this.parent_issue_id = json.parent_issue_id;
+        this.parent_issue_type_id = json.parent_issue_type_id;
         this.priority = json.priority;
         this.posted_by = json.posted_by;
         this.severity = json.severity;
@@ -872,7 +881,7 @@ class Issue {
         }
     }
 
-    createHtmlElement() {
+    createHtmlCardElement() {
         let classes = [];
         if (this.closed) classes.push('issue_closed');
         if (this.blocking) classes.push('blocking');
@@ -922,6 +931,18 @@ class Issue {
             }
         }
         return $html;
+    }
+
+    createHtmlElement(template) {
+        switch (template) {
+            case Templates.placeholder:
+                return $(issuePlaceholderTemplate());
+            case Templates.row:
+                return $(issueRowTemplate({ issue: this, UI, T: Pachno.T }));
+            case Templates.card:
+            default:
+                return this.createHtmlCardElement();
+        }
     }
 }
 

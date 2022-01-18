@@ -14,6 +14,8 @@
         protected static $_items = null;
 
         protected $_itemtype = Datatype::STATUS;
+        
+        protected $json;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -49,5 +51,14 @@
         {
             return (bool)tables\WorkflowSteps::getTable()->countByStatusID($this->getID());
         }
-
+    
+        public function toJSON($detailed = true)
+        {
+            if (!is_array($this->json)) {
+                $this->json = parent::toJSON($detailed);
+            }
+        
+            return $this->json;
+        }
+    
     }

@@ -28,6 +28,8 @@
         protected $_itemtype = Datatype::PRIORITY;
 
         protected $_abbreviation = null;
+        
+        protected $json;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -71,5 +73,14 @@
 
             return $this->_abbreviation;
         }
-
+    
+        public function toJSON($detailed = true)
+        {
+            if (!is_array($this->json)) {
+                $this->json = parent::toJSON($detailed);
+            }
+        
+            return $this->json;
+        }
+    
     }

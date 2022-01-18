@@ -15400,7 +15400,7 @@
                 <target>Saksbaserte svømmebaner</target>
             </trans-unit>
             <trans-unit id="9ccce55c21e547cdcf976351112f555c">
-                <source>The board has a swimlane for each issue of one or more issue type(s).</source>
+                <source>The board has a swimlane for each issue of one or more issue type(s)</source>
                 <target>Tavlen har én svømmebane per sak av én eller flere sakstype(r)</target>
             </trans-unit>
             <trans-unit id="4691406763677aef735c90c78fd2d5ea">
@@ -15408,7 +15408,7 @@
                 <target>Saksdetalj-baserte svømmebaner</target>
             </trans-unit>
             <trans-unit id="a119c8b7aeed47b34eaed0496fafafcd">
-                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together.</source>
+                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together</source>
                 <target>Tavlen er gruppert med svømmebaner der saker som har samme detaljer grupperes sammen</target>
             </trans-unit>
             <trans-unit id="7136396ae0db832c7944cbd0a6d8808d">
@@ -15901,7 +15901,7 @@
                 <target>Sett opp den første, nye sprinten</target>
             </trans-unit>
             <trans-unit id="e96257c7d2939796ee88d233f0151707">
-                <source>Create a sprint for this period</source>
+                <source>Create a sprint for this period to add cards and columns</source>
                 <target>Opprett en sprint for denne perioden</target>
             </trans-unit>
             <trans-unit id="8355282f01ced037457c7e8185e5b169">

@@ -2,9 +2,6 @@
 
     use pachno\core\entities\AgileBoard;
 
-    $selected_columns = $milestone->getProject()->getPlanningColumns($pachno_user);
-    $all_columns = $milestone->getProject()->getIssueFields(false, array('status', 'milestone', 'resolution', 'assignee', 'user_pain'));
-
     if (isset($board))
     {
         switch ($board->getType())

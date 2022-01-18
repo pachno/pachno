@@ -16,6 +16,7 @@ import {setupListeners as moduleSetupListeners} from "../helpers/modules";
 import {setupListeners as projectSetupListeners} from "../helpers/project";
 import {setupListeners as configurationSetupListeners} from "../helpers/configuration";
 import Board from "./board";
+import Backlog from "./backlog";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
 import Issue from "./issue";
@@ -35,6 +36,7 @@ class PachnoApplication {
             ready: 'pachno-ready',
             agile: {
                 deleteBoard: 'agile-delete-board',
+                deleteMilestone: 'agile-delete-milestone',
             },
             article: {
                 removeFile: 'article-remove-file',
@@ -279,12 +281,12 @@ class PachnoApplication {
      * @param board_id
      * @returns Issue
      */
-    addIssue(json, board_id) {
+    addIssue(json, board_id, template) {
         if (this.issues[json.id] !== undefined) {
             return this.issues[json.id];
         }
 
-        this.issues[json.id] = new Issue(json, board_id);
+        this.issues[json.id] = new Issue(json, board_id, template);
 
         return this.issues[json.id];
     }

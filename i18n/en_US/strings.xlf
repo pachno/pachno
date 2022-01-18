@@ -12063,13 +12063,13 @@
                 <source>Issue swimlanes</source>
             </trans-unit>
             <trans-unit id="9ccce55c21e547cdcf976351112f555c">
-                <source>The board has a swimlane for each issue of one or more issue type(s).</source>
+                <source>The board has a swimlane for each issue of one or more issue type(s)</source>
             </trans-unit>
             <trans-unit id="4691406763677aef735c90c78fd2d5ea">
                 <source>Issue detail swimlanes</source>
             </trans-unit>
             <trans-unit id="a119c8b7aeed47b34eaed0496fafafcd">
-                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together.</source>
+                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together</source>
             </trans-unit>
             <trans-unit id="7136396ae0db832c7944cbd0a6d8808d">
                 <source>Level of service swimlane</source>
@@ -12460,7 +12460,7 @@
                 <source>Set up the first new sprint</source>
             </trans-unit>
             <trans-unit id="e96257c7d2939796ee88d233f0151707">
-                <source>Create a sprint for this period</source>
+                <source>Create a sprint for this period to add cards and columns</source>
             </trans-unit>
             <trans-unit id="8355282f01ced037457c7e8185e5b169">
                 <source>There is no active sprint for today</source>

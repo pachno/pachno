@@ -5,11 +5,11 @@ const webpack = require('webpack');
 
 module.exports = {
     mode: 'development',
-    entry: glob.sync('./js/**.js').reduce(function(obj, el){
+    entry: glob.sync('./js/**.js').reduce(function (obj, el) {
         obj[path.parse(el).name] = el;
         return obj
-    // },{
-    //     mainCss: './themes/oxygen/scss/main.scss'
+        // },{
+        //     mainCss: './themes/oxygen/scss/main.scss'
     }),
     output: {
         filename: 'public/js/dist/pachno/[name].js',
@@ -17,13 +17,19 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'quill$': path.resolve(__dirname, 'node_modules/quill/quill.js'),
+            '@': path.resolve(__dirname, './js'),
         },
         extensions: ['.js', '.ts', '.svg']
     },
     devtool: 'source-map',
     module: {
         rules: [
+            {
+                test: /\.(njk|nunjucks)$/,
+                use: [
+                    {loader: 'simple-nunjucks-loader', options: {searchPaths: ['js/templates']}},
+                ],
+            },
             {
                 test: /\.m?js$/,
                 exclude: /(node_modules|bower_components)/,
@@ -33,43 +39,6 @@ module.exports = {
                         presets: ['@babel/preset-env']
                     }
                 }
-            // },
-            // {
-            //     test: /\.scss$/,
-            //     use: [
-            //         {
-            //             loader: 'file-loader',
-            //             options: {
-            //                 name: 'themes/oxygen/css/theme.css',
-            //                 minimize: false
-            //             }
-            //         },
-            //         {
-            //             loader: 'extract-loader',
-            //             options: {
-            //                 sourceMap: true,
-            //                 minimize: false
-            //             }
-            //         },
-            //         {
-            //             loader: 'css-loader?-url',
-            //             options: {
-            //                 sourceMap: true
-            //             }
-            //         },
-            //         {
-            //             loader: 'postcss-loader',
-            //             options: {
-            //                 sourceMap: true
-            //             }
-            //         },
-            //         {
-            //             loader: 'sass-loader',
-            //             options: {
-            //                 sourceMap: true
-            //             }
-            //         }
-            //     ]
             },
             {
                 test: /\.svg$/,
@@ -85,15 +54,15 @@ module.exports = {
                 use: [
                     {
                         loader: 'url-loader',
-                        options: { limit: 8192 }
+                        options: {limit: 8192}
                     }
                 ]
             },
             {
                 test: /\.css$/,
                 use: [
-                    { loader: 'style-loader' },
-                    { loader: 'css-loader?sourceMap' }
+                    {loader: 'style-loader'},
+                    {loader: 'css-loader?sourceMap'}
                 ]
             }
         ]

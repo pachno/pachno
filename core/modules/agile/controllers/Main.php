@@ -12,6 +12,7 @@
     use pachno\core\entities\SavedSearch;
     use pachno\core\entities\SearchFilter;
     use pachno\core\entities\tables\AgileBoards;
+    use pachno\core\entities\tables\BoardColumns;
     use pachno\core\entities\tables\Builds;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\Milestones;
@@ -43,7 +44,6 @@
                 if (!($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project))) {
                     throw new Exception($this->getI18n()->__("You don't have access to modify milestones"));
                 }
-                $return_options = ['finished' => 'ok'];
                 $board = AgileBoards::getTable()->selectById($request['board_id']);
                 $milestone = Milestones::getTable()->selectById($request['milestone_id']);
                 $reached_date = mktime(23, 59, 59, Context::getRequest()->getParameter('milestone_finish_reached_month'), Context::getRequest()->getParameter('milestone_finish_reached_day'), Context::getRequest()->getParameter('milestone_finish_reached_year'));
@@ -51,35 +51,41 @@
                 $milestone->setReached();
                 $milestone->setClosed(true);
                 $milestone->save();
-                if ($request->hasParameter('unresolved_issues_action')) {
-                    switch ($request['unresolved_issues_action']) {
-                        case 'backlog':
-                            Issues::getTable()->reAssignIssuesByMilestoneIds($milestone->getID(), null, 0);
-                            break;
-                        case 'reassign':
-                            $new_milestone = Milestones::getTable()->selectById($request['assign_issues_milestone_id']);
-                            if ($request['assign_issues_milestone_id'] === '' || !$new_milestone instanceof Milestone || $new_milestone->isClosed()) {
-                                switch ($board->getType()) {
-                                    case AgileBoard::TYPE_GENERIC:
-                                        throw new Exception($this->getI18n()->__('You must select an existing, unfinished milestone'));
-                                        break;
-                                    case AgileBoard::TYPE_SCRUM:
-                                    case AgileBoard::TYPE_KANBAN:
-                                        throw new Exception($this->getI18n()->__('You must select an existing, unfinished sprint'));
-                                        break;
-                                }
+                $return_options = [
+                    'milestone' => $milestone->toJSON(),
+                    'finished' => 'ok',
+                    'unresolved_action' => $request['unresolved_issues_action']
+                ];
+                switch ($request['unresolved_issues_action']) {
+                    case 'backlog':
+                        Issues::getTable()->reAssignIssuesByMilestoneIds($milestone->getID(), null, 0);
+                        break;
+                    case 'reassign':
+                        $new_milestone = Milestones::getTable()->selectById($request['assign_issues_milestone_id']);
+                        if ($request['assign_issues_milestone_id'] === '' || !$new_milestone instanceof Milestone || $new_milestone->isClosed()) {
+                            switch ($board->getType()) {
+                                case AgileBoard::TYPE_GENERIC:
+                                    throw new Exception($this->getI18n()->__('You must select an existing, unfinished milestone'));
+                                case AgileBoard::TYPE_SCRUM:
+                                case AgileBoard::TYPE_KANBAN:
+                                    throw new Exception($this->getI18n()->__('You must select an existing, unfinished sprint'));
                             }
-                            $return_options['new_milestone_id'] = $new_milestone->getID();
-                            break;
-                        case 'addnew':
-                            $new_milestone = $this->_saveMilestoneDetails($request);
-                            $return_options['component'] = $this->getComponentHTML('milestonebox', ['milestone' => $new_milestone, 'board' => $board]);
-                            $return_options['new_milestone_id'] = $new_milestone->getID();
-                            break;
-                    }
-                    if (isset($new_milestone) && $new_milestone instanceof Milestone) {
-                        Issues::getTable()->reAssignIssuesByMilestoneIds($milestone->getID(), $new_milestone->getID());
-                    }
+                        }
+                        $return_options['new_milestone_id'] = $new_milestone->getID();
+                        $return_options['number_of_reassigned_issues'] = $milestone->countOpenIssues();
+                        break;
+                    case 'add_new':
+                        $new_milestone = $this->_saveMilestoneDetails($request);
+                        $new_milestone->setClosed(false);
+                        $new_milestone->setVisibleIssues(true);
+                        $new_milestone->setVisibleRoadmap(true);
+                        $new_milestone->save();
+                        $return_options['number_of_reassigned_issues'] = $milestone->countOpenIssues();
+                        break;
+                }
+                if (isset($new_milestone) && $new_milestone instanceof Milestone) {
+                    Issues::getTable()->reAssignIssuesByMilestoneIds($milestone->getID(), $new_milestone->getID());
+                    $return_options['new_milestone'] = $new_milestone->toJSON();
                 }
 
                 return $this->renderJSON($return_options);
@@ -92,12 +98,12 @@
 
         /**
          * @param Request $request
-         * @param null $milestone
+         * @param ?Milestone $milestone
          *
          * @return null|Milestone
          * @throws Exception
          */
-        protected function _saveMilestoneDetails(Request $request, $milestone = null)
+        protected function _saveMilestoneDetails(Request $request, Milestone $milestone = null)
         {
             if (!$request['name'])
                 throw new Exception($this->getI18n()->__('You must provide a valid milestone name'));
@@ -105,11 +111,11 @@
             if ($milestone === null) $milestone = new Milestone();
             $milestone->setName($request['name']);
             $milestone->setProject($this->selected_project);
-            $milestone->setStarting((bool)$request['is_starting']);
-            $milestone->setScheduled((bool)$request['is_scheduled']);
+            $milestone->setStarting((bool) $request['is_starting']);
+            $milestone->setScheduled((bool) $request['is_scheduled']);
             $milestone->setDescription($request['description']);
-            $milestone->setVisibleRoadmap($request['visibility_roadmap']);
-            $milestone->setVisibleIssues($request['visibility_issues']);
+            $milestone->setVisibleRoadmap((bool) $request['visibility_roadmap']);
+            $milestone->setVisibleIssues((bool) $request['visibility_issues']);
             $milestone->setType($request->getParameter('milestone_type', Milestone::TYPE_REGULAR));
             $milestone->setPercentageType($request->getParameter('percentage_type', Milestone::PERCENTAGE_TYPE_REGULAR));
             if ($request->hasParameter('sch_month') && $request->hasParameter('sch_day') && $request->hasParameter('sch_year')) {
@@ -233,7 +239,7 @@
         {
             $board = AgileBoards::getTable()->selectById($request['board_id']);
             if ($request['column_id']) {
-                $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
+                $column = BoardColumns::getTable()->selectById($request['column_id']);
             } else {
                 $column = new BoardColumn();
                 $column->setBoard($board);
@@ -269,13 +275,12 @@
                 'column' => $column->toJSON(),
             ];
 
-            if ($request->isPost()) {
-                $milestone = null;
-                if ($request['milestone_id']) {
-                    $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
+            if ($request->isPost() && $request['milestone_id']) {
+                $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
+                if ($milestone instanceof Milestone) {
+                    $swimlanes_json = $board->toMilestoneJSON($milestone, $column->getID());
+                    $options['swimlanes'] = $swimlanes_json['swimlanes'];
                 }
-                $swimlanes_json = $board->toMilestoneJSON($milestone, $column->getID());
-                $options['swimlanes'] = $swimlanes_json['swimlanes'];
             }
 
             return $this->renderJSON($options);
@@ -284,12 +289,11 @@
         /**
          * The project board whiteboard page
          *
-         * @Route(url="/boards/:board_id/whiteboard/issues/:csrf_token/*")
-         * @CsrfProtected
+         * @Route(url="/boards/:board_id/whiteboard/issues/*")
          *
          * @param Request $request
          */
-        public function runWhiteboardIssues(Request $request)
+        public function runWhiteboardIssues(Request $request): framework\JsonOutput
         {
             $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = AgileBoards::getTable()->selectById($request['board_id']);
@@ -297,11 +301,30 @@
             $this->forward403unless($this->board instanceof AgileBoard);
 
             try {
-                $milestone = null;
-                if ($request['milestone_id']) {
-                    $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
+                if ($request->isPost()) {
+                    $issue_table = Issues::getTable();
+                    $issue_ids = explode(',', $request['issue_ids']);
+                    $orders = array_keys($issue_ids);
+                    foreach ($issue_ids as $issue_id) {
+                        $issue_table->setOrderByIssueId(array_pop($orders), $issue_id);
+                    }
+    
+                    return $this->renderJSON(['sorted' => 'ok']);
                 }
-                return $this->renderJSON($this->board->toMilestoneJSON($milestone));
+                
+                $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
+                
+                if ($request['mode'] == 'backlog') {
+                    if ($request['milestone_id'] > 0 && $milestone instanceof Milestone) {
+                        return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
+                    } else {
+                        return $this->renderJSON(['milestone' => $this->board->toBacklogJSON()]);
+                    }
+                } elseif ($milestone instanceof Milestone || $this->board->getType() !== AgileBoard::TYPE_SCRUM) {
+                    return $this->renderJSON($this->board->toMilestoneJSON($milestone));
+                } else {
+                    return $this->renderJSON($this->board->toJSON(false));
+                }
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 

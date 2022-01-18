@@ -13,6 +13,8 @@
         protected static $_items = null;
 
         protected $_itemtype = Datatype::SEVERITY;
+        
+        protected $json;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -29,5 +31,14 @@
                 $severity->save();
             }
         }
-
+    
+        public function toJSON($detailed = true)
+        {
+            if (!is_array($this->json)) {
+                $this->json = parent::toJSON($detailed);
+            }
+        
+            return $this->json;
+        }
+    
     }

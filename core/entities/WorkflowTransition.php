@@ -76,6 +76,8 @@
          * @Relates(class="\pachno\core\entities\Workflow")
          */
         protected $_workflow_id = null;
+        
+        protected $json;
 
         public static function loadMultiTeamWorkflowFixtures(Scope $scope, Workflow $workflow, $steps)
         {
@@ -797,35 +799,39 @@
 
         public function toJSON($detailed = true)
         {
-            $json = parent::toJSON($detailed);
-            $json['name'] = $this->getName();
-            $json['description'] = $this->getDescription();
-            $json['template'] = $this->getTemplate();
-            $json['url'] = framework\Context::getRouting()->generate('transition_issue', ['project_key' => '%project_key%', 'issue_id' => '%issue_id%', 'transition_id' => $this->getID()]);
-            $json['backdrop_url'] = framework\Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $this->getID()]);
-            $json['status_ids'] = [];
-            if ($this->getOutgoingStep()->getLinkedStatus() instanceof Status) {
-                $json['status_ids'][] = $this->getOutgoingStep()->getLinkedStatus()->getID();
-            }
-
-            $json['actions'] = [];
-
-            foreach ($this->getActions() as $action) {
-                $json['actions'][] = $action->toJSON();
-            }
-
-            $json['post_validations'] = [];
-            foreach ($this->getPostValidationRules() as $rule) {
-                if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_STATUS_VALID) {
-                    $values = explode(',', $rule->getRuleValue());
-                    foreach ($values as $value) {
-                        $json['status_ids'][] = $value;
-                    }
+            if (!is_array($this->json)) {
+                $json = parent::toJSON($detailed);
+                $json['name'] = $this->getName();
+                $json['description'] = $this->getDescription();
+                $json['template'] = $this->getTemplate();
+                $json['url'] = framework\Context::getRouting()->generate('transition_issue', ['project_key' => '%project_key%', 'issue_id' => '%issue_id%', 'transition_id' => $this->getID()]);
+                $json['backdrop_url'] = framework\Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $this->getID()]);
+                $json['status_ids'] = [];
+                if ($this->getOutgoingStep()->getLinkedStatus() instanceof Status) {
+                    $json['status_ids'][] = $this->getOutgoingStep()->getLinkedStatus()->getID();
                 }
-                $json['post_validations'][] = $rule->toJSON();
+    
+                $json['actions'] = [];
+    
+                foreach ($this->getActions() as $action) {
+                    $json['actions'][] = $action->toJSON();
+                }
+    
+                $json['post_validations'] = [];
+                foreach ($this->getPostValidationRules() as $rule) {
+                    if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_STATUS_VALID) {
+                        $values = explode(',', $rule->getRuleValue());
+                        foreach ($values as $value) {
+                            $json['status_ids'][] = $value;
+                        }
+                    }
+                    $json['post_validations'][] = $rule->toJSON();
+                }
+                
+                $this->json = $json;
             }
 
-            return $json;
+            return $this->json;
         }
 
         /**

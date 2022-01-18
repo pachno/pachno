@@ -25,6 +25,7 @@
                 <input type="text" name="name" id="next-column-name" placeholder="<?= __('Give your column a name, like "Todo"'); ?>">
             </div>
             <div class="form-row">
+                <input type="hidden" name="milestone_id" value="0" id="add_column_milestone_id" class="add_column_milestone_id">
                 <label><?php echo __('Status for this column'); ?></label>
                 <div class="fancy-dropdown-container" data-default-label="<?= __('Pick a status for this column'); ?>">
                     <div class="fancy-dropdown">

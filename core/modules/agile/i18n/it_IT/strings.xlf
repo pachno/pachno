@@ -347,7 +347,7 @@
                 <target>Non usare corsie</target>
             </trans-unit>
             <trans-unit id="9ccce55c21e547cdcf976351112f555c">
-                <source>The board has a swimlane for each issue of one or more issue type(s).</source>
+                <source>The board has a swimlane for each issue of one or more issue type(s)</source>
                 <target>La bacheca ha una corsia per ogni segnalazione di uno o più tipi segnalazione.</target>
             </trans-unit>
             <trans-unit id="4691406763677aef735c90c78fd2d5ea">
@@ -355,7 +355,7 @@
                 <target>Corsie dettaglio segnalazioni</target>
             </trans-unit>
             <trans-unit id="a119c8b7aeed47b34eaed0496fafafcd">
-                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together.</source>
+                <source>The board is grouped in swimlanes where issues that share the same characteristics are grouped together</source>
                 <target>La bacheca è divisa in corsie in cui le segnalazioni che condividono le medesime caratteristiche sono raggruppate insieme.</target>
             </trans-unit>
             <trans-unit id="223b1c2b471954744f980e99fa13f3be">

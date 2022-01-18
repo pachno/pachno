@@ -2528,6 +2528,10 @@
             try {
                 if (!$is_new) {
                     $comment = tables\Comments::getTable()->selectById($request['comment_id']);
+    
+                    if (!$comment instanceof Comment || $comment->getPostedByID() !== $this->getUser()->getID() && !$this->getUser()->canModerateComments($comment->getTargetType(), $comment->getTarget()->getProject())) {
+                        throw new Exception($i18n->__('You are not allowed to do this'));
+                    }
                 } else {
                     $comment = new entities\Comment();
                     $comment->setPostedBy($this->getUser()->getID());
@@ -3859,8 +3863,8 @@
             $milestone->setStarting((bool)$request['is_starting']);
             $milestone->setScheduled((bool)$request['is_scheduled']);
             $milestone->setDescription($request['description']);
-            $milestone->setVisibleRoadmap($request['visibility_roadmap']);
-            $milestone->setVisibleIssues($request['visibility_issues']);
+            $milestone->setVisibleRoadmap((bool) $request['visibility_roadmap']);
+            $milestone->setVisibleIssues((bool) $request['visibility_issues']);
             $milestone->setType($request->getParameter('milestone_type', entities\Milestone::TYPE_REGULAR));
             $milestone->setPercentageType($request->getParameter('percentage_type', entities\Milestone::PERCENTAGE_TYPE_REGULAR));
             if ($request->hasParameter('sch_month') && $request->hasParameter('sch_day') && $request->hasParameter('sch_year')) {

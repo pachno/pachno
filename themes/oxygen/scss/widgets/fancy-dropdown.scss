@@ -7,6 +7,10 @@
   text-align: left;
   box-sizing: border-box;
 
+  &.row-mode {
+    flex-direction: row;
+  }
+
   .fancy-dropdown {
     display: flex;
     align-items: center;
@@ -26,6 +30,21 @@
     }
     &:focus {
       border-color: #0C8990;
+    }
+    &.small {
+      flex: 0 0 auto;
+
+      > .value,
+      > .name {
+        min-width: 3em;
+      }
+    }
+    &.auto-size {
+      > .value,
+      > .name {
+        min-width: 0;
+        max-width: none;
+      }
     }
     &.active {
       border-radius: 4px 4px 0 0;

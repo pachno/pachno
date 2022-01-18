@@ -364,6 +364,10 @@
 
         public function getOpenIssuesByProjectIDAndIssuetypeID($project_id, $issuetype_id)
         {
+            if ($issuetype_id == 0) {
+                return [];
+            }
+
             $query = $this->getQuery();
             $query->where(self::DELETED, false);
             $query->where(self::STATE, Issue::STATE_OPEN);

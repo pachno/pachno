@@ -854,6 +854,14 @@
         {
             $this->_sort_order = $order;
         }
+        
+        public function toSimpleJSON()
+        {
+            return [
+                'id' => $this->getID(),
+                'name' => $this->getName()
+            ];
+        }
 
         public function toJSON($detailed = false)
         {
@@ -861,6 +869,7 @@
                 'id' => $this->getID(),
                 'url' => Context::getRouting()->generate('project_milestone', ['project_key' => $this->getProject()->getKey(), 'milestone_id' => $this->getID()]),
                 'backdrop_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $this->getProject()->getID(), 'milestone_id' => $this->getID()]),
+                'mark_finished_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'milestone_finish', 'project_id' => $this->getProject()->getID(), 'milestone_id' => $this->getID()]),
                 'name' => $this->getName(),
                 'closed' => $this->getClosed(),
                 'reached' => $this->isReached(),
@@ -869,9 +878,9 @@
                 'is_sprint' => $this->isSprint(),
                 'sort_order' => $this->getOrder(),
                 'starting' => $this->isStarting(),
-                'starting_date' => $this->getStartingDate(),
+                'starting_date' => ($this->isStarting()) ? framework\Context::getI18n()->formatTime($this->getStartingDate(), 22, true, true) : '',
                 'scheduled' => $this->isScheduled(),
-                'scheduled_date' => $this->getScheduledDate(),
+                'scheduled_date' => ($this->isScheduled()) ? framework\Context::getI18n()->formatTime($this->getScheduledDate(), 22, true, true) : '',
                 'current' => $this->isCurrent(),
                 'overdue' => $this->isOverdue(),
                 'reached_date' => $this->getReachedDate(),
@@ -881,6 +890,7 @@
                 'issues_count' => $this->countIssues(),
                 'issues_count_open' => $this->countOpenIssues(),
                 'issues_count_closed' => $this->countClosedIssues(),
+                'can_edit' => Context::getUser()->canEditProjectDetails($this->getProject())
             ];
 
             if (count($returnJSON['virtual_percentage']['details'])) {
@@ -890,15 +900,17 @@
                 }
             }
 
+            $this->_populatePointsAndTime();
+            $returnJSON['hours'] = $this->_hours;
+            $returnJSON['points'] = $this->_points;
+            $returnJSON['hours_spent_formatted'] = $this->getHoursAndMinutesSpent(true, true);
+            $returnJSON['hours_estimated_formatted'] = $this->getHoursAndMinutesEstimated(true, true);
+
             if ($detailed) {
                 $returnJSON['issues'] = [];
                 foreach ($this->getIssues() as $issue) {
                     $returnJSON['issues'][] = $issue->toJSON(false);
                 }
-
-                $this->_populatePointsAndTime();
-                $returnJSON['hours'] = $this->_hours;
-                $returnJSON['points'] = $this->_points;
             }
 
             return $returnJSON;
@@ -1072,7 +1084,7 @@
                     break;
             }
 
-            return (int)$pct;
+            return (int) $pct;
         }
 
         /**

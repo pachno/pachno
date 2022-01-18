@@ -1,6 +1,15 @@
 import UI from "../helpers/ui";
 import Pachno from "./pachno";
 import $ from "jquery";
+import {Templates as IssueTemplates} from "./issue";
+const milestoneRoadmapTemplate = require('@/templates/milestone/roadmap.njk');
+const milestoneBacklogTemplate = require('@/templates/milestone/backlog.njk');
+const issuePlaceholderTemplate = require('@/templates/issue/placeholder.njk');
+
+export const Templates = {
+    roadmap: 'roadmap',
+    backlog: 'backlog'
+}
 
 class Milestone {
     constructor(json) {
@@ -12,73 +21,179 @@ class Milestone {
         this.scheduled_date = json.scheduled_date;
         this.percent_complete = json.percent_complete;
         this.issues_count = json.issues_count;
+        this.issues_count_open = json.issues_count_open;
+        this.issues_count_closed = json.issues_count_closed;
         this.url = json.url;
         this.backdrop_url = json.backdrop_url;
+        this.board_url = json.board_url;
+        this.mark_finished_url = json.mark_finished_url;
+        this.visible_in_roadmap = json.visible_roadmap;
+        this.reached = json.reached;
+        this.points = json.points;
+        this.hours = json.hours;
+        this.hours_spent_formatted = json.hours_spent_formatted;
+        this.hours_estimated_formatted = json.hours_estimated_formatted;
+        this.can_edit = json.can_edit;
+
+        this.template = undefined;
+
         /**
          * @type {Issue[]}
          */
         this.issues = [];
-        this.element = this.createHtmlElement();
+        this.element = undefined;
     }
 
-    createHtmlElement() {
-        let classes = [];
-        if (this.is_closed) classes.push('milestone-closed');
+    createHtmlElement(board_type) {
+        let html = '';
+        const options = { milestone: this, UI, T: Pachno.T, board_type };
 
-        let html = `
-<div class="milestone-container ${classes.join(',')}" data-milestone-id="${this.id}">
-    <div class="milestone milestone-card">
-        <div class="header trigger-backdrop" data-url="${this.backdrop_url}">
-            <span class="name">${this.name}</span>
-            <span class="info">
-                <span class="info-item">${UI.fa_image_tag('file-alt', {}, 'far')}&nbsp;${this.issues_count}</span>
-                <span class="icon indicator">${UI.fa_image_tag('spinner', {classes: 'fa-spin'})}</span>
-                <span class="icon expander">${UI.fa_image_tag('chevron-down')}</span>
-            </span>
-            <div class="percent-container">
-                <span class="percent-header">${Pachno.T.roadmap.percent_complete.replace('%percentage', this.percent_complete)}</span>
-                <span class="percent_unfilled">
-                    <span class="percent_filled" style="width: ${this.percent_complete}%;"></span>
-                </span>
-            </div>
-        </div>
-        <div class="issues"></div>
-    </div>
-</div>
-`;
-        const $html = $(html);
+        switch (this.template) {
+            case Templates.roadmap:
+                html = milestoneRoadmapTemplate(options);
+                break;
+            case Templates.backlog:
+                html = milestoneBacklogTemplate(options);
 
-        return $html;
+        }
+
+        return $(html);
     }
 
     addIssues(issues) {
+        let issue_template;
+        switch (this.template) {
+            case Templates.roadmap:
+                issue_template = IssueTemplates.card;
+                break;
+            case Templates.backlog:
+                issue_template = IssueTemplates.row;
+                break;
+        }
         for (const issue_json of issues) {
-            this.issues.push(Pachno.addIssue(issue_json));
+            this.addIssue(Pachno.addIssue(issue_json, undefined, issue_template));
         }
     }
 
     addIssue(issue) {
+        issue.processed = false;
         this.issues.push(issue);
     }
 
-    fetchIssues() {
-        const $milestone_card = this.element.find('.milestone-card');
-        $milestone_card.addClass('loading');
+    addOrRemove(issue, add = true) {
+        if (issue.milestone?.id == this.id) {
+            this.issues = this.issues.filter(existing_issue => existing_issue.id != issue.id);
+            issue.element.remove();
+        } else if (add) {
+            let found = this.issues.some(existing_issue => existing_issue.id == issue.id);
+            if (!found) {
+                this.issues.push(issue);
+            }
+            return true;
+        }
 
-        Pachno.fetch(this.url, { method: 'GET' })
-            .then((json) => {
-                this.addIssues(json.milestone.issues);
-                $milestone_card.removeClass('loading');
-                this.verifyIssues();
-            });
+        return false;
+    }
+
+    addPlaceholderIssues() {
+        const $milestone_issues = this.element.find('.milestone-issues');
+        const placeholderTemplate = issuePlaceholderTemplate();
+        $milestone_issues.html('');
+
+        for (let cc = 1; cc <= this.issues_count_open; cc += 1) {
+            $milestone_issues.append($(placeholderTemplate));
+        }
+    }
+
+    fetchIssues() {
+        return new Promise((resolve, reject) => {
+            const $milestone_card = this.element.find('.milestone-card');
+            if ($milestone_card.length) {
+                $milestone_card.addClass('loading');
+            }
+
+            this.issues = [];
+            this.addPlaceholderIssues();
+
+            Pachno.fetch(this.url, { method: 'GET' })
+                .then((json) => {
+                    this.addIssues(json.milestone.issues);
+                    if ($milestone_card.length) {
+                        $milestone_card.removeClass('loading');
+                    }
+                    this.verifyIssues();
+                    resolve();
+                }).catch(reject);
+        });
+    }
+
+    updateCounts = function () {
+        const milestone_id = this.id;
+        let sums = {
+            issues: {
+                open: 0,
+                closed: 0
+            },
+            estimates: {
+                points: 0,
+                hours: 0,
+                minutes: 0
+            },
+            spent: {
+                points: 0,
+                hours: 0,
+                minutes: 0
+            }
+        };
+
+        for (const issue of this.issues) {
+            sums.estimates.points += issue.estimated_time.values.points > 0;
+            sums.estimates.hours += issue.estimated_time.values.hours > 0;
+            sums.estimates.minutes += issue.estimated_time.values.minutes > 0;
+            sums.spent.points += issue.spent_time.values.points > 0;
+            sums.spent.hours += issue.spent_time.values.hours > 0;
+            sums.spent.minutes += issue.spent_time.values.minutes > 0;
+            if (issue.closed) {
+                sums.issues.closed += 1;
+            } else {
+                sums.issues.open += 1;
+            }
+        }
+
+        if (sums.issues.closed > 0) {
+            $('#milestone_' + milestone_id + '_issues_count').html(sums.issues.open + ' (' + sums.issues.closed + ')');
+        } else {
+            $('#milestone_' + milestone_id + '_issues_count').html(sums.issues.open);
+        }
+
+        if (sums.spent.points + sums.estimates.points > 0) {
+            $('#milestone_' + milestone_id + '_points_count').html(sums.spent.points + ' / ' + sums.estimates.points);
+        } else {
+            $('#milestone_' + milestone_id + '_points_count').html(0);
+        }
+
+        if (sums.spent.hours + sums.spent.minutes + sums.estimates.hours + sums.estimates.minutes > 0) {
+            let spent_hours_string = '' + sums.spent.hours;
+            let estimated_hours_string = '' + sums.estimates.hours;
+            if (sums.spent.minutes > 0) {
+                spent_hours_string += ':' + ((sums.spent.minutes < 10) ? '0' : '') + sums.spent.minutes;
+            }
+            if (sums.estimates.minutes > 0) {
+                estimated_hours_string += ':' + ((sums.estimates.minutes < 10) ? '0' : '') + sums.estimates.minutes;
+            }
+            $('#milestone_' + milestone_id + '_hours_count').html(spent_hours_string + ' / ' + estimated_hours_string);
+        } else {
+            $('#milestone_' + milestone_id + '_hours_count').html(0);
+        }
     }
 
     verifyIssues() {
+        this.element.find('.issues .placeholder').remove();
+        this.updateCounts();
         for (const issue of this.issues) {
             if (issue.processed) {
                 continue;
             }
-
             this.element.find('.issues').append(issue.element);
             issue.element.removeClass('whiteboard-issue');
             issue.element.addClass('milestone-issue');
@@ -86,7 +201,12 @@ class Milestone {
         }
     }
 
-    getHtmlElement() {
+    getHtmlElement(template, board_type) {
+        this.template = template;
+        if (this.element === undefined) {
+            this.element = this.createHtmlElement(board_type);
+        }
+
         return this.element;
     }
 }

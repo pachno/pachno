@@ -71,6 +71,8 @@
          * @Column(type="text")
          */
         protected $_description;
+        
+        protected $json;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -237,18 +239,20 @@
 
         public function toJSON($detailed = true)
         {
-            $json = [
-                'id' => $this->getID(),
-                'key' => $this->getKey(),
-                'name' => $this->getName(),
-                'icon' => $this->getIcon(),
-                'type' => $this->getType(),
-                'is_task' => $this->isTask(),
-                'fa_icon' => $this->getFontAwesomeIcon(),
-                'description' => $this->getDescription()
-            ];
+            if (!is_array($this->json)) {
+                $this->json = [
+                    'id' => $this->getID(),
+                    'key' => $this->getKey(),
+                    'name' => $this->getName(),
+                    'icon' => $this->getIcon(),
+                    'type' => $this->getType(),
+                    'is_task' => $this->isTask(),
+                    'fa_icon' => $this->getFontAwesomeIcon(),
+                    'description' => $this->getDescription()
+                ];
+            }
 
-            return $json;
+            return $this->json;
         }
 
         /**

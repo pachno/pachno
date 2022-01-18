@@ -1,36 +1,47 @@
-import Issue from "./issue";
+import Issue, {Templates} from "./issue";
 import Pachno from "./pachno";
 import {SwimlaneTypes} from "./board";
 
 class Swimlane {
-    constructor(json, board_id, milestone_id) {
+    constructor(json, board, milestone_id) {
         /**
          * @type {Issue[]}
          */
         this.issues = [];
         this.name = json.name;
-        this.board_id = board_id;
+
+        /**
+         * @type {Board}
+         */
+        this.board = board;
         this.selected_milestone_id = milestone_id;
         this.has_identifiables = (json.has_identifiables);
-        this.identifier_issue = (json.identifier_issue) ? Pachno.addIssue(json.identifier_issue, board_id) : undefined;
+        this.identifier_issue = (json.identifier_issue) ? Pachno.addIssue(json.identifier_issue, board.id, Templates.card) : undefined;
         this.identifier_grouping = json.identifier_grouping;
         this.identifier_type = json.identifier_type;
         this.identifiables = json.identifiables;
         this.identifier = json.identifier;
 
         for (const issue_json of json.issues) {
-            this.issues.push(Pachno.addIssue(issue_json, this.board_id));
+            this.issues.push(Pachno.addIssue(issue_json, this.board.id, Templates.card));
         }
     }
 
     addIssues(issues) {
         for (const issue_json of issues) {
-            this.issues.push(Pachno.addIssue(issue_json, this.board_id));
+            this.issues.push(Pachno.addIssue(issue_json, this.board.id, Templates.card));
         }
     }
 
     addIssue(issue) {
         this.issues.push(issue);
+    }
+
+    removeIssue(issue) {
+        if (this.has(issue)) {
+            this.issues = this.issues.filter(existing_issue => existing_issue.id != issue.id);
+            issue.element.remove();
+        }
     }
 
     addOrRemove(issue, add = true) {
@@ -66,8 +77,10 @@ class Swimlane {
             return true;
 
         switch (this.identifier_type) {
+            case SwimlaneTypes.EPICS:
+                return (this.board.epic_issue_type_id == issue.parent_issue_type_id);
             case SwimlaneTypes.ISSUES:
-                return (this.identifier_issue.id === issue.parent_issue_id);
+                return (this.identifier_issue.id == issue.parent_issue_id);
             case SwimlaneTypes.GROUPING:
             case SwimlaneTypes.EXPEDITE:
                 // debugger;

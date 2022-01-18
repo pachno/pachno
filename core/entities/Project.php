@@ -424,6 +424,8 @@
         protected $_dashboards = null;
 
         protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours'];
+        
+        protected $json;
 
         public static function getValidSubprojects(Project $project)
         {
@@ -2410,44 +2412,46 @@
 
         public function toJSON($detailed = true)
         {
-            $jsonArray = [
-                'id' => $this->getID(),
-                'key' => $this->getKey(),
-                'name' => $this->getName(),
-                'href' => framework\Context::getRouting()->generate('project_dashboard', ['project_key' => $this->getKey()]),
-                'deleted' => $this->isDeleted(),
-                'archived' => $this->isArchived(),
-                'icon' => $this->getIconName(),
-                'description' => $this->getDescription(),
-                'url_documentation' => $this->getDocumentationURL(),
-                'url_homepage' => $this->getHomepage(),
-                'url_wiki' => $this->getWikiURL(),
-                'prefix_used' => $this->doesUsePrefix(),
-                'prefix' => $this->getPrefix(),
-                'parent_id' => $this->hasParent() ? $this->getParent()->getID() : null,
-                'leader' => $this->hasLeader() ? $this->getLeader()->toJSON(false) : null,
-                'owner' => $this->hasOwner() ? $this->getOwner()->toJSON(false) : null,
-                'qa_responsible' => $this->hasQaResponsible() ? $this->getQaResponsible()->toJSON(false) : null,
-                'client' => $this->hasClient() ? $this->getClient()->toJSON(false) : null,
-                'released' => $this->isReleased(),
-                'release_date' => $this->getReleaseDate(),
-                'settings' => [
-                    'workflow_scheme' => $this->hasWorkflowScheme() ? $this->getWorkflowScheme()->toJSON() : null,
-                    'issuetype_scheme' => $this->getIssuetypeScheme()->toJSON(),
-                    'builds_enabled' => $this->isBuildsEnabled(),
-                    'editions_enabled' => $this->isEditionsEnabled(),
-                    'components_enabled' => $this->isComponentsEnabled(),
-                    'allow_freelancing' => $this->useStrictWorkflowMode(),
-                ]
-            ];
-
-            if ($detailed) {
-                $jsonArray['issues_count'] = $this->countAllIssues();
-                $jsonArray['issues_count_open'] = $this->countAllOpenIssues();
-                $jsonArray['issues_count_closed'] = $this->countAllClosedIssues();
+            if (!is_array($this->json)) {
+                $this->json = [
+                    'id' => $this->getID(),
+                    'key' => $this->getKey(),
+                    'name' => $this->getName(),
+                    'href' => framework\Context::getRouting()->generate('project_dashboard', ['project_key' => $this->getKey()]),
+                    'deleted' => $this->isDeleted(),
+                    'archived' => $this->isArchived(),
+                    'icon' => $this->getIconName(),
+                    'description' => $this->getDescription(),
+                    'url_documentation' => $this->getDocumentationURL(),
+                    'url_homepage' => $this->getHomepage(),
+                    'url_wiki' => $this->getWikiURL(),
+                    'prefix_used' => $this->doesUsePrefix(),
+                    'prefix' => $this->getPrefix(),
+                    'parent_id' => $this->hasParent() ? $this->getParent()->getID() : null,
+                    'leader' => $this->hasLeader() ? $this->getLeader()->toJSON(false) : null,
+                    'owner' => $this->hasOwner() ? $this->getOwner()->toJSON(false) : null,
+                    'qa_responsible' => $this->hasQaResponsible() ? $this->getQaResponsible()->toJSON(false) : null,
+                    'client' => $this->hasClient() ? $this->getClient()->toJSON(false) : null,
+                    'released' => $this->isReleased(),
+                    'release_date' => $this->getReleaseDate(),
+                    'settings' => [
+                        'workflow_scheme' => $this->hasWorkflowScheme() ? $this->getWorkflowScheme()->toJSON() : null,
+                        'issuetype_scheme' => $this->getIssuetypeScheme()->toJSON(),
+                        'builds_enabled' => $this->isBuildsEnabled(),
+                        'editions_enabled' => $this->isEditionsEnabled(),
+                        'components_enabled' => $this->isComponentsEnabled(),
+                        'allow_freelancing' => $this->useStrictWorkflowMode(),
+                    ]
+                ];
             }
 
-            return $jsonArray;
+            if ($detailed) {
+                $this->json['issues_count'] = $this->countAllIssues();
+                $this->json['issues_count_open'] = $this->countAllOpenIssues();
+                $this->json['issues_count_closed'] = $this->countAllClosedIssues();
+            }
+
+            return $this->json;
         }
 
         /**

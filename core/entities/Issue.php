@@ -4558,19 +4558,19 @@
                 'backdrop_url' => $this->getBackdropUrl(),
                 'save_url' => $this->getSaveUrl(),
                 'card_url' => $this->getCardUrl(),
-                'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
-                'assigned_to' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
-                'owned_by' => ($this->getOwner() instanceof common\Identifiable) ? $this->getOwner()->toJSON() : null,
-                'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
-                'category' => ($this->getCategory() instanceof common\Identifiable) ? $this->getCategory()->toJSON() : null,
-                'priority' => ($this->getPriority() instanceof common\Identifiable) ? $this->getPriority()->toJSON() : null,
-                'severity' => ($this->getSeverity() instanceof common\Identifiable) ? $this->getSeverity()->toJSON() : null,
-                'milestone' => ($this->getMilestone() instanceof common\Identifiable) ? $this->getMilestone()->toJSON() : null,
+                'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON(false) : null,
+                'assigned_to' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON(false) : null,
+                'owned_by' => ($this->getOwner() instanceof common\Identifiable) ? $this->getOwner()->toJSON(false) : null,
+                'status' => ($this->getStatus() instanceof Status) ? $this->getStatus()->toJSON(false) : null,
+                'category' => ($this->getCategory() instanceof Category) ? $this->getCategory()->toJSON(false) : null,
+                'priority' => ($this->getPriority() instanceof Priority) ? $this->getPriority()->toJSON(false) : null,
+                'severity' => ($this->getSeverity() instanceof Severity) ? $this->getSeverity()->toJSON(false) : null,
+                'milestone' => ($this->getMilestone() instanceof Milestone) ? $this->getMilestone()->toSimpleJSON() : null,
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
-                'number_of_subscribers' => count($this->getSubscribers()),
-                'number_of_child_issues' => count($this->getChildIssues()),
-                'number_of_affected_items' => $this->getNumberOfAffectedItems(),
+                'number_of_subscribers' => 0, // count($this->getSubscribers()),
+                'number_of_child_issues' => 0, //count($this->getChildIssues()),
+                'number_of_affected_items' => 0, //$this->getNumberOfAffectedItems(),
                 'tags' => [],
                 'transitions' => [],
                 'available_statuses' => [],
@@ -4580,47 +4580,52 @@
                     'editions' => [],
                 ]
             ];
-
-            foreach ($this->getBuilds() as $data) {
-                $json['affected_items']['builds'][] = [
-                    'id' => $data['a_id'],
-                    'build' => $data['build']->toJSON()
-                ];
+            
+            if ($json['number_of_affected_items'] > 0) {
+                foreach ($this->getBuilds() as $data) {
+                    $json['affected_items']['builds'][] = [
+                        'id' => $data['a_id'],
+                        'build' => $data['build']->toJSON()
+                    ];
+                }
+    
+                foreach ($this->getComponents() as $data) {
+                    $json['affected_items']['components'][] = [
+                        'id' => $data['a_id'],
+                        'component' => $data['component']->toJSON()
+                    ];
+                }
+    
+                foreach ($this->getEditions() as $data) {
+                    $json['affected_items']['editions'][] = [
+                        'id' => $data['a_id'],
+                        'edition' => $data['edition']->toJSON()
+                    ];
+                }
             }
-
-            foreach ($this->getComponents() as $data) {
-                $json['affected_items']['components'][] = [
-                    'id' => $data['a_id'],
-                    'component' => $data['component']->toJSON()
-                ];
-            }
-
-            foreach ($this->getEditions() as $data) {
-                $json['affected_items']['editions'][] = [
-                    'id' => $data['a_id'],
-                    'edition' => $data['edition']->toJSON()
-                ];
-            }
-
+    
             foreach ($this->getAvailableStatuses() as $status) {
                 $json['available_statuses'][] = $status->toJSON();
             }
-
+    
             foreach ($this->getAvailableWorkflowTransitions() as $transition) {
                 $json['transitions'][] = $transition->toJSON(false);
             }
-
+    
             if ($this->isChildIssue()) {
                 foreach ($this->getParentIssues() as $parentIssue) {
                     $json['parent_issue_id'] = $parentIssue->getID();
+                    $json['parent_issue_type_id'] = $parentIssue->getIssueType()->getID();
                 }
             }
 
-            foreach ($this->getTags() as $tag) {
-                $json['tags'][] = $tag->toJSON(false);
-            }
-
             if ($detailed) {
+                $json['number_of_subscribers'] = count($this->getSubscribers());
+                
+                foreach ($this->getTags() as $tag) {
+                    $json['tags'][] = $tag->toJSON(false);
+                }
+    
                 $fields = DatatypeBase::getAvailableFields();
                 $visible_fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());
 

@@ -103,6 +103,8 @@
                 $milestone = Milestones::getTable()->selectById($request['milestone_id']);
             } else {
                 $milestone = new entities\Milestone();
+                $milestone->setVisibleIssues();
+                $milestone->setVisibleRoadmap();
             }
             if (!$request['name'])
                 throw new \Exception($this->getI18n()->__('You must provide a valid milestone name'));
@@ -111,6 +113,8 @@
             $milestone->setProject($this->selected_project);
             $milestone->setStarting((bool) $request['is_starting']);
             $milestone->setScheduled((bool) $request['is_scheduled']);
+            $milestone->setVisibleRoadmap((bool) $request->getParameter('visibility_roadmap', true));
+            $milestone->setVisibleIssues((bool) $request->getParameter('visibility_issues', true));
 
             if ($request['is_starting'] && $request['is_scheduled']) {
                 $milestone->setStartingDate($request['dates'][0]);
@@ -197,19 +201,18 @@
         public function runSortMilestones(framework\Request $request)
         {
             $this->forward403unless($this->getUser()->canManageProjectReleases($this->selected_project));
-            $milestones = $request->getParameter('milestone_ids', []);
+            $milestone_ids = $request->getParameter('milestone_ids', '');
+            $milestones = explode(',', $milestone_ids);
 
             try {
-                if (is_array($milestones)) {
-                    foreach ($milestones as $order => $milestone_id) {
-                        $milestone = Milestones::getTable()->selectByID($milestone_id);
+                foreach ($milestones as $order => $milestone_id) {
+                    $milestone = Milestones::getTable()->selectByID((int) $milestone_id);
 
-                        if ($milestone->getProject()->getID() != $this->selected_project->getID())
-                            continue;
+                    if ($milestone->getProject()->getID() != $this->selected_project->getID())
+                        continue;
 
-                        $milestone->setOrder($order);
-                        $milestone->save();
-                    }
+                    $milestone->setOrder($order);
+                    $milestone->save();
                 }
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);

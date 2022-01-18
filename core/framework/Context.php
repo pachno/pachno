@@ -291,6 +291,7 @@
             $load_time = self::getLoadtime();
             $session_time = self::$_session_initialization_time;
             if (Core::isInitialized()) {
+//                var_dump(Core::getSQLHits());die();
                 $debug_summary['db']['queries'] = Core::getSQLHits();
                 $debug_summary['db']['timing'] = Core::getSQLTiming();
                 $debug_summary['db']['objectpopulation'] = Core::getObjectPopulationHits();
@@ -1760,7 +1761,7 @@
             }
             Logging::log('Done Loading Configuration', 'core');
         }
-
+        
         public static function initializeSession()
         {
             Logging::log('Initializing session');
@@ -2153,7 +2154,7 @@
                             $action_posttime = $time[1] + $time[0];
                             self::visitPartial("{$controllerClassName}::" . self::$_current_controller_method . "()", $action_posttime - $action_pretime);
                         } else {
-                            //session_write_close();
+                            session_write_close();
                         }
                     }
 

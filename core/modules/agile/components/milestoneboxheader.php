@@ -62,7 +62,7 @@
                 <button class="dropper secondary icon"><?= fa_image_tag('cog'); ?></button>
                 <div class="dropdown-container" id="milestone_<?= $milestone->getID(); ?>_moreactions">
                     <div class="list-mode">
-                        <a href="<?= make_url('project_milestone_details', array('project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID())); ?>" class="list-item">
+                        <a href="<?php //echo make_url('project_milestone_details', array('project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID())); ?>" class="list-item">
                             <span class="icon"><?= fa_image_tag('columns'); ?></span>
                             <span class="name"><?= __('Show overview'); ?></span>
                         </a>

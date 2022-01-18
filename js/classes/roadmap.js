@@ -2,7 +2,7 @@ import $ from "jquery";
 import Pachno from "../classes/pachno";
 import { watchIssuePopupForms } from "../helpers/issues";
 
-import Milestone from "./milestone";
+import Milestone, {Templates as MilestoneTemplates} from "./milestone";
 
 class Roadmap {
     constructor(options) {
@@ -66,7 +66,7 @@ class Roadmap {
                     continue;
                 }
 
-                $milestones_container.append(milestone.getHtmlElement());
+                $milestones_container.append(milestone.getHtmlElement(MilestoneTemplates.roadmap));
                 if (!milestone.is_closed) {
                     milestone.fetchIssues();
                 }

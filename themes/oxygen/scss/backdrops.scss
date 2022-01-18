@@ -196,12 +196,13 @@
             }
           }
 
-          .content {
+          > .content {
             flex: 1 1 auto;
             padding: 1em;
             box-sizing: border-box;
             background-color: #FFF;
             border-radius: .75em 0 0 0;
+            max-width: calc(100% - 15em);
 
             &.hidden {
               display: none;
@@ -209,11 +210,13 @@
           }
 
           &.sidebar-right {
-            .content {
+            > .content {
               border-radius: 0 .75em 0 0;
+              max-width: calc(100% - 22em);
 
               &.no-sidebar {
                 border-radius: .75em .75em 0 0;
+                max-width: 100%;
               }
             }
 

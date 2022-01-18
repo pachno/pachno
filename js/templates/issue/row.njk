@@ -1,0 +1,34 @@
+<div id="issue_{{ issue.id }}" class="trigger-backdrop milestone-issue {% if issue.closed %}issue_closed{% endif %} {% if issue.blocking %}issue_blocking{% endif %} draggable" data-url="{{ issue.card_url }}" data-issue-id="{{ issue.id }}">
+    <div class="issue-link-container">
+        <a href="{{ issue.url }}" target="_blank">
+            <span class="issue-number">{{ issue.issue_no }}</span>
+            <span class="issue-title" data-dynamic-field-value data-field="title" data-issue-id="{{ issue.id }}">{{ issue.title }}</span>
+        </a>
+        <div class="issue-info">
+            {% for build in issue.affected_items.builds %}
+                <div class="issue_release">{{ build.version }}</div>
+            {% endfor %}
+            {% for component in issue.affected_items.components %}
+                <div class="issue_component">{{ component.version }}</div>
+            {% endfor %}
+            <div class="assignee-container">
+                <span class="assignee" data-dynamic-field-value data-field="assigned_to" data-issue-id="{{ issue.id }}">{% if (issue.assigned_to and issue.assigned_to.type == "user") %}<span class="avatar medium"><img src="{{ issue.assigned_to.avatar_url_small }}"></span>{% endif %}</span>
+            </div>
+            <span class="attachments {% if issue.number_of_child_issues == 0 %}hidden{% endif %}" data-dynamic-field-value data-field="number_of_child_issues" data-issue-id="{{ issue.id }}">{{ UI.fa_image_tag('tasks') | safe }}<span class="value">{{ issue.number_of_child_issues }}</span></span>
+            <span class="attachments {% if issue.number_of_files == 0 %}hidden{% endif %}" data-dynamic-field-value data-field="number_of_files" data-issue-id="{{ issue.id }}">{{ UI.fa_image_tag('paperclip') | safe }}<span class="value">{{ issue.number_of_files }}</span></span>
+            <span class="attachments {% if issue.number_of_comments == 0 %}hidden{% endif %}" data-dynamic-field-value data-field="number_of_comments" data-issue-id="{{ issue.id }}">{{ UI.fa_image_tag('comments', [], 'far') | safe }}<span class="value">{{ issue.number_of_comments }}</span></span>
+            <span class="attachments {% if not issue.priority %}hidden{% endif %}" data-dynamic-field-value data-field="priority-icon" data-issue-id="${this.id}">{% if issue.priority %}<span class="priority priority_{{ issue.priority.itemdata }}" title="{{ issue.priority.name }}">{{ UI.fa_image_tag(issue.priority.icon.name, { classes: 'priority-icon' }, issue.priority.icon.style) | safe }}</span>{% endif %}</span>
+            <span class="status-badge" style="background-color: {{ issue.status.color }}; color: {{ issue.status.text_color }};" data-dynamic-field-value data-field="status" data-issue-id="{{ issue.id }}"><span>{{ issue.status.name }}</span></span>
+        </div>
+        <div class="dropper-container">
+            <button class="button icon dropper dynamic_menu_link" type="button">{{ UI.fa_image_tag('ellipsis-v') | safe }}</button>
+            <div class="dropdown-container dynamic_menu" data-menu-url="{{ issue.more_actions_url }}">
+                <div class="list-mode">
+                    <div class="list-item disabled">
+                        <span class="icon">{{ UI.fa_image_tag('spinner', {'classes': 'fa-spin'}) | safe }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

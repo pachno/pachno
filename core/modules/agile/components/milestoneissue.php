@@ -17,7 +17,7 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
 ?>>
     <div class="planning_indicator" id="<?php echo $parent_prefix; ?>issue_<?php echo $issue->getID(); ?>_indicator" style="display: none;"><?php echo image_tag('spinning_16.gif'); ?></div>
     <div id="<?php echo $parent_prefix .'issue_'. $issue->getID(); ?>" class="issue-container <?php if ($issue->isClosed()) echo 'issue_closed'; ?> <?php if ($issue->isBlocking()) echo 'blocking'; ?> draggable" data-estimated-points="<?php echo $issue->getEstimatedPoints(); ?>" data-estimated-hours="<?php echo $issue->getEstimatedHours(); ?>" data-estimated-minutes="<?php echo $issue->getEstimatedMinutes(); ?>" data-spent-points="<?php echo $issue->getSpentPoints(); ?>" data-spent-hours="<?php echo $issue->getSpentHours(); ?>" data-spent-minutes="<?php echo $issue->getSpentMinutes(); ?>" data-last-updated="<?php echo $issue->getLastUpdatedTime(); ?>">
-        <?php include_component('agile/colorpicker', array('issue' => $issue)); ?>
+        <?php // include_component('agile/colorpicker', array('issue' => $issue)); ?>
         <div class="priority priority_<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getValue() : 0; ?>" title="<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? __($issue->getPriority()->getName()) : __('Priority not set'); ?>"><?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getAbbreviation() : '-'; ?></div>
         <div class="assignee-container">
             <?php if ($issue->isAssigned()): ?>

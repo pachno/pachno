@@ -34,7 +34,7 @@
     <?php endif; ?>
     <script type="text/javascript">
         Pachno.on(Pachno.EVENTS.ready, function () {
-            const issue = Pachno.addIssue(<?= json_encode($json, JSON_THROW_ON_ERROR); ?>, undefined, false);
+            const issue = Pachno.addIssue(<?= json_encode($json, JSON_THROW_ON_ERROR); ?>);
             issue.allowShortcuts(<?= json_encode($json['fields'], JSON_THROW_ON_ERROR); ?>);
             issue.updateVisibleValues();
         });

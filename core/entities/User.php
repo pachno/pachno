@@ -1897,6 +1897,35 @@
         }
 
         /**
+         * Return if the user can moderate comments
+         *
+         * @param $comment_type
+         * @param Project|null $project
+         * @return boolean
+         */
+        public function canModerateComments($comment_type, Project $project = null): bool
+        {
+            if ($project instanceof Project && $project->isArchived()) {
+                return false;
+            }
+
+            switch ($comment_type) {
+                case Comment::TYPE_ARTICLE:
+                    if ($project instanceof Project) {
+                        return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project, true);
+                    }
+
+                    return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+                case Comment::TYPE_ISSUE:
+                    return $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project, true);
+                case Comment::TYPE_COMMIT:
+                    return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project, true);
+            }
+
+            return false;
+        }
+
+        /**
          * @param Project|null $project
          * @return bool
          */

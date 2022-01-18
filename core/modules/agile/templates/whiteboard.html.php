@@ -1,15 +1,23 @@
 <?php
 
-    /** @var AgileBoard $board */
     use pachno\core\entities\AgileBoard;
     use pachno\core\entities\Milestone;
+    use pachno\core\entities\Project;
+    use pachno\core\framework\Response;
+    
+    /**
+     * @var AgileBoard $board
+     * @var Milestone $selected_milestone
+     * @var Project $selected_project
+     * @var Response $pachno_response
+     */
 
-    $pachno_response->setTitle(__('"%project_name" agile whiteboard', array('%project_name' => $selected_project->getName())));
+    $pachno_response->setTitle(__('"%project_name" agile whiteboard', ['%project_name' => $selected_project->getName()]));
 
 ?>
 <div class="content-with-sidebar">
     <?php include_component('project/sidebar', ['dashboard' => __('Releases'), 'collapsed' => true]); ?>
-    <div id="project_planning" class="project_info_container boards-container whiteboard <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'type-generic'; if ($board->getType() == AgileBoard::TYPE_SCRUM) echo 'type-scrum'; if ($board->getType() == AgileBoard::TYPE_KANBAN) echo 'type-kanban'; ?>" data-last-refreshed="<?= time(); ?>" data-poll-url="<?= make_url('agile_poll', array('project_key' => $selected_project->getKey(), 'board_id' => $board->getID(), 'mode' => 'whiteboard')); ?>" data-board-id="<?= $board->getID(); ?>">
+    <div id="project_planning" class="project_info_container boards-container whiteboard <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'type-generic'; if ($board->getType() == AgileBoard::TYPE_SCRUM) echo 'type-scrum'; if ($board->getType() == AgileBoard::TYPE_KANBAN) echo 'type-kanban'; ?>" data-last-refreshed="<?= time(); ?>" data-poll-url="<?= make_url('agile_poll', ['project_key' => $selected_project->getKey(), 'board_id' => $board->getID(), 'mode' => 'whiteboard']); ?>" data-board-id="<?= $board->getID(); ?>">
         <div class="planning_indicator" id="planning_indicator"><?= image_tag('spinning_30.gif'); ?></div>
         <div class="top-search-filters-container" id="project_planning_action_strip">
             <div class="header">
@@ -19,6 +27,20 @@
                 <div class="stripe-container">
                     <div class="stripe"></div>
                 </div>
+                <div class="fancy-tabs">
+                    <a class="tab" href="<?= make_url('agile_board', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>">
+                        <span class="icon"><?= fa_image_tag('stream'); ?></span>
+                        <span class="name label-generic"><?= __('Planning'); ?></span>
+                        <span class="name label-scrum"><?= __('Backlog'); ?></span>
+                        <span class="name label-kanban"><?= __('Backlog'); ?></span>
+                    </a>
+                    <a class="tab selected" href="<?= make_url('agile_whiteboard', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>">
+                        <span class="icon"><?= fa_image_tag('columns'); ?></span>
+                        <span class="name label-generic"><?= __('Whiteboard'); ?></span>
+                        <span class="name label-scrum"><?= __('Ongoing sprint'); ?></span>
+                        <span class="name label-kanban"><?= __('Ongoing work'); ?></span>
+                    </a>
+                </div>
             </div>
             <div class="search-and-filters-strip">
                 <div class="search-strip">
@@ -27,18 +49,13 @@
                             <label><span class="label-generic"><?= __('Milestone'); ?></span><span class="label-scrum"><?= __('Sprint'); ?></span><span class="label-kanban"><?= __('Milestone'); ?></span></label>
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                            <div class="dropdown-container list-mode" id="selected_milestone_input" data-status-url="<?= make_url('agile_whiteboardmilestonestatus', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'mode' => 'getmilestonestatus')); ?>">
+                            <div class="dropdown-container list-mode" id="selected_milestone_input" data-status-url="<?= make_url('agile_whiteboardmilestonestatus', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'mode' => 'getmilestonestatus']); ?>">
                                 <input type="radio" name="selected_milestone" id="selected_milestone_0_generic" class="fancy-checkbox" value="0" checked>
-                                <label for="selected_milestone_0_generic" class="list-item label-generic">
+                                <label for="selected_milestone_0_generic" class="list-item">
                                     <span class="icon"><?= fa_image_tag('money-check'); ?></span>
-                                    <span class="name value"><?= __('Any milestones'); ?></span>
+                                    <span class="name value"><?= __('Issues not assigned to a milestone'); ?></span>
                                 </label>
-                                <div class="list-item separator label-generic"></div>
-                                <input type="radio" name="selected_milestone" id="selected_milestone_0_kanban" class="fancy-checkbox" value="0" checked>
-                                <label for="selected_milestone_0_kanban" class="list-item label-kanban">
-                                    <span class="icon"><?= fa_image_tag('money-check'); ?></span>
-                                    <span class="name value"><?= __('Any milestones'); ?></span>
-                                </label>
+                                <div class="list-item separator"></div>
                                 <div class="list-item separator label-kanban" id="milestone-list-separator"></div>
                                 <div class="list-item disabled" id="milestone-list-no-milestones" style="<?php if (count($board->getMilestones())) echo 'display: none;'; ?>">
                                     <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
@@ -48,7 +65,11 @@
                                     <?php include_component('agile/milestonelistitem', ['milestone' => $milestone, 'board' => $board, 'selected_milestone' => $selected_milestone]); ?>
                                 <?php endforeach; ?>
                                 <div class="list-item separator"></div>
-                                <a class="list-item label-scrum" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                                <a class="list-item label-generic label-kanban" href="<?= make_url('agile_board', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>">
+                                    <?= fa_image_tag('stream', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Plan a milestone from the backlog'); ?></span>
+                                </a>
+                                <a class="list-item label-scrum" href="<?= make_url('agile_board', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>">
                                     <?= fa_image_tag('stream', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Plan a sprint from the backlog'); ?></span>
                                 </a>
@@ -67,6 +88,17 @@
         </div>
         <div id="planning_whiteboard" class="whiteboard-columns-container <?php if (!count($board->getColumns())) echo 'initialized'; ?>">
             <div class="planning_indicator" id="whiteboard_indicator"><?= image_tag('spinning_30.gif'); ?></div>
+            <div id="milestone-issues-unhandled" class="message-box type-warning hidden">
+                <?= fa_image_tag('exclamation-circle', ['class' => 'icon']); ?>
+                <span class="message"><span><?= __('%number_of_issues in this milestone are not visible because their status is not assigned to a column', ['%number_of_issues' => '<span class="count-badge">' . __('%number_of_issues issue(s)', ['%number_of_issues' => '<span class="number_of_issues"></span>']) . '</span>']); ?></span></span>
+            </div>
+            <div id="milestone-issues-unconfigured" class="message-box type-warning hidden">
+                <?= fa_image_tag('exclamation-circle', ['class' => 'icon']); ?>
+                <span class="message"><span><?= __('%number_of_issues in this milestone are not visible because of the way the board is configured', ['%number_of_issues' => '<span class="count-badge">' . __('%number_of_issues issue(s)', ['%number_of_issues' => '<span class="number_of_issues"></span>']) . '</span>']); ?></span></span>
+                <span class="actions">
+                    <button class="button secondary icon trigger-backdrop settings" type="button" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'agileboard', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID()]); ?>" data-docked-backdrop="right"><?= __('Configure board'); ?></button>
+                </span>
+            </div>
             <div id="onboarding-no-milestones" class="onboarding hidden">
                 <div class="image-container">
                     <?= image_tag('/unthemed/onboarding_no_milestones.png', [], true); ?>
@@ -83,7 +115,7 @@
                     </button>
                     <div class="dropdown-container from-bottom from-center">
                         <div class="list-mode">
-                            <a class="list-item" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                            <a class="list-item" href="<?= make_url('agile_board', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>">
                                 <?= fa_image_tag('stream', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Plan a sprint from the backlog'); ?></span>
                             </a>
@@ -100,8 +132,8 @@
                     <?= image_tag('/unthemed/onboarding_no_active_sprint.png', [], true); ?>
                 </div>
                 <div class="helper-text">
-                    <div class="title"><?= __('Create a sprint for this period'); ?></div>
-                    <span><?= __('There is no active sprint for today'); ?></span>
+                    <div class="title"><?= __('There is no active sprint for today'); ?></div>
+                    <span><?= __('Create a sprint for this period to add cards and columns'); ?></span>
                 </div>
                 <div class="button-container">
                     <div class="dropper-container">
@@ -112,7 +144,7 @@
                         </button>
                         <div class="dropdown-container from-bottom from-center">
                             <div class="list-mode">
-                                <a class="list-item" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                                <a class="list-item multiline" href="<?= make_url('agile_board', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>">
                                     <?= fa_image_tag('stream', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Set up a sprint from the backlog'); ?></span>
                                 </a>
@@ -143,6 +175,7 @@
                     <div class="card form-container">
                         <form method="POST" action="<?= make_url('agile_whiteboardcolumn', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'column_id' => 0]); ?>" id="add-first-column-form" data-simple-submit>
                             <div class="form-row">
+                                <input type="hidden" name="milestone_id" value="0" id="add_first_column_milestone_id" class="add_column_milestone_id">
                                 <input type="text" name="name" id="first-column-name" placeholder="<?= __('Give your column a name, like "Todo"'); ?>">
                             </div>
                             <div class="form-row">
