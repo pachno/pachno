@@ -1,0 +1,19 @@
+<div class="milestone-container {% if milestone.closed %}milestone-closed{% endif %}" data-milestone-id="{{ milestone.id }}">
+    <div class="milestone milestone-card">
+        <div class="header trigger-backdrop" data-url="{{ milestone.backdrop_url }}">
+            <span class="name">{{ milestone.name }}</span>
+            <span class="info">
+                <span class="info-item">{{ UI.fa_image_tag('file-alt', {}, 'far') | safe }}&nbsp;{{ milestone.issues_count }}</span>
+                <span class="icon indicator">{{ UI.fa_image_tag('spinner', {classes: 'fa-spin'}) | safe }}</span>
+                <span class="icon expander">{{ UI.fa_image_tag('chevron-down') | safe }}</span>
+            </span>
+            <div class="percent-container">
+                <span class="percent-header">{{ T.roadmap.percent_complete.replace('%percentage', milestone.percent_complete) }}</span>
+                <span class="percent_unfilled">
+                    <span class="percent_filled" style="width: {{ milestone.percent_complete }}%;"></span>
+                </span>
+            </div>
+        </div>
+        <div class="issues"></div>
+    </div>
+</div>
