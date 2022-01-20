@@ -1018,7 +1018,12 @@
          */
         public function runAccountChangePassword(Request $request)
         {
-            $this->forward403unless($this->getUser()->hasPageAccess('account'));
+            if ($this->getUser()->isGuest()) {
+                $this->getResponse()->setHttpStatus(400);
+    
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__("You're not allowed to change your password.")]);
+            }
+            
             if ($request->isPost()) {
                 if ($this->getUser()->isGuest()) {
                     $this->getResponse()->setHttpStatus(400);
@@ -1044,7 +1049,7 @@
                 $this->getUser()->save();
                 framework\Context::clearMessage('auto_password');
 
-                return $this->renderJSON(['title' => framework\Context::getI18n()->__('Your new password has been saved')]);
+                return $this->renderJSON(['message' => framework\Context::getI18n()->__('Your new password has been saved')]);
             }
         }
 

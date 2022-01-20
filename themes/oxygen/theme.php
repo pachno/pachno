@@ -13,7 +13,6 @@
     #header_banner { background-image: url('<?= image_url('mobile_header_banner.png'); ?>'); }
     #openid-signin-button.persona-button span:after{ background-image: url('<?php echo $webroot; ?>images/openid_providers.small/openid.ico.png'); }
     #regular-signin-button.persona-button span:after{ background-image: url('<?php echo $webroot; ?>images/footer_logo.png'); }
-    #forgot_password_username { background-image: url('<?php echo $webroot; ?>images/user_mono.png'); }
 
     <?php /*
     .markItUp .markItUpButton1 a { background-image:url('<?php echo $webroot; ?>images/markitup/h1.png'); }
