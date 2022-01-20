@@ -203,7 +203,10 @@ export const fetchHelper = function (url, options) {
                                 }
                             }
                             _reject(json);
-                        }).catch(() => _reject(response));
+                        }).catch((error) => {
+                            console.error('Error in response from fetch', error);
+                            _reject(response);
+                        });
                     }
                 });
             })
