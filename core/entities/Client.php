@@ -411,5 +411,24 @@
         {
             tables\Permissions::getTable()->removeClientPermission($this->getID(), $permission_name, $module, $target_id);
         }
-
+    
+        public function toJSON($detailed = true)
+        {
+            $returnJSON = [
+                'id' => $this->getID(),
+                'name' => $this->getName(),
+                'type' => 'client' // This is for distinguishing of assignees & similar "ambiguous" values in JSON.
+            ];
+        
+            if ($detailed) {
+                $returnJSON['member_count'] = $this->getNumberOfMembers();
+                $returnJSON['members'] = [];
+                foreach ($this->getMembers() as $member) {
+                    $returnJSON['members'][] = $member->toJSON();
+                }
+            }
+        
+            return $returnJSON;
+        }
+    
     }

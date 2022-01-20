@@ -1045,11 +1045,11 @@
                     }
                 }
 
-                if ($request->hasParameter('client')) {
-                    if ($request['client'] == 0) {
+                if ($request->hasParameter('client_id')) {
+                    if ($request['client_id'] == 0) {
                         $this->selected_project->setClient(null);
                     } else {
-                        $this->selected_project->setClient(tables\Clients::getTable()->selectById($request['client']));
+                        $this->selected_project->setClient(tables\Clients::getTable()->selectById($request['client_id']));
                     }
                 }
 
