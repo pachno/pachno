@@ -242,6 +242,13 @@ class Backlog {
             $('#milestone_' + $(this).val() + '_issues').toggleClass('collapsed');
         });
 
+        $body.off('click', '.trigger-refresh-issues');
+        $body.on('click', '.trigger-refresh-issues', function (event) {
+            const milestone = backlog.getMilestone($(this.data('milestone-id')));
+            milestone.clearCounts();
+            milestone.fetchIssues();
+        });
+
         $body.off('click', '.trigger-toggle-closed-issues');
         $body.on('click', '.trigger-toggle-closed-issues', function (event) {
             $('.milestone-issues').toggleClass('hide-closed');

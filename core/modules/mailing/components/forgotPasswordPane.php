@@ -1,6 +1,8 @@
 <?php
     
+    use pachno\core\framework\Context;
     use pachno\core\framework\Settings;
+    use pachno\core\helpers\TextParser;
 
 ?>
 <div class="backdrop_box avatar-header hidden" id="forgot_password_container">
@@ -12,10 +14,10 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
-            <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
-                <?php echo \pachno\core\helpers\TextParser::parseText(\pachno\core\framework\Settings::get('forgot_message'), false, null, array('embedded' => true)); ?>
+            <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
+                <?php echo TextParser::parseText(Settings::get('forgot_message'), false, null, array('embedded' => true)); ?>
             <?php else: ?>
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_forgot'); ?>" method="post" id="forgot_password_form" data-simple-submit>
+                <form accept-charset="<?php echo Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_forgot'); ?>" method="post" id="forgot_password_form" data-simple-submit>
                     <div class="form-row">
                         <div class="helper-text">
                             <div class="image-container"><?= image_tag('/unthemed/onboarding_forgot_password.png', [], true); ?></div>

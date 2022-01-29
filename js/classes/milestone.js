@@ -132,7 +132,13 @@ class Milestone {
         });
     }
 
-    updateCounts = function () {
+    clearCounts() {
+        $('#milestone_' + this.id + '_points_count').html('-');
+        $('#milestone_' + this.id + '_issues_count').html('-');
+        $('#milestone_' + this.id + '_hours_count').html('-');
+    }
+
+    updateCounts() {
         const milestone_id = this.id;
         let sums = {
             issues: {
