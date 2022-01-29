@@ -33,7 +33,7 @@
     </span>
 </div>
 <div class="spacer"></div>
-<?php if ($pachno_response->getPage() !== 'project_dashboard'): ?>
+<?php if ($pachno_user->canEditProjectDetails($project) && $pachno_response->getPage() !== 'project_dashboard'): ?>
     <div class="action-container">
         <div class="dropper-container">
             <button class="dropper button secondary icon"><?php echo fa_image_tag('ellipsis-v', ['class' => 'icon']); ?></button>

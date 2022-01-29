@@ -300,8 +300,10 @@
                 $json['identifiables'] = array_values($json['identifiables']);
             }
 
-            foreach ($this->getIssues($column_id) as $issue) {
-                $json['issues'][] = $issue->toJSON(false);
+            if (count($this->getBoard()->getColumns())) {
+                foreach ($this->getIssues($column_id) as $issue) {
+                    $json['issues'][] = $issue->toJSON(false);
+                }
             }
 
             return $json;

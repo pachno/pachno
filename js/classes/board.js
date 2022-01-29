@@ -15,6 +15,12 @@ export const SwimlaneTypes = {
     EPICS: 'epics'
 };
 
+export const WorkflowEnforcementModes = {
+    NONE: 'none',
+    LAX: 'lax',
+    STRICT: 'strict'
+};
+
 export const BoardTypes = {
     GENERIC: 0,
     SCRUM: 1,
@@ -35,6 +41,7 @@ class Board {
         this.report_issue_url = undefined;
         this.sort_milestones_url = undefined;
         this.epic_issue_type_id = undefined;
+        this.workflow_enforcement_mode = undefined;
 
         /**
          * Swimlanes
@@ -94,12 +101,13 @@ class Board {
         this.report_issue_url = board_json.report_issue_url;
         this.sort_milestones_url = board_json.sort_milestones_url;
         this.epic_issue_type_id = board_json.epic_issue_type_id;
+        this.workflow_enforcement_mode = board_json.workflow_enforcement_mode;
 
         this.updateBackgroundColor();
         this.updateBoardClass();
         this.updateVisibleWhiteboard();
 
-        if (fetchSwimlanes && this.columns.length && (this.selected_milestone_id || this.type !== BoardTypes.SCRUM)) {
+        if (fetchSwimlanes && (this.selected_milestone_id || this.type !== BoardTypes.SCRUM)) {
             this.fetchSwimlanes();
         } else {
             $('#whiteboard_indicator').hide();
@@ -229,6 +237,10 @@ class Board {
     }
 
     verifySwimlanes() {
+        if (!this.swimlanes) {
+            return;
+        }
+
         const $whiteboard_content = $('#whiteboard-content');
         let has_swimlanes = false;
         for (const swimlane of this.swimlanes) {
@@ -567,7 +579,7 @@ class Board {
 
                 $column.removeClass('drop-valid drop-highlight drop-origin');
 
-                if (status_ids.includes(parseInt(dragged_issue.status.id))) {
+                if (board.workflow_enforcement_mode !== WorkflowEnforcementModes.STRICT || status_ids.includes(parseInt(dragged_issue.status.id))) {
                     if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
                         $column.addClass('drop-valid');
                     } else {
@@ -577,9 +589,13 @@ class Board {
                     continue;
                 }
 
-                for (const status of dragged_issue.available_statuses) {
-                    if (status_ids.includes(parseInt(status.id))) {
-                        $column.addClass('drop-valid');
+                if (board.workflow_enforcement_mode !== WorkflowEnforcementModes.STRICT) {
+                    $column.addClass('drop-valid');
+                } else {
+                    for (const status of dragged_issue.available_statuses) {
+                        if (status_ids.includes(parseInt(status.id))) {
+                            $column.addClass('drop-valid');
+                        }
                     }
                 }
             }

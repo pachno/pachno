@@ -41,6 +41,10 @@
 
         public const SWIMLANE_IDENTIFIER_ISSUETYPE = 'issuetype';
 
+        public const WORKFLOW_ENFORCEMENT_NONE = 'none';
+        public const WORKFLOW_ENFORCEMENT_LAX = 'lax';
+        public const WORKFLOW_ENFORCEMENT_STRICT = 'strict';
+
         public const BACKGROUND_COLOR_DEFAULT = '#00ADC7';
         public const BACKGROUND_COLOR_ONE = '#7d7c84';
         public const BACKGROUND_COLOR_TWO = '#00aa7f';
@@ -198,6 +202,14 @@
          * @Column(type="serializable", length=500)
          */
         protected $_issue_field_values = [];
+
+        /**
+         * Project workflow enforcement mode
+         *
+         * @var string
+         * @Column(type="varchar", length=50, default="none")
+         */
+        protected $_workflow_enforcement_mode = self::WORKFLOW_ENFORCEMENT_NONE;
 
         public static function getAvailableColors()
         {
@@ -459,6 +471,16 @@
             $this->_use_swimlanes = $use_swimlanes;
         }
 
+        public function getWorkflowEnforcementMode(): string
+        {
+            return $this->_workflow_enforcement_mode ?: self::WORKFLOW_ENFORCEMENT_NONE;
+        }
+
+        public function setWorkflowEnforcementMode(string $mode): void
+        {
+            $this->_workflow_enforcement_mode = $mode;
+        }
+
         public function clearSwimlaneType()
         {
             $this->_swimlane_type = null;
@@ -566,7 +588,7 @@
         {
             $swimlanes = [];
 
-            if ($this->usesSwimlanes() && count($this->getColumns())) {
+            if ($this->usesSwimlanes()) {
                 switch ($this->getSwimlaneType()) {
                     case self::SWIMLANES_EXPEDITE:
                     case self::SWIMLANES_GROUPING:
@@ -743,6 +765,7 @@
             $json['swimlane_type'] = $this->getSwimlaneType();
             $json['swimlane_identifier'] = $this->getSwimlaneIdentifier();
             $json['swimlane_field_values'] = array_values($this->getSwimlaneFieldValues());
+            $json['workflow_enforcement_mode'] = $this->getWorkflowEnforcementMode();
             $json['columns'] = [];
             $json['epic_issue_type_id'] = $this->getEpicIssuetypeID();
             foreach ($this->getColumns() as $column) {
@@ -763,10 +786,8 @@
                 'swimlanes' => []
             ];
 
-            if (count($this->getColumns())) {
-                foreach ($this->getMilestoneSwimlanes($milestone) as $swimlane) {
-                    $json['swimlanes'][] = $swimlane->toJSON($column_id);
-                }
+            foreach ($this->getMilestoneSwimlanes($milestone) as $swimlane) {
+                $json['swimlanes'][] = $swimlane->toJSON($column_id);
             }
 
             return $json;

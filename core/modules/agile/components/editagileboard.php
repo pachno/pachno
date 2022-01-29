@@ -181,6 +181,38 @@
                     <div class="form-row">
                         <div class="fancy-dropdown-container from-bottom">
                             <div class="fancy-dropdown">
+                                <label><?php echo __('Project workflow'); ?></label>
+                                <span class="value"></span>
+                                <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                <div class="dropdown-container list-mode">
+                                    <input type="radio" name="workflow_enforcement_mode" value="<?= AgileBoard::WORKFLOW_ENFORCEMENT_NONE; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->getWorkflowEnforcementMode() == AgileBoard::WORKFLOW_ENFORCEMENT_NONE) echo ' checked'; ?> id="agileboard_workflow_enforcement_mode_<?= $board->getId(); ?>_<?= AgileBoard::WORKFLOW_ENFORCEMENT_NONE; ?>">
+                                    <label for="agileboard_workflow_enforcement_mode_<?= $board->getId(); ?>_<?= AgileBoard::WORKFLOW_ENFORCEMENT_NONE; ?>" class="list-item multiline">
+                                        <span class="name">
+                                            <span class="title value"><?php echo __("Ignore project workflow"); ?></span>
+                                            <span class="description"><?php echo __('Issue cards can move freely on the board and the project workflow steps will never be applied'); ?></span>
+                                        </span>
+                                    </label>
+                                    <input type="radio" name="workflow_enforcement_mode" value="<?= AgileBoard::WORKFLOW_ENFORCEMENT_LAX; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->getWorkflowEnforcementMode() == AgileBoard::WORKFLOW_ENFORCEMENT_LAX) echo ' checked'; ?> id="agileboard_workflow_enforcement_mode_<?= $board->getId(); ?>_<?= AgileBoard::WORKFLOW_ENFORCEMENT_LAX; ?>">
+                                    <label for="agileboard_workflow_enforcement_mode_<?= $board->getId(); ?>_<?= AgileBoard::WORKFLOW_ENFORCEMENT_LAX; ?>" class="list-item multiline">
+                                        <span class="name">
+                                            <span class="title value"><?php echo __('Apply when triggered'); ?></span>
+                                            <span class="description"><?php echo __('Issue cards can move freely on the board, but will have to follow the project workflow if a workflow step is triggered'); ?></span>
+                                        </span>
+                                    </label>
+                                    <input type="radio" name="workflow_enforcement_mode" value="<?= AgileBoard::WORKFLOW_ENFORCEMENT_STRICT; ?>" class="fancy-checkbox trigger-swimlane-toggle" <?php if ($board->getWorkflowEnforcementMode() == AgileBoard::WORKFLOW_ENFORCEMENT_STRICT) echo ' checked'; ?> id="agileboard_workflow_enforcement_mode_<?= $board->getId(); ?>_<?= AgileBoard::WORKFLOW_ENFORCEMENT_STRICT; ?>">
+                                    <label for="agileboard_workflow_enforcement_mode_<?= $board->getId(); ?>_<?= AgileBoard::WORKFLOW_ENFORCEMENT_STRICT; ?>" class="list-item multiline">
+                                        <span class="name">
+                                            <span class="title value"><?php echo __('Follow workflow'); ?></span>
+                                            <span class="description"><?php echo __('Issue cards can only be updated according to the settings in the projects current workflow'); ?></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="fancy-dropdown-container from-bottom">
+                            <div class="fancy-dropdown">
                                 <label><?php echo __('Whiteboard swimlanes'); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
