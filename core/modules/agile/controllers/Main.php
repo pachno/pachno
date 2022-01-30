@@ -189,6 +189,7 @@
                 $this->board->setUser(Context::getUser());
 
                 if ($this->board->getId()) {
+                    $this->board->setWorkflowEnforcementMode($request['workflow_enforcement_mode']);
                     $this->board->setDescription($request['description']);
                     $this->board->setEpicIssuetype($request['epic_issuetype_id']);
                     $this->board->setTaskIssuetype($request['task_issuetype_id']);

@@ -9,6 +9,7 @@
     use pachno\core\framework\cli\Command;
     use pachno\core\modules\installation\entities\upgrade_1_0_0\tables\LivelinkImports;
     use pachno\core\modules\installation\entities\upgrade_1_0_2\tables\Users;
+    use pachno\core\modules\installation\entities\upgrade_1_0_4\tables\AgileBoards;
 
     class Upgrade
     {
@@ -35,6 +36,16 @@
             \pachno\core\entities\tables\Users::getTable()->upgrade(Users::getTable());
 
             $this->current_version = '1.0.3';
+
+            return true;
+        }
+
+        protected function _upgradeFrom1_0_4(framework\Request $request = null): bool
+        {
+            $this->cliEchoUpgradeTable(AgileBoards::getTable());
+            \pachno\core\entities\tables\AgileBoards::getTable()->upgrade(AgileBoards::getTable());
+
+            $this->current_version = '1.0.5';
 
             return true;
         }
@@ -72,6 +83,8 @@
                     $this->_upgradeFrom1_0_0($request);
                 case '1.0.2':
                     $this->_upgradeFrom1_0_2($request);
+                case '1.0.4':
+                    $this->_upgradeFrom1_0_4($request);
             }
 
             framework\Context::loadModules();

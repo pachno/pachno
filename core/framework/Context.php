@@ -481,7 +481,7 @@
             if (self::isDebugMode())
                 self::generateDebugInfo();
 
-            if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
+            if (!self::isCLI() && self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
                 self::getResponse()->ajaxResponseText(404, $error);
             }
 

@@ -5,7 +5,7 @@ import Uploader from "./uploader";
 import {TYPES as QuicksearchTypes} from "./quicksearch";
 import {getEditor} from "../widgets/editor";
 import dayjs from "dayjs";
-import {SwimlaneTypes} from "./board";
+import {SwimlaneTypes, WorkflowEnforcementModes} from "./board";
 const issueRowTemplate = require('@/templates/issue/row.njk');
 const issuePlaceholderTemplate = require('@/templates/issue/placeholder.njk');
 
@@ -795,31 +795,44 @@ class Issue {
     }
 
     triggerTransition(board, swimlane, status_ids, force_popup) {
-        let show_popup = force_popup;
         let processed = false;
 
         this.clone_element.addClass('loading');
 
-        for (const transition of this.transitions) {
-            const includes = transition.status_ids.filter(value => status_ids.includes(value));
-            if (!includes.length)
-                continue;
+        if (board.workflow_enforcement_mode !== WorkflowEnforcementModes.NONE) {
+            for (const transition of this.transitions) {
+                const includes = transition.status_ids.filter(value => status_ids.includes(value));
+                if (!includes.length)
+                    continue;
 
-            processed = true;
-            if (!show_popup) {
-                Pachno.fetch(transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id) + `?board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`, {method: 'POST'})
-                    .then((json) => {
-                        for (const issue of json.issues) {
-                            Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: issue});
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        UI.Backdrop.show(transition.backdrop_url + `?issue_id=${this.id}&board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`);
-                    })
-            } else {
-                UI.Backdrop.show(transition.backdrop_url + `?issue_id=${this.id}&board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`);
+                processed = true;
+                if (!force_popup) {
+                    Pachno.fetch(transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id) + `?board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`, {method: 'POST'})
+                        .then((json) => {
+                            for (const issue of json.issues) {
+                                Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: issue});
+                            }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            UI.Backdrop.show(transition.backdrop_url + `?issue_id=${this.id}&board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`);
+                        });
+                } else {
+                    UI.Backdrop.show(transition.backdrop_url + `?issue_id=${this.id}&board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`);
+                }
             }
+        }
+
+        if (board.workflow_enforcement_mode === WorkflowEnforcementModes.NONE || (board.workflow_enforcement_mode === WorkflowEnforcementModes.LAX && !processed)) {
+            let status_id = status_ids.shift();
+            this.postAndUpdate('status', status_id)
+                .then(() => {
+                    board.verifyIssues();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            return;
         }
 
         if (!processed && !swimlane.has(this)) {
