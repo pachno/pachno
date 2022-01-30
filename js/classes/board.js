@@ -579,7 +579,7 @@ class Board {
 
                 $column.removeClass('drop-valid drop-highlight drop-origin');
 
-                if (board.workflow_enforcement_mode !== WorkflowEnforcementModes.STRICT || status_ids.includes(parseInt(dragged_issue.status.id))) {
+                if (board.workflow_enforcement_mode === WorkflowEnforcementModes.STRICT && status_ids.includes(parseInt(dragged_issue.status.id))) {
                     if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
                         $column.addClass('drop-valid');
                     } else {
@@ -641,7 +641,7 @@ class Board {
                 let swimlane_identifier = $dropped_target.data('swimlane-identifier');
                 let swimlane = board.getSwimlane(swimlane_identifier);
                 let status_id_data = $dropped_target.data('status-ids');
-                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
+                let status_ids = (`${status_id_data}`.indexOf(',') !== -1) ? status_id_data.split(',') : [status_id_data];
                 dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
             } else {
                 dragged_issue.stopDragging();
@@ -790,7 +790,7 @@ class Board {
                 if (swimlane.identifier_issue && swimlane.identifier_issue.id === issue.id)
                     return;
 
-                if (issue.milestone?.id == board.selected_milestone_id) {
+                if (!board.selected_milestone_id || issue.milestone?.id == board.selected_milestone_id) {
                     let updated = swimlane.addOrRemove(issue, !found);
                     if (found === false) {
                         found = updated;
