@@ -301,7 +301,7 @@
 
         public function moveIssueToMatchingWorkflowStep(Issue $issue)
         {
-            if (!$issue->isPropertyChanged('status') && !$issue->isPropertyChanged('resolution')) {
+            if (!$issue->isPropertyChanged('_status')) {
                 return false;
             }
 

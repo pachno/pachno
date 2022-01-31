@@ -2048,7 +2048,7 @@
 
             $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue);
             // Currently if category is changed we want to regenerate permissions since category is used for granting user access.
-            if ($issue->isPropertyChanged('category')) {
+            if ($issue->isPropertyChanged('_category')) {
                 framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', [$this, 'listen_issueCreate']);
             }
             $issue->save();
