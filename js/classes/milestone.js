@@ -85,7 +85,8 @@ class Milestone {
     }
 
     matches(issue) {
-        return parseInt(issue.milestone?.id) == this.id;
+        const milestone_id = (issue.milestone?.id) ? parseInt(issue.milestone.id) : 0;
+        return milestone_id == this.id;
     }
 
     addOrRemove(issue) {

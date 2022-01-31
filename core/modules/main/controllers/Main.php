@@ -1165,6 +1165,9 @@
                                 tables\IssueFiles::getTable()->addByIssueIDandFileID($issue->getID(), $file->getID());
                             }
                         }
+                        if ($issue->getStatus()->getID() != $issue->getWorkflow()->getInitialTransition()->getOutgoingStep()->getLinkedStatusID()) {
+                            $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue, true);
+                        }
                         $json_issues = [];
                         $component = '';
                         if ($issue->isChildIssue()) {
@@ -1181,25 +1184,25 @@
                     } catch (Exception $e) {
                         if ($request['return_format'] == 'planning') {
                             $this->getResponse()->setHttpStatus(400);
-
+    
                             return $this->renderJSON(['error' => $e->getMessage()]);
                         }
                         $errors[] = $e->getMessage();
                     }
                 }
             }
-            if ($request['return_format'] == 'planning') {
-                $err_msg = [];
-                foreach ($errors as $field => $value) {
-                    $err_msg[] = $i18n->__('Please provide a value for the %field_name field', ['%field_name' => $field]);
-                }
-                foreach ($permission_errors as $field => $value) {
-                    $err_msg[] = $i18n->__("The %field_name field is marked as required, but you don't have permission to set it", ['%field_name' => $field]);
-                }
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $i18n->__('An error occured while creating this story: %errors', ['%errors' => '']), 'message' => join('<br>', $err_msg)]);
+//            if ($request['return_format'] == 'planning') {
+            $err_msg = [];
+            foreach ($errors as $field => $value) {
+                $err_msg[] = $i18n->__('Please provide a value for the %field_name field', ['%field_name' => $field]);
             }
+            foreach ($permission_errors as $field => $value) {
+                $err_msg[] = $i18n->__("The %field_name field is marked as required, but you don't have permission to set it", ['%field_name' => $field]);
+            }
+            $this->getResponse()->setHttpStatus(400);
+
+            return $this->renderJSON(['error' => join('<br>', $err_msg)]);
+//            }
             $this->errors = $errors;
             $this->permission_errors = $permission_errors;
             $this->options = $this->getParameterHolder();

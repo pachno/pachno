@@ -298,10 +298,15 @@
                 if (array_key_exists($this->getInitialTransition()->getID(), $this->_transitions)) unset($this->_transitions[$this->getInitialTransition()->getID()]);
             }
         }
-
-        public function moveIssueToMatchingWorkflowStep(Issue $issue)
+    
+        /**
+         * @param Issue $issue
+         * @param bool $force
+         * @return bool
+         */
+        public function moveIssueToMatchingWorkflowStep(Issue $issue, bool $force = false): bool
         {
-            if (!$issue->isPropertyChanged('_status')) {
+            if (!$force && !$issue->isPropertyChanged('_status')) {
                 return false;
             }
 

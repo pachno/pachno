@@ -100,7 +100,7 @@ class Backlog {
     addIssue(issue_json) {
         const issue = Pachno.addIssue(issue_json, undefined, Templates.row);
         for (const milestone of this.milestones) {
-            if (milestone.has(issue)) {
+            if (milestone.matches(issue)) {
                 milestone.addIssue(issue);
                 milestone.verifyIssues();
                 break;
