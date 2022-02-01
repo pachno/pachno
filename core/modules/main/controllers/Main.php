@@ -1939,7 +1939,7 @@
                     }
                     break;
                 case 'parent_issue_id':
-                    $new_parent_issue = tables\Issues::getTable()->selectById($request['value']);
+                    $new_parent_issue = ($request['value']) ? tables\Issues::getTable()->selectById($request['value']) : null;
                     foreach ($issue->getParentIssues() as $parent_issue) {
                         if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
                             $issue->removeDependantIssue($parent_issue);

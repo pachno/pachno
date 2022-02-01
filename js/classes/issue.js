@@ -827,6 +827,9 @@ class Issue {
             let status_id = status_ids.shift();
             this.postAndUpdate('status', status_id)
                 .then(() => {
+                    return this.updateSwimlane(swimlane);
+                })
+                .then(() => {
                     board.verifyIssues();
                 })
                 .catch(error => {
@@ -835,17 +838,29 @@ class Issue {
             return;
         }
 
-        if (!processed && !swimlane.has(this)) {
+        if (!processed) {
+            this.updateSwimlane(swimlane);
+        }
+    }
+
+    updateSwimlane(swimlane) {
+        return new Promise((resolve, reject) => {
+            // if (!swimlane.has(this)) {
             switch (swimlane.identifier_type) {
                 case SwimlaneTypes.ISSUES:
                     this.postAndUpdate('parent_issue_id', (swimlane.identifier_issue !== undefined) ? swimlane.identifier_issue.id : 0)
+                        .then(resolve)
+                        .catch(reject);
                     return;
                 case SwimlaneTypes.GROUPING:
                 case SwimlaneTypes.EXPEDITE:
-                    this.postAndUpdate(swimlane.identifier_grouping, (swimlane.has_identifiables) ? swimlane.identifiables.find(() => true).id : 0);
+                    this.postAndUpdate(swimlane.identifier_grouping, (swimlane.has_identifiables) ? swimlane.identifiables.find(() => true).id : 0)
+                        .then(resolve)
+                        .catch(reject);
                     return;
             }
-        }
+            // }
+        });
     }
 
     startDragging(x, y) {

@@ -2871,13 +2871,16 @@
                 if ($row->get(tables\IssueRelations::PARENT_ID) == $this->getID()) {
                     $this->_removeChildIssue($related_issue, $relation_id);
                 } else {
-                    $this->_removeParentIssue($related_issue, $relation_id);
+                    $this->_removeParentIssue($related_issue);
                 }
                 $this->touch();
                 $this->clearCachedItems();
                 $related_issue->touch();
                 $related_issue->clearCachedItems();
+                $this->_parent_issues = null;
+                $this->_child_issues = null;
                 tables\IssueRelations::getTable()->rawDeleteById($relation_id);
+                tables\IssueRelations::getTable()->clearRelationCache();
             }
 
             return $related_issue;
@@ -3154,20 +3157,17 @@
          * Removes a parent issue
          *
          * @param Issue $related_issue The issue to remove relations from
-         * @param integer $relation_id The relation id to delete
          *
          * @see removeDependantIssue()
          *
          */
-        protected function _removeParentIssue($related_issue, $relation_id)
+        protected function _removeParentIssue(Issue $related_issue)
         {
             $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_RELATED_ISSUE, Context::getI18n()->__('This issue no longer depends on the solution of issue %issue_no', ['%issue_no' => $related_issue->getFormattedIssueNo()]), $related_issue->getID(), 0);
             $related_issue->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_RELATED_ISSUE, Context::getI18n()->__('Issue %issue_no no longer depends on the solution of this issue', ['%issue_no' => $this->getFormattedIssueNo()]), $this->getID(), 0);
             $related_issue->calculateTime();
 
-            if ($this->_parent_issues !== null && array_key_exists($relation_id, $this->_parent_issues)) {
-                unset($this->_parent_issues[$relation_id]);
-            }
+            $this->_parent_issues = null;
         }
 
         /**
