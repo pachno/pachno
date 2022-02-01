@@ -279,7 +279,7 @@
         &.form-container {
           font-size: 1em;
           position: relative;
-          margin-top: auto;
+          //margin-top: auto;
         }
 
         + .column {
@@ -383,8 +383,20 @@
 
           .name {
             flex: 1 1 auto;
+            flex-direction: row;
+            flex-wrap: nowrap;
+
             .form-row {
               padding: 0;
+              width: auto;
+
+              &.name-container {
+                flex: 1 1 auto;
+              }
+
+              &:not(.name-container) {
+                align-content: center;
+              }
 
               input[type=text],
               .input {
@@ -393,6 +405,7 @@
 
                 &.trigger-whiteboard-toggle-add-next-column,
                 &.column-header {
+                  width: 100%;
                   font-weight: $theme-font-weight-bold;
                 }
               }
@@ -451,6 +464,7 @@
 
         .form-container {
           flex: 0 0 auto;
+          margin-top: auto;
         }
 
         .swimlane-header {
@@ -459,7 +473,7 @@
           width: 100%;
           //background: linear-gradient(to bottom, $theme-primary-color 0%, transparent 30%);
 
-          .header {
+          > .header {
             display: flex;
             flex-direction: row;
             align-items: center;

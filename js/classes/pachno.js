@@ -36,6 +36,7 @@ class PachnoApplication {
             ready: 'pachno-ready',
             agile: {
                 deleteBoard: 'agile-delete-board',
+                deleteColumn: 'agile-delete-column',
                 deleteMilestone: 'agile-delete-milestone',
             },
             article: {

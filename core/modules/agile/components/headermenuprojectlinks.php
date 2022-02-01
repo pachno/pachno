@@ -1,12 +1,19 @@
 <?php
-
+    
+    use pachno\core\entities\AgileBoard;
     use pachno\core\entities\Permission;
+    use pachno\core\entities\Project;
     use pachno\core\entities\tables\Permissions;
-
+    use pachno\core\entities\User;
+    use pachno\core\framework\Request;
+    use pachno\core\framework\Response;
+    
     /**
-     * @var \pachno\core\entities\User $pachno_user
-     * @var \pachno\core\entities\Project $project
-     * @var \pachno\core\framework\Response $pachno_response
+     * @var User $pachno_user
+     * @var Project $project
+     * @var Response $pachno_response
+     * @var Request $pachno_request
+     * @var AgileBoard[] $boards
      */
 
 ?>
@@ -24,19 +31,12 @@
                         <span class="icon"><?= fa_image_tag('angle-double-left'); ?></span>
                         <span class="name"><?= __('Back'); ?></span>
                     </a>
-                    <?php if (count($boards)): ?>
-                        <?php foreach ($boards as $board): ?>
-                            <a href="<?= make_url('agile_whiteboard', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>" class="list-item <?php if ($pachno_request['board_id'] == $board->getID()) echo ' selected'; ?>">
-                                <?= fa_image_tag('chalkboard', ['class' => 'icon']); ?>
-                                <span class="name"><?= $board->getName(); ?></span>
-                            </a>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="list-item disabled">
-                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('No project boards available'); ?></span>
-                        </div>
-                    <?php endif; ?>
+                    <?php foreach ($boards as $board): ?>
+                        <a href="<?= make_url('agile_whiteboard', ['project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID()]); ?>" class="list-item <?php if ($pachno_request['board_id'] == $board->getID()) echo ' selected'; ?>">
+                            <?= fa_image_tag('chalkboard', ['class' => 'icon']); ?>
+                            <span class="name"><?= $board->getName(); ?></span>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
         <?php endif; ?>

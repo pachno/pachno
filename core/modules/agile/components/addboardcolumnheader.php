@@ -12,7 +12,7 @@
 <div class="column form-container" id="add-next-column-input-container">
     <div class="row">
         <div class="form name">
-            <div class="form-row">
+            <div class="form-row name-container">
                 <span class="input invisible trigger-whiteboard-toggle-add-next-column">
                     <span class="placeholder"><?= fa_image_tag('plus'); ?><span><?= __('Add another column'); ?></span></span>
                 </span>

@@ -89,11 +89,21 @@ const UI = {
             if (options.yes.href) {
                 $('#dialog_yes').attr('href', options.yes.href);
             }
+            if (options.yes.text) {
+                $('#dialog_yes').find('span').html(options.yes.text);
+            } else {
+                $('#dialog_yes').find('span').html(Pachno.T.ui.yes);
+            }
             if (options.no.click) {
                 $('#dialog_no').on('click', options.no.click);
             }
             if (options.no.href) {
                 $('#dialog_no').attr('href', options.no.href);
+            }
+            if (options.no.text) {
+                $('#dialog_no').find('span').html(options.no.text);
+            } else {
+                $('#dialog_no').find('span').html(Pachno.T.ui.no);
             }
             $('#dialog_backdrop').removeClass('submitting');
             $('#dialog_backdrop_content').show();

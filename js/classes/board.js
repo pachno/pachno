@@ -6,6 +6,7 @@ import Pachno from "./pachno";
 import {watchIssuePopupForms} from "../helpers/issues";
 import {Templates} from "./issue";
 import backlog from "@/classes/backlog";
+import {clearPopupsAndButtons} from "@/widgets";
 
 export const SwimlaneTypes = {
     NONE: '',
@@ -319,7 +320,7 @@ class Board {
                             <div class="form-container">
                                 <div class="row">
                                     <div class="form name">
-                                        <div class="form-row">
+                                        <div class="form-row name-container">
                                             <span class="input invisible trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="status_ids=${status_ids}">
                                                 <span class="placeholder">${UI.fa_image_tag('plus')}<span>${Pachno.T.agile.add_card}</span></span>
                                             </span>
@@ -753,6 +754,62 @@ class Board {
             }
         });
 
+        $body.off('click', '.trigger-delete-column');
+        $body.on('click', '.trigger-delete-column', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            clearPopupsAndButtons(event);
+            const $this = $(this);
+            const url = $this.data('url');
+            const column_id = $this.data('column-id');
+
+            UI.Dialog.show(Pachno.T.agile.delete_column.title, Pachno.T.agile.delete_column.message, {yes: {text: Pachno.T.agile.delete_column.button, click: function() { Pachno.trigger(Pachno.EVENTS.agile.deleteColumn, { url, column_id });}}, no: {click: Pachno.UI.Dialog.dismiss}});
+        });
+
+        const moveColumn = function (event, $this, direction) {
+            event.preventDefault();
+            event.stopPropagation();
+            clearPopupsAndButtons(event);
+            const $column = $this.parents('.column');
+            const url = $column.data('url');
+            let sort_order = parseInt($column.data('sort-order'));
+            sort_order = (direction === 'left') ? sort_order - 1 : sort_order + 1;
+            Pachno.fetch(url, { method: 'POST', data: { sort_order } })
+                .then(json => {
+                    $('.row:not(.headers)').remove();
+                    $column.parent().html(json.headers);
+                    board.columns = json.columns;
+                    for (const swimlane of board.swimlanes) {
+                        for (const issue of swimlane.issues) {
+                            issue.processed = false;
+                        }
+                    }
+                    board.updateWhiteboard();
+                })
+        };
+
+        $body.off('click', '.trigger-move-column-left');
+        $body.on('click', '.trigger-move-column-left', function (event) {
+            moveColumn(event, $(this), 'left');
+        });
+
+        $body.off('click', '.trigger-move-column-right');
+        $body.on('click', '.trigger-move-column-right', function (event) {
+            moveColumn(event, $(this), 'right');
+        });
+
+        Pachno.on(Pachno.EVENTS.agile.deleteColumn, (json, data) => {
+            this.columns = this.columns.filter((column) => column.id != data.column_id);
+            $(`.column[data-column-id=${data.column_id}]`).remove();
+            $('#whiteboard-content .row.headers .columns').html(json.headers);
+
+            Pachno.UI.Dialog.dismiss();
+            Pachno.fetch(data.url, { method: 'DELETE' });
+
+            this.verifyColumns();
+            this.updateVisibleWhiteboard();
+        });
+
         watchIssuePopupForms();
 
         const $filter_input = $('#planning_filter_title_input');
@@ -769,10 +826,13 @@ class Board {
                 case 'add-first-column-form':
                 case 'add-another-column-form':
                     const $container = $('#add-next-column-input-container');
+                    const $first_container = $('#add-first-column-button-container');
                     $container.before(json.component);
                     $container.removeClass('toggle-card');
                     board.addColumn(json.column, json.swimlanes);
                     $('#add-another-column-form').trigger("reset");
+                    $('#add-first-column-form').trigger("reset");
+                    $first_container.removeClass('active');
                     board.updateVisibleWhiteboard();
                     break;
                 case 'edit_milestone_form':
@@ -781,6 +841,12 @@ class Board {
                     $(`#selected_milestone_${json.milestone.id}`).prop('checked', true);
                     board.updateSelectedMilestone(true);
                     break;
+                default:
+                    const $form = $('#' + data.form);
+                    if ($form.data('column-form') !== undefined) {
+                        $('#whiteboard-column-header-' + json.column.id).replaceWith(json.component);
+                        board.verifyIssues();
+                    }
             }
         });
 

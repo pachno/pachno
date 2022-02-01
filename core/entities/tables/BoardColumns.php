@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
+    use b2db\Update;
     use pachno\core\entities\BoardColumn;
 
     /**
@@ -20,7 +22,7 @@
      * @package pachno
      * @subpackage tables
      *
-     * @method BoardColumns getTable() Retrieves an instance of this table
+     * @method static BoardColumns getTable() Retrieves an instance of this table
      * @method BoardColumn selectById(integer $id) Retrieves an agile board
      *
      * @Table(name="agileboard_columns")
@@ -30,5 +32,18 @@
     {
 
         public const SCOPE = 'agileboard_columns.scope';
+        
+        public function updateSortOrderByBoardId($board_id, $order, $old_order, $column_id)
+        {
+            $update = new Update();
+            $update->update('agileboard_columns.sort_order', $old_order);
+            
+            $query = $this->getQuery();
+            $query->where('agileboard_columns.sort_order', $order);
+            $query->where('agileboard_columns.board_id', $board_id);
+            $query->where('agileboard_columns.id', $column_id, Criterion::NOT_EQUALS);
+            
+            $this->rawUpdate($update, $query);
+        }
 
     }

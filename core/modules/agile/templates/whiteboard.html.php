@@ -212,10 +212,7 @@
                     <div class="row headers">
                         <div class="columns-container" id="whiteboard-headers-columns">
                             <div class="columns">
-                                <?php foreach ($board->getColumns() as $column): ?>
-                                    <?php include_component('agile/boardcolumnheader', compact('column')); ?>
-                                <?php endforeach; ?>
-                                <?php include_component('agile/addboardcolumnheader', ['board' => $board]); ?>
+                                <?php include_component('agile/boardcolumnheaders', ['board' => $board]); ?>
                             </div>
                         </div>
                     </div>

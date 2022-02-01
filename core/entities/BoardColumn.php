@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\framework\Context;
 
     /**
      * Agile board column class
@@ -182,6 +183,11 @@
         {
             return ($this->getID()) ? $this->getID() : md5(rand(0, 1000000));
         }
+        
+        public function getUrl()
+        {
+            return Context::getRouting()->generate('agile_whiteboardcolumn', ['project_key' => $this->getBoard()->getProject()->getKey(), 'board_id' => $this->getBoard()->getID(), 'column_id' => $this->getID()]);
+        }
 
         public function toJSON($detailed = true)
         {
@@ -189,6 +195,7 @@
             $json['status_ids'] = array_values($this->_status_ids);
             $json['name'] = $this->_name;
             $json['sort_order'] = $this->_sort_order;
+            $json['url'] = $this->getUrl();
 
             return $json;
         }

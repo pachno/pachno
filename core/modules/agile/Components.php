@@ -66,6 +66,7 @@
         public function componentBoardColumnheader()
         {
             $this->statuses = Status::getAll();
+            $this->board = $this->column->getBoard();
         }
 
         public function componentAddBoardColumnheader()

@@ -1,4 +1,9 @@
 {
+  "ui": {
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel"
+  },
   "common": {
     "mentions": {
       "user_search_placeholder": "Start typing to search"
@@ -18,6 +23,11 @@
     "add_card": "Add card",
     "add_card_here": "Add card",
     "add_swimlane": "Add a swimlane",
+    "delete_column": {
+      "title": "Delete column?",
+      "message": "Issues will not be removed, but may no longer appear on the board. Add a new column to the board with the statuses of this column to make these issues appear again.",
+      "button": "Yes, delete column"
+    },
     "no_milestone_label": "Issues not assigned to a milestone",
     "choose_sprint_label": "Choose a sprint",
     "backlog": {

@@ -562,7 +562,29 @@
          */
         public function getColumns()
         {
-            return $this->_b2dbLazyLoad('_board_columns');
+            if ($this->_board_columns === null) {
+                $this->_b2dbLazyLoad('_board_columns');
+                $this->reorderColumns();
+            }
+            
+            return $this->_board_columns;
+        }
+        
+        public function reorderColumns(bool $force = false): void
+        {
+            if ($this->_board_columns === null) {
+                $this->_b2dbLazyLoad('_board_columns');
+            }
+            $cc = 1;
+            foreach ($this->_board_columns as $column) {
+                if (!$force && $column->getSortOrder()) {
+                    return;
+                }
+        
+                $column->setSortOrder($cc);
+                $column->save();
+                $cc += 1;
+            }
         }
 
         public function getStatusIds()

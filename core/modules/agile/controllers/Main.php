@@ -26,19 +26,23 @@
     /**
      * Actions for the agile module
      *
+     * @property AgileBoard $board
+     * @property Milestone $selected_milestone
+     *
      * @Routes(name_prefix="agile_", url_prefix="/:project_key/agile")
      */
     class Main extends helpers\ProjectActions
     {
-
+    
         /**
          * Action for marking a milestone as completed, optionally moving issues across to a new milestone
          *
          * @Route(url="/boards/:board_id/milestone/:milestone_id/markfinished")
          *
          * @param Request $request
+         * @return framework\JsonOutput
          */
-        public function runMarkMilestoneFinished(Request $request)
+        public function runMarkMilestoneFinished(Request $request): framework\JsonOutput
         {
             try {
                 if (!($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project))) {
@@ -228,33 +232,65 @@
                 ]);
             }
         }
-
+    
         /**
          * Whiteboard column edit
          *
          * @Route(url="/boards/:board_id/whiteboard/column/:column_id")
          *
          * @param Request $request
+         * @return framework\JsonOutput
          */
-        public function runWhiteboardColumn(Request $request)
+        public function runWhiteboardColumn(Request $request): framework\JsonOutput
         {
+            if (!$this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS)) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
+            }
+
             $board = AgileBoards::getTable()->selectById($request['board_id']);
+            if (!$board instanceof AgileBoard) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to this board or it doesn't exist")]);
+            }
+            
+            if ($board->getUser()->getID() !== $this->getUser()->getID() && !$this->_checkProjectAccess(Permission::PERMISSION_MANAGE_PROJECT_BOARDS)) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to this board or it doesn't exist")]);
+            }
+            
             if ($request['column_id']) {
                 $column = BoardColumns::getTable()->selectById($request['column_id']);
             } else {
                 $column = new BoardColumn();
                 $column->setBoard($board);
+                $column->setSortOrder(count($board->getColumns()) + 1);
+            }
+            
+            if ($request->isDelete()) {
+                $column->delete();
+                $board->reorderColumns(true);
+                return $this->renderJSON([
+                    'headers' => $this->getComponentHTML('agile/boardcolumnheaders', compact('board')),
+                    'deleted' => 'ok'
+                ]);
             }
 
             if ($request->isPost()) {
+                $reorder = false;
+                $old_sort_order = 0;
                 if (!$column instanceof BoardColumn) {
                     $this->getResponse()->setHttpStatus(400);
                     return $this->renderJSON(['error' => $this->getI18n()->__('There was an error trying to save column %column', ['%column' => $request['column_id']])]);
                 }
-
-                $column->setName($request['name']);
+    
+                if ($request->hasParameter('name')) {
+                    $column->setName($request['name']);
+                }
                 if ($request->hasParameter('sort_order')) {
+                    $old_sort_order = $column->getSortOrder();
                     $column->setSortOrder($request['sort_order']);
+                    $reorder = true;
                 }
                 if ($request->hasParameter('min_workitems')) {
                     $column->setMinWorkitems($request['min_workitems']);
@@ -269,10 +305,20 @@
                 }
 
                 $column->save();
+                if ($reorder) {
+                    BoardColumns::getTable()->updateSortOrderByBoardId($board->getID(), $column->getSortOrder(), $old_sort_order, $column->getID());
+                }
+            }
+            
+            $columns = [];
+            foreach ($board->getColumns() as $board_column) {
+                $columns[] = $board_column->toJSON();
             }
 
             $options = [
                 'component' => $this->getComponentHTML('agile/boardcolumnheader', compact('column')),
+                'headers' => $this->getComponentHTML('agile/boardcolumnheaders', compact('board')),
+                'columns' => $columns,
                 'column' => $column->toJSON(),
             ];
 
@@ -351,59 +397,28 @@
 
             return $this->renderJSON(['content' => $this->getComponentHTML('project/milestonevirtualstatusdetails', compact('milestone', 'allowed_status_ids'))]);
         }
-
+    
         /**
          * The project board whiteboard page
          *
          * @Route(url="/boards/:board_id/whiteboard")
          *
          * @param Request $request
+         * @return framework\JsonOutput|void
          */
         public function runWhiteboard(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
+            if (!$this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS)) {
+                $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
+            }
+    
             $this->board = AgileBoards::getTable()->selectById($request['board_id']);
-
-            $this->forward403unless($this->board instanceof AgileBoard);
-
-            try {
-                if ($request->isPost()) {
-                    $columns = $request['columns'];
-                    $saved_columns = [];
-                    $cc = 1;
-                    if (is_array($columns)) {
-                        foreach ($columns as $details) {
-                            if ($details['column_id']) {
-                                $column = BoardColumn::getB2DBTable()->selectById($details['column_id']);
-                            } else {
-                                $column = new BoardColumn();
-                                $column->setBoard($this->board);
-                            }
-                            if (!$column instanceof BoardColumn) {
-                                throw new Exception($this->getI18n()->__('There was an error trying to save column %column', ['%column' => $details['column_id']]));
-                            }
-                            $column->setName($details['name']);
-                            $column->setSortOrder($details['sort_order']);
-                            if (array_key_exists('min_workitems', $details)) $column->setMinWorkitems($details['min_workitems']);
-                            if (array_key_exists('max_workitems', $details)) $column->setMaxWorkitems($details['max_workitems']);
-                            $column->setStatusIds($details['status_ids']);
-                            $column->save();
-                            $saved_columns[$column->getID()] = $column->getID();
-                            $cc++;
-                        }
-                    }
-                    foreach ($this->board->getColumns() as $column) {
-                        if (!array_key_exists($column->getID(), $saved_columns)) {
-                            $column->delete();
-                        }
-                    }
-
-                    return $this->renderJSON(['forward' => $this->getRouting()->generate('agile_whiteboard', ['project_key' => $this->board->getProject()->getKey(), 'board_id' => $this->board->getID()])]);
-                }
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
+            if (!$this->board instanceof AgileBoard) {
+                $this->forward403($this->getI18n()->__("You don't have access to this board or it doesn't exist"));
+            }
+    
+            if ($this->board->getUser()->getID() !== $this->getUser()->getID() && !$this->_checkProjectAccess(Permission::PERMISSION_MANAGE_PROJECT_BOARDS)) {
+                $this->forward403($this->getI18n()->__("You don't have access to this board or it doesn't exist"));
             }
 
             if ($request->getRequestedFormat() == 'json') {
