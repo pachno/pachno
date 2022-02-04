@@ -87,8 +87,8 @@ use pachno\core\entities\LogItem;
             case LogItem::ACTION_ISSUE_UPDATE_ISSUETYPE:
                 echo fa_image_tag('file-code', ['class' => 'log_issue_type']);
                 if ($item->hasChangeDetails()) {
-                    $previous_value = ($item->getPreviousValue()) ? (($old_item = \pachno\core\entities\tables\Issuetypes::getTable()->selectById((int) $item->getPreviousValue())) ? __($old_item->getName()) : __('Unknown')) : __('Not determined');
-                    $new_value = ($item->getCurrentValue()) ? (($new_item = \pachno\core\entities\tables\Issuetypes::getTable()->selectById((int) $item->getCurrentValue())) ? __($new_item->getName()) : __('Unknown')) : __('Not determined');
+                    $previous_value = ($item->getPreviousValue()) ? (($old_item = \pachno\core\entities\tables\IssueTypes::getTable()->selectById((int) $item->getPreviousValue())) ? __($old_item->getName()) : __('Unknown')) : __('Not determined');
+                    $new_value = ($item->getCurrentValue()) ? (($new_item = \pachno\core\entities\tables\IssueTypes::getTable()->selectById((int) $item->getCurrentValue())) ? __($new_item->getName()) : __('Unknown')) : __('Not determined');
                     echo __("Issuetype changed from %previous_value to %new_value", ['%previous_value' => '<strong>' . $previous_value . '</strong>', '%new_value' => '<strong>' . $new_value . '</strong>']);
                 }
                 break;
