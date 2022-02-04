@@ -1550,7 +1550,7 @@
                     $workflow_scheme->setDescription(trim($request['description']));
                     $workflow_scheme->save();
                     foreach ($request->getParameter('workflow_id', []) as $issue_type_id => $workflow_id) {
-                        $issue_type = entities\tables\Issuetypes::getTable()->selectById($issue_type_id);
+                        $issue_type = entities\tables\IssueTypes::getTable()->selectById($issue_type_id);
                         if ($workflow_id) {
                             $workflow = entities\Workflow::getB2DBTable()->selectById($workflow_id);
                             $workflow_scheme->associateIssuetypeWithWorkflow($issue_type, $workflow);
