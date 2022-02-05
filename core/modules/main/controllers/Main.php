@@ -1236,7 +1236,7 @@
                 $this->issuetype_id = $request['issuetype_id'];
                 if ($this->issuetype_id) {
                     try {
-                        $this->selected_issuetype = tables\Issuetypes::getTable()->selectById($this->issuetype_id);
+                        $this->selected_issuetype = tables\IssueTypes::getTable()->selectById($this->issuetype_id);
                     } catch (Exception $e) {
 
                     }
