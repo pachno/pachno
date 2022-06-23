@@ -24,7 +24,9 @@
      * @package pachno
      * @subpackage tables
      *
+     * @method static Teams getTable()
      * @method Team selectById($id, Query $query = null, $join = 'all')
+     * @method Team[] select(Query $query, $join = 'all')
      *
      * @Table(name="teams")
      * @Entity(class="\pachno\core\entities\Team")
@@ -43,7 +45,10 @@
         public const NAME = 'teams.name';
 
         public const ONDEMAND = 'teams.ondemand';
-
+    
+        /**
+         * @return Team[]
+         */
         public function getAll()
         {
             $query = $this->getQuery();

@@ -85,7 +85,10 @@
         {
             return tables\Teams::getTable()->doesTeamNameExist($team_name);
         }
-
+    
+        /**
+         * @return Team[]
+         */
         public static function getAll()
         {
             if (self::$_teams === null) {

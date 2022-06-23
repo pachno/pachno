@@ -19,8 +19,10 @@
     /**
      * Groups table
      *
+     * @method static Groups getTable()
      * @method Group selectById($id, Query $query = null, $join = 'all')
      * @method Group selectOne(Query $query = null, $join = 'all')
+     * @method Group[] select(Query $query, $join = 'all')
      *
      * @Table(name="groups")
      * @Entity(class="\pachno\core\entities\Group")
@@ -37,7 +39,11 @@
         public const NAME = 'groups.name';
 
         public const SCOPE = 'groups.scope';
-
+    
+        /**
+         * @param $scope
+         * @return Group[]
+         */
         public function getAll($scope = null)
         {
             $scope = $scope ?? framework\Context::getScope()->getID();

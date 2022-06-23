@@ -21,9 +21,6 @@
     /**
      * Group class
      *
-     * @package pachno
-     * @subpackage main
-     *
      * @Table(name="\pachno\core\entities\tables\Groups")
      */
     class Group extends IdentifiableScoped implements Permissible
@@ -55,7 +52,10 @@
         {
             return tables\Groups::getTable()->doesGroupNameExist($group_name);
         }
-
+    
+        /**
+         * @return Group[]
+         */
         public static function getAll()
         {
             if (self::$_groups === null) {

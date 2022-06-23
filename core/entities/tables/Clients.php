@@ -3,7 +3,10 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\Query;
     use b2db\QueryColumnSort;
+    use b2db\Saveable;
+    use pachno\core\entities\Client;
     use pachno\core\framework;
 
     /**
@@ -19,8 +22,10 @@
     /**
      * Clients table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static Clients getTable()
+     * @method Client selectById($id, Query $query = null, $join = 'all')
+     * @method Client selectOne(Query $query, $join = 'all')
+     * @method Client[] select(Query $query, $join = 'all')
      *
      * @Table(name="clients")
      * @Entity(class="\pachno\core\entities\Client")
@@ -45,7 +50,11 @@
         public const TELEPHONE = 'clients.telephone';
 
         public const FAX = 'clients.fax';
-
+    
+        /**
+         * @param $limit
+         * @return Client[]
+         */
         public function getAll($limit = null)
         {
             $query = $this->getQuery();

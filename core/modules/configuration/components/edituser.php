@@ -1,3 +1,17 @@
+<?php
+    
+    use pachno\core\entities\Client;
+    use pachno\core\entities\Group;
+    use pachno\core\entities\Team;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Settings;
+    
+    /**
+     * @var User $user
+     */
+    
+?>
 <?php if ($user->isScopeConfirmed()): ?>
     <div class="backdrop_box medium">
         <div class="backdrop_detail_header">
@@ -8,7 +22,7 @@
             <div class="form-container">
                 <form action="<?= make_url('configure_user', array('user_id' => $user->getID())); ?>" method="post" data-simple-submit data-auto-close id="edit_user_<?= $user->getID(); ?>_form" data-update-container="#users_results_user_<?php echo $user->getID(); ?>" data-update-replace>
                     <div class="form-row">
-                        <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
+                        <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                             <span class="value"><?= $user->getUsername(); ?></span>
                         <?php else: ?>
                             <input type="text" name="username" id="username_<?= $user->getID(); ?>" class="name-input-enhance" value="<?= $user->getUsername(); ?>">
@@ -16,7 +30,7 @@
                         <label for="username_<?= $user->getID(); ?>"><?= __('Username'); ?></label>
                     </div>
                     <div class="form-row">
-                        <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
+                        <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                             <span class="value"><?= ($user->getEmail() == null) ? '-' : $user->getEmail(); ?></span>
                         <?php else: ?>
                             <input type="text" name="email" id="email_<?= $user->getID(); ?>" value="<?= $user->getEmail(); ?>">
@@ -30,8 +44,8 @@
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
-                                    <?php foreach (\pachno\core\entities\Group::getAll() as $group): ?>
-                                        <input type="radio" name="group" value="<?= $group->getId(); ?>" id="edit_user_<?= $user->getId(); ?>_group_<?= $group->getId(); ?>" class="fancy-checkbox" <?php if ($user->getGroupID() == $group->getID()) echo 'checked'; ?>>
+                                    <?php foreach (Group::getAll() as $group): ?>
+                                        <input type="radio" name="group_id" value="<?= $group->getId(); ?>" id="edit_user_<?= $user->getId(); ?>_group_<?= $group->getId(); ?>" class="fancy-checkbox" <?php if ($user->getGroupID() == $group->getID()) echo 'checked'; ?>>
                                         <label for="edit_user_<?= $user->getId(); ?>_group_<?= $group->getId(); ?>" class="list-item">
                                             <span class="icon"><?php echo fa_image_tag('users'); ?></span>
                                             <span class="name value"><?= $group->getName(); ?></span>
@@ -44,7 +58,7 @@
                     <div class="row">
                         <div class="column">
                             <div class="form-row">
-                                <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
+                                <?php if (Context::getScope()->isDefault()): ?>
                                     <input type="checkbox" class="fancy-checkbox" name="activated" value="1" id="user_activated_<?= $user->getID(); ?>" <?php if ($user->isActivated()) echo 'checked'; ?>>
                                     <label for="user_activated_<?= $user->getID(); ?>">
                                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
@@ -58,7 +72,7 @@
                         </div>
                         <div class="column">
                             <div class="form-row">
-                                <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
+                                <?php if (Context::getScope()->isDefault()): ?>
                                     <input type="checkbox" class="fancy-checkbox" name="enabled" value="1" id="user_enabled_<?= $user->getID(); ?>" <?php if ($user->isEnabled()) echo 'checked'; ?>>
                                     <label for="user_enabled_<?= $user->getID(); ?>">
                                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
@@ -72,7 +86,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
+                        <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                             <span class="value"><?= ($user->getRealname() == null) ? '-' : $user->getRealname(); ?></span>
                         <?php else: ?>
                             <input type="text" name="realname" id="realname_<?= $user->getID(); ?>" value="<?= $user->getRealname(); ?>">
@@ -80,26 +94,26 @@
                         <label for="realname_<?= $user->getID(); ?>"><?= __('Real name'); ?></label>
                     </div>
                     <div class="form-row">
-                        <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
+                        <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                             <span class="value"><?= ($user->getNickname() == null) ? '-' : $user->getNickname(); ?></span>
                         <?php else: ?>
                             <input type="text" name="nickname" id="nickname_<?= $user->getID(); ?>" value="<?= $user->getNickname(); ?>">
                         <?php endif; ?>
-                        <label for="buddyname_<?= $user->getID(); ?>"><?= __('Nickname'); ?></label>
+                        <label for="nickname_<?= $user->getID(); ?>"><?= __('Nickname'); ?></label>
                     </div>
                     <div class="form-row">
                         <input type="text" name="homepage" id="homepage_<?= $user->getID(); ?>" style="width: 250px;" value="<?= $user->getHomepage(); ?>">
                         <label for="homepage_<?= $user->getID(); ?>"><?= __('Homepage'); ?></label>
                     </div>
-                    <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
+                    <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                         <div class="form-row explanation">
-                            <?= __('The password setting, along with a number of other settings for this user, have been disabled due to use of an alternative authentictation mechanism'); ?>
+                            <?= __('The password setting, along with a number of other settings for this user, have been disabled due to use of an alternative authentication mechanism'); ?>
                         </div>
                     <?php endif; ?>
                     <div class="form-row">
                         <label><?= __('Member of team(s)'); ?></label>
                         <div class="grid">
-                            <?php foreach (\pachno\core\entities\Team::getAll() as $team): ?>
+                            <?php foreach (Team::getAll() as $team): ?>
                                 <input type="checkbox" class="fancy-checkbox" name="teams[<?= $team->getID(); ?>]" id="team_<?= $user->getID(); ?>_<?= $team->getID(); ?>" value="<?= $team->getID(); ?>"<?php if ($user->isMemberOfTeam($team)): ?> checked<?php endif; ?>>
                                 <label for="team_<?= $user->getID(); ?>_<?= $team->getID(); ?>">
                                     <span class="icon"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></span>
@@ -107,13 +121,13 @@
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                        <?php if (count(\pachno\core\entities\Team::getAll()) == 0): ?>
+                        <?php if (count(Team::getAll()) == 0): ?>
                             <?= __('No teams exist'); ?>
                         <?php endif; ?>
                     </div>
                     <div class="form-row">
                         <label><?= __('Member of client(s)'); ?></label>
-                        <?php foreach (\pachno\core\entities\Client::getAll() as $client): ?>
+                        <?php foreach (Client::getAll() as $client): ?>
                             <div>
                                 <input type="checkbox" class="fancy-checkbox" name="clients[<?= $client->getID(); ?>]" id="client_<?= $user->getID(); ?>_<?= $client->getID(); ?>" value="<?= $client->getID(); ?>"<?php if ($user->isMemberOfClient($client)): ?> checked<?php endif; ?>>
                                 <label for="client_<?= $user->getID(); ?>_<?= $client->getID(); ?>">
@@ -122,7 +136,7 @@
                                 </label>
                             </div>
                         <?php endforeach; ?>
-                        <?php if (count(\pachno\core\entities\Client::getAll()) == 0): ?>
+                        <?php if (count(Client::getAll()) == 0): ?>
                             <?= __('No clients exist'); ?>
                         <?php endif; ?>
                     </div>
