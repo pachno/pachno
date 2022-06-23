@@ -1,0 +1,92 @@
+{
+  "ui": {
+    "yes": "Sim",
+    "no": "Não",
+    "cancel": "Cancelar"
+  },
+  "common": {
+    "mentions": {
+      "user_search_placeholder": "Comece a digitar para pesquisar"
+    },
+    "editorjs": {
+      "tools": {
+        "code": "Bloco de código (idioma de detecção automática)",
+        "codeMirror": "Bloco de código (especifique o idioma)",
+        "alert": {
+          "title": "Mensagem destacada",
+          "placeholder": "Digite uma mensagem aqui para destacá-la"
+        }
+      }
+    }
+  },
+  "agile": {
+    "add_card": "Adicionar cartão",
+    "add_card_here": "Adicionar cartão",
+    "add_swimlane": "Adicionar um subprocesso",
+    "delete_column": {
+      "title": "Excluir coluna?",
+      "message": "Os problemas não serão removidos, mas podem não aparecer mais no quadro. Adicione uma nova coluna ao quadro com os status dessa coluna para que esses problemas apareçam novamente.",
+      "button": "Sim, excluir coluna"
+    },
+    "no_milestone_label": "Problemas não atribuídos a um marco",
+    "choose_sprint_label": "Escolha um período",
+    "backlog": {
+      "generic": {
+        "no_issues": "Nenhum problema é atribuído a este marco",
+        "no_issues_filtered": "Nenhum problema atribuído a este marco corresponde aos filtros selecionados",
+        "milestone": {
+          "delete_title": "Deseja mesmo excluir este marco?",
+          "delete_message": "A remoção deste marco cancelará a atribuição de todos os problemas deste marco e o removerá de todas as listas disponíveis. Essa ação não pode ser desfeita."
+        }
+      },
+      "kanban": {
+        "no_issues": "Nenhum problema é atribuído a este marco",
+        "no_issues_filtered": "Nenhum problema atribuído a este marco corresponde aos filtros selecionados",
+        "milestone": {
+          "delete_title": "Deseja mesmo excluir este marco?",
+          "delete_message": "A remoção deste marco cancelará a atribuição de todos os problemas deste marco e o removerá de todas as listas disponíveis. Essa ação não pode ser desfeita."
+        }
+      },
+      "scrum": {
+        "no_issues": "Não há problemas neste período",
+        "no_issues_filtered": "Nenhum problema neste período corresponde aos filtros selecionados",
+        "milestone": {
+          "delete_title": "Você realmente deseja excluir este período?",
+          "delete_message": "A exclusão deste período removerá todos os problemas neste período e os colocará na lista de pendências. Essa ação não pode ser desfeita."
+        }
+      },
+      "milestone_unscheduled": "Não programado",
+      "milestone_header_issues": "Problemas",
+      "milestone_header_points": "Pontos",
+      "milestone_header_hours": "Horas",
+      "milestone_header_show_issues": "Mostrar problemas",
+      "milestone_show_overview": "Mostrar visão geral",
+      "milestone_mark_as_finished": "Marcar como concluído",
+      "milestone_edit": "Editar",
+      "milestone_delete": "Excluir",
+      "milestone_issues_error": "A lista de problemas não pôde ser carregada"
+    }
+  },
+  "issue": {
+    "value_not_set": "Não determinado",
+    "unknown_value": "Desconhecido",
+    "time_spent_none": "Sem tempo gasto",
+    "time_estimated_none": "Não estimado",
+    "go_to_converted_issue": {
+      "title": "Ir para a nova edição?",
+      "message": "Deseja navegar até o problema que acabou de converter?"
+    }
+  },
+  "roadmap": {
+    "percent_complete": "%percentage% concluído"
+  },
+  "configuration": {
+    "update_available": {
+      "header": "Pachno %version está disponível",
+      "content": "Uma versão atualizada do Pachno está disponível! Deseja abrir o site pach.no para ler mais sobre a versão %version"
+    },
+    "up_to_date": {
+      "message": "Pachno está atualizado"
+    }
+  }
+}
