@@ -58,6 +58,16 @@
                     </div>
                 </div>
             </form>
+            <?php if (\pachno\core\framework\Event::isAnyoneListening('core', 'alternate-signin-list')): ?>
+                <div id="alternate-signin-container" class="form-container">
+                    <div class="form">
+                        <fieldset>
+                            <legend><span><?= __('%login or %signup', array('%login' => '', '%signup' => '')); ?></span></legend>
+                        </fieldset>
+                        <?php \pachno\core\framework\Event::createNew('core', 'alternate-signin-list')->trigger(array_merge(array('selected_tab' => $selected_tab), $options)); ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
