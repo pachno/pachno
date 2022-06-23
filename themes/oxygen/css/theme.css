@@ -6465,25 +6465,28 @@ input[data-interactive-toggle].submitting + label .indicator {
     border-radius: 1.5em;
     border: 1px solid rgba(0, 0, 0, 0.15); }
 
-.list-mode {
+.list-mode, .list-mode[data-simplebar] {
   padding: 0;
   margin: 0;
   display: flex;
+  align-content: stretch;
+  align-items: stretch;
   flex-direction: column;
   text-align: left;
   box-sizing: border-box; }
-  .list-mode.grid-mode {
+  .list-mode.grid-mode, .list-mode[data-simplebar].grid-mode {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-start; }
     .list-mode.grid-mode .list-item,
-    .list-mode.grid-mode .list-item:hover {
+    .list-mode.grid-mode .list-item:hover, .list-mode[data-simplebar].grid-mode .list-item,
+    .list-mode[data-simplebar].grid-mode .list-item:hover {
       justify-content: center;
       margin: .35rem; }
-  .list-mode.updating {
+  .list-mode.updating, .list-mode[data-simplebar].updating {
     opacity: 0.2; }
-  .list-mode .header-banner {
+  .list-mode .header-banner, .list-mode[data-simplebar] .header-banner {
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
@@ -6492,18 +6495,18 @@ input[data-interactive-toggle].submitting + label .indicator {
     z-index: 10;
     background-color: #FFF;
     box-sizing: border-box; }
-    .list-mode .header-banner .header-name {
+    .list-mode .header-banner .header-name, .list-mode[data-simplebar] .header-banner .header-name {
       display: flex;
       flex-direction: row;
       padding: 1.6em;
       align-items: center; }
-      .list-mode .header-banner .header-name .image-container {
+      .list-mode .header-banner .header-name .image-container, .list-mode[data-simplebar] .header-banner .header-name .image-container {
         flex: 0 0 2.8em;
         margin-right: 1em;
         padding: 0; }
-        .list-mode .header-banner .header-name .image-container > img:not(.avatar) {
+        .list-mode .header-banner .header-name .image-container > img:not(.avatar), .list-mode[data-simplebar] .header-banner .header-name .image-container > img:not(.avatar) {
           width: 100%; }
-      .list-mode .header-banner .header-name .name-container {
+      .list-mode .header-banner .header-name .name-container, .list-mode[data-simplebar] .header-banner .header-name .name-container {
         flex: 1 1 auto;
         font-size: 1.55rem;
         font-weight: 500;
@@ -6511,18 +6514,18 @@ input[data-interactive-toggle].submitting + label .indicator {
         display: flex;
         flex-direction: column;
         padding: 0; }
-    .list-mode .header-banner .info-container {
+    .list-mode .header-banner .info-container, .list-mode[data-simplebar] .header-banner .info-container {
       font-size: .6em;
       display: flex;
       align-content: center;
       justify-content: flex-start; }
-      .list-mode .header-banner .info-container .icon {
+      .list-mode .header-banner .info-container .icon, .list-mode[data-simplebar] .header-banner .info-container .icon {
         flex: 0 0 25px;
         padding: .35em 0;
         color: #646464;
         align-self: center;
         text-align: center; }
-    .list-mode .header-banner .button-group {
+    .list-mode .header-banner .button-group, .list-mode[data-simplebar] .header-banner .button-group {
       padding: 0 1.5em 1.5em 1.5em;
       justify-content: flex-end;
       align-content: center;
@@ -6530,19 +6533,26 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .header-banner .button-group button + button,
       .list-mode .header-banner .button-group button + .button,
       .list-mode .header-banner .button-group .button + button,
-      .list-mode .header-banner .button-group .button + .button {
+      .list-mode .header-banner .button-group .button + .button, .list-mode[data-simplebar] .header-banner .button-group button + button,
+      .list-mode[data-simplebar] .header-banner .button-group button + .button,
+      .list-mode[data-simplebar] .header-banner .button-group .button + button,
+      .list-mode[data-simplebar] .header-banner .button-group .button + .button {
         margin-left: auto; }
       .list-mode .header-banner .button-group button.back-button .name,
-      .list-mode .header-banner .button-group .button.back-button .name {
+      .list-mode .header-banner .button-group .button.back-button .name, .list-mode[data-simplebar] .header-banner .button-group button.back-button .name,
+      .list-mode[data-simplebar] .header-banner .button-group .button.back-button .name {
         display: none; }
       .list-mode .header-banner .button-group button.back-button:first-child:last-child,
-      .list-mode .header-banner .button-group .button.back-button:first-child:last-child {
+      .list-mode .header-banner .button-group .button.back-button:first-child:last-child, .list-mode[data-simplebar] .header-banner .button-group button.back-button:first-child:last-child,
+      .list-mode[data-simplebar] .header-banner .button-group .button.back-button:first-child:last-child {
         margin-right: auto; }
         .list-mode .header-banner .button-group button.back-button:first-child:last-child .name,
-        .list-mode .header-banner .button-group .button.back-button:first-child:last-child .name {
+        .list-mode .header-banner .button-group .button.back-button:first-child:last-child .name, .list-mode[data-simplebar] .header-banner .button-group button.back-button:first-child:last-child .name,
+        .list-mode[data-simplebar] .header-banner .button-group .button.back-button:first-child:last-child .name {
           display: inline-flex; }
   .list-mode .list-item,
-  .list-mode .list-item:hover {
+  .list-mode .list-item:hover, .list-mode[data-simplebar] .list-item,
+  .list-mode[data-simplebar] .list-item:hover {
     position: relative;
     padding: .15em .35em;
     display: flex;
@@ -6562,63 +6572,83 @@ input[data-interactive-toggle].submitting + label .indicator {
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
     box-sizing: border-box; }
     .list-mode .list-item:last-child,
-    .list-mode .list-item:hover:last-child {
+    .list-mode .list-item:hover:last-child, .list-mode[data-simplebar] .list-item:last-child,
+    .list-mode[data-simplebar] .list-item:hover:last-child {
       margin-bottom: 0; }
     .list-mode .list-item.hidden,
-    .list-mode .list-item:hover.hidden {
+    .list-mode .list-item:hover.hidden, .list-mode[data-simplebar] .list-item.hidden,
+    .list-mode[data-simplebar] .list-item:hover.hidden {
       display: none; }
     .list-mode .list-item.disabled,
-    .list-mode .list-item:hover.disabled {
+    .list-mode .list-item:hover.disabled, .list-mode[data-simplebar] .list-item.disabled,
+    .list-mode[data-simplebar] .list-item:hover.disabled {
       color: rgba(100, 100, 100, 0.4); }
       .list-mode .list-item.disabled:hover,
-      .list-mode .list-item:hover.disabled:hover {
+      .list-mode .list-item:hover.disabled:hover, .list-mode[data-simplebar] .list-item.disabled:hover,
+      .list-mode[data-simplebar] .list-item:hover.disabled:hover {
         cursor: default; }
       .list-mode .list-item.disabled .icon,
-      .list-mode .list-item:hover.disabled .icon {
+      .list-mode .list-item:hover.disabled .icon, .list-mode[data-simplebar] .list-item.disabled .icon,
+      .list-mode[data-simplebar] .list-item:hover.disabled .icon {
         color: rgba(100, 100, 100, 0.4); }
     .list-mode .list-item.help:hover,
-    .list-mode .list-item:hover.help:hover {
+    .list-mode .list-item:hover.help:hover, .list-mode[data-simplebar] .list-item.help:hover,
+    .list-mode[data-simplebar] .list-item:hover.help:hover {
       cursor: help; }
     .list-mode .list-item.help .icon:not(.issuetype-icon),
-    .list-mode .list-item:hover.help .icon:not(.issuetype-icon) {
+    .list-mode .list-item:hover.help .icon:not(.issuetype-icon), .list-mode[data-simplebar] .list-item.help .icon:not(.issuetype-icon),
+    .list-mode[data-simplebar] .list-item:hover.help .icon:not(.issuetype-icon) {
       color: #00adc7; }
     .list-mode .list-item.danger,
-    .list-mode .list-item:hover.danger {
+    .list-mode .list-item:hover.danger, .list-mode[data-simplebar] .list-item.danger,
+    .list-mode[data-simplebar] .list-item:hover.danger {
       color: #cb1a00; }
       .list-mode .list-item.danger.disabled,
-      .list-mode .list-item:hover.danger.disabled {
+      .list-mode .list-item:hover.danger.disabled, .list-mode[data-simplebar] .list-item.danger.disabled,
+      .list-mode[data-simplebar] .list-item:hover.danger.disabled {
         color: rgba(177, 22, 0, 0.54); }
       .list-mode .list-item.danger .icon,
-      .list-mode .list-item:hover.danger .icon {
+      .list-mode .list-item:hover.danger .icon, .list-mode[data-simplebar] .list-item.danger .icon,
+      .list-mode[data-simplebar] .list-item:hover.danger .icon {
         color: #cb1a00; }
       .list-mode .list-item.danger:not(.disabled):hover,
-      .list-mode .list-item:hover.danger:not(.disabled):hover {
+      .list-mode .list-item:hover.danger:not(.disabled):hover, .list-mode[data-simplebar] .list-item.danger:not(.disabled):hover,
+      .list-mode[data-simplebar] .list-item:hover.danger:not(.disabled):hover {
         background-color: #cb1a00;
         color: #FFF; }
         .list-mode .list-item.danger:not(.disabled):hover .icon,
-        .list-mode .list-item:hover.danger:not(.disabled):hover .icon {
+        .list-mode .list-item:hover.danger:not(.disabled):hover .icon, .list-mode[data-simplebar] .list-item.danger:not(.disabled):hover .icon,
+        .list-mode[data-simplebar] .list-item:hover.danger:not(.disabled):hover .icon {
           color: #FFF; }
     .list-mode .list-item + .fancy-dropdown-container,
-    .list-mode .list-item:hover + .fancy-dropdown-container {
+    .list-mode .list-item:hover + .fancy-dropdown-container, .list-mode[data-simplebar] .list-item + .fancy-dropdown-container,
+    .list-mode[data-simplebar] .list-item:hover + .fancy-dropdown-container {
       margin: .5em 1em; }
     .list-mode .list-item + input[type=text],
-    .list-mode .list-item:hover + input[type=text] {
+    .list-mode .list-item:hover + input[type=text], .list-mode[data-simplebar] .list-item + input[type=text],
+    .list-mode[data-simplebar] .list-item:hover + input[type=text] {
       margin: .5em 1em; }
     .list-mode .list-item .dropper-container,
-    .list-mode .list-item:hover .dropper-container {
+    .list-mode .list-item:hover .dropper-container, .list-mode[data-simplebar] .list-item .dropper-container,
+    .list-mode[data-simplebar] .list-item:hover .dropper-container {
       box-sizing: border-box;
       border-left: 1px solid rgba(100, 100, 100, 0.1); }
       .list-mode .list-item .dropper-container .fas.dropper,
       .list-mode .list-item .dropper-container .far.dropper,
       .list-mode .list-item:hover .dropper-container .fas.dropper,
-      .list-mode .list-item:hover .dropper-container .far.dropper {
+      .list-mode .list-item:hover .dropper-container .far.dropper, .list-mode[data-simplebar] .list-item .dropper-container .fas.dropper,
+      .list-mode[data-simplebar] .list-item .dropper-container .far.dropper,
+      .list-mode[data-simplebar] .list-item:hover .dropper-container .fas.dropper,
+      .list-mode[data-simplebar] .list-item:hover .dropper-container .far.dropper {
         padding: .75em; }
     .list-mode .list-item.active .dropper-container,
-    .list-mode .list-item:hover.active .dropper-container {
+    .list-mode .list-item:hover.active .dropper-container, .list-mode[data-simplebar] .list-item.active .dropper-container,
+    .list-mode[data-simplebar] .list-item:hover.active .dropper-container {
       border-radius: 4px;
       background-color: rgba(100, 100, 100, 0.1); }
     .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover,
-    .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover {
+    .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover,
+    .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover {
       background-color: rgba(225, 225, 225, 0.2);
       color: #141823; }
       .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-bug_report, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-developer_report, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-feature_request, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-idea, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-enhancement, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-epic, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-documentation_request, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-unknown, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task,
@@ -6631,53 +6661,81 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-documentation_request,
       .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-unknown,
       .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task {
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-bug_report, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-developer_report, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-feature_request, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-idea, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-enhancement, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-epic, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-documentation_request, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-unknown, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-, .list-mode[data-simplebar] .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-bug_report,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-developer_report,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-feature_request,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-idea,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-enhancement,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-epic,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-documentation_request,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-unknown,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-,
+      .list-mode[data-simplebar] .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task {
         background-color: rgba(225, 225, 225, 0.2);
         color: #141823; }
     .list-mode .list-item.selected,
-    .list-mode .list-item:hover.selected {
+    .list-mode .list-item:hover.selected, .list-mode[data-simplebar] .list-item.selected,
+    .list-mode[data-simplebar] .list-item:hover.selected {
       background-color: rgba(12, 216, 182, 0.1);
       color: #0cd8b6;
       border-left: 3px solid #0cd8b6;
       font-weight: 400; }
       .list-mode .list-item.selected:hover,
-      .list-mode .list-item:hover.selected:hover {
+      .list-mode .list-item:hover.selected:hover, .list-mode[data-simplebar] .list-item.selected:hover,
+      .list-mode[data-simplebar] .list-item:hover.selected:hover {
         color: #FFF; }
         .list-mode .list-item.selected:hover > .icon:not(.issuetype-icon),
         .list-mode .list-item.selected:hover > a .icon:not(.issuetype-icon),
         .list-mode .list-item:hover.selected:hover > .icon:not(.issuetype-icon),
-        .list-mode .list-item:hover.selected:hover > a .icon:not(.issuetype-icon) {
+        .list-mode .list-item:hover.selected:hover > a .icon:not(.issuetype-icon), .list-mode[data-simplebar] .list-item.selected:hover > .icon:not(.issuetype-icon),
+        .list-mode[data-simplebar] .list-item.selected:hover > a .icon:not(.issuetype-icon),
+        .list-mode[data-simplebar] .list-item:hover.selected:hover > .icon:not(.issuetype-icon),
+        .list-mode[data-simplebar] .list-item:hover.selected:hover > a .icon:not(.issuetype-icon) {
           color: #141823; }
         .list-mode .list-item.selected:hover > .name,
         .list-mode .list-item.selected:hover > a .name,
         .list-mode .list-item:hover.selected:hover > .name,
-        .list-mode .list-item:hover.selected:hover > a .name {
+        .list-mode .list-item:hover.selected:hover > a .name, .list-mode[data-simplebar] .list-item.selected:hover > .name,
+        .list-mode[data-simplebar] .list-item.selected:hover > a .name,
+        .list-mode[data-simplebar] .list-item:hover.selected:hover > .name,
+        .list-mode[data-simplebar] .list-item:hover.selected:hover > a .name {
           color: #0cd8b6; }
       .list-mode .list-item.selected > .icon:not(.issuetype-icon),
       .list-mode .list-item.selected > a .icon:not(.issuetype-icon),
       .list-mode .list-item:hover.selected > .icon:not(.issuetype-icon),
-      .list-mode .list-item:hover.selected > a .icon:not(.issuetype-icon) {
+      .list-mode .list-item:hover.selected > a .icon:not(.issuetype-icon), .list-mode[data-simplebar] .list-item.selected > .icon:not(.issuetype-icon),
+      .list-mode[data-simplebar] .list-item.selected > a .icon:not(.issuetype-icon),
+      .list-mode[data-simplebar] .list-item:hover.selected > .icon:not(.issuetype-icon),
+      .list-mode[data-simplebar] .list-item:hover.selected > a .icon:not(.issuetype-icon) {
         color: #232323; }
       .list-mode .list-item.selected > .name,
       .list-mode .list-item.selected > a .name,
       .list-mode .list-item:hover.selected > .name,
-      .list-mode .list-item:hover.selected > a .name {
+      .list-mode .list-item:hover.selected > a .name, .list-mode[data-simplebar] .list-item.selected > .name,
+      .list-mode[data-simplebar] .list-item.selected > a .name,
+      .list-mode[data-simplebar] .list-item:hover.selected > .name,
+      .list-mode[data-simplebar] .list-item:hover.selected > a .name {
         color: #232323;
         font-weight: 400; }
     .list-mode .list-item.multiline .icon:not(.time-tracking-icon),
-    .list-mode .list-item:hover.multiline .icon:not(.time-tracking-icon) {
+    .list-mode .list-item:hover.multiline .icon:not(.time-tracking-icon), .list-mode[data-simplebar] .list-item.multiline .icon:not(.time-tracking-icon),
+    .list-mode[data-simplebar] .list-item:hover.multiline .icon:not(.time-tracking-icon) {
       font-size: 1.2em; }
       .list-mode .list-item.multiline .icon:not(.time-tracking-icon).large + span.name,
-      .list-mode .list-item:hover.multiline .icon:not(.time-tracking-icon).large + span.name {
+      .list-mode .list-item:hover.multiline .icon:not(.time-tracking-icon).large + span.name, .list-mode[data-simplebar] .list-item.multiline .icon:not(.time-tracking-icon).large + span.name,
+      .list-mode[data-simplebar] .list-item:hover.multiline .icon:not(.time-tracking-icon).large + span.name {
         padding-left: .5em; }
     .list-mode .list-item.multiline span.name,
-    .list-mode .list-item:hover.multiline span.name {
+    .list-mode .list-item:hover.multiline span.name, .list-mode[data-simplebar] .list-item.multiline span.name,
+    .list-mode[data-simplebar] .list-item:hover.multiline span.name {
       flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       font-size: 1em; }
       .list-mode .list-item.multiline span.name .title,
-      .list-mode .list-item:hover.multiline span.name .title {
+      .list-mode .list-item:hover.multiline span.name .title, .list-mode[data-simplebar] .list-item.multiline span.name .title,
+      .list-mode[data-simplebar] .list-item:hover.multiline span.name .title {
         font-weight: 500;
         white-space: normal;
         width: 100%;
@@ -6685,14 +6743,16 @@ input[data-interactive-toggle].submitting + label .indicator {
         align-items: center;
         justify-content: flex-start; }
         .list-mode .list-item.multiline span.name .title .separator,
-        .list-mode .list-item:hover.multiline span.name .title .separator {
+        .list-mode .list-item:hover.multiline span.name .title .separator, .list-mode[data-simplebar] .list-item.multiline span.name .title .separator,
+        .list-mode[data-simplebar] .list-item:hover.multiline span.name .title .separator {
           flex: 0 0 auto;
           padding: 0 .5em;
           margin: 0;
           font-size: 0.8em;
           border-bottom: none; }
       .list-mode .list-item.multiline span.name .description,
-      .list-mode .list-item:hover.multiline span.name .description {
+      .list-mode .list-item:hover.multiline span.name .description, .list-mode[data-simplebar] .list-item.multiline span.name .description,
+      .list-mode[data-simplebar] .list-item:hover.multiline span.name .description {
         display: flex;
         text-align: left;
         align-items: center;
@@ -6700,10 +6760,14 @@ input[data-interactive-toggle].submitting + label .indicator {
         .list-mode .list-item.multiline span.name .description span,
         .list-mode .list-item.multiline span.name .description .button,
         .list-mode .list-item:hover.multiline span.name .description span,
-        .list-mode .list-item:hover.multiline span.name .description .button {
+        .list-mode .list-item:hover.multiline span.name .description .button, .list-mode[data-simplebar] .list-item.multiline span.name .description span,
+        .list-mode[data-simplebar] .list-item.multiline span.name .description .button,
+        .list-mode[data-simplebar] .list-item:hover.multiline span.name .description span,
+        .list-mode[data-simplebar] .list-item:hover.multiline span.name .description .button {
           display: inline-flex; }
     .list-mode .list-item.multiline .information,
-    .list-mode .list-item:hover.multiline .information {
+    .list-mode .list-item:hover.multiline .information, .list-mode[data-simplebar] .list-item.multiline .information,
+    .list-mode[data-simplebar] .list-item:hover.multiline .information {
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
@@ -6711,19 +6775,23 @@ input[data-interactive-toggle].submitting + label .indicator {
       align-items: flex-start;
       justify-content: center; }
       .list-mode .list-item.multiline .information:last-child,
-      .list-mode .list-item:hover.multiline .information:last-child {
+      .list-mode .list-item:hover.multiline .information:last-child, .list-mode[data-simplebar] .list-item.multiline .information:last-child,
+      .list-mode[data-simplebar] .list-item:hover.multiline .information:last-child {
         align-items: flex-end; }
       .list-mode .list-item.multiline .information .row,
-      .list-mode .list-item:hover.multiline .information .row {
+      .list-mode .list-item:hover.multiline .information .row, .list-mode[data-simplebar] .list-item.multiline .information .row,
+      .list-mode[data-simplebar] .list-item:hover.multiline .information .row {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start; }
         .list-mode .list-item.multiline .information .row + .row,
-        .list-mode .list-item:hover.multiline .information .row + .row {
+        .list-mode .list-item:hover.multiline .information .row + .row, .list-mode[data-simplebar] .list-item.multiline .information .row + .row,
+        .list-mode[data-simplebar] .list-item:hover.multiline .information .row + .row {
           margin-top: .15em; }
         .list-mode .list-item.multiline .information .row .item,
-        .list-mode .list-item:hover.multiline .information .row .item {
+        .list-mode .list-item:hover.multiline .information .row .item, .list-mode[data-simplebar] .list-item.multiline .information .row .item,
+        .list-mode[data-simplebar] .list-item:hover.multiline .information .row .item {
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -6733,38 +6801,48 @@ input[data-interactive-toggle].submitting + label .indicator {
           background-color: rgba(225, 225, 225, 0.3);
           color: #676767; }
           .list-mode .list-item.multiline .information .row .item .icon,
-          .list-mode .list-item:hover.multiline .information .row .item .icon {
+          .list-mode .list-item:hover.multiline .information .row .item .icon, .list-mode[data-simplebar] .list-item.multiline .information .row .item .icon,
+          .list-mode[data-simplebar] .list-item:hover.multiline .information .row .item .icon {
             padding: 0;
             margin: 0;
             flex: 0 0 auto; }
             .list-mode .list-item.multiline .information .row .item .icon + span,
-            .list-mode .list-item:hover.multiline .information .row .item .icon + span {
+            .list-mode .list-item:hover.multiline .information .row .item .icon + span, .list-mode[data-simplebar] .list-item.multiline .information .row .item .icon + span,
+            .list-mode[data-simplebar] .list-item:hover.multiline .information .row .item .icon + span {
               margin-left: .25em; }
           .list-mode .list-item.multiline .information .row .item + .item,
-          .list-mode .list-item:hover.multiline .information .row .item + .item {
+          .list-mode .list-item:hover.multiline .information .row .item + .item, .list-mode[data-simplebar] .list-item.multiline .information .row .item + .item,
+          .list-mode[data-simplebar] .list-item:hover.multiline .information .row .item + .item {
             margin-left: .25em; }
     .list-mode .list-item.with-pop-out,
-    .list-mode .list-item:hover.with-pop-out {
+    .list-mode .list-item:hover.with-pop-out, .list-mode[data-simplebar] .list-item.with-pop-out,
+    .list-mode[data-simplebar] .list-item:hover.with-pop-out {
       padding-right: 0; }
     .list-mode .list-item.expandable,
-    .list-mode .list-item:hover.expandable {
+    .list-mode .list-item:hover.expandable, .list-mode[data-simplebar] .list-item.expandable,
+    .list-mode[data-simplebar] .list-item:hover.expandable {
       padding-right: 0; }
       .list-mode .list-item.expandable.expanded.selected,
-      .list-mode .list-item:hover.expandable.expanded.selected {
+      .list-mode .list-item:hover.expandable.expanded.selected, .list-mode[data-simplebar] .list-item.expandable.expanded.selected,
+      .list-mode[data-simplebar] .list-item:hover.expandable.expanded.selected {
         background-color: transparent;
         border-color: #0cd8b6; }
         .list-mode .list-item.expandable.expanded.selected .name,
-        .list-mode .list-item:hover.expandable.expanded.selected .name {
+        .list-mode .list-item:hover.expandable.expanded.selected .name, .list-mode[data-simplebar] .list-item.expandable.expanded.selected .name,
+        .list-mode[data-simplebar] .list-item:hover.expandable.expanded.selected .name {
           color: #0cd8b6;
           font-weight: 500; }
         .list-mode .list-item.expandable.expanded.selected .icon,
-        .list-mode .list-item:hover.expandable.expanded.selected .icon {
+        .list-mode .list-item:hover.expandable.expanded.selected .icon, .list-mode[data-simplebar] .list-item.expandable.expanded.selected .icon,
+        .list-mode[data-simplebar] .list-item:hover.expandable.expanded.selected .icon {
           color: #0cd8b6; }
     .list-mode .list-item.faq,
-    .list-mode .list-item:hover.faq {
+    .list-mode .list-item:hover.faq, .list-mode[data-simplebar] .list-item.faq,
+    .list-mode[data-simplebar] .list-item:hover.faq {
       font-size: 1.05em; }
     .list-mode .list-item .name,
-    .list-mode .list-item:hover .name {
+    .list-mode .list-item:hover .name, .list-mode[data-simplebar] .list-item .name,
+    .list-mode[data-simplebar] .list-item:hover .name {
       flex: 1 1 auto;
       align-self: center;
       padding: 7px 0;
@@ -6775,13 +6853,18 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item .indicator,
     .list-mode .list-item .icon.indicator,
     .list-mode .list-item:hover .indicator,
-    .list-mode .list-item:hover .icon.indicator {
+    .list-mode .list-item:hover .icon.indicator, .list-mode[data-simplebar] .list-item .indicator,
+    .list-mode[data-simplebar] .list-item .icon.indicator,
+    .list-mode[data-simplebar] .list-item:hover .indicator,
+    .list-mode[data-simplebar] .list-item:hover .icon.indicator {
       display: none;
       flex: 0 0 auto;
       text-align: center; }
     .list-mode .list-item.filter-container, .list-mode .list-item.text-input-container,
     .list-mode .list-item:hover.filter-container,
-    .list-mode .list-item:hover.text-input-container {
+    .list-mode .list-item:hover.text-input-container, .list-mode[data-simplebar] .list-item.filter-container, .list-mode[data-simplebar] .list-item.text-input-container,
+    .list-mode[data-simplebar] .list-item:hover.filter-container,
+    .list-mode[data-simplebar] .list-item:hover.text-input-container {
       border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
       margin-bottom: 7px;
       padding-bottom: 7px;
@@ -6789,7 +6872,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       border-radius: 0; }
       .list-mode .list-item.filter-container:hover, .list-mode .list-item.text-input-container:hover,
       .list-mode .list-item:hover.filter-container:hover,
-      .list-mode .list-item:hover.text-input-container:hover {
+      .list-mode .list-item:hover.text-input-container:hover, .list-mode[data-simplebar] .list-item.filter-container:hover, .list-mode[data-simplebar] .list-item.text-input-container:hover,
+      .list-mode[data-simplebar] .list-item:hover.filter-container:hover,
+      .list-mode[data-simplebar] .list-item:hover.text-input-container:hover {
         background: transparent; }
       .list-mode .list-item.filter-container input[type=text],
       .list-mode .list-item.filter-container input[type=search], .list-mode .list-item.text-input-container input[type=text],
@@ -6797,7 +6882,13 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover.filter-container input[type=text],
       .list-mode .list-item:hover.filter-container input[type=search],
       .list-mode .list-item:hover.text-input-container input[type=text],
-      .list-mode .list-item:hover.text-input-container input[type=search] {
+      .list-mode .list-item:hover.text-input-container input[type=search], .list-mode[data-simplebar] .list-item.filter-container input[type=text],
+      .list-mode[data-simplebar] .list-item.filter-container input[type=search], .list-mode[data-simplebar] .list-item.text-input-container input[type=text],
+      .list-mode[data-simplebar] .list-item.text-input-container input[type=search],
+      .list-mode[data-simplebar] .list-item:hover.filter-container input[type=text],
+      .list-mode[data-simplebar] .list-item:hover.filter-container input[type=search],
+      .list-mode[data-simplebar] .list-item:hover.text-input-container input[type=text],
+      .list-mode[data-simplebar] .list-item:hover.text-input-container input[type=search] {
         border: none;
         background: rgba(200, 200, 200, 0.1);
         padding: .45em .75em;
@@ -6810,14 +6901,23 @@ input[data-interactive-toggle].submitting + label .indicator {
         .list-mode .list-item:hover.filter-container input[type=text].filtering + .indicator,
         .list-mode .list-item:hover.filter-container input[type=search].filtering + .indicator,
         .list-mode .list-item:hover.text-input-container input[type=text].filtering + .indicator,
-        .list-mode .list-item:hover.text-input-container input[type=search].filtering + .indicator {
+        .list-mode .list-item:hover.text-input-container input[type=search].filtering + .indicator, .list-mode[data-simplebar] .list-item.filter-container input[type=text].filtering + .indicator,
+        .list-mode[data-simplebar] .list-item.filter-container input[type=search].filtering + .indicator, .list-mode[data-simplebar] .list-item.text-input-container input[type=text].filtering + .indicator,
+        .list-mode[data-simplebar] .list-item.text-input-container input[type=search].filtering + .indicator,
+        .list-mode[data-simplebar] .list-item:hover.filter-container input[type=text].filtering + .indicator,
+        .list-mode[data-simplebar] .list-item:hover.filter-container input[type=search].filtering + .indicator,
+        .list-mode[data-simplebar] .list-item:hover.text-input-container input[type=text].filtering + .indicator,
+        .list-mode[data-simplebar] .list-item:hover.text-input-container input[type=search].filtering + .indicator {
           display: inline-block; }
     .list-mode .list-item.submitting .indicator,
-    .list-mode .list-item:hover.submitting .indicator {
+    .list-mode .list-item:hover.submitting .indicator, .list-mode[data-simplebar] .list-item.submitting .indicator,
+    .list-mode[data-simplebar] .list-item:hover.submitting .indicator {
       display: inline-block; }
     .list-mode .list-item.separator, .list-mode .list-item.separator:hover,
     .list-mode .list-item:hover.separator,
-    .list-mode .list-item:hover.separator:hover {
+    .list-mode .list-item:hover.separator:hover, .list-mode[data-simplebar] .list-item.separator, .list-mode[data-simplebar] .list-item.separator:hover,
+    .list-mode[data-simplebar] .list-item:hover.separator,
+    .list-mode[data-simplebar] .list-item:hover.separator:hover {
       padding: 2px 0 0 0;
       margin: 0 10px 7px 10px;
       border-bottom: 1px solid rgba(100, 100, 100, 0.2);
@@ -6826,7 +6926,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       border-radius: 0;
       flex: 0 0 1px; }
     .list-mode .list-item .icon,
-    .list-mode .list-item:hover .icon {
+    .list-mode .list-item:hover .icon, .list-mode[data-simplebar] .list-item .icon,
+    .list-mode[data-simplebar] .list-item:hover .icon {
       flex: 0 0 35px;
       align-self: center;
       text-align: center;
@@ -6835,27 +6936,35 @@ input[data-interactive-toggle].submitting + label .indicator {
       flex-direction: row;
       box-sizing: border-box; }
       .list-mode .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child),
-      .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child) {
+      .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child), .list-mode[data-simplebar] .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child),
+      .list-mode[data-simplebar] .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child) {
         padding: .25em .15em;
         flex: 0 0 30px; }
       .list-mode .list-item .icon.issuetype-icon,
-      .list-mode .list-item:hover .icon.issuetype-icon {
+      .list-mode .list-item:hover .icon.issuetype-icon, .list-mode[data-simplebar] .list-item .icon.issuetype-icon,
+      .list-mode[data-simplebar] .list-item:hover .icon.issuetype-icon {
         flex: 0 0 30px;
         padding: .65em; }
       .list-mode .list-item .icon.large,
-      .list-mode .list-item:hover .icon.large {
+      .list-mode .list-item:hover .icon.large, .list-mode[data-simplebar] .list-item .icon.large,
+      .list-mode[data-simplebar] .list-item:hover .icon.large {
         flex: 0 0 36px;
         display: flex; }
       .list-mode .list-item .icon img:not(.avatar),
-      .list-mode .list-item:hover .icon img:not(.avatar) {
+      .list-mode .list-item:hover .icon img:not(.avatar), .list-mode[data-simplebar] .list-item .icon img:not(.avatar),
+      .list-mode[data-simplebar] .list-item:hover .icon img:not(.avatar) {
         width: 100%; }
       .list-mode .list-item .icon:not(.issuetype-icon),
-      .list-mode .list-item:hover .icon:not(.issuetype-icon) {
+      .list-mode .list-item:hover .icon:not(.issuetype-icon), .list-mode[data-simplebar] .list-item .icon:not(.issuetype-icon),
+      .list-mode[data-simplebar] .list-item:hover .icon:not(.issuetype-icon) {
         color: inherit; }
     .list-mode .list-item > a,
     .list-mode .list-item > a:hover,
     .list-mode .list-item:hover > a,
-    .list-mode .list-item:hover > a:hover {
+    .list-mode .list-item:hover > a:hover, .list-mode[data-simplebar] .list-item > a,
+    .list-mode[data-simplebar] .list-item > a:hover,
+    .list-mode[data-simplebar] .list-item:hover > a,
+    .list-mode[data-simplebar] .list-item:hover > a:hover {
       color: inherit;
       border: none;
       display: flex;
@@ -6863,7 +6972,10 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item > a:not(.icon),
       .list-mode .list-item > a:hover:not(.icon),
       .list-mode .list-item:hover > a:not(.icon),
-      .list-mode .list-item:hover > a:hover:not(.icon) {
+      .list-mode .list-item:hover > a:hover:not(.icon), .list-mode[data-simplebar] .list-item > a:not(.icon),
+      .list-mode[data-simplebar] .list-item > a:hover:not(.icon),
+      .list-mode[data-simplebar] .list-item:hover > a:not(.icon),
+      .list-mode[data-simplebar] .list-item:hover > a:hover:not(.icon) {
         flex: 1 1 auto; }
       .list-mode .list-item > a .fas.icon,
       .list-mode .list-item > a .far.icon,
@@ -6872,13 +6984,22 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover > a .fas.icon,
       .list-mode .list-item:hover > a .far.icon,
       .list-mode .list-item:hover > a:hover .fas.icon,
-      .list-mode .list-item:hover > a:hover .far.icon {
+      .list-mode .list-item:hover > a:hover .far.icon, .list-mode[data-simplebar] .list-item > a .fas.icon,
+      .list-mode[data-simplebar] .list-item > a .far.icon,
+      .list-mode[data-simplebar] .list-item > a:hover .fas.icon,
+      .list-mode[data-simplebar] .list-item > a:hover .far.icon,
+      .list-mode[data-simplebar] .list-item:hover > a .fas.icon,
+      .list-mode[data-simplebar] .list-item:hover > a .far.icon,
+      .list-mode[data-simplebar] .list-item:hover > a:hover .fas.icon,
+      .list-mode[data-simplebar] .list-item:hover > a:hover .far.icon {
         margin-right: 0; }
     .list-mode .list-item .button-group, .list-mode .list-item .button-group:hover,
     .list-mode .list-item:hover .button-group,
-    .list-mode .list-item:hover .button-group:hover {
+    .list-mode .list-item:hover .button-group:hover, .list-mode[data-simplebar] .list-item .button-group, .list-mode[data-simplebar] .list-item .button-group:hover,
+    .list-mode[data-simplebar] .list-item:hover .button-group,
+    .list-mode[data-simplebar] .list-item:hover .button-group:hover {
       padding: .25em; }
-  .list-mode .fancy-checkbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
+  .list-mode .fancy-checkbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover, .list-mode[data-simplebar] .fancy-checkbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
     background-color: #0cd8b6;
     color: #FFF; }
 
@@ -7976,10 +8097,12 @@ input[type=email],
   overflow: hidden;
   position: relative; }
   .content-with-sidebar > div:not(.sidebar):not(.fixed-position) {
-    height: 100%;
+    height: auto;
+    min-height: 100%;
     box-sizing: border-box;
     overflow: auto;
     flex: 1 1 auto;
+    flex-wrap: nowrap;
     background-color: rgba(225, 225, 225, 0.15);
     display: flex;
     flex-direction: column;
@@ -13374,12 +13497,14 @@ dl.info {
   box-shadow: none; }
 
 .content-with-sidebar.article-container .main_area {
-  padding: 0 2em; }
+  padding: 0 2em;
+  height: auto; }
   .content-with-sidebar.article-container .main_area .header-container {
     padding: .5em 0 1em 0;
     max-width: 1024px;
     margin: 0 auto;
-    display: flex; }
+    display: flex;
+    width: 100%; }
     .content-with-sidebar.article-container .main_area .header-container .title-container {
       flex: 1 1 auto; }
       .content-with-sidebar.article-container .main_area .header-container .title-container .title-name {
@@ -14044,7 +14169,8 @@ DEL {
 
 #article_comments, #article_attachments, #article_categories {
   max-width: 1024px;
-  margin: 2em auto .5em auto; }
+  margin: 2em auto .5em auto;
+  width: 100%; }
   #article_comments h4, #article_attachments h4, #article_categories h4 {
     color: #676767;
     font-size: 1.2em;

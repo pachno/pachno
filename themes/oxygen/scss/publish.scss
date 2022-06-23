@@ -83,12 +83,14 @@
 
     .main_area {
       padding: 0 2em;
+      height: auto;
 
       .header-container {
         padding: .5em 0 1em 0;
         max-width: 1024px;
         margin: 0 auto;
         display: flex;
+        width: 100%;
 
         .title-container {
           flex: 1 1 auto;
@@ -1072,6 +1074,7 @@ DEL {
 #article_comments, #article_attachments, #article_categories {
   max-width: 1024px;
   margin: 2em auto .5em auto;
+  width: 100%;
 
   h4 {
     color: $theme-text-color-lighter;
