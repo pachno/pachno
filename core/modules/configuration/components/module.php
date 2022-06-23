@@ -45,7 +45,7 @@
         <?php if (Context::getScope()->isDefault()): ?>
             <?php if ($module->getID()): ?>
                 <?php if ($module->isOutdated()): ?>
-                    <button class="list-item trigger-install-module" data-key="<?= $module->getName(); ?>" data-install-update="1">
+                    <button class="list-item trigger-install-module" data-key="<?= $module->getName(); ?>">
                         <?php echo fa_image_tag('spinner', ['class' => 'indicator fa-spin icon']); ?>
                         <span class="name"><?= __('Install update'); ?></span>
                     </button>

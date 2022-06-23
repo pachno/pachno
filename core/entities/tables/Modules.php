@@ -151,8 +151,14 @@
         {
             $core_classname = "\\pachno\\core\\modules\\" . $identifier . "\\" . ucfirst($identifier);
             if (class_exists($core_classname)) {
+                /**
+                 * @var Module
+                 */
                 $module = new $core_classname($identifier);
             } else {
+                /**
+                 * @var static Module
+                 */
                 $classname = "\\pachno\\modules\\" . $identifier . "\\" . ucfirst($identifier);
                 if (!class_exists($classname)) {
                     throw new Exception('Can not load new instance of type \\pachno\\modules\\' . $identifier . "\\" . ucfirst($identifier) . ', is not loaded');
@@ -170,6 +176,13 @@
                     $module_id = $this->rawInsert($insertion)->getInsertID();
                 } else {
                     $module_id = $res->get(self::ID);
+                    if ($res->get(self::VERSION) !== $classname::VERSION) {
+                        $update = new Update();
+                        $update->update(self::VERSION, $classname::VERSION);
+                        $query = $this->getQuery();
+                        $query->where(self::ID, $module_id);
+                        $this->rawUpdate($update, $query);
+                    }
                 }
 
                 $module = new $classname($module_id);
