@@ -129,14 +129,6 @@
          */
         protected $_comment;
 
-        public static function getSpentHoursValue($hours)
-        {
-            $hours = trim(str_replace([','], ['.'], $hours));
-            $hours *= 100;
-
-            return $hours;
-        }
-
         /**
          * @return User
          */

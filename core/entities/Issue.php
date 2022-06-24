@@ -2953,7 +2953,7 @@
                 foreach ($issue->getSpentTime() as $key => $value) $spent_times[$key] += $value;
             }
 
-            $spent_times['hours'] *= 100;
+//            $spent_times['hours'] *= 100;
 
             $this->setEstimatedTime($estimated_times);
             $this->setSpentTime($spent_times);
@@ -2978,7 +2978,7 @@
          */
         public function getEstimatedTime()
         {
-            return ['months' => (int)$this->_estimated_months, 'weeks' => (int)$this->_estimated_weeks, 'days' => (int)$this->_estimated_days, 'hours' => (int)$this->getEstimatedHours(), 'minutes' => (int)$this->getEstimatedMinutes(), 'points' => (int)$this->_estimated_points];
+            return ['months' => (int) $this->_estimated_months, 'weeks' => (int)$this->_estimated_weeks, 'days' => (int)$this->_estimated_days, 'hours' => (int)$this->getEstimatedHours(), 'minutes' => (int)$this->getEstimatedMinutes(), 'points' => (int)$this->_estimated_points];
         }
 
         /**
@@ -4355,7 +4355,7 @@
             $this->clearUserWorkingOnIssue();
 
             if ($time_spent['minutes'] > 0 || $time_spent['hours'] > 0 || $time_spent['days'] > 0 || $time_spent['weeks'] > 0) {
-                $time_spent['hours'] *= 100;
+//                $time_spent['hours'] *= 100;
                 $spenttime = new IssueSpentTime();
                 $spenttime->setIssue($this);
                 $spenttime->setUser(Context::getUser());

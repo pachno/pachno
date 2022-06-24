@@ -438,7 +438,7 @@
                             $times[$request['timespent_specified_type']] = $request['timespent_specified_value'];
                         }
                         if (array_sum($times) > 0) {
-                            $times['hours'] *= 100;
+//                            $times['hours'] *= 100;
                             $spenttime = new IssueSpentTime();
                             $spenttime->setIssue($issue);
                             $spenttime->setUser(framework\Context::getUser());
