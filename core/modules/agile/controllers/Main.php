@@ -322,12 +322,10 @@
                 'column' => $column->toJSON(),
             ];
 
-            if ($request->isPost() && $request['milestone_id']) {
-                $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
-                if ($milestone instanceof Milestone) {
-                    $swimlanes_json = $board->toMilestoneJSON($milestone, $column->getID());
-                    $options['swimlanes'] = $swimlanes_json['swimlanes'];
-                }
+            if ($request->isPost()) {
+                $milestone = ($request['milestone_id']) ? Milestones::getTable()->selectById((int)$request['milestone_id']) : null;
+                $swimlanes_json = $board->toMilestoneJSON($milestone, $column->getID());
+                $options['swimlanes'] = $swimlanes_json['swimlanes'];
             }
 
             return $this->renderJSON($options);

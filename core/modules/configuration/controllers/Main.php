@@ -153,7 +153,7 @@
                     }
                 }
 
-                return $this->renderJSON(['title' => framework\Context::getI18n()->__('All settings saved')]);
+                return $this->renderJSON(['message' => framework\Context::getI18n()->__('All settings saved')]);
             }
         }
 

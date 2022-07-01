@@ -918,7 +918,7 @@ class Issue {
         const card_url = this.board_id !== undefined ? `${this.card_url}/board_id/${this.board_id}` : this.card_url;
 
         let html = `
-<div id="whiteboard_issue_${this.id}" draggable="true" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(' ')}" data-issue-id="${this.id}" data-url="${card_url}">
+<div id="whiteboard_issue_${this.id}" draggable="true" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(' ')}" data-issue data-url="${card_url}">
     <div class="issue-header" style="${background}" data-dynamic-field-value data-field="cover_image" data-issue-id="${this.id}">
         <span class="issue-number">${this.issue_no}</span>
         <span class="issue-title" data-dynamic-field-value data-field="title" data-issue-id="${this.id}">${this.title}</span>

@@ -123,6 +123,7 @@ const setupListeners = () => {
                 if ($('[data-issue]').length === 0 && $issueDeletedMessage.length > 0) {
                     $issueDeletedMessage.removeClass('hidden');
                 }
+                Pachno.UI.Backdrop.reset();
                 Pachno.UI.Dialog.dismiss();
             })
     });

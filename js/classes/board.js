@@ -313,6 +313,18 @@ class Board {
                 if ($(`#${column_id}`).length) {
                     continue;
                 }
+                $('.add-next-column-status-list input').each(function() {
+                    $(this).removeAttr('disabled');
+                });
+                $('.add-next-column-status-list label').each(function() {
+                    $(this).removeClass('disabled');
+                });
+                for (const column of this.columns) {
+                    for (const status_id of column.status_ids) {
+                        $(`#add_next_column_status_${status_id}`).attr('disabled', true);
+                        $(`label[for=add_next_column_status_${status_id}]`).addClass('disabled');
+                    }
+                }
 
                 let html = `<div class="column" id="${column_id}" data-swimlane-identifier="${swimlane.identifier}" data-column-id="${column.id}" data-status-ids="${status_ids}">`;
                 if (this.swimlane_type === SwimlaneTypes.NONE || !swimlane.has_identifiables) {
@@ -544,12 +556,6 @@ class Board {
                     const board_swimlane = this.swimlanes.find(lane => lane.identifier == swimlane.identifier);
                     board_swimlane.addIssues(swimlane.issues);
                 }
-            }
-        }
-        for (const column of this.columns) {
-            for (const status_id of column.status_ids) {
-                $(`#add_next_column_status_${status_id}`).attr('disabled', true);
-                $(`label[for=add_next_column_status_${status_id}]`).addClass('disabled');
             }
         }
         this.updateWhiteboard();

@@ -7,15 +7,23 @@
     /**
      * @var BoardColumn $column
      * @var AgileBoard $board
+     * @var bool $editable
      */
 
 ?>
 <div class="column form-container" id="whiteboard-column-header-<?= $column->getID(); ?>" data-whiteboard-column data-column-id="<?= $column->getID(); ?>" data-min-workitems="<?php echo $column->getMinWorkitems(); ?>" data-max-workitems="<?php echo $column->getMaxWorkitems(); ?>" data-status-ids="<?= implode(',', $column->getStatusIds()); ?>" data-url="<?= $column->getUrl(); ?>" data-sort-order="<?= $column->getSortOrder(); ?>">
     <div class="row" title="<?php echo $column->getName(); ?>">
-        <form class="name" method="POST" action="<?php echo make_url('agile_whiteboardcolumn', array('project_key' => $column->getBoard()->getProject()->getKey(), 'board_id' => $column->getBoard()->getID(), 'column_id' => $column->getID())); ?>" data-interactive-form id="column_<?= $column->getID(); ?>_header_form" data-column-form>
+        <?php if ($editable): ?>
+            <form class="name" method="POST" action="<?php echo make_url('agile_whiteboardcolumn', array('project_key' => $column->getBoard()->getProject()->getKey(), 'board_id' => $column->getBoard()->getID(), 'column_id' => $column->getID())); ?>" data-interactive-form id="column_<?= $column->getID(); ?>_header_form" data-column-form>
+        <?php else: ?>
+            <div class="form name">
+        <?php endif; ?>
             <div class="form-row name-container">
+                <?php if ($editable): ?>
                 <input type="text" name="name" value="<?= $column->getName(); ?>" class="invisible column-header" id="column_<?= $column->getID(); ?>_name_input">
-                <label for="column_<?= $column->getID(); ?>_name_input"><?= __('Column name'); ?></label>
+                <?php else: ?>
+                    <span class="input invisible column-header"><?= $column->getName(); ?></span>
+                <?php endif; ?>
             </div>
             <div class="form-row">
                 <div class="statuses-badge">
@@ -26,42 +34,48 @@
                     <?php endforeach; ?>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="dropper-container settings">
-                    <button class="button dropper icon" type="button"><?php echo fa_image_tag('ellipsis-v'); ?></button>
-                    <div class="dropdown-container">
-                        <div class="list-mode">
-                            <a class="list-item <?php if ($column->getSortOrder() > 1): ?>trigger-move-column-left<?php else: ?>disabled<?php endif; ?>" href="javascript:void(0);">
-                                <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
-                                <span class="name"><?= __('Move column left'); ?></span>
-                            </a>
-                            <a class="list-item <?php if ($column->getSortOrder() < count($board->getColumns())): ?>trigger-move-column-right<?php else: ?>disabled<?php endif; ?>" href="javascript:void(0);">
-                                <?= fa_image_tag('arrow-right', ['class' => 'icon']); ?>
-                                <span class="name"><?= __('Move column right'); ?></span>
-                            </a>
-                            <div class="list-item separator"></div>
-                            <div class="list-item header">
-                                <?= __('Status for this column'); ?>
+            <?php if ($editable): ?>
+                <div class="form-row">
+                    <div class="dropper-container settings">
+                        <button class="button dropper icon" type="button"><?php echo fa_image_tag('ellipsis-v'); ?></button>
+                        <div class="dropdown-container">
+                            <div class="list-mode">
+                                <a class="list-item <?php if ($column->getSortOrder() > 1): ?>trigger-move-column-left<?php else: ?>disabled<?php endif; ?>" href="javascript:void(0);">
+                                    <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Move column left'); ?></span>
+                                </a>
+                                <a class="list-item <?php if ($column->getSortOrder() < count($board->getColumns())): ?>trigger-move-column-right<?php else: ?>disabled<?php endif; ?>" href="javascript:void(0);">
+                                    <?= fa_image_tag('arrow-right', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Move column right'); ?></span>
+                                </a>
+                                <div class="list-item separator"></div>
+                                <div class="list-item header">
+                                    <?= __('Status for this column'); ?>
+                                </div>
+                                <?php foreach ($board->getProject()->getAvailableStatuses() as $status_id => $status): ?>
+                                    <input type="checkbox" value="<?php echo $status->getID(); ?>" name="status_ids[<?= $status->getID(); ?>]" id="column_<?= $column->getId(); ?>_status_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if (in_array($status_id, $column->getStatusIds())) echo 'checked'; ?> data-status-id="<?= $status->getID(); ?>" <?php if (in_array($status->getId(), $board->getStatusIds()) && !in_array($status_id, $column->getStatusIds())) echo 'disabled'; ?>>
+                                    <label for="column_<?= $column->getId(); ?>_status_<?php echo $status->getID(); ?>" class="list-item <?php if (in_array($status->getId(), $board->getStatusIds()) && !in_array($status_id, $column->getStatusIds())) echo 'disabled'; ?>">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
+                                            <span><?php echo __($status->getName()); ?></span>
+                                        </span>
+                                    </label>
+                                <?php endforeach; ?>
+                                <div class="list-item separator"></div>
+                                <a href="javascript:void(0);" class="list-item danger trigger-delete-column" data-column-id="<?= $column->getId(); ?>" data-url="<?= $column->getUrl(); ?>">
+                                    <span class="icon"><?= fa_image_tag('times'); ?></span>
+                                    <span class="name"><?= __('Delete this column'); ?></span>
+                                </a>
                             </div>
-                            <?php foreach ($board->getProject()->getAvailableStatuses() as $status_id => $status): ?>
-                                <input type="checkbox" value="<?php echo $status->getID(); ?>" name="status_ids[<?= $status->getID(); ?>]" id="column_<?= $column->getId(); ?>_status_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if (in_array($status_id, $column->getStatusIds())) echo 'checked'; ?> data-status-id="<?= $status->getID(); ?>" <?php if (in_array($status->getId(), $board->getStatusIds()) && !in_array($status_id, $column->getStatusIds())) echo 'disabled'; ?>>
-                                <label for="column_<?= $column->getId(); ?>_status_<?php echo $status->getID(); ?>" class="list-item <?php if (in_array($status->getId(), $board->getStatusIds()) && !in_array($status_id, $column->getStatusIds())) echo 'disabled'; ?>">
-                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                    <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
-                                        <span><?php echo __($status->getName()); ?></span>
-                                    </span>
-                                </label>
-                            <?php endforeach; ?>
-                            <div class="list-item separator"></div>
-                            <a href="javascript:void(0);" class="list-item danger trigger-delete-column" data-column-id="<?= $column->getId(); ?>" data-url="<?= $column->getUrl(); ?>">
-                                <span class="icon"><?= fa_image_tag('times'); ?></span>
-                                <span class="name"><?= __('Delete this column'); ?></span>
-                            </a>
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
+        <?php if ($editable): ?>
+            </form>
+        <?php else: ?>
             </div>
-        </form>
+        <?php endif; ?>
     </div>
     <?php if ($column->getMinWorkitems() || $column->getMaxWorkitems()): ?>
         <?php if ($column->getMinWorkitems() && $column->getMaxWorkitems()): ?>

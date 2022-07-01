@@ -2,20 +2,27 @@
 
     namespace pachno\core\modules\agile;
 
+    use pachno\core\entities\AgileBoard;
     use pachno\core\entities\BoardColumn;
     use pachno\core\entities\Category;
     use pachno\core\entities\CustomDatatype;
     use pachno\core\entities\DatatypeBase;
     use pachno\core\entities\Milestone;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Priority;
     use pachno\core\entities\SavedSearch;
     use pachno\core\entities\Severity;
     use pachno\core\entities\Status;
+    use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\SavedSearches;
     use pachno\core\framework;
 
     /**
      * action components for the agile module
+     * @property BoardColumn $column
+     * @property AgileBoard $board
+     * @property Status[] $statuses
+     * @property bool $editable
      */
     class Components extends framework\ActionComponent
     {
@@ -67,6 +74,7 @@
         {
             $this->statuses = Status::getAll();
             $this->board = $this->column->getBoard();
+            $this->editable = ($this->board->getUser()->getID() == $this->getUser()->getID() || $this->getUser()->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_BOARDS, $this->board->getProject()));
         }
 
         public function componentAddBoardColumnheader()
