@@ -1,4 +1,9 @@
 {
+  "ui": {
+    "yes": "Ja",
+    "no": "Nei",
+    "cancel": "Avbryt"
+  },
   "common": {
     "mentions": {
       "user_search_placeholder": "Skriv noe for å søke"
@@ -17,7 +22,50 @@
   "agile": {
     "add_card": "Nytt kort",
     "add_card_here": "Nytt kort",
-    "add_swimlane": "Nytt svømmefelt"
+    "add_swimlane": "Nytt svømmefelt",
+    "delete_column": {
+      "title": "Slette kolonnen?",
+      "message": "Ingen saker vil bli fjernet, men de vil ikke lenger vises på tavlen. Legg til en ny kolonne på tavlen med statusen(e) til denne kolonnen for å vise sakene igjen.",
+      "button": "Ja, slett kolonnen"
+    },
+    "no_milestone_label": "Saker som ikke er tildelt en milepæl",
+    "choose_sprint_label": "Velg en sprint",
+    "backlog": {
+      "generic": {
+        "no_issues": "Ingen saker er tildelt denne milepælen",
+        "no_issues_filtered": "Ingen saker som samsvarer med de valgte filterne er tildelt denne milepælen",
+        "milestone": {
+          "delete_title": "Vil du virkelig slette denne milepælen?",
+          "delete_message": "Hvis du sletter denne milepælen, fjernes koblingen til alle saker i denne milepælen og den fjernes fra alle tilgjengelige lister. Denne handlingen kan ikke angres."
+        }
+      },
+      "kanban": {
+        "no_issues": "Ingen saker er tildelt denne milepælen",
+        "no_issues_filtered": "Ingen saker som samsvarer med de valgte filterne er tildelt denne milepælen",
+        "milestone": {
+          "delete_title": "Vil du virkelig slette denne milepælen?",
+          "delete_message": "Hvis du sletter denne milepælen, fjernes koblingen til alle saker i denne milepælen og den fjernes fra alle tilgjengelige lister. Denne handlingen kan ikke angres."
+        }
+      },
+      "scrum": {
+        "no_issues": "Det er ingen saker i denne sprinten",
+        "no_issues_filtered": "Ingen saker som samsvarer med de valgte filterne er tildelt denne sprinten",
+        "milestone": {
+          "delete_title": "Vil du virkelig slette denne sprinten?",
+          "delete_message": "Hvis du sletter denne sprinten vil alle saker i sprinten bli fjernet fra den og puttet i sprintkøen. Denne handlingen kan ikke angres."
+        }
+      },
+      "milestone_unscheduled": "Ikke tidfestet",
+      "milestone_header_issues": "Saker",
+      "milestone_header_points": "Poeng",
+      "milestone_header_hours": "Timer",
+      "milestone_header_show_issues": "Vis saker",
+      "milestone_show_overview": "Vis oversikt",
+      "milestone_mark_as_finished": "Merk som fullført",
+      "milestone_edit": "Rediger",
+      "milestone_delete": "Slett",
+      "milestone_issues_error": "Listen over saker kunne ikke lastes inn"
+    }
   },
   "issue": {
     "value_not_set": "Ikke valgt",
