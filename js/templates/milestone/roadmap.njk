@@ -3,9 +3,27 @@
         <div class="header trigger-backdrop" data-url="{{ milestone.backdrop_url }}">
             <span class="name">{{ milestone.name }}</span>
             <span class="info">
-                <span class="info-item">{{ UI.fa_image_tag('file-alt', {}, 'far') | safe }}&nbsp;{{ milestone.issues_count }}</span>
+                <span class="info-item">
+                    {{ UI.fa_image_tag('calendar-alt', {}, 'far') | safe }}
+                    {% if (milestone.starting or milestone.scheduled) %}
+                        {% if milestone.starting %}
+                            <span class="start-date">{{ milestone.starting_date }}</span>
+                        {% endif %}
+                        {% if (milestone.starting and milestone.scheduled) %}
+                        {{ UI.fa_image_tag('arrow-alt-circle-right', {}, 'fas') | safe }}
+                    {% endif %}
+                        {% if milestone.scheduled %}
+                        <span class="end-date">{{ milestone.scheduled_date }}</span>
+                    {% endif %}
+                    {% else %}
+                        {{ T.agile.backlog.milestone_unscheduled }}
+                    {% endif %}
+                </span>
+                <span class="icon"></span>
+            </span>
+            <span class="info">
+                <span class="info-item">{{ UI.fa_image_tag('file-alt', {}, 'far') | safe }}&nbsp;{{ T.roadmap.number_of_issues.replace('%count', milestone.issues_count) }}</span>
                 <span class="icon indicator">{{ UI.fa_image_tag('spinner', {classes: 'fa-spin'}) | safe }}</span>
-                <span class="icon expander">{{ UI.fa_image_tag('chevron-down') | safe }}</span>
             </span>
             <div class="percent-container">
                 <span class="percent-header">{{ T.roadmap.percent_complete.replace('%percentage', milestone.percent_complete) }}</span>

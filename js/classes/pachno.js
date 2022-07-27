@@ -112,6 +112,19 @@ class PachnoApplication {
         }
     }
 
+    /**
+     * @returns {
+     *   {
+     *     issue: {
+     *       go_to_converted_issue: {title: string, message: string, description: string}
+     *     },
+     *     roadmap: {
+     *       number_of_issues: string
+     *     }
+     *   }
+     * }
+     * @constructor
+     */
     get T() {
         return translations[this.language] || translations.en_US;
     }

@@ -13,12 +13,28 @@ export const Templates = {
 
 class Milestone {
     constructor(json) {
+        this.updateFromJson(json);
+
+        this.template = undefined;
+
+        /**
+         * @type {Issue[]}
+         */
+        this.issues = [];
+        this.element = undefined;
+    }
+
+    updateFromJson(json) {
         this.id = json.id;
         this.is_closed = json.closed == 1;
         this.is_sprint = json.is_sprint;
         this.name = json.name;
+        this.starting = json.starting == 1;
         this.starting_date = json.starting_date;
+        this.starting_date_iso = json.starting_date_iso;
+        this.scheduled = json.scheduled == 1;
         this.scheduled_date = json.scheduled_date;
+        this.scheduled_date_iso = json.scheduled_date_iso;
         this.percent_complete = json.percent_complete;
         this.issues_count = json.issues_count;
         this.issues_count_open = json.issues_count_open;
@@ -34,14 +50,15 @@ class Milestone {
         this.hours_spent_formatted = json.hours_spent_formatted;
         this.hours_estimated_formatted = json.hours_estimated_formatted;
         this.can_edit = json.can_edit;
+    }
 
-        this.template = undefined;
+    updateHtmlElement(board_type) {
+        const $html = this.createHtmlElement(board_type);
+        const $milestone_container = $(`.milestone-container[data-milestone-id=${this.id}]`);
+        const $header = $milestone_container.find('.milestone > .header');
+        const $updated_header = $html.find('.milestone > .header');
 
-        /**
-         * @type {Issue[]}
-         */
-        this.issues = [];
-        this.element = undefined;
+        $header.replaceWith($updated_header);
     }
 
     createHtmlElement(board_type) {

@@ -115,8 +115,6 @@
             if ($milestone === null) $milestone = new Milestone();
             $milestone->setName($request['name']);
             $milestone->setProject($this->selected_project);
-            $milestone->setStarting((bool) $request['is_starting']);
-            $milestone->setScheduled((bool) $request['is_scheduled']);
             $milestone->setDescription($request['description']);
             $milestone->setVisibleRoadmap((bool) $request['visibility_roadmap']);
             $milestone->setVisibleIssues((bool) $request['visibility_issues']);
@@ -125,14 +123,16 @@
             if ($request->hasParameter('sch_month') && $request->hasParameter('sch_day') && $request->hasParameter('sch_year')) {
                 $scheduled_date = mktime(23, 59, 59, Context::getRequest()->getParameter('sch_month'), Context::getRequest()->getParameter('sch_day'), Context::getRequest()->getParameter('sch_year'));
                 $milestone->setScheduledDate($scheduled_date);
-            } else
+            } else {
                 $milestone->setScheduledDate(0);
+            }
 
             if ($request->hasParameter('starting_month') && $request->hasParameter('starting_day') && $request->hasParameter('starting_year')) {
                 $starting_date = mktime(0, 0, 1, Context::getRequest()->getParameter('starting_month'), Context::getRequest()->getParameter('starting_day'), Context::getRequest()->getParameter('starting_year'));
                 $milestone->setStartingDate($starting_date);
-            } else
+            } else {
                 $milestone->setStartingDate(0);
+            }
 
             $milestone->save();
 

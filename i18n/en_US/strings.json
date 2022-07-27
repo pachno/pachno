@@ -78,7 +78,8 @@
     }
   },
   "roadmap": {
-    "percent_complete": "%percentage% completed"
+    "percent_complete": "%percentage% completed",
+    "number_of_issues": "%count issue(s)"
   },
   "configuration": {
     "update_available": {

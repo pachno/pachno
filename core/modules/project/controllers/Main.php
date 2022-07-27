@@ -111,18 +111,23 @@
 
             $milestone->setName($request['name']);
             $milestone->setProject($this->selected_project);
-            $milestone->setStarting((bool) $request['is_starting']);
-            $milestone->setScheduled((bool) $request['is_scheduled']);
+            if (!$request['is_starting']) {
+                $milestone->setStartingDate(0);
+            }
+            if (!$request['is_scheduled']) {
+                $milestone->setScheduledDate(0);
+            }
             $milestone->setVisibleRoadmap((bool) $request->getParameter('visibility_roadmap', true));
             $milestone->setVisibleIssues((bool) $request->getParameter('visibility_issues', true));
+            $dates = explode(',', $request['dates']);
 
             if ($request['is_starting'] && $request['is_scheduled']) {
-                $milestone->setStartingDate($request['dates'][0]);
-                $milestone->setScheduledDate($request['dates'][1]);
+                $milestone->setStartingDate((int) $dates[0]);
+                $milestone->setScheduledDate((int) $dates[1]);
             } elseif ($request['is_starting']) {
-                $milestone->setStartingDate($request['dates']);
+                $milestone->setStartingDate((int) $dates[0]);
             } elseif ($request['is_scheduled']) {
-                $milestone->setScheduledDate($request['dates']);
+                $milestone->setScheduledDate((int) $dates[0]);
             }
 
             $milestone->save();

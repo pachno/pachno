@@ -32,9 +32,16 @@ class Roadmap {
         });
 
         Pachno.on(Pachno.EVENTS.formSubmitResponse, (Pachno, data) => {
-            const milestone = new Milestone(data.json.milestone);
-            roadmap.milestones.push(milestone);
-            roadmap.createMilestoneHtml();
+            const found_milestone = this.milestones.find(milestone => milestone.id == data.json.milestone.id);
+            debugger;
+            if (found_milestone === undefined) {
+                const milestone = new Milestone(data.json.milestone);
+                roadmap.milestones.push(milestone);
+                roadmap.createMilestoneHtml();
+            } else {
+                found_milestone.updateFromJson(data.json.milestone);
+                found_milestone.updateHtmlElement();
+            }
         });
 
         watchIssuePopupForms();

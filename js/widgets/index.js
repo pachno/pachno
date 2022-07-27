@@ -9,8 +9,8 @@ import Pachno from "../classes/pachno";
 import { EVENTS as FetchEvents } from "../helpers/fetch";
 import 'simplebar';
 import 'simplebar/dist/simplebar.css';
-import 'air-datepicker/dist/js/datepicker';
-import 'air-datepicker/dist/js/i18n/datepicker.en';
+import AirDatepicker from "air-datepicker";
+import localeEn from 'air-datepicker/locale/en';
 import hljs from 'highlight.js';
 
 export const EVENTS = {
@@ -28,8 +28,20 @@ const updateWidgets = function () {
         });
 
         $('.auto-calendar:not([data-processed])').each(function () {
-            $(this).datepicker({ inline: true, language: 'en' });
-            calendars[$(this).attr('id')] = $(this).data('datepicker');
+            let options = { inline: true, locale: localeEn };
+            const dates = $(this).data('dates');
+            if (dates !== undefined) {
+                if (Number.isInteger(dates)) {
+                    options.selectedDates = [dates];
+                } else if (dates.length > 0) {
+                    options.selectedDates = dates.split(',').map(n => parseInt(n));
+                }
+            }
+            if ($(this).data('range') || (options.selectedDates !== undefined && options.selectedDates.length == 2)) {
+                options.range = true;
+            }
+            const datepicker = new AirDatepicker('#' + $(this).attr('id'), options);
+            calendars[$(this).attr('id')] = datepicker;
             $(this).data('processed', true);
         });
 

@@ -9,7 +9,7 @@
   "dependencies": {
     "@editorjs/codemirror": "github:alexiej/editorjs-codemirror",
     "@editorjs/underline": "^1.0.0",
-    "air-datepicker": "^2.2.3",
+    "air-datepicker": "^3.2.0",
     "dayjs": "^1.10.5",
     "easymde": "^2.14.0",
     "editorjs-alert": "^1.0.3",

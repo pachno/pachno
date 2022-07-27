@@ -416,7 +416,7 @@
         /**
          * Set the milestone type
          *
-         * @param integer $type
+         * @param string $type
          */
         public function setType($type)
         {
@@ -426,7 +426,7 @@
         /**
          * Get the milestone type
          *
-         * @return integer
+         * @return string
          */
         public function getType()
         {
@@ -434,19 +434,9 @@
         }
 
         /**
-         * Set whether or not the milestone is scheduled for finishing
-         *
-         * @param boolean $scheduled [optional] scheduled or not (default true)
-         */
-        public function setScheduled($scheduled = true)
-        {
-            $this->_isscheduled = $scheduled;
-        }
-
-        /**
          * Return the year the milestone is scheduled for release
          *
-         * @return integer
+         * @return string
          */
         public function getScheduledYear()
         {
@@ -456,7 +446,7 @@
         /**
          * Return the month the milestone is scheduled for release
          *
-         * @return integer
+         * @return string
          */
         public function getScheduledMonth()
         {
@@ -466,7 +456,7 @@
         /**
          * Return the day the milestone is scheduled for release
          *
-         * @return integer
+         * @return string
          */
         public function getScheduledDay()
         {
@@ -474,19 +464,9 @@
         }
 
         /**
-         * Set whether or not the milestone is scheduled for start
-         *
-         * @param boolean $starting [optional] starting or not (default true)
-         */
-        public function setStarting($starting = true)
-        {
-            $this->_isstarting = $starting;
-        }
-
-        /**
          * Return the year the milestone is starting
          *
-         * @return integer
+         * @return string
          */
         public function getStartingYear()
         {
@@ -496,7 +476,7 @@
         /**
          * Return the month the milestone is starting
          *
-         * @return integer
+         * @return string
          */
         public function getStartingMonth()
         {
@@ -506,7 +486,7 @@
         /**
          * Return the day the milestone is starting
          *
-         * @return integer
+         * @return string
          */
         public function getStartingDay()
         {
@@ -516,7 +496,7 @@
         /**
          * Return the year the milestone is reached
          *
-         * @return integer
+         * @return string
          */
         public function getReachedYear()
         {
@@ -526,7 +506,7 @@
         /**
          * Return the month the milestone is reached
          *
-         * @return integer
+         * @return string
          */
         public function getReachedMonth()
         {
@@ -536,7 +516,7 @@
         /**
          * Return the day the milestone is reached
          *
-         * @return integer
+         * @return string
          */
         public function getReachedDay()
         {
@@ -707,6 +687,23 @@
                 $this->_burndowndata = ['estimations' => $estimations, 'spent_times' => $spent_times, 'burndown' => $burndown];
             }
         }
+    
+        /**
+         * @return int[]
+         */
+        public function getDatesArray($as_javascript_timestamp = false)
+        {
+            $dates = [];
+            $multiplier = ($as_javascript_timestamp) ? 1000 : 1;
+            if ($this->isStarting()) {
+                $dates[] = $this->getStartingDate() * $multiplier;
+            }
+            if ($this->isScheduled()) {
+                $dates[] = $this->getScheduledDate() * $multiplier;
+            }
+            
+            return $dates;
+        }
 
         /**
          * Return when this milestone is starting
@@ -862,7 +859,7 @@
                 'name' => $this->getName()
             ];
         }
-
+        
         public function toJSON($detailed = false)
         {
             $returnJSON = [
@@ -878,9 +875,11 @@
                 'is_sprint' => $this->isSprint(),
                 'sort_order' => $this->getOrder(),
                 'starting' => $this->isStarting(),
-                'starting_date' => ($this->isStarting()) ? framework\Context::getI18n()->formatTime($this->getStartingDate(), 22, true, true) : '',
+                'starting_date' => ($this->isStarting()) ? framework\Context::getI18n()->formatTime($this->getStartingDate(), 22, false, false) : '',
+                'starting_date_iso' => ($this->isStarting()) ? date('c', $this->getStartingDate()) : '',
                 'scheduled' => $this->isScheduled(),
-                'scheduled_date' => ($this->isScheduled()) ? framework\Context::getI18n()->formatTime($this->getScheduledDate(), 22, true, true) : '',
+                'scheduled_date' => ($this->isScheduled()) ? framework\Context::getI18n()->formatTime($this->getScheduledDate(), 22, false, false) : '',
+                'scheduled_date_iso' => ($this->isScheduled()) ? date('c', $this->getScheduledDate()) : '',
                 'current' => $this->isCurrent(),
                 'overdue' => $this->isOverdue(),
                 'reached_date' => $this->getReachedDate(),

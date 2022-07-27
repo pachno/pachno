@@ -35,20 +35,6 @@
                         <label for="milestone_description_<?= $milestone->getID(); ?>"><?= __('Description'); ?></label>
                     </div>
                     <div class="form-row">
-                        <input type="checkbox" class="fancy-checkbox" name="visibility_roadmap" value="1" id="milestone_visibility_roadmap_<?= $milestone->getID(); ?>" <?php if ($milestone->isVisibleRoadmap()) echo 'checked'; ?>>
-                        <label for="milestone_visibility_roadmap_<?= $milestone->getID(); ?>">
-                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                            <span><?= __('Visible in project roadmap'); ?></span>
-                        </label>
-                    </div>
-                    <div class="form-row">
-                        <input type="checkbox" class="fancy-checkbox" name="visibility_issues" value="1" id="milestone_visibility_issues_<?= $milestone->getID(); ?>" <?php if ($milestone->isVisibleIssues()) echo 'checked'; ?>>
-                        <label for="milestone_visibility_issues_<?= $milestone->getID(); ?>">
-                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                            <span><?= __('Issues can be assigned to this milestone'); ?></span>
-                        </label>
-                    </div>
-                    <div class="form-row">
                         <div class="fancy-dropdown-container">
                             <div class="fancy-dropdown">
                                 <label><?= __('Percentage type'); ?></label>
@@ -66,6 +52,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <input type="checkbox" class="fancy-checkbox" name="visibility_roadmap" value="1" id="milestone_visibility_roadmap_<?= $milestone->getID(); ?>" <?php if ($milestone->isVisibleRoadmap()) echo 'checked'; ?>>
+                        <label for="milestone_visibility_roadmap_<?= $milestone->getID(); ?>">
+                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                            <span><?= __('Visible in project roadmap'); ?></span>
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <input type="checkbox" class="fancy-checkbox" name="visibility_issues" value="1" id="milestone_visibility_issues_<?= $milestone->getID(); ?>" <?php if ($milestone->isVisibleIssues()) echo 'checked'; ?>>
+                        <label for="milestone_visibility_issues_<?= $milestone->getID(); ?>">
+                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                            <span><?= __('Issues can be assigned to this milestone'); ?></span>
+                        </label>
+                    </div>
                 <?php endif; ?>
                 <div class="row">
                     <div class="column">
@@ -80,7 +80,7 @@
                     </div>
                     <div class="column">
                         <div class="form-row">
-                            <input type="hidden" id="edit_milestone_date_container" class="auto-calendar">
+                            <input type="hidden" id="edit_milestone_date_container" class="auto-calendar" data-dates="<?= join(',', $milestone->getDatesArray(true)); ?>">
                         </div>
                     </div>
                 </div>
