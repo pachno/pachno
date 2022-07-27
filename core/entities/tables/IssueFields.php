@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use pachno\core\entities\DatatypeBase;
     use pachno\core\entities\IssuetypeScheme;
     use pachno\core\entities\Scope;
     use pachno\core\framework;
@@ -48,48 +49,73 @@
 
         public const REQUIRED = 'issuefields.required';
 
+        public static function getFieldName($key)
+        {
+            switch ($key) {
+                case DatatypeBase::FIELD_SHORTNAME:
+                    return framework\Context::getI18n()->__('Identifier / shortname');
+                case DatatypeBase::FIELD_DESCRIPTION:
+                    return framework\Context::getI18n()->__('Description');
+                case DatatypeBase::FIELD_REPRODUCTION_STEPS:
+                    return framework\Context::getI18n()->__('Reproduction steps');
+                case DatatypeBase::FIELD_USER_PAIN:
+                    return framework\Context::getI18n()->__('Triaging: User pain');
+                case DatatypeBase::FIELD_PERCENT_COMPLETE:
+                    return framework\Context::getI18n()->__('Percent completed');
+                case DatatypeBase::FIELD_BUILD:
+                    return framework\Context::getI18n()->__('Affected release(s)');
+                case DatatypeBase::FIELD_COMPONENT:
+                    return framework\Context::getI18n()->__('Affected component(s)');
+                case DatatypeBase::FIELD_EDITION:
+                    return framework\Context::getI18n()->__('Affected edition(s)');
+                case DatatypeBase::FIELD_ESTIMATED_TIME:
+                    return framework\Context::getI18n()->__('Estimate');
+                case DatatypeBase::FIELD_SPENT_TIME:
+                    return framework\Context::getI18n()->__('Time spent');
+                case DatatypeBase::FIELD_MILESTONE:
+                    return framework\Context::getI18n()->__('Milestone');
+                case DatatypeBase::FIELD_VOTES:
+                    return framework\Context::getI18n()->__('Votes');
+                case DatatypeBase::FIELD_OWNED_BY:
+                    return framework\Context::getI18n()->__('Issue owner');
+                default:
+                    return framework\Context::getI18n()->__(ucfirst($key));
+            }
+        }
+
         public static function getFieldDescription($key)
         {
             switch ($key) {
-                case 'description':
-                    return framework\Context::getI18n()->__('Issue description');
-                    break;
-                case 'reproduction_steps':
+                case DatatypeBase::FIELD_SHORTNAME:
+                    return framework\Context::getI18n()->__('A short, recognizable name');
+                case DatatypeBase::FIELD_DESCRIPTION:
+                    return framework\Context::getI18n()->__('Textarea with issue description');
+                case DatatypeBase::FIELD_REPRODUCTION_STEPS:
                     return framework\Context::getI18n()->__('Steps to reproduce the issue');
-                    break;
-                case 'user_pain':
+                case DatatypeBase::FIELD_USER_PAIN:
                     return framework\Context::getI18n()->__('Triaging: User pain');
-                    break;
-                case 'percent_complete':
+                case DatatypeBase::FIELD_PERCENT_COMPLETE:
                     return framework\Context::getI18n()->__('Percent completed');
-                    break;
-                case 'build':
+                case DatatypeBase::FIELD_BUILD:
                     return framework\Context::getI18n()->__('Affected release(s)');
-                    break;
-                case 'component':
+                case DatatypeBase::FIELD_COMPONENT:
                     return framework\Context::getI18n()->__('Affected component(s)');
-                    break;
-                case 'edition':
+                case DatatypeBase::FIELD_EDITION:
                     return framework\Context::getI18n()->__('Affected edition(s)');
-                    break;
-                case 'estimated_time':
+                case DatatypeBase::FIELD_ESTIMATED_TIME:
                     return framework\Context::getI18n()->__('Estimated time to complete');
-                    break;
-                case 'spent_time':
+                case DatatypeBase::FIELD_SPENT_TIME:
                     return framework\Context::getI18n()->__('Time spent working on the issue');
-                    break;
-                case 'milestone':
+                case DatatypeBase::FIELD_MILESTONE:
                     return framework\Context::getI18n()->__('Targetted for milestone');
-                    break;
-                case 'votes':
-                    return framework\Context::getI18n()->__('Votes');
-                    break;
-                case 'owned_by':
-                    return framework\Context::getI18n()->__('Owner');
-                    break;
+                case DatatypeBase::FIELD_VOTES:
+                    return framework\Context::getI18n()->__('Up- and downvotes');
+                case DatatypeBase::FIELD_OWNED_BY:
+                    return framework\Context::getI18n()->__('Issue owner');
+                case DatatypeBase::FIELD_ASSIGNEE:
+                    return framework\Context::getI18n()->__('Issue assignee (team/user)');
                 default:
                     return framework\Context::getI18n()->__(ucfirst($key));
-                    break;
             }
         }
 
@@ -98,38 +124,36 @@
             switch ($key) {
                 default:
                     return 'fas';
-                    break;
             }
         }
 
         public static function getFieldFontAwesomeImage($key)
         {
             switch ($key) {
-                case 'description':
-                case 'reproduction_steps':
+                case DatatypeBase::FIELD_DESCRIPTION:
+                case DatatypeBase::FIELD_REPRODUCTION_STEPS:
                     return 'align-left';
-                case 'user_pain':
+                case DatatypeBase::FIELD_USER_PAIN:
                     return 'chart-line';
-                case 'percent_complete':
+                case DatatypeBase::FIELD_PERCENT_COMPLETE:
                     return 'percentage';
-                case 'build':
+                case DatatypeBase::FIELD_BUILD:
                     return 'compact-disc';
-                case 'component':
+                case DatatypeBase::FIELD_COMPONENT:
                     return 'boxes';
-                case 'edition':
+                case DatatypeBase::FIELD_EDITION:
                     return 'box';
-                case 'estimated_time':
-                case 'spent_time':
+                case DatatypeBase::FIELD_ESTIMATED_TIME:
+                case DatatypeBase::FIELD_SPENT_TIME:
                     return 'clock';
-                case 'milestone':
+                case DatatypeBase::FIELD_MILESTONE:
                     return 'list-alt';
-                case 'votes':
+                case DatatypeBase::FIELD_VOTES:
                     return 'vote-yea';
-                case 'owned_by':
+                case DatatypeBase::FIELD_OWNED_BY:
                     return 'user';
                 default:
                     return 'tag';
-                    break;
             }
         }
 

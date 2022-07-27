@@ -16,10 +16,14 @@
     <div class="configuration-container">
         <div class="configuration-content centered">
             <div class="form-container">
-                <form action="<?= make_url('configure_issuetypes_scheme', ['scheme_id' => $scheme->getId()]); ?>" onsubmit="Pachno.Config.IssuetypeScheme.save(this);return false;" data-interactive-form data-interactive-form-method="Pachno.Config.IssuetypeScheme.save">
+                <form action="<?= make_url('configure_issuetypes_scheme_post', ['scheme_id' => $scheme->getId()]); ?>" data-interactive-form id="edit_issuetype_scheme_<?= $scheme->getID(); ?>">
                     <div class="form-row">
-                        <input type="text" name="name" value="<?= $scheme->getName(); ?>" class="invisible" id="scheme_<?= $scheme->getID(); ?>_name_input">
                         <label for="scheme_<?= $scheme->getID(); ?>_name_input"><?= __('Scheme name'); ?><?= fa_image_tag('spinner', ['class' => 'fa-spin submit-indicator icon']); ?></label>
+                        <input type="text" name="name" value="<?= $scheme->getName(); ?>" class="invisible" id="scheme_<?= $scheme->getID(); ?>_name_input">
+                    </div>
+                    <div class="form-row textarea_container">
+                        <label for="workflow_<?= $scheme->getID(); ?>_description_input"><?= __('Scheme description'); ?><?= fa_image_tag('spinner', ['class' => 'fa-spin submit-indicator icon']); ?></label>
+                        <textarea name="description" class="invisible full-width" id="scheme_<?= $scheme->getID(); ?>_description_input" placeholder="<?= __('Enter an optional description for this scheme'); ?>"><?= $scheme->getDescription(); ?></textarea>
                     </div>
                     <div class="form-row error-container">
                         <div class="error"></div>
@@ -52,12 +56,27 @@
 </div>
 <script>
     Pachno.on(Pachno.EVENTS.ready, function () {
-        // $('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
-        //     const key = $(this).data('id'),
-        //         url = $(this).data('url');
-        //
-        //     pachno_index_js.Config.IssuetypeScheme.addField(url, key);
-        // });
+        $('body').on('click', '#add-issue-field-list .list-item[data-issue-field]:not(.disabled)', function(event) {
+            const key = $(this).data('id'),
+                url = $(this).data('url');
+
+            const $container = $('#issue-type-fields-list');
+        
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            $container.append(json.content);
+                            $('#add-issue-field-list .list-item[data-issue-field][data-id=' + key + ']').addClass('disabled');
+                        } else {
+                            Pachno.UI.Message.error(json.error);
+                        }
+                    });
+                });
+
+        });
 
         $('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
             const $item = $(this).parents('.configurable-component'),

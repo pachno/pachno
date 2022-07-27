@@ -249,10 +249,17 @@
             if ($request['name']) {
                 $scheme->setName($request['name']);
             }
+            if ($request['description']) {
+                $scheme->setDescription($request['description']);
+            }
 
             $scheme->save();
+            $json = ['message' => framework\Context::getI18n()->__('Issue type scheme saved')];
+            if (!$scheme_id) {
+                $json['forward'] = $this->getRouting()->generate('configure_issuetypes_scheme', ['scheme_id' => $scheme->getID()]);
+            }
 
-            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Issue type scheme saved')]);
+            return $this->renderJSON($json);
         }
 
         /**

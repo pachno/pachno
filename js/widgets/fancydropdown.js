@@ -67,7 +67,7 @@ const toggleFancyDropdown = function (event) {
 
 const filterFilterOptionsElement = function (element) {
     const filtervalue = element.val().toLowerCase(),
-        $filterContainer = $(element.closest('.filter-container').siblings('.filter-values-container'));
+        $filterContainer = $(element.parents('.dropdown-container').find('.filter-values-container'));
 
     if (filtervalue === '') {
         $filterContainer.removeClass('filtered');

@@ -16,7 +16,7 @@
                 </div>
             <?php endif; ?>
             <div class="name">
-                <?= (is_object($item)) ? $item->getDescription() : IssueFields::getFieldDescription($item); ?>
+                <?= (is_object($item)) ? $item->getDescription() : IssueFields::getFieldName($item); ?>
             </div>
             <?php if (in_array($key, ['build', 'component', 'edition'])): ?>
                 <div class="icon tooltip-container">
@@ -46,7 +46,7 @@
                 <?php endif; ?>
                 <?php if (!in_array($key, array('votes', 'owner', 'assignee'))): ?>
                     <div class="form-row">
-                        <input type="checkbox" class="fancy-checkbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onclick="if ($(this).checked) { $('#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').prop('disabled', false); } else { $('#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').prop('disabled', true); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
+                        <input type="checkbox" class="fancy-checkbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onchange="if ($(this).is(':checked')) { $('#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').prop('disabled', false); } else { $('#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').prop('disabled', true); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
                         <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable">
                             <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                             <span class="name"><?= __('Show field when creating a new issue'); ?></span>
@@ -65,7 +65,7 @@
                         <?= fa_image_tag('times', ['class' => 'icon']); ?>
                         <span><?= __('Remove field'); ?></span>
                     </button>
-                    <?php if (!in_array($key, ['owner', 'description', 'reproduction_steps'])): ?>
+                    <?php if (!in_array($key, [\pachno\core\entities\DatatypeBase::FIELD_OWNED_BY, \pachno\core\entities\DatatypeBase::FIELD_DESCRIPTION, \pachno\core\entities\DatatypeBase::FIELD_REPRODUCTION_STEPS, \pachno\core\entities\DatatypeBase::FIELD_ESTIMATED_TIME])): ?>
                         <button class="button secondary" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield', 'type' => $key]); ?>');return false;">
                             <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                             <span><?= __('Edit field options'); ?></span>

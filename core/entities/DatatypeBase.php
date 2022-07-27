@@ -42,6 +42,27 @@
         public const DATE_PICKER = 19;
         public const RADIO_CHOICE = 5;
         public const RELEASES_CHOICE = 8;
+        
+        public const FIELD_SHORTNAME = 'shortname';
+        public const FIELD_DESCRIPTION = 'description';
+        public const FIELD_REPRODUCTION_STEPS = 'reproduction_steps';
+        public const FIELD_STATUS = 'status';
+        public const FIELD_CATEGORY = 'category';
+        public const FIELD_RESOLUTION = 'resolution';
+        public const FIELD_PRIORITY = 'priority';
+        public const FIELD_REPRODUCABILITY = 'reproducability';
+        public const FIELD_SEVERITY = 'severity';
+        public const FIELD_PERCENT_COMPLETE = 'percent_complete';
+        public const FIELD_OWNED_BY = 'owned_by';
+        public const FIELD_ASSIGNEE = 'assignee';
+        public const FIELD_EDITION = 'edition';
+        public const FIELD_BUILD = 'build';
+        public const FIELD_COMPONENT = 'component';
+        public const FIELD_ESTIMATED_TIME = 'estimated_time';
+        public const FIELD_SPENT_TIME = 'spent_time';
+        public const FIELD_MILESTONE = 'milestone';
+        public const FIELD_USER_PAIN = 'user_pain';
+        public const FIELD_VOTES = 'votes';
 
         /**
          * The name of the object
@@ -78,26 +99,26 @@
         public static function getAvailableFields($builtin_only = false)
         {
             $types = [
-                'shortname' => self::BUILTIN,
-                'description' => self::BUILTIN,
-                'reproduction_steps' => self::BUILTIN,
-                'status' => self::BUILTIN,
-                'category' => self::BUILTIN,
-                'resolution' => self::BUILTIN,
-                'priority' => self::BUILTIN,
-                'reproducability' => self::BUILTIN,
-                'severity' => self::BUILTIN,
-                'percent_complete' => self::BUILTIN,
-                'owned_by' => self::BUILTIN,
-                'assignee' => self::BUILTIN,
-                'edition' => self::BUILTIN,
-                'build' => self::BUILTIN,
-                'component' => self::BUILTIN,
-                'estimated_time' => self::BUILTIN,
-                'spent_time' => self::BUILTIN,
-                'milestone' => self::BUILTIN,
-                'user_pain' => self::BUILTIN,
-                'votes' => self::BUILTIN
+                self::FIELD_SHORTNAME => self::BUILTIN,
+                self::FIELD_DESCRIPTION => self::BUILTIN,
+                self::FIELD_REPRODUCTION_STEPS => self::BUILTIN,
+                self::FIELD_STATUS => self::BUILTIN,
+                self::FIELD_CATEGORY => self::BUILTIN,
+                self::FIELD_RESOLUTION => self::BUILTIN,
+                self::FIELD_PRIORITY => self::BUILTIN,
+                self::FIELD_REPRODUCABILITY => self::BUILTIN,
+                self::FIELD_SEVERITY => self::BUILTIN,
+                self::FIELD_PERCENT_COMPLETE => self::BUILTIN,
+                self::FIELD_OWNED_BY => self::BUILTIN,
+                self::FIELD_ASSIGNEE => self::BUILTIN,
+                self::FIELD_EDITION => self::BUILTIN,
+                self::FIELD_BUILD => self::BUILTIN,
+                self::FIELD_COMPONENT => self::BUILTIN,
+                self::FIELD_ESTIMATED_TIME => self::BUILTIN,
+                self::FIELD_SPENT_TIME => self::BUILTIN,
+                self::FIELD_MILESTONE => self::BUILTIN,
+                self::FIELD_USER_PAIN => self::BUILTIN,
+                self::FIELD_VOTES => self::BUILTIN
             ];
 
             if ($builtin_only) return $types;

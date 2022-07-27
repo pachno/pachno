@@ -70,8 +70,28 @@
       transform-origin: bottom;
     }
 
-    &.columns {
+    &.two-columns {
+      min-width: 520px;
+    }
+
+    > .row {
+      display: flex;
+      overflow: hidden;
+      flex: 1 1 auto;
+      min-height: 4em;
+
+      .column {
+        min-width: 50%;
+        overflow: auto;
+        &.full {
+          flex: 1 1 100%;
+        }
+      }
+    }
+
+    &.columns, > .row {
       flex-direction: row;
+      //flex-wrap: wrap;
 
       .column {
         &.hidden {
@@ -87,6 +107,10 @@
         flex: 1 1 50%;
         min-width: 260px;
         overflow: auto;
+
+        &.full {
+          flex: 1 1 100%;
+        }
       }
     }
 

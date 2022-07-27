@@ -2968,6 +2968,15 @@
                         $options['step'] = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
                         $options['transition'] = $scheme;
                         break;
+                    case 'edit_issuetype_scheme':
+                        $template_name = 'configuration/editissuetypescheme';
+                        if ($request['scheme_id']) {
+                            $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+                        } else {
+                            $scheme = new entities\IssuetypeScheme();
+                        }
+                        $options['scheme'] = $scheme;
+                        break;
                     case 'edit_issuetype':
                         $template_name = 'configuration/editissuetype';
                         if ($request['issuetype_id']) {

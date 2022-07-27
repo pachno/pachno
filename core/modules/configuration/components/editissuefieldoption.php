@@ -31,7 +31,7 @@
         </div>
         <div class="icon">
             <?php if ($item->canBeDeleted()): ?>
-                <a href="javascript:void(0);" class="button secondary icon" onclick="Pachno.UI.Dialog.show('<?php echo __('Really delete this item?'); ?>', '<?php echo __('Are you really sure you want to delete this item?'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Options.remove('<?php echo make_url('configure_issuefields_delete', array('type' => $item->getItemType(), 'id' => $item->getID())); ?>', <?php echo $item->getID(); ?>); Pachno.UI.Dialog.dismiss(); }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
+                <a href="javascript:void(0);" class="button secondary icon" onclick="Pachno.UI.Dialog.show('<?php echo __('Really delete this item?'); ?>', '<?php echo __('Are you really sure you want to delete this item?'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.deleteComponent, { url: '<?= make_url('configure_issuefields_delete', ['type' => $item->getItemType(), 'id' => $item->getID()]); ?>', type: 'issue-field-option', id: <?= $item->getID(); ?> })}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="button secondary icon disabled" onclick="Pachno.UI.Message.error('<?php echo __('This item cannot be deleted'); ?>', '<?php echo __('Other items - such as workflow steps - may depend on this item to exist. Remove the dependant item or unlink it from this item to continue.'); ?>');" id="delete_<?php echo $item->getID(); ?>_link"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
             <?php endif; ?>

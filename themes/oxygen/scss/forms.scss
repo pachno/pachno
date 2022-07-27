@@ -482,6 +482,11 @@
       padding: .3em .7em;
       border-radius: 4px;
       color: #141823;
+
+      &.full-width {
+        flex: 1 1 auto;
+        min-height: 4em;
+      }
     }
 
     > .fancy-dropdown-container {
@@ -561,6 +566,10 @@ input[type=email],
   font-size: 1.1em;
   box-sizing: border-box;
   font-weight: $theme-font-weight-light;
+
+  &.double-line {
+    height: 2.5em;
+  }
 
   &.invisible {
     background-color: transparent;

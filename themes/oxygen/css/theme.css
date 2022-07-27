@@ -5883,16 +5883,30 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
       top: auto;
       bottom: 37px;
       transform-origin: bottom; }
-    .dropper-container .dropdown-container.columns {
+    .dropper-container .dropdown-container.two-columns {
+      min-width: 520px; }
+    .dropper-container .dropdown-container > .row {
+      display: flex;
+      overflow: hidden;
+      flex: 1 1 auto;
+      min-height: 4em; }
+      .dropper-container .dropdown-container > .row .column {
+        min-width: 50%;
+        overflow: auto; }
+        .dropper-container .dropdown-container > .row .column.full {
+          flex: 1 1 100%; }
+    .dropper-container .dropdown-container.columns, .dropper-container .dropdown-container > .row {
       flex-direction: row; }
-      .dropper-container .dropdown-container.columns .column.hidden {
+      .dropper-container .dropdown-container.columns .column.hidden, .dropper-container .dropdown-container > .row .column.hidden {
         display: none; }
-      .dropper-container .dropdown-container.columns.three-columns .column {
+      .dropper-container .dropdown-container.columns.three-columns .column, .dropper-container .dropdown-container > .row.three-columns .column {
         flex: 1 1 33%; }
-      .dropper-container .dropdown-container.columns.two-columns .column {
+      .dropper-container .dropdown-container.columns.two-columns .column, .dropper-container .dropdown-container > .row.two-columns .column {
         flex: 1 1 50%;
         min-width: 260px;
         overflow: auto; }
+        .dropper-container .dropdown-container.columns.two-columns .column.full, .dropper-container .dropdown-container > .row.two-columns .column.full {
+          flex: 1 1 100%; }
     .dropper-container .dropdown-container:not(.slide-out) .list-mode {
       max-height: 450px; }
     .dropper-container .dropdown-container .list-mode {
@@ -7825,6 +7839,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       padding: .3em .7em;
       border-radius: 4px;
       color: #141823; }
+      .form-container .form-row > textarea.full-width {
+        flex: 1 1 auto;
+        min-height: 4em; }
     .form-container .form-row > .fancy-dropdown-container {
       flex: 1 1 100%; }
       .form-container .form-row > .fancy-dropdown-container .fancy-dropdown > .value {
@@ -7877,6 +7894,15 @@ input[type=email],
   font-size: 1.1em;
   box-sizing: border-box;
   font-weight: 300; }
+  textarea.double-line,
+  input[type=text].double-line,
+  input[type=password].double-line,
+  input[type=search].double-line,
+  input[type=url].double-line,
+  input[type=password].double-line,
+  input[type=email].double-line,
+  .input.double-line {
+    height: 2.5em; }
   textarea.invisible,
   input[type=text].invisible,
   input[type=password].invisible,
