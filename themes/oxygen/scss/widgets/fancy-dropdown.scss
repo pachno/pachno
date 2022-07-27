@@ -102,6 +102,18 @@
       text-transform: uppercase;
       margin-right: .5em;
 
+      > span {
+        &.required-indicator {
+          display: none;
+        }
+      }
+
+      &.required {
+        .required-indicator {
+          display: inline-flex;
+        }
+      }
+
       .locked {
         display: none;
       }

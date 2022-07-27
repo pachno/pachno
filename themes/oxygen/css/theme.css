@@ -6184,6 +6184,10 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
       font-size: .9em;
       text-transform: uppercase;
       margin-right: .5em; }
+      .fancy-dropdown-container .fancy-dropdown > label > span.required-indicator {
+        display: none; }
+      .fancy-dropdown-container .fancy-dropdown > label.required .required-indicator {
+        display: inline-flex; }
       .fancy-dropdown-container .fancy-dropdown > label .locked {
         display: none; }
     .fancy-dropdown-container .fancy-dropdown > .value,

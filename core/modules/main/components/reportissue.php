@@ -361,7 +361,8 @@
                             <input name="estimated_time" id="estimated_time_id" class="number" placeholder="<?= __('Enter an estimate here'); ?>">
                             <label for="estimated_time_id" id="estimated_time_label">
                                 <?= fa_image_tag('clock', ['class' => 'icon']); ?>
-                                <?= __('Estimated time'); ?>
+                                <span><?= __('Estimated time'); ?></span>
+                                <span class="required-indicator">* </span>
                             </label>
                             <div class="helper-text"><?= __('Type in your estimate here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your estimate'); ?></div>
                         </div>
@@ -369,7 +370,8 @@
                             <input name="spent_time" id="spent_time_id" class="number" placeholder="<?= __('Enter an estimate here'); ?>">
                             <label for="spent_time_id" id="spent_time_label">
                                 <?= fa_image_tag('clock', ['class' => 'icon']); ?>
-                                <?= __('Spent time'); ?>
+                                <span><?= __('Spent time'); ?></span>
+                                <span class="required-indicator">* </span>
                             </label>
                             <div class="helper-text"><?= __('Enter time spent on this issue here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your effort'); ?></div>
                         </div>
@@ -377,7 +379,8 @@
                             <input name="percentage" id="percentage_id" class="number" placeholder="<?= __('Enter an estimate here'); ?>">
                             <label for="percentage_id" id="percentage_label">
                                 <?= fa_image_tag('percent', ['class' => 'icon']); ?>
-                                <?= __('Percentage completed'); ?>
+                                <span><?= __('Percentage completed'); ?></span>
+                                <span class="required-indicator">* </span>
                             </label>
                             <div class="helper-text"><?= __('Enter time spent on this issue here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your effort'); ?></div>
                         </div>
@@ -386,6 +389,7 @@
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="category_label">
                                         <span><?php echo __('Select category'); ?></span>
+                                        <span class="required-indicator">* </span>
                                         <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
                                     </label>
                                     <span class="value"></span>
@@ -415,7 +419,10 @@
                         <div class="form-row hidden additional_information <?php if (array_key_exists('resolution', $errors)): ?>invalid<?php endif; ?>" id="resolution_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                    <label id="resolution_label"><?php echo __('Select resolution'); ?></label>
+                                    <label id="resolution_label">
+                                        <span><?php echo __('Select resolution'); ?></span>
+                                        <span class="required-indicator">* </span>
+                                    </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
@@ -441,7 +448,10 @@
                         <div class="form-row hidden additional_information <?php if (array_key_exists('reproducability', $errors)): ?>invalid<?php endif; ?>" id="reproducability_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                    <label id="reproducability_label"><?php echo __('Select reproducability'); ?></label>
+                                    <label id="reproducability_label">
+                                        <span><?php echo __('Select reproducability'); ?></span>
+                                        <span class="required-indicator">* </span>
+                                    </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
@@ -470,6 +480,7 @@
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="priority_label">
                                         <span><?php echo __('Select priority'); ?></span>
+                                        <span class="required-indicator">* </span>
                                         <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
                                     </label>
                                     <span class="value"></span>
@@ -501,6 +512,7 @@
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="severity_label">
                                         <span><?php echo __('Select severity'); ?></span>
+                                        <span class="required-indicator">* </span>
                                         <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
                                     </label>
                                     <span class="value"></span>
@@ -532,6 +544,7 @@
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="milestone_label">
                                         <span><?php echo __('Select milestone'); ?></span>
+                                        <span class="required-indicator">* </span>
                                         <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
                                     </label>
                                     <span class="value"></span>

@@ -31,7 +31,7 @@ if (isset($customtype)): ?>
         </div>
         <p><?= __('To use a custom field in the formula, enter the field key (displayed in light gray text next to the name) between curly braces.'); ?></p>
         <p><?= __('Example: ({myfield}+{otherfield})/({thirdfield}*2)'); ?></p>
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', array('type' => $type)); ?>" onsubmit="Pachno.Config.Issuefields.Options.save('<?= make_url('configure_issuefields_add', array('type' => $type)); ?>', '<?= $type; ?>');return false;" id="add_<?= $type; ?>_form">
+        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', array('type' => $type)); ?>" id="add_<?= $type; ?>_form" data-interactive-form>
             <label for="add_option_<?= $type; ?>_itemdata"><?= __('Value'); ?></label>
             <input type="hidden" id="add_option_<?= $type; ?>_name" name="name" value="Formula">
             <?php $value = (!empty($items) ? array_pop($items)->getValue() : ''); ?>
@@ -52,7 +52,7 @@ if (isset($customtype)): ?>
         <?php endforeach; ?>
     </div>
     <div class="form-container">
-        <form id="add-field-form" accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', ['type' => $type]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form data-update-container="#field-options-list" data-update-insert data-update-insert-form-list>
+        <form id="add-field-form" accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', ['type' => $type]); ?>" data-interactive-form data-update-container="#field-options-list" data-update-insert data-update-insert-form-list>
             <div class="form-row add-placeholder">
                 <?= fa_image_tag('plus', ['class' => 'icon']); ?>
                 <input type="text" name="name" class="invisible" placeholder="<?= __('Add a choice'); ?>">
