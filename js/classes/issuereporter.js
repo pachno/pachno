@@ -13,7 +13,9 @@ class IssueReporter {
 
     updateFields() {
         const url = $('#report_form').data('fields-url');
-        const issue_type_id = document.querySelector('input[name="issuetype_id"]:checked').value;
+        // debugger;
+        const $issue_type = $('#report_form').find('input[name="issuetype_id"]:checked');
+        const issue_type_id = $issue_type.val();
 
         if (issue_type_id != 0) {
             $('#report_form_issue_type_selector').addClass('hidden');

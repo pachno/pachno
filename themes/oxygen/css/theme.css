@@ -2229,10 +2229,10 @@ li.milestone_issue.included
   padding: 4px;
   font-size: 0.7rem;
   border: none;
-  width: 15px;
+  width: 1.1em;
   text-align: center;
   box-sizing: content-box;
-  margin-right: 5px;
+  margin-right: .75em;
   vertical-align: middle;
   text-shadow: none;
   transition: color .2s ease-in-out, background-color .2s ease-in-out; }
@@ -5297,7 +5297,7 @@ button, button:hover,
   outline: 0;
   box-shadow: 1px 3px 3px -2px rgba(27, 27, 36, 0.2);
   text-transform: none;
-  font-size: 1em;
+  font-size: .85rem;
   padding: .5em 1em;
   transition: background-color .2s ease-in-out, color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out;
   display: flex;
@@ -6079,7 +6079,7 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
     color: #558; }
 
 .form-container .form-row > .fancy-checkbox + label:not(.button) {
-  font-size: .95em; }
+  font-size: .85rem; }
 
 .fancy-checkbox-grid {
   display: flex;
@@ -6960,7 +6960,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item .icon.issuetype-icon,
       .list-mode .list-item:hover .icon.issuetype-icon, .list-mode[data-simplebar] .list-item .icon.issuetype-icon,
       .list-mode[data-simplebar] .list-item:hover .icon.issuetype-icon {
-        flex: 0 0 30px;
+        flex: 0 0 2.5em;
         padding: .65em; }
       .list-mode .list-item .icon.large,
       .list-mode .list-item:hover .icon.large, .list-mode[data-simplebar] .list-item .icon.large,

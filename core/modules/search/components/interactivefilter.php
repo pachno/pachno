@@ -60,7 +60,6 @@ if ($filter instanceof SearchFilter): ?>
                                     <?php /** @var \pachno\core\entities\Issuetype $issuetype */ ?>
                                     <input type="checkbox" class="fancy-checkbox" value="<?= $issuetype->getID(); ?>" name="filters_issuetype_value_<?= $issuetype->getID(); ?>" id="filters_issuetype_value_<?= $issuetype->getID(); ?>" <?php if ($filter->hasValue($issuetype->getID())) echo 'checked'; ?>>
                                     <label for="filters_issuetype_value_<?= $issuetype->getID(); ?>" class="list-item filtervalue">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                         <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                         <span class="name value"><?= __($issuetype->getName()); ?></span>
                                     </label>
