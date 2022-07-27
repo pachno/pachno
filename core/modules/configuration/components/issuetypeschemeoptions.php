@@ -31,7 +31,7 @@
                     <span class="header"><?= __('Built-in fields'); ?></span>
                     <div class="filter-values-container">
                         <?php foreach ($builtin_fields as $item): ?>
-                            <?php if (in_array($item, ['status', 'description'])) continue; ?>
+                            <?php if (in_array($item, ['status'])) continue; ?>
                             <a href="javascript:void(0);" class="list-item filtervalue multiline <?php if (array_key_exists($item, $visible_fields)) echo 'disabled'; ?>" data-issue-field data-id="<?= $item; ?>" data-url="<?= make_url('configure_issuetypes_scheme_field', ['key' => $item, 'scheme_id' => $scheme->getId(), 'issue_type_id' => $issue_type->getId()]); ?>">
                                 <span class="icon"><?= fa_image_tag(IssueFields::getFieldFontAwesomeImage($item), [], IssueFields::getFieldFontAwesomeImageStyle($item)); ?></span>
                                 <span class="name">

@@ -3,7 +3,7 @@
     use pachno\core\entities\tables\IssueFields;
 
 ?>
-<?php if (is_object($item) || !in_array($item, ['description', 'status'])): ?>
+<?php if (is_object($item) || !in_array($item, ['status'])): ?>
     <div class="configurable-component" id="item_<?= $key; ?>_<?= $issue_type->getID(); ?>" data-issue-field data-id="<?= $key; ?>">
         <input type="hidden" name="field[<?= $key; ?>][visible]" value="1">
         <div class="row">
