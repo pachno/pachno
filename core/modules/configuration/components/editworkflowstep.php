@@ -63,12 +63,12 @@
                 <span class="list-item filter-container">
                     <input type="search" placeholder="<?= __('Filter values'); ?>">
                 </span>
-                <span class="column">
+                <span class="filter-values-container">
                     <span class="list-item header"><?= __('Add existing transition'); ?></span>
                     <?php foreach ($step->getWorkflow()->getTransitions() as $transition): ?>
                         <?php if ($transition->getOutgoingStep() instanceof \pachno\core\entities\WorkflowStep && $transition->getOutgoingStep()->getID() == $step->getID()) continue; ?>
                         <?php $has_transition = ($step->hasOutgoingTransition($transition)); ?>
-                        <a href="javascript:void(0);" class="list-item multiline <?php if ($has_transition) echo 'disabled'; ?>" data-workflow-transition data-id="<?= $transition->getID(); ?>" data-url="<?= make_url('configure_workflow_add_transition', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID())); ?>">
+                        <a href="javascript:void(0);" class="filtervalue list-item multiline <?php if ($has_transition) echo 'disabled'; ?>" data-workflow-transition data-id="<?= $transition->getID(); ?>" data-url="<?= make_url('configure_workflow_add_transition', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID())); ?>">
                             <span class="name">
                                 <span class="title"><?= $transition->getName(); ?></span>
                                 <span class="description">

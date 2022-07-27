@@ -36,7 +36,7 @@
             <div class="list-item filter-container">
                 <input type="search" placeholder="<?php echo __('Filter values'); ?>">
             </div>
-            <div class="interactive_menu_values">
+            <div class="filter-values-container">
                 <?php foreach ($filter->getAvailableValues() as $value): ?>
                     <input type="checkbox" class="fancy-checkbox" value="<?php echo $value->getID(); ?>"
                            name="filters_<?php echo $key; ?>_value_<?php echo $value->getID(); ?>"

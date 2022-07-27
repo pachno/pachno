@@ -55,7 +55,7 @@ if ($filter instanceof SearchFilter): ?>
                             <div class="list-item filter-container">
                                 <input type="search" placeholder="<?= __('Filter values'); ?>">
                             </div>
-                            <div class="interactive_values_container">
+                            <div class="filter-values-container">
                                 <?php foreach ($filter->getAvailableValues() as $issuetype): ?>
                                     <?php /** @var \pachno\core\entities\Issuetype $issuetype */ ?>
                                     <input type="checkbox" class="fancy-checkbox" value="<?= $issuetype->getID(); ?>" name="filters_issuetype_value_<?= $issuetype->getID(); ?>" id="filters_issuetype_value_<?= $issuetype->getID(); ?>" <?php if ($filter->hasValue($issuetype->getID())) echo 'checked'; ?>>
@@ -180,7 +180,7 @@ if ($filter instanceof SearchFilter): ?>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                         <div class="dropdown-container list-mode">
                             <div class="header"><?= __('Filter on relation'); ?></div>
-                            <div class="interactive_menu_values">
+                            <div class="filter-values-container">
                                 <input type="checkbox" class="fancy-checkbox" value="<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" name="filters_relation_value" data-text="<?= __('Only child issues'); ?>" id="filters_relation_value_<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_CHILD)) echo 'checked'; ?>>
                                 <label for="filters_relation_value_<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" class="list-item filtervalue">
                                     <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>

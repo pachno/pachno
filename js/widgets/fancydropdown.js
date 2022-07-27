@@ -69,30 +69,29 @@ const filterFilterOptionsElement = function (element) {
     const filtervalue = element.val().toLowerCase(),
         $filterContainer = $(element.closest('.filter-container').siblings('.filter-values-container'));
 
-    if (filtervalue !== element.data('previousValue')) {
-        if (filtervalue !== '') {
-            $filterContainer.addClass('filtered');
-        } else {
-            $filterContainer.removeClass('filtered');
-        }
+    if (filtervalue === '') {
+        $filterContainer.removeClass('filtered');
+    } else {
+        $filterContainer.addClass('filtered');
+        if (filtervalue !== element.data('previousValue')) {
+            $filterContainer.find('.filtervalue').each(function () {
+                var $filterElement = $(this);
+                if ($filterElement.hasClass('sticky'))
+                    return;
 
-        $filterContainer.find('.filtervalue').each(function () {
-            var $filterElement = $(this);
-            if ($filterElement.hasClass('sticky'))
-                return;
-
-            if (filtervalue !== '') {
-                if ($filterElement.text().toLowerCase().indexOf(filtervalue) !== -1 || $filterElement.hasClass('selected')) {
-                    $filterElement.addClass('visible');
+                if (filtervalue !== '') {
+                    if ($filterElement.text().toLowerCase().indexOf(filtervalue) !== -1 || $filterElement.hasClass('selected')) {
+                        $filterElement.addClass('visible');
+                    } else {
+                        $filterElement.removeClass('visible');
+                    }
                 } else {
-                    $filterElement.removeClass('visible');
+                    $filterElement.addClass('visible');
                 }
-            } else {
-                $filterElement.addClass('visible');
-            }
-            $filterElement.removeClass('highlighted');
-        });
-        element.data('previousValue', filtervalue);
+                $filterElement.removeClass('highlighted');
+            });
+            element.data('previousValue', filtervalue);
+        }
     }
 };
 
@@ -103,8 +102,8 @@ const setupListeners = function () {
     $body.on('change', '.fancy-dropdown input[type=radio]', updateFancyDropdownValues);
     $body.on("click", ".fancy-dropdown", toggleFancyDropdown);
 
-    $body.on("keyup", ".fancy-dropdown .filter-container input[type=search]", function (e) {
-        var $filterInput = jQuery(this);
+    $body.on("keyup", ".fancy-dropdown .filter-container input[type=search],.dropdown-container .filter-container input[type=search]", function (e) {
+        const $filterInput = $(this);
 
         $filterInput.data('previousValue', '');
         filterFilterOptionsElement($filterInput);
