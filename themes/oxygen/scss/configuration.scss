@@ -249,20 +249,23 @@
     flex-wrap: nowrap;
   }
 
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
-  background-color: #FFF;
-  padding: 0;
-  border-radius: 3px;
-  font-size: 1rem;
-  margin-bottom: .5rem;
-  transition: border .25s ease-in-out;
+  &,
+  &:hover {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+    background-color: #FFF;
+    padding: 0;
+    border-radius: 3px;
+    font-size: 1rem;
+    margin-bottom: .5rem;
+    transition: border .25s ease-in-out;
 
-  border: none;
+    border: none;
+  }
 
   &:hover {
     border: none;

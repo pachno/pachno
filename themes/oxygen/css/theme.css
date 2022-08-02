@@ -12718,7 +12718,12 @@ dl.info {
     border-top: 1px solid rgba(200, 200, 200, 0.8);
     padding-top: 1rem; }
 
-.configurable-component {
+.configurable-component.form-container {
+  flex: 0 0 auto;
+  width: 100%;
+  flex-wrap: nowrap; }
+
+.configurable-component, .configurable-component:hover {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -12732,134 +12737,134 @@ dl.info {
   margin-bottom: .5rem;
   transition: border .25s ease-in-out;
   border: none; }
-  .configurable-component.form-container {
-    flex: 0 0 auto;
-    width: 100%;
-    flex-wrap: nowrap; }
-  .configurable-component:hover {
-    border: none; }
-  .configurable-component.active {
-    border: 2px solid #0c8990;
-    background-color: #0c8990; }
-    .configurable-component.active > .row > .icon:not(.open),
-    .configurable-component.active > .row > .information,
-    .configurable-component.active > .row > .name {
-      background-color: #FFF; }
-    .configurable-component.active > .row > *:first-child {
-      border-radius: 3px 0 0 3px; }
-    .configurable-component.active > .row > div:last-of-type {
-      border-radius: 0 3px 3px 0; }
-    .configurable-component.active > .row > .icon.open,
-    .configurable-component.active > .row > .icon.open:hover {
-      background-color: transparent;
-      color: #FFF; }
-  .configurable-component.issue-field .row, .configurable-component.workflow-transition .row, .configurable-component.workflow-transition-validation-rule .row {
-    flex-wrap: nowrap;
-    overflow: visible; }
-  .configurable-component > form > .row,
-  .configurable-component > .row {
-    flex: 0 0 auto;
+
+.configurable-component:hover {
+  border: none; }
+
+.configurable-component.active {
+  border: 2px solid #0c8990;
+  background-color: #0c8990; }
+  .configurable-component.active > .row > .icon:not(.open),
+  .configurable-component.active > .row > .information,
+  .configurable-component.active > .row > .name {
+    background-color: #FFF; }
+  .configurable-component.active > .row > *:first-child {
+    border-radius: 3px 0 0 3px; }
+  .configurable-component.active > .row > div:last-of-type {
+    border-radius: 0 3px 3px 0; }
+  .configurable-component.active > .row > .icon.open,
+  .configurable-component.active > .row > .icon.open:hover {
+    background-color: transparent;
+    color: #FFF; }
+
+.configurable-component.issue-field .row, .configurable-component.workflow-transition .row, .configurable-component.workflow-transition-validation-rule .row {
+  flex-wrap: nowrap;
+  overflow: visible; }
+
+.configurable-component > form > .row,
+.configurable-component > .row {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  box-sizing: border-box;
+  justify-content: flex-start; }
+  .configurable-component > form > .row.actions,
+  .configurable-component > .row.actions {
+    justify-content: flex-end; }
+  .configurable-component > form > .row .form-row,
+  .configurable-component > .row .form-row {
+    padding: 0;
+    width: 100%; }
+  .configurable-component > form > .row .message-box .message,
+  .configurable-component > .row .message-box .message {
+    font-size: .85em; }
+  .configurable-component > form > .row.options-container .form-row,
+  .configurable-component > .row.options-container .form-row {
+    padding: .35rem; }
+  .configurable-component > form > .row.actions-container,
+  .configurable-component > .row.actions-container {
+    padding: .75em; }
+  .configurable-component > form > .row .rating,
+  .configurable-component > .row .rating {
+    margin: 0 .75em .75em .75em; }
+  .configurable-component > form > .row > .icon,
+  .configurable-component > .row > .icon {
+    flex: 0 0 36px;
+    box-sizing: border-box;
+    padding: .35rem;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    align-items: stretch;
-    box-sizing: border-box;
-    justify-content: flex-start; }
-    .configurable-component > form > .row.actions,
-    .configurable-component > .row.actions {
-      justify-content: flex-end; }
-    .configurable-component > form > .row .form-row,
-    .configurable-component > .row .form-row {
-      padding: 0;
-      width: 100%; }
-    .configurable-component > form > .row .message-box .message,
-    .configurable-component > .row .message-box .message {
-      font-size: .85em; }
-    .configurable-component > form > .row.options-container .form-row,
-    .configurable-component > .row.options-container .form-row {
-      padding: .35rem; }
-    .configurable-component > form > .row.actions-container,
-    .configurable-component > .row.actions-container {
-      padding: .75em; }
-    .configurable-component > form > .row .rating,
-    .configurable-component > .row .rating {
-      margin: 0 .75em .75em .75em; }
-    .configurable-component > form > .row > .icon,
-    .configurable-component > .row > .icon {
-      flex: 0 0 36px;
-      box-sizing: border-box;
-      padding: .35rem;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      border: none;
-      border-radius: 0;
-      text-align: center;
-      color: #141823; }
-      .configurable-component > form > .row > .icon.handle,
-      .configurable-component > .row > .icon.handle {
-        flex: 0 0 30px;
-        font-size: .7em;
-        color: rgba(200, 200, 200, 0.6); }
-        .configurable-component > form > .row > .icon.handle:hover,
-        .configurable-component > .row > .icon.handle:hover {
-          color: rgba(200, 200, 200, 0.8);
-          cursor: move;
-          cursor: grab; }
-      .configurable-component > form > .row > .icon.open:hover,
-      .configurable-component > .row > .icon.open:hover {
-        background: rgba(220, 220, 220, 0.15);
-        color: #3c1642; }
-      .configurable-component > form > .row > .icon .fas:not(.checked):not(.unchecked):not(.indicator),
-      .configurable-component > form > .row > .icon .far:not(.checked):not(.unchecked):not(.indicator),
-      .configurable-component > .row > .icon .fas:not(.checked):not(.unchecked):not(.indicator),
-      .configurable-component > .row > .icon .far:not(.checked):not(.unchecked):not(.indicator) {
-        flex: 0 0 auto;
-        margin-left: auto;
-        margin-right: auto; }
-      .configurable-component > form > .row > .icon + .name,
-      .configurable-component > .row > .icon + .name {
-        padding-left: 0; }
-    .configurable-component > form > .row > .name,
-    .configurable-component > .row > .name {
-      padding: .35rem;
-      flex: 1 1 auto;
-      display: flex;
-      font-size: .85em;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-      border: none;
-      color: #141823;
-      box-sizing: border-box;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap; }
-      .configurable-component > form > .row > .name.with-dropdown,
-      .configurable-component > .row > .name.with-dropdown {
-        overflow: visible; }
-      .configurable-component > form > .row > .name .title,
-      .configurable-component > .row > .name .title {
-        font-weight: 400; }
-      .configurable-component > form > .row > .name .description,
-      .configurable-component > .row > .name .description {
-        color: rgba(0, 0, 0, 0.4);
-        font-weight: 300; }
-    .configurable-component > form > .row > .actions,
-    .configurable-component > form > .row > .information,
-    .configurable-component > .row > .actions,
-    .configurable-component > .row > .information {
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 0;
+    text-align: center;
+    color: #141823; }
+    .configurable-component > form > .row > .icon.handle,
+    .configurable-component > .row > .icon.handle {
+      flex: 0 0 30px;
+      font-size: .7em;
+      color: rgba(200, 200, 200, 0.6); }
+      .configurable-component > form > .row > .icon.handle:hover,
+      .configurable-component > .row > .icon.handle:hover {
+        color: rgba(200, 200, 200, 0.8);
+        cursor: move;
+        cursor: grab; }
+    .configurable-component > form > .row > .icon.open:hover,
+    .configurable-component > .row > .icon.open:hover {
+      background: rgba(220, 220, 220, 0.15);
+      color: #3c1642; }
+    .configurable-component > form > .row > .icon .fas:not(.checked):not(.unchecked):not(.indicator),
+    .configurable-component > form > .row > .icon .far:not(.checked):not(.unchecked):not(.indicator),
+    .configurable-component > .row > .icon .fas:not(.checked):not(.unchecked):not(.indicator),
+    .configurable-component > .row > .icon .far:not(.checked):not(.unchecked):not(.indicator) {
       flex: 0 0 auto;
-      min-width: 50px;
-      max-width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end; }
-    .configurable-component > form > .row .description,
-    .configurable-component > .row .description {
-      padding: .75em; }
+      margin-left: auto;
+      margin-right: auto; }
+    .configurable-component > form > .row > .icon + .name,
+    .configurable-component > .row > .icon + .name {
+      padding-left: 0; }
+  .configurable-component > form > .row > .name,
+  .configurable-component > .row > .name {
+    padding: .35rem;
+    flex: 1 1 auto;
+    display: flex;
+    font-size: .85em;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    border: none;
+    color: #141823;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    .configurable-component > form > .row > .name.with-dropdown,
+    .configurable-component > .row > .name.with-dropdown {
+      overflow: visible; }
+    .configurable-component > form > .row > .name .title,
+    .configurable-component > .row > .name .title {
+      font-weight: 400; }
+    .configurable-component > form > .row > .name .description,
+    .configurable-component > .row > .name .description {
+      color: rgba(0, 0, 0, 0.4);
+      font-weight: 300; }
+  .configurable-component > form > .row > .actions,
+  .configurable-component > form > .row > .information,
+  .configurable-component > .row > .actions,
+  .configurable-component > .row > .information {
+    flex: 0 0 auto;
+    min-width: 50px;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; }
+  .configurable-component > form > .row .description,
+  .configurable-component > .row .description {
+    padding: .75em; }
 
 .configurable-components-container {
   display: flex;

@@ -53,6 +53,7 @@
         protected $_closed = null;
 
         /**
+         * @var ?Status|int
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Status")
          */
@@ -360,7 +361,7 @@
             return $this->_num_outgoing_transitions;
         }
 
-        public function hasOutgoingTransition(WorkflowTransition $transition)
+        public function hasOutgoingTransition(WorkflowTransition $transition): bool
         {
             $transitions = $this->getOutgoingTransitions();
 
@@ -484,7 +485,7 @@
         /**
          * Return this steps linked status if any
          *
-         * @return Status
+         * @return ?Status
          */
         public function getLinkedStatus()
         {

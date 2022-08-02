@@ -21,6 +21,7 @@
      * @property ?string[] $icons
      * @property ?string $members_url
      * @property ?string $form_url
+     * @property ?bool $selected
      *
      * @package pachno\core\modules\configuration
      */
@@ -262,6 +263,13 @@
             $this->user_id = (isset($this->user_id)) ? $this->user_id : 0;
             $this->team_id = (isset($this->team_id)) ? $this->team_id : 0;
             $this->mode = ($this->user_id) ? 'user' : 'team';
+        }
+        
+        public function componentWorkflowStep()
+        {
+            if (!isset($this->selected)) {
+                $this->selected = false;
+            }
         }
 
         public function componentWorkflowtransitionaction()

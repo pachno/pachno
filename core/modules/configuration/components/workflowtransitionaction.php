@@ -17,7 +17,7 @@ use pachno\core\entities\Milestone;
      */
 
 ?>
-<div id="workflowtransitionaction_<?= $action->getID(); ?>" class="configurable-component">
+<div id="workflowtransitionaction_<?= $action->getID(); ?>" class="configurable-component" data-workflow-transition-action data-id="<?= $action->getId(); ?>">
     <div class="row">
         <?php if (!$action->hasEdit()): ?>
             <div class="name"><?= $action->getDescription(); ?></div>
@@ -29,7 +29,7 @@ use pachno\core\entities\Milestone;
                     <?php include_component('main/identifiableselector', [
                         'html_id'        => 'workflowtransitionaction_'. $action->getID().'_edit',
                         'header'          => __('Select a user'),
-                        'callback' => "Pachno.Config.Workflows.Transition.Actions.update('". make_url('configure_workflow_transition_action_post', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]) ."?target_value=%identifiable_value', '". $action->getID() ."')",
+                        'callback' => "Pachno.Config.Workflows.Transition.Actions.update('". make_url('configure_workflow_transition_action', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]) ."?target_value=%identifiable_value', '". $action->getID() ."')",
                         'clear_link_text' => __('Clear currently selected user'),
                         'base_id'         => 'workflowtransitionaction_'. $action->getID(),
                         'include_users'   => true,
@@ -43,7 +43,7 @@ use pachno\core\entities\Milestone;
                     <?php include_component('main/identifiableselector', [
                         'html_id'        => 'workflowtransitionaction_'. $action->getID().'_edit',
                         'header'          => __('Select a team'),
-                        'callback' => "Pachno.Config.Workflows.Transition.Actions.update('". make_url('configure_workflow_transition_action_post', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]) ."?target_value=%identifiable_value', '". $action->getID() ."')",
+                        'callback' => "Pachno.Config.Workflows.Transition.Actions.update('". make_url('configure_workflow_transition_action', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]) ."?target_value=%identifiable_value', '". $action->getID() ."')",
                         'clear_link_text' => __('Clear currently selected team'),
                         'base_id'         => 'workflowtransitionaction_'. $action->getID(),
                         'include_users'   => false,
@@ -57,7 +57,7 @@ use pachno\core\entities\Milestone;
                     <?php include_component('main/identifiableselector', [
                         'html_id'        => 'workflowtransitionaction_'. $action->getID().'_edit',
                         'header'          => __('Select a client'),
-                        'callback' => "Pachno.Config.Workflows.Transition.Actions.update('". make_url('configure_workflow_transition_action_post', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]) ."?target_value=%identifiable_value', '". $action->getID() ."')",
+                        'callback' => "Pachno.Config.Workflows.Transition.Actions.update('". make_url('configure_workflow_transition_action', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]) ."?target_value=%identifiable_value', '". $action->getID() ."')",
                         'clear_link_text' => __('Clear currently selected client'),
                         'base_id'         => 'workflowtransitionaction_'. $action->getID(),
                         'include_users'   => false,
@@ -71,11 +71,12 @@ use pachno\core\entities\Milestone;
             </div>
         <?php else: ?>
             <div class="name with-dropdown">
-                <form action="<?= make_url('configure_workflow_transition_action_post', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.Actions.update('<?= make_url('configure_workflow_transition_action_post', array('workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID())); ?>', <?= $action->getID(); ?>);return false;" id="workflowtransitionaction_<?= $action->getID(); ?>_form">
+                <form action="<?= make_url('configure_workflow_transition_action', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.Actions.update('<?= make_url('configure_workflow_transition_action', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID()]); ?>', <?= $action->getID(); ?>);return false;" id="workflowtransitionaction_<?= $action->getID(); ?>_form" data-interactive-form data-simple-submit>
+                    <input type="hidden" name="action_type" value="<?= $action->getActionType(); ?>">
                     <div class="form-row">
                         <?php if ($action->hasOptions()): ?>
                             <div class="fancy-dropdown-container">
-                                <div class="fancy-dropdown invisible">
+                                <div class="fancy-dropdown invisible <?php if (!$action->getTargetValue()) echo 'active'; ?>">
                                     <label>
                                         <?php if ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_STATUS): ?>
                                             <?= __('Set status to %status', ['%status' => '']); ?>
@@ -96,6 +97,7 @@ use pachno\core\entities\Milestone;
                                         <?php elseif ($action->isCustomSetAction()): ?>
                                             <?= __('Set issue field %key to %value', ['%key' => $action->getCustomActionType(), '%value' => '']); ?>
                                         <?php endif; ?>
+                                        <span class="submit-indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span>
                                     </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -153,7 +155,7 @@ use pachno\core\entities\Milestone;
                                     </div>
                                 </div>
                             </div>
-                        <?php else: ?>
+                        <?php elseif ($action->getCustomActionType()): ?>
                             <span><?= __('Set issue field %key to %value', array('%key' => $action->getCustomActionType(), '%value' => '')); ?></span>
                             <?php switch (CustomDatatype::getByKey($action->getCustomActionType())->getType()) {
                                 case DatatypeBase::INPUT_TEXTAREA_MAIN:
@@ -184,7 +186,7 @@ use pachno\core\entities\Milestone;
             </div>
         <?php endif; ?>
         <div class="icon">
-            <button class="secondary icon" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this transition action?'); ?>', '<?= __('Please confirm that you really want to delete this transition action.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Actions.remove('<?= make_url('configure_workflow_transition_action_delete', array('workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID())); ?>', <?= $action->getID(); ?>, '<?= $action->getActionType(); ?>'); }}, no: { click: Pachno.UI.Dialog.dismiss }});"><?= fa_image_tag('trash-alt'); ?></button>
+            <button class="secondary icon" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this transition action?'); ?>', '<?= __('Please confirm that you really want to delete this transition action.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.deleteComponent, { url: '<?= make_url('configure_workflow_transition_action', ['workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID()]); ?>?action_id=<?= $action->getId(); ?>', type: 'workflow-transition-action', id: <?= $action->getID(); ?>, close_container: false })}}, no: { click: Pachno.UI.Dialog.dismiss }});"><?= fa_image_tag('trash-alt'); ?></button>
         </div>
     </div>
 </div>

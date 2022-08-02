@@ -11,13 +11,15 @@
 
 ?>
 <div class="configurable-component form-container workflow-transition-validation-rule" data-workflow-transition-validation-rule data-id="<?php echo $rule->getID(); ?>">
-    <form class="row" action="<?php echo make_url('configure_workflow_transition_validation_rule_post', ['workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.Validations.update(this);return false;" id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_form" data-interactive-form>
+    <form class="row" action="<?php echo make_url('configure_workflow_transition_validation_rule', ['workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.Validations.update(this);return false;" id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_form" data-interactive-form>
+        <input type="hidden" name="rule" value="<?= $rule->getRule(); ?>">
+        <input type="hidden" name="postorpre" value="<?= ($rule->isPre()) ? WorkflowTransitionValidationRule::PRE_TRANSITION_VALIDATION : WorkflowTransitionValidationRule::POST_TRANSITION_VALIDATION; ?>">
         <?php if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_MAX_ASSIGNED_ISSUES): ?>
             <div class="name with-dropdown">
                 <div class="form-row">
                     <div class="fancy-dropdown-container">
-                        <div class="fancy-dropdown">
-                            <label><?= __('Max number of assigned issues for current user'); ?></label>
+                        <div class="fancy-dropdown <?php if ($rule->getRuleValue() == '') echo 'active'; ?>">
+                            <label><?= __('Max user assigned issues'); ?></label>
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                             <div class="dropdown-container list-mode">
@@ -37,7 +39,7 @@
             <div class="name with-dropdown">
                 <div class="form-row">
                     <div class="fancy-dropdown-container">
-                        <div class="fancy-dropdown invisible">
+                        <div class="fancy-dropdown invisible <?php if (!$rule->getRuleValue()) echo 'active'; ?>">
                             <label>
                                 <?php if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_STATUS_VALID): ?>
                                     <?php echo __('Status is any of %list', ['%list' => '']); ?>
@@ -84,7 +86,7 @@
             </div>
         <?php endif; ?>
         <div class="icon">
-            <button class="secondary icon" onclick="Pachno.UI.Dialog.show('<?php echo __('Do you really want to delete this transition validation rule?'); ?>', '<?php echo __('Please confirm that you really want to delete this transition validation rule.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Validations.remove('<?php echo make_url('configure_workflow_transition_validation_rule_delete', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>, '<?php echo $rule->isPreOrPost(); ?>', '<?php echo $rule->getRule(); ?>'); }}, no: { click: Pachno.UI.Dialog.dismiss }});return false;"><?php echo fa_image_tag('trash', ['class' => 'icon']); ?></button>
+            <button class="secondary icon" onclick="Pachno.UI.Dialog.show('<?php echo __('Do you really want to delete this transition validation rule?'); ?>', '<?php echo __('Please confirm that you really want to delete this transition validation rule.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.deleteComponent, { url: '<?php echo make_url('configure_workflow_transition_validation_rule', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', type: 'workflow-transition-validation-rule', id: <?= $rule->getID(); ?>, close_container: false })}}, no: { click: Pachno.UI.Dialog.dismiss }});return false;"><?php echo fa_image_tag('trash', ['class' => 'icon']); ?></button>
         </div>
     </form>
 </div>

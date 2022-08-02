@@ -18,6 +18,9 @@
      */
     class WorkflowTransition extends IdentifiableScoped
     {
+        
+        const DIRECTION_INCOMING = 'incoming';
+        const DIRECTION_OUTGOING = 'outgoing';
 
         /**
          * The name of the object
@@ -445,7 +448,10 @@
 
         public static function getTemplates()
         {
-            $templates = ['' => 'No template used - transition happens instantly', 'main/updateissueproperties' => 'Set issue properties or add comment'];
+            $templates = [
+                '' => framework\Context::getI18n()->__('No template used - transition happens instantly'),
+                'main/updateissueproperties' => framework\Context::getI18n()->__('Set issue properties or add comment')
+            ];
             $event = Event::createNew('core', 'workflow_templates', null, [], $templates)->trigger();
 
             return $event->getReturnList();
@@ -459,7 +465,7 @@
         /**
          * Set the template to be used
          *
-         * @param string $template
+         * @param ?string $template
          */
         public function setTemplate($template)
         {
@@ -510,7 +516,7 @@
 
         public function deleteTransition($direction, $step_id)
         {
-            if ($direction == 'incoming') {
+            if ($direction == self::DIRECTION_INCOMING) {
                 $this->delete();
             } else {
                 tables\WorkflowStepTransitions::getTable()->deleteByTransitionAndStepID($this->getID(), $step_id);
@@ -542,11 +548,11 @@
             }
         }
 
-        public function hasPreValidationRule($rule)
+        public function hasPreValidationRule($rule): bool
         {
             $rules = $this->getPreValidationRules();
 
-            return (array_key_exists($rule, $rules));
+            return array_key_exists($rule, $rules);
         }
 
         public function getPreValidationRule($rule)
@@ -572,11 +578,11 @@
             return $this->_post_validation_rules;
         }
 
-        public function hasPostValidationRule($rule)
+        public function hasPostValidationRule($rule): bool
         {
             $rules = $this->getPostValidationRules();
 
-            return (array_key_exists($rule, $rules));
+            return array_key_exists($rule, $rules);
         }
 
         public function getPostValidationRule($rule)

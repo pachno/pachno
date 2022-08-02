@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
+    use b2db\Saveable;
     use b2db\Update;
     use pachno\core\entities\WorkflowTransitionAction;
     use pachno\core\framework;
@@ -19,8 +21,10 @@
     /**
      * Workflow transition actions table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static WorkflowTransitionActions getTable()
+     * @method WorkflowTransitionAction selectById($id, Query $query = null, $join = 'all')
+     * @method WorkflowTransitionAction selectOne(Query $query, $join = 'all')
+     * @method WorkflowTransitionAction[] select(Query $query, $join = 'all')
      *
      * @Table(name="workflow_transition_actions")
      * @Entity(class="\pachno\core\entities\WorkflowTransitionAction")

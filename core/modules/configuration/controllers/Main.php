@@ -14,6 +14,8 @@
     use pachno\core\entities\tables\Editions;
     use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\Milestones;
+    use pachno\core\entities\tables\Workflows;
+    use pachno\core\entities\tables\WorkflowSteps;
     use pachno\core\exceptions\FormException;
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
@@ -25,13 +27,19 @@
      * Main controller for settings
      *
      * @property int $access_level
+     * @property string $error
      * @property array $config_sections
      * @property array $outdated_modules
-     * @property entities\Scope[] $scopes
-     * @property entities\Group[] $groups
-     * @property entities\Team[] $teams
-     * @property entities\Client[] $clients
-     * @property entities\Role[] $roles
+     * @property ?entities\Scope[] $scopes
+     * @property ?entities\Group[] $groups
+     * @property ?entities\Team[] $teams
+     * @property ?entities\Client[] $clients
+     * @property ?entities\Role[] $roles
+     * @property ?entities\WorkflowStep $step
+     * @property ?entities\WorkflowTransition $transition
+     * @property ?entities\WorkflowTransitionValidationRule $rule
+     * @property ?entities\WorkflowTransitionAction $action
+     * @property ?entities\Workflow $workflow
      *
      * @Routes(name_prefix="configure_", url_prefix="/configure")
      * @package pachno\core\modules\configuration\controllers
@@ -1475,14 +1483,14 @@
 
         public function runConfigureWorkflows(framework\Request $request)
         {
-            $this->workflows = tables\Workflows::getTable()->getAll();
+            $this->workflows = Workflows::getTable()->getAll();
         }
 
         public function runConfigureWorkflowPost(framework\Request $request)
         {
             try {
                 if ($request['workflow_id']) {
-                    $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
+                    $workflow = Workflows::getTable()->selectById($request['workflow_id']);
                 } else {
                     $workflow = new entities\Workflow();
                 }
@@ -1522,7 +1530,7 @@
 
         public function runConfigureWorkflow(framework\Request $request)
         {
-            $this->workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
+            $this->workflow = Workflows::getTable()->selectById($request['workflow_id']);
         }
 
         public function runConfigureWorkflowSchemeDelete(framework\Request $request)
@@ -1608,7 +1616,7 @@
         public function runConfigureWorkflowSteps(framework\Request $request)
         {
             try {
-                $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
+                $workflow = Workflows::getTable()->selectById($request['workflow_id']);
 //                $transition = new entities\WorkflowTransition();
 //                $step = tables\WorkflowSteps::getTable()->selectById(9);
 //                $transition->setOutgoingStep($step);
@@ -1646,43 +1654,40 @@
                 }
             }
         }
-
-        public function runConfigureWorkflowStep(framework\Request $request)
+    
+        /**
+         * @Route(name="workflow_step", url="/configure/workflows/:workflow_id/steps/:step_id/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runConfigureWorkflowStep(framework\Request $request): framework\JsonOutput
         {
-            $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
-
-            switch ($request['mode']) {
-                case 'delete':
-                    $step->delete();
-                    break;
-            }
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $step])
-            ]);
-        }
-
-        public function runConfigureWorkflowStepPost(framework\Request $request)
-        {
-            $this->workflow = null;
-            $this->step = null;
             try {
-                $this->workflow = entities\Workflow::getB2DBTable()->selectById($request['workflow_id']);
-                if ($request['mode'] == 'edit' && !$request->hasParameter('step_id')) {
+                $this->workflow = Workflows::getTable()->selectById($request['workflow_id']);
+                if (!$request['step_id']) {
                     $this->step = new entities\WorkflowStep();
                     $this->step->setWorkflow($this->workflow);
                 } else {
-                    $this->step = entities\WorkflowStep::getB2DBTable()->selectById($request['step_id']);
+                    $this->step = WorkflowSteps::getTable()->selectById($request['step_id']);
                 }
-                if ($request->isPost() && $request['mode'] == 'delete_outgoing_transitions') {
-                    $this->step->deleteOutgoingTransitions();
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', ['workflow_id' => $this->workflow->getID()]));
-                }
-                if ($request->isPost() && $request['mode'] == 'delete' && !$this->step->hasIncomingTransitions()) {
+                
+                if ($request->isDelete()) {
                     $this->step->deleteOutgoingTransitions();
                     $this->step->delete();
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', ['workflow_id' => $this->workflow->getID()]));
-                } elseif ($request->isPost() && ($request->hasParameter('edit') || $request['mode'] == 'edit')) {
+                    return $this->renderJSON(['message' => $this->getI18n()->__('Workflow step deleted')]);
+                }
+                
+                if ($request->hasParameter('transition_id')) {
+                    $transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['transition_id']);
+                    $this->step->addOutgoingTransition($transition);
+                    return $this->renderJSON([
+                        'content' => $this->getComponentHTML('configuration/editworkflowtransition', ['transition' => $transition, 'step' => $this->step])
+                    ]);
+                }
+                
+                if ($request->isPost()) {
                     $this->step->setName($request['name']);
                     $this->step->setDescription($request['description']);
                     $this->step->setLinkedStatusID($request['status_id']);
@@ -1690,278 +1695,232 @@
                     $this->step->setIsClosed((bool)($request['state'] == entities\Issue::STATE_CLOSED));
                     $this->step->save();
 
-                    return $this->renderJSON(['workflow_step' => $this->step->toJSON()]);
+                    return $this->renderJSON([
+                        'workflow_step' => $this->step->toJSON(),
+                        'content' => $this->getComponentHTML('configuration/workflowstep', ['step' => $this->step, 'selected' => (bool) $request['step_id']])
+                    ]);
                 }
             } catch (Exception $e) {
-                $this->error = $this->getI18n()->__('This workflow / step does not exist');
+                $this->return400($this->getI18n()->__('This workflow / step does not exist'));
             }
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $this->step])
+            ]);
         }
-
-        public function runConfigureWorkflowTransitionPost(framework\Request $request)
+    
+        /**
+         * @Route(name="workflow_transition", url="/configure/workflows/:workflow_id/transitions/:transition_id/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runConfigureWorkflowTransition(framework\Request $request): framework\JsonOutput
         {
-        }
+            $this->workflow = Workflows::getTable()->selectById((int)$request['workflow_id']);
+            if (!$this->workflow instanceof entities\Workflow) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This workflow does not exist')]);
+            }
+            
+            if ($request['transition_id']) {
+                $this->transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['transition_id']);
 
-        public function runConfigureWorkflowTransition(framework\Request $request)
-        {
-            $this->workflow = null;
-            $this->transition = null;
-
-            try {
-                $this->workflow = tables\Workflows::getTable()->selectById((int)$request['workflow_id']);
-                if ($request->hasParameter('transition_id')) {
-                    $mode = $request['mode'];
-                    $this->transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['transition_id']);
-                    if ($request->isPost()) {
-                        if ($mode == 'edit') {
-                            if (!$this->transition->isInitialTransition()) {
-                                $this->transition->setName($request['transition_name']);
-                                $this->transition->setDescription($request['transition_description']);
-                                if ($request['template']) {
-                                    $this->transition->setTemplate($request['template']);
-                                } else {
-                                    $this->transition->setTemplate(null);
-                                }
-                            }
-                            try {
-                                $step = tables\WorkflowSteps::getTable()->selectById((int)$request['outgoing_step_id']);
-                                $this->transition->setOutgoingStep($step);
-                            } catch (Exception $e) {
-
-                            }
-                            $this->transition->save();
-                            $transition = $this->transition;
-                            $redirect_transition = true;
-                        } elseif ($mode == 'delete') {
-                            $this->transition->deleteTransition($request['direction'], $request['step_id']);
-                            $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', ['workflow_id' => $this->workflow->getID(), 'step_id' => $request['step_id']]));
-                        } elseif ($mode == 'delete_action') {
-                            $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int)$request['action_id']);
-                            $this->action->delete();
-
-                            return $this->renderJSON(['message' => $this->getI18n()->__('The action has been deleted')]);
-                        } elseif ($mode == 'new_action') {
-                            $action = new entities\WorkflowTransitionAction();
-                            $action->setActionType($request['action_type']);
-                            $action->setTransition($this->transition);
-                            $action->setWorkflow($this->workflow);
-                            $action->setTargetValue('');
-                            $action->save();
-
-                            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/workflowtransitionaction', ['action' => $action])]);
-                        } elseif ($mode == 'update_action') {
-                            $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int)$request['action_id']);
-                            $this->action->setTargetValue($request['target_value']);
-                            $this->action->save();
-                            $text = $request['target_value'];
-                            switch ($this->action->getActionType()) {
-                                case entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE:
-                                    if ($this->action->hasTargetValue()) {
-                                        $target_details = explode('_', $this->action->getTargetValue());
-                                        $text = ($target_details[0] == 'user') ? tables\Users::getTable()->selectById((int)$target_details[1])->getNameWithUsername() : entities\Team::getB2DBTable()->selectById((int)$target_details[1])->getName();
-                                    } else {
-                                        $text = $this->getI18n()->__('User specified during transition');
-                                    }
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_RESOLUTION:
-                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Resolution specified by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_REPRODUCABILITY:
-                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Reproducability specified by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_STATUS:
-                                    $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                    $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: ' . $target->getColor() . '; color: ' . $target->getTextColor() . ';">' . $target->getName() . '</span>' : $this->getI18n()->__('Status provided by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
-                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Priority specified by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_SEVERITY:
-                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Severity specified by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_CATEGORY:
-                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Category specified by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::ACTION_SET_MILESTONE:
-                                    $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                    $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Milestone specified by user');
-                                    break;
-                                case entities\WorkflowTransitionAction::CUSTOMFIELD_SET_PREFIX . $this->action->getCustomActionType():
-                                    switch (CustomDatatype::getByKey($this->action->getCustomActionType())->getType()) {
-                                        case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
-                                        case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
-                                            break;
-                                        case entities\DatatypeBase::DATE_PICKER:
-                                        case entities\DatatypeBase::DATETIME_PICKER:
-                                            return $this->renderJSON(['content' => date('Y-m-d' . (CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == entities\DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), (int)$text)]);
-                                            break;
-                                        case entities\DatatypeBase::USER_CHOICE:
-                                            return $this->renderJSON(['content' => $this->getComponentHTML('main/userdropdown', ['user' => $text])]);
-                                            break;
-                                        case entities\DatatypeBase::TEAM_CHOICE:
-                                            return $this->renderJSON(['content' => $this->getComponentHTML('main/teamdropdown', ['team' => $text])]);
-                                            break;
-                                        case entities\DatatypeBase::CLIENT_CHOICE:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $text = ($this->action->getTargetValue()) ? Clients::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                        case entities\DatatypeBase::RELEASES_CHOICE:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? Builds::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                        case entities\DatatypeBase::COMPONENTS_CHOICE:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? Components::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                        case entities\DatatypeBase::EDITIONS_CHOICE:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? Editions::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                        case entities\DatatypeBase::MILESTONE_CHOICE:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? Milestones::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                        case entities\DatatypeBase::STATUS_CHOICE:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: ' . $target->getColor() . '; color: ' . $target->getTextColor() . ';">' . $target->getName() . '</span>' : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                        case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
-                                        default:
-                                            if (is_numeric($this->action->getTargetValue())) {
-                                                $text = ($this->action->getTargetValue()) ? tables\CustomFieldOptions::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
-                                            }
-                                            break;
-                                    }
-                                    break;
-                            }
-
-                            return $this->renderJSON(['content' => $text]);
-                        } elseif ($mode == 'delete_validation_rule') {
-                            $this->rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int)$request['rule_id']);
-                            $this->rule->delete();
-
-                            return $this->renderJSON(['message' => $this->getI18n()->__('The validation rule has been deleted')]);
-                        } elseif ($mode == 'new_validation_rule') {
-                            if (!in_array($request['postorpre'], ['post', 'pre'])) {
-                                throw new InvalidArgumentException($this->getI18n()->__('Invalid transition definition'));
-                            }
-                            $rule = new entities\WorkflowTransitionValidationRule();
-                            if ($request['postorpre'] == 'post') {
-                                $exists = (bool)($this->transition->hasPostValidationRule($request['rule']));
-                                if (!$exists)
-                                    $rule->setPost();
-                            } elseif ($request['postorpre'] == 'pre') {
-                                $exists = (bool)($this->transition->hasPreValidationRule($request['rule']));
-                                if (!$exists)
-                                    $rule->setPre();
-                            }
-                            if ($exists) {
-                                $this->getResponse()->setHttpStatus(400);
-
-                                return $this->renderJSON(['message' => $this->getI18n()->__('This validation rule already exist')]);
-                            }
-                            $rule->setRule($request['rule']);
-                            $rule->setRuleValue('');
-                            $rule->setTransition($this->transition);
-                            $rule->setWorkflow($this->workflow);
-                            $rule->save();
-
-                            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/workflowtransitionvalidationrule', ['rule' => $rule])]);
-                        } elseif ($mode == 'update_validation_rule') {
-                            $rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int)$request['rule_id']);
-                            $text = null;
-                            if ($rule->isCustom()) {
-                                switch ($rule->getCustomType()) {
-                                    case entities\DatatypeBase::RADIO_CHOICE:
-                                    case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
-                                    case entities\DatatypeBase::TEAM_CHOICE:
-                                    case entities\DatatypeBase::STATUS_CHOICE:
-                                    case entities\DatatypeBase::MILESTONE_CHOICE:
-                                    case entities\DatatypeBase::CLIENT_CHOICE:
-                                    case entities\DatatypeBase::COMPONENTS_CHOICE:
-                                    case entities\DatatypeBase::EDITIONS_CHOICE:
-                                    case entities\DatatypeBase::RELEASES_CHOICE:
-                                        $rule->setRuleValue(join(',', $request['rule_value'] ?: []));
-                                        $text = ($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : $this->getI18n()->__('Any valid value');
-                                        break;
-                                }
-                            } else {
-                                switch ($rule->getRule()) {
-                                    case entities\WorkflowTransitionValidationRule::RULE_MAX_ASSIGNED_ISSUES:
-                                        $rule->setRuleValue($request['rule_value']);
-                                        $text = ($rule->getRuleValue()) ? $rule->getRuleValue() : $this->getI18n()->__('Unlimited');
-                                        break;
-                                    case entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID:
-                                    case entities\WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID:
-                                    case entities\WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID:
-                                    case entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID:
-                                    case entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID:
-                                    case entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID:
-                                        $rule->setRuleValue(join(',', $request['rule_value'] ?: []));
-                                        $text = ($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : $this->getI18n()->__('Any valid value');
-                                        break;
-                                }
-                            }
-                            $rule->save();
-                            $this->rule = $rule;
-
-                            return $this->renderJSON(['content' => $text]);
-                        }
+                if ($request->isDelete()) {
+                    if ($this->transition->isInitialTransition()) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('You cannot delete the initial transition')]);
                     }
-                } elseif ($request->isPost() && $request->hasParameter('step_id')) {
-                    $step = tables\WorkflowSteps::getTable()->selectById((int)$request['step_id']);
-                    if ($request['add_transition_type'] == 'existing' && $request->hasParameter('existing_transition_id')) {
-                        $transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['existing_transition_id']);
-                        $redirect_transition = false;
+                    
+                    $this->transition->deleteTransition(entities\WorkflowTransition::DIRECTION_OUTGOING, $request['step_id']);
+                    return $this->renderJSON(['message' => $this->getI18n()->__('The transition has been deleted')]);
+                }
+            } else {
+                $this->transition = new entities\WorkflowTransition();
+            }
+            
+            if (!$this->transition instanceof entities\WorkflowTransition) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This transition does not exist')]);
+            }
+            
+            if ($request->isPost() && (!$this->transition->getID() || !$this->transition->isInitialTransition())) {
+                $this->transition->setWorkflow($this->workflow);
+                $this->transition->setName($request['name']);
+                if ($request->hasParameter('description')) {
+                    $this->transition->setDescription($request['transition_description']);
+                }
+                if ($request->hasParameter('template')) {
+                    $this->transition->setTemplate($request['template']);
+                }
+                if ($request->hasParameter('outgoing_step_id')) {
+                    $outgoing_step = WorkflowSteps::getTable()->selectById((int)$request['outgoing_step_id']);
+                    $this->transition->setOutgoingStep($outgoing_step);
+                }
+                $this->transition->save();
+            }
+
+            if ($request->hasParameter('step_id')) {
+                $step = WorkflowSteps::getTable()->selectById((int) $request['step_id']);
+                $step->addOutgoingTransition($this->transition);
+                
+                $options = ['transition' => $this->transition, 'step' => $step];
+                
+                return $this->renderJSON([
+                    'menu_item' => $this->getComponentHTML('configuration/workflowtransition', $options),
+                    'content' => $this->getComponentHTML('configuration/editworkflowtransition', $options),
+                    'transition' => $this->transition->toJSON()
+                ]);
+            }
+            
+            return $this->renderJSON([
+                'transition' => $this->transition->toJSON()
+            ]);
+        }
+    
+        /**
+         * @Route(name="workflow_transition_action", url="/configure/workflows/:workflow_id/transitions/:transition_id/actions/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runConfigureWorkflowTransitionAction(framework\Request $request): framework\JsonOutput
+        {
+            $this->workflow = Workflows::getTable()->selectById((int)$request['workflow_id']);
+            if (!$this->workflow instanceof entities\Workflow) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This workflow does not exist')]);
+            }
+    
+            $this->transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['transition_id']);
+            if (!$this->transition instanceof entities\WorkflowTransition) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This transition does not exist')]);
+            }
+            
+            if ($request['action_id']) {
+                $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int)$request['action_id']);
+    
+                if ($request->isDelete()) {
+                    $this->action->delete();
+                    return $this->renderJSON(['message' => $this->getI18n()->__('The action has been deleted')]);
+                }
+            } else {
+                $this->action = new entities\WorkflowTransitionAction();
+                $this->action->setWorkflow($this->workflow);
+                $this->action->setTransition($this->transition);
+            }
+            if (!$this->action instanceof entities\WorkflowTransitionAction) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This transition action does not exist')]);
+            }
+
+            $this->action->setActionType($request['action_type']);
+            $this->action->setTargetValue($request['target_value']);
+            $this->action->save();
+            
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/workflowtransitionaction', ['action' => $this->action])
+            ]);
+        }
+    
+        /**
+         * @Route(name="workflow_transition_validation_rule", url="/configure/workflows/:workflow_id/transitions/:transition_id/validationrules/:rule_id/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runConfigureWorkflowTransitionValidationRule(framework\Request $request)
+        {
+            $this->workflow = Workflows::getTable()->selectById((int)$request['workflow_id']);
+            if (!$this->workflow instanceof entities\Workflow) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This workflow does not exist')]);
+            }
+    
+            $this->transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['transition_id']);
+            if (!$this->transition instanceof entities\WorkflowTransition) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This transition does not exist')]);
+            }
+    
+            if ($request['rule_id']) {
+                $this->rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int)$request['rule_id']);
+        
+                if ($request->isDelete()) {
+                    $this->rule->delete();
+                    return $this->renderJSON(['message' => $this->getI18n()->__('The rule has been deleted')]);
+                }
+            } else {
+                $this->rule = new entities\WorkflowTransitionValidationRule();
+                $this->rule->setWorkflow($this->workflow);
+                $this->rule->setTransition($this->transition);
+                
+                $rule = $request['rule'];
+                $prefix = $request['postorpre'];
+                $exists = false;
+                if ($prefix == entities\WorkflowTransitionValidationRule::POST_TRANSITION_VALIDATION) {
+                    if (!$this->transition->hasPostValidationRule($rule)) {
+                        $this->rule->setPost();
                     } else {
-                        if ($request['transition_name'] && $request['outgoing_step_id'] && $request->hasParameter('template')) {
-                            if (($outgoing_step = tables\WorkflowSteps::getTable()->selectById((int)$request['outgoing_step_id'])) && $step instanceof entities\WorkflowStep) {
-                                if (!$request['template'] || array_key_exists($request['template'], entities\WorkflowTransition::getTemplates())) {
-                                    $transition = new entities\WorkflowTransition();
-                                    $transition->setWorkflow($this->workflow);
-                                    $transition->setName($request['transition_name']);
-                                    $transition->setDescription($request['transition_description']);
-                                    $transition->setOutgoingStep($outgoing_step);
-                                    $transition->setTemplate($request['template']);
-                                    $transition->save();
-                                    $step->addOutgoingTransition($transition);
-                                    $redirect_transition = true;
-                                } else {
-                                    throw new InvalidArgumentException($this->getI18n()->__('Please select a valid template'));
-                                }
-                            } else {
-                                throw new InvalidArgumentException($this->getI18n()->__('Please select a valid outgoing step'));
-                            }
-                        } else {
-                            throw new InvalidArgumentException($this->getI18n()->__('Please fill in all required fields'));
-                        }
+                        $exists = true;
                     }
-                    $step->addOutgoingTransition($transition);
                 } else {
-                    throw new InvalidArgumentException('Invalid action');
+                    if (!$this->transition->hasPreValidationRule($rule)) {
+                        $this->rule->setPre();
+                    } else {
+                        $exists = true;
+                    }
                 }
-            } catch (InvalidArgumentException $e) {
-                $this->error = $e->getMessage();
-            } catch (Exception $e) {
-                $this->error = $this->getI18n()->__('This workflow / transition does not exist');
+                
+                if ($exists) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['message' => $this->getI18n()->__('This validation rule already exist')]);
+                }
             }
-            if (isset($redirect_transition) && $redirect_transition) {
-                $this->forward(framework\Context::getRouting()->generate('configure_workflow_transition', ['workflow_id' => $this->workflow->getID(), 'transition_id' => $transition->getID()]));
-            } elseif (isset($redirect_transition)) {
-                $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', ['workflow_id' => $this->workflow->getID()]));
-            }
-        }
 
+            $this->rule->setRule($request['rule']);
+            $this->rule->setRuleValue('');
+            $this->rule->setTransition($this->transition);
+            $this->rule->setWorkflow($this->workflow);
+            
+            if ($this->rule->isCustom()) {
+                switch ($this->rule->getCustomType()) {
+                    case entities\DatatypeBase::RADIO_CHOICE:
+                    case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                    case entities\DatatypeBase::TEAM_CHOICE:
+                    case entities\DatatypeBase::STATUS_CHOICE:
+                    case entities\DatatypeBase::MILESTONE_CHOICE:
+                    case entities\DatatypeBase::CLIENT_CHOICE:
+                    case entities\DatatypeBase::COMPONENTS_CHOICE:
+                    case entities\DatatypeBase::EDITIONS_CHOICE:
+                    case entities\DatatypeBase::RELEASES_CHOICE:
+                        $this->rule->setRuleValue(join(',', $request['rule_value'] ?: []));
+                        break;
+                }
+            } else {
+                switch ($this->rule->getRule()) {
+                    case entities\WorkflowTransitionValidationRule::RULE_MAX_ASSIGNED_ISSUES:
+                        $this->rule->setRuleValue($request['rule_value']);
+                        break;
+                    case entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID:
+                    case entities\WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID:
+                    case entities\WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID:
+                    case entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID:
+                    case entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID:
+                    case entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID:
+                        $this->rule->setRuleValue(join(',', $request['rule_value'] ?: []));
+                        break;
+                }
+            }
+            $this->rule->save();
+            
+            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/workflowtransitionvalidationrule', ['rule' => $this->rule])]);
+        }
+    
         public function runAddClient(framework\Request $request)
         {
             try {

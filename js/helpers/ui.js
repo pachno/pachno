@@ -450,11 +450,19 @@ const setupListeners = function() {
     });
 
     Pachno.on(Pachno.EVENTS.configuration.deleteComponent, (_, data) => {
-        const $container = $('body').find('.configurable-components-container');
-        const $optionsContainer = $('body').find('.configurable-component-options').first();
-        $(`[data-${data.type}][data-id=${data.id}]`).remove();
-        $container.removeClass('active');
-        $optionsContainer.html('');
+        const $component = $(`[data-${data.type}][data-id=${data.id}]`);
+        const $componentContainer = $component.parent();
+        $component.remove();
+        if ($componentContainer.children().length == 0) {
+            $componentContainer.html('');
+        }
+
+        if (data.close_container === undefined || data.close_container === true) {
+            const $container = $('body').find('.configurable-components-container');
+            const $optionsContainer = $('body').find('.configurable-component-options').first();
+            $container.removeClass('active');
+            $optionsContainer.html('');
+        }
         Pachno.UI.Dialog.dismiss();
 
         Pachno.fetch(data.url, { method: 'DELETE' });

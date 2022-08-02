@@ -334,6 +334,21 @@
 
             return false;
         }
+    
+        /**
+         * @param int $status_id
+         * @return bool
+         */
+        public function hasStatusId($status_id): bool
+        {
+            foreach ($this->getSteps() as $step) {
+                if ($step->getLinkedStatusID() == $status_id) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
 
         /**
          * Return the items name

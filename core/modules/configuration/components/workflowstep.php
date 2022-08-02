@@ -1,12 +1,16 @@
 <?php
-
+    
+    use pachno\core\entities\WorkflowStep;
     use pachno\core\framework\Context;
     use pachno\core\entities\Status;
 
-    /** @var \pachno\core\entities\WorkflowStep $step */
+    /**
+     * @var WorkflowStep $step
+     * @var bool $selected
+     */
 
 ?>
-<div class="configurable-component form-container workflow-step" data-workflow-step data-id="<?= $step->getID(); ?>" data-options-url="<?= make_url('configure_workflow_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getId()]); ?>">
+<div class="configurable-component form-container workflow-step <?php if ($selected): ?>active<?php endif; ?>" id="workflow_step_component_<?= $step->getID(); ?>" data-workflow-step data-id="<?= $step->getID(); ?>" data-options-url="<?= make_url('configure_workflow_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getId()]); ?>">
     <div class="row">
         <div class="icon handle"><?= fa_image_tag('grip-vertical'); ?></div>
         <div class="name">

@@ -2945,14 +2945,10 @@
                         }
                         $options['scheme'] = $scheme;
                         break;
-                    case 'edit_workflow_step':
-                        $template_name = 'configuration/editworkflowstep';
-                        if ($request['step_id']) {
-                            $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
-                        } else {
-                            $step = new entities\WorkflowStep();
-                            $step->setWorkflowId($request['workflow_id']);
-                        }
+                    case 'create_workflow_step':
+                        $template_name = 'configuration/createworkflowstep';
+                        $step = new entities\WorkflowStep();
+                        $step->setWorkflowId($request['workflow_id']);
                         if ($request->hasParameter('clone')) {
                             $options['clone'] = true;
                         }
@@ -2961,12 +2957,14 @@
                     case 'edit_workflow_transition':
                         $template_name = 'configuration/editworkflowtransitionpopup';
                         if ($request['transition_id']) {
-                            $scheme = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
+                            $transition = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
                         } else {
-                            $scheme = new entities\WorkflowTransition();
+                            $transition = new entities\WorkflowTransition();
+                            $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
+                            $transition->setWorkflow($workflow);
                         }
                         $options['step'] = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
-                        $options['transition'] = $scheme;
+                        $options['transition'] = $transition;
                         break;
                     case 'edit_issuetype_scheme':
                         $template_name = 'configuration/editissuetypescheme';

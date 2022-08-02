@@ -38,20 +38,16 @@
     {
 
         public const RULE_MAX_ASSIGNED_ISSUES = 'max_assigned_issues';
-
         public const RULE_STATUS_VALID = 'valid_status';
-
         public const RULE_RESOLUTION_VALID = 'valid_resolution';
-
         public const RULE_REPRODUCABILITY_VALID = 'valid_reproducability';
-
         public const RULE_PRIORITY_VALID = 'valid_priority';
-
         public const RULE_TEAM_MEMBERSHIP_VALID = 'valid_team';
-
         public const RULE_ISSUE_IN_MILESTONE_VALID = 'valid_in_milestone';
-
         public const CUSTOMFIELD_VALIDATE_PREFIX = 'customfield_validate_';
+        
+        public const PRE_TRANSITION_VALIDATION = 'pre';
+        public const POST_TRANSITION_VALIDATION = 'post';
 
         /**
          * @Column(type="string", length=100, name="rule")

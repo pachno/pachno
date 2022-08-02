@@ -37,14 +37,14 @@
                         <?php endforeach; ?>
                     </div>
                     <div class="configurable-components-list">
-                        <a class="configurable-component trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_step', 'workflow_id' => $workflow->getId()]); ?>">
+                        <button class="configurable-component trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'create_workflow_step', 'workflow_id' => $workflow->getId()]); ?>">
                             <span class="row">
                                 <span class="icon"><?= fa_image_tag('plus'); ?></span>
                                 <span class="name">
                                     <span class="title"><?= __('Add workflow step'); ?></span>
                                 </span>
                             </span>
-                        </a>
+                        </button>
                     </div>
                 </div>
                 <div class="configurable-component-options" id="selected-workflow-step-options"></div>
@@ -53,20 +53,98 @@
     </div>
 </div>
 <script>
-    Pachno.on(Pachno.EVENTS.ready, function () {
-        // $('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
-        //     const key = $(this).data('id'),
-        //         url = $(this).data('url');
-        //
-        //     .Config.IssuetypeScheme.addField(url, key);
-        // });
+  Pachno.on(Pachno.EVENTS.ready, function () {
+    Pachno.on(Pachno.EVENTS.configuration.deleteComponent, (_, data) => {
+      if (data.type == 'workflow-transition') {
+          $('#add-transition-list .list-item[data-add-workflow-transition][data-id=' + data.id + ']').removeClass('disabled');
+      }
+      if (data.type == 'workflow-transition-action') {
+          $('#add-transition-list .list-item[data-add-workflow-transition][data-id=' + data.id + ']').removeClass('disabled');
+      }
+      if (data.type == 'workflow-validation-rule') {
+          $('#add-transition-list .list-item[data-add-workflow-validation-rule][data-id=' + data.id + ']').removeClass('disabled');
+      }
+    });
+    
+    $('body').on('click', '#add-transition-list .list-item[data-add-workflow-transition]:not(.disabled)', function(event) {
+      const key = $(this).data('id'),
+        url = $(this).data('url');
 
-        $('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
-            const $item = $(this).parents('.configurable-component'),
-                key = $item.data('id');
+      const $container = $('#outgoing-transitions-list');
 
-            $item.remove();
-            $('.list-item[data-issue-field][data-id=' + key + ']').removeClass('disabled');
+      fetch(url, {
+        method: 'POST'
+      })
+        .then(function (response) {
+          response.json().then(function (json) {
+            if (response.ok) {
+              $container.append(json.content);
+              $('#add-transition-list .list-item[data-add-workflow-transition][data-id=' + key + ']').addClass('disabled');
+            } else {
+              Pachno.UI.Message.error(json.error);
+            }
+          });
         });
     });
+
+    $('body').on('click', '#add-transition-action .list-item[data-add-workflow-transition-action]:not(.disabled)', function(event) {
+      const key = $(this).data('id'),
+        url = $(this).data('url');
+
+      const $container = $('#workflow-transition-actions-list');
+
+      fetch(url, {
+        method: 'POST'
+      })
+        .then(function (response) {
+          response.json().then(function (json) {
+            if (response.ok) {
+              $container.append(json.content);
+              $('#add-transition-list .list-item[data-add-workflow-transition-action][data-id=' + key + ']').addClass('disabled');
+            } else {
+              Pachno.UI.Message.error(json.error);
+            }
+          });
+        });
+    });
+
+    $('body').on('click', '.add-validation-rule-list .list-item[data-add-workflow-validation-rule]:not(.disabled)', function(event) {
+      const key = $(this).data('id'),
+        url = $(this).data('url');
+
+      const $container = ($(this).data('rule-type') == 'post') ? $('#workflowtransitionpostvalidationrules_list') : $('#workflowtransitionprevalidationrules_list');
+
+      fetch(url, {
+        method: 'POST'
+      })
+        .then(function (response) {
+          response.json().then(function (json) {
+            if (response.ok) {
+              $container.append(json.content);
+              $('.add-validation-rule-list .list-item[data-add-workflow-validation-rule][data-id=' + key + ']').addClass('disabled');
+            } else {
+              Pachno.UI.Message.error(json.error);
+            }
+          });
+        });
+    });
+
+    Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
+      const json = data.json;
+      switch (data.form) {
+        case 'edit-workflow-transition-0-form':
+          const $menu_container = $('#add-transition-list');
+          const $container = $('#outgoing-transitions-list');
+          
+          if ($menu_container.length > 0) {
+            $menu_container.append(json.menu_item);
+          }
+          if ($container.length > 0) {
+            $container.append(json.content);
+          }
+          $('#add-transition-list .list-item[data-add-workflow-transition-action][data-id=' + json.transition.id + ']').addClass('disabled');
+          break;
+      }
+    });
+  });
 </script>

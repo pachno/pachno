@@ -4,9 +4,12 @@
 
     use b2db\Insertion;
     use b2db\Join;
+    use b2db\Query;
+    use b2db\Saveable;
     use b2db\Update;
     use pachno\core\entities\Scope;
     use pachno\core\entities\Status;
+    use pachno\core\entities\WorkflowStep;
     use pachno\core\entities\WorkflowTransitionAction;
     use pachno\core\framework;
 
@@ -23,8 +26,10 @@
     /**
      * Workflow steps table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static WorkflowSteps getTable()
+     * @method WorkflowStep selectOne(Query $query, $join = 'all')
+     * @method WorkflowStep selectById($id, Query $query = null, $join = 'all')
+     * @method WorkflowStep[] select(Query $query, $join = 'all')
      *
      * @Table(name="workflow_steps")
      * @Entity(class="\pachno\core\entities\WorkflowStep")

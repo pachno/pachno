@@ -2,7 +2,10 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
     use b2db\QueryColumnSort;
+    use b2db\Saveable;
+    use pachno\core\entities\Workflow;
     use pachno\core\framework;
 
     /**
@@ -18,8 +21,10 @@
     /**
      * Workflows table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static Workflows getTable()
+     * @method Workflow selectOne(Query $query, $join = 'all')
+     * @method Workflow selectById($id, Query $query = null, $join = 'all')
+     * @method Workflow[] select(Query $query, $join = 'all')
      *
      * @Table(name="workflows")
      * @Entity(class="\pachno\core\entities\Workflow")
@@ -40,7 +45,11 @@
         public const DESCRIPTION = 'workflows.description';
 
         public const IS_ACTIVE = 'workflows.is_active';
-
+    
+        /**
+         * @param ?int $scope_id
+         * @return Workflow[]
+         */
         public function getAll($scope_id = null)
         {
             $scope_id = ($scope_id === null) ? framework\Context::getScope()->getID() : $scope_id;
