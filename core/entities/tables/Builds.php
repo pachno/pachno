@@ -3,7 +3,9 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\Query;
     use b2db\QueryColumnSort;
+    use b2db\Saveable;
     use b2db\Table;
     use b2db\Update;
     use pachno\core\entities\Build;
@@ -18,6 +20,8 @@
      * @method static Builds getTable() Retrieves an instance of this table
      *
      * @method Build selectById($id)
+     * @method Build selectOne(Query $query, $join = 'all')
+     * @method Build[] select(Query $query, $join = 'all')
      *
      * @Table(name="builds")
      * @Entity(class="\pachno\core\entities\Build")
@@ -66,7 +70,11 @@
             $query->where(self::ID, $build_ids, Criterion::IN);
             $this->select($query);
         }
-
+    
+        /**
+         * @param $project_id
+         * @return Build[]
+         */
         public function getByProjectID($project_id)
         {
             $query = $this->getQuery();

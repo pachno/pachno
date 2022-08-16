@@ -1,11 +1,17 @@
 <?php
-
+    
+    use pachno\core\entities\Group;
+    use pachno\core\entities\Project;
+    use pachno\core\entities\User;
     use pachno\core\framework;
 
     /**
      * @var framework\Response $pachno_response
-     * @var \pachno\core\entities\User $pachno_user
-     * @var \pachno\core\entities\Group $user_group
+     * @var User $pachno_user
+     * @var Group $user_group
+     * @var int $access_level
+     * @var Project[] $active_projects
+     * @var Project[] $archived_projects
      */
 
     $pachno_response->setTitle(__('Manage projects'));
@@ -23,7 +29,7 @@
             <?php if (framework\Context::getScope()->getMaxProjects()): ?>
                 <div class="message-box type-info">
                     <?= fa_image_tag('info-circle'); ?>
-                    <span><?php echo __('This instance is using %num of max %max projects', array('%num' => '<b id="current_project_num_count">' . \pachno\core\entities\Project::getProjectsCount() . '</b>', '%max' => '<b>' . framework\Context::getScope()->getMaxProjects() . '</b>')); ?></span>
+                    <span><?php echo __('This instance is using %num of max %max projects', array('%num' => '<b id="current_project_num_count">' . Project::getProjectsCount() . '</b>', '%max' => '<b>' . framework\Context::getScope()->getMaxProjects() . '</b>')); ?></span>
                 </div>
             <?php endif; ?>
             <h2>
@@ -44,40 +50,98 @@
             <div id="project_table" class="flexible-table">
                 <div class="row header">
                     <div class="column header info-icons"></div>
-                    <div class="column header"><?= __('Project key'); ?></div>
                     <div class="column header name-container"><?= __('Project name'); ?></div>
+                    <div class="column header"><?= __('Project key'); ?></div>
+                    <div class="column header"><?= __('Issues prefix'); ?></div>
                     <div class="column header"><?= __('Owner'); ?></div>
                     <div class="column header actions"></div>
                 </div>
-                <div class="body">
+                <div class="body" id="project-active-list">
                     <?php foreach ($active_projects as $project): ?>
                         <?php include_component('projectbox', array('project' => $project, 'access_level' => $access_level)); ?>
                     <?php endforeach; ?>
                 </div>
+                <div class="body" id="noprojects_tr" style="<?php if (count($active_projects) > 0): ?> display: none;<?php endif; ?>">
+                    <div class="row disabled">
+                        <div class="column info-icons">
+                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                        </div>
+                        <div class="column name-container">
+                            <?php echo __('There are no projects available'); ?>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="noprojects_tr"
-                 style="padding: 3px; color: #AAA;<?php if (count($active_projects) > 0): ?> display: none;<?php endif; ?>">
-                <?php echo __('There are no projects available'); ?>
-            </div>
-            <h4 style="margin-top: 30px;"><?php echo __('Archived projects'); ?></h4>
+            <h2>
+                <span>
+                    <?php echo __('Archived projects'); ?>
+                </span>
+            </h2>
             <div id="project_table_archived" class="flexible-table">
                 <div class="row header">
                     <div class="column header info-icons"></div>
-                    <div class="column header"><?= __('Project key'); ?></div>
                     <div class="column header name-container"><?= __('Project name'); ?></div>
+                    <div class="column header"><?= __('Project key'); ?></div>
+                    <div class="column header"><?= __('Issues prefix'); ?></div>
                     <div class="column header"><?= __('Owner'); ?></div>
                     <div class="column header actions"></div>
                 </div>
-                <div class="body">
+                <div class="body" id="project-archived-list">
                     <?php foreach ($archived_projects as $project): ?>
                         <?php include_component('projectbox', array('project' => $project, 'access_level' => $access_level)); ?>
                     <?php endforeach; ?>
                 </div>
-            </div>
-            <div id="noprojects_tr_archived"
-                 style="padding: 3px; color: #AAA;<?php if (count($archived_projects) > 0): ?> display: none;<?php endif; ?>">
-                <?php echo __('There are no projects available'); ?>
+                <div class="body" id="noprojects_tr_archived" style="<?php if (count($archived_projects) > 0): ?> display: none;<?php endif; ?>">
+                    <div class="row disabled">
+                        <div class="column info-icons">
+                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                        </div>
+                        <div class="column name-container">
+                            <?php echo __('There are no archived projects'); ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+  Pachno.on(Pachno.EVENTS.ready, () => {
+    Pachno.on(Pachno.EVENTS.configuration.archiveProject, (PachnoApplication, data) => {
+      const url = data.url;
+      Pachno.UI.Dialog.setSubmitting();
+
+      Pachno.fetch(url, {
+        method: 'POST'
+      })
+        .then((json) => {
+            Pachno.UI.Dialog.dismiss();
+            $('#project_box_' + data.project_id).remove();
+            if ($('#project-active-list').children().length == 0) {
+                $('#noprojects_tr').show();
+            }
+            $('#project-archived-list').prepend(json.box);
+          $('#noprojects_tr_archived').hide();
+        })
+    });
+
+    Pachno.on(Pachno.EVENTS.configuration.unarchiveProject, (PachnoApplication, data) => {
+      const url = data.url;
+      Pachno.UI.Dialog.setSubmitting();
+
+      Pachno.fetch(url, {
+        method: 'POST'
+      })
+        .then((json) => {
+            Pachno.UI.Dialog.dismiss();
+            $('#project_box_' + data.project_id).remove();
+            $('#noprojects_tr').hide();
+            if ($('#project-archived-list').children().length == 0) {
+              $('#noprojects_tr_archived').show();
+            }
+            $('#project-active-list').append(json.box);
+        })
+    });
+
+  })
+</script>

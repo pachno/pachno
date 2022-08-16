@@ -1,18 +1,28 @@
-<?php \pachno\core\framework\Context::loadLibrary('ui'); ?>
+<?php
+    
+    use pachno\core\entities\Project;
+    use pachno\core\framework\Settings;
+    
+    /**
+     * @var int $access_level
+     * @var Project $project
+     */
+
+?>
 <div id="project_box_<?= $project->getID();?>" class="row">
     <div class="column info-icons">
         <?= image_tag($project->getIconName(), ['class' => 'icon-large', 'alt' => '[i]'], true); ?>
+    </div>
+    <div class="column name-container">
+        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>
+    </div>
+    <div class="column">
+        <span class="count-badge"><?= $project->getKey(); ?></span>
     </div>
     <div class="column smaller">
         <?php if ($project->usePrefix()): ?>
             <?= $project->getPrefix(); ?>
         <?php endif; ?>
-    </div>
-    <div class="column name-container">
-        <?php if ($project->isArchived()): ?>
-            <span class="status-badge"><span class="name"><?= __('ARCHIVED'); ?> </span></span>
-        <?php endif; ?>
-        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>&nbsp;<span class="count-badge"><?= $project->getKey(); ?></span>
     </div>
     <div class="column">
         <?php if ($project->getOwner() != null): ?>
@@ -25,7 +35,7 @@
             <div style="color: #AAA; padding: 2px; width: auto;"><?= __('None'); ?></div>
         <?php endif; ?>
     </div>
-    <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+    <?php if ($access_level == Settings::ACCESS_FULL): ?>
         <div class="column actions">
             <div class="dropper-container">
                 <button class="dropper button secondary">
@@ -36,22 +46,21 @@
                     <div class="list-mode">
                         <?php if (!$project->isArchived()): ?>
                             <a class="list-item" href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>">
-                                <?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? fa_image_tag('edit', ['class' => 'icon']) : fa_image_tag('info-circle', ['class' => 'icon']); ?>
-                                <span class="name"><?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? __('Edit project') : __('Show project details'); ?></span>
+                                <?= fa_image_tag('edit', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Edit project'); ?></span>
+                            </a>
+                            <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Archive this project?'); ?>', '<?= __('If you archive a project, it is placed into a read only mode, where the project and its issues can no longer be edited. This will also prevent you from creating new issues, and will hide it from project lists (it can be viewed from an Archived Projects list). This will not affect any subprojects.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.archiveProject, { url: '<?= make_url('configure_project_archive', ['project_id' => $project->getID()]); ?>', project_id: <?= $project->getID(); ?>});}}, no: {click: Pachno.UI.Dialog.dismiss}});">
+                                <?= fa_image_tag('archive', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Archive project');?></span>
+                            </a>
+                        <?php else: ?>
+                            <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Unarchive this project?'); ?>', '<?= __('Restoring this project disables read only mode and makes the project and its issues editable again. Depending on project settings this will also allow new issues to be created and makes it visible in project lists again. Restoring this project will not affect any subprojects.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.unarchiveProject, { url: '<?= make_url('configure_project_unarchive', ['project_id' => $project->getID()]); ?>', project_id: <?= $project->getID(); ?>});}}, no: {click: Pachno.UI.Dialog.dismiss}});">
+                                <?= fa_image_tag('undo', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Unarchive project');?></span>
                             </a>
                         <?php endif; ?>
-                        <a class="list-item" href="javascript:void(0);" onclick="$('#project_<?= $project->getID(); ?>_permissions').toggle();">
-                            <?= fa_image_tag('lock', ['class' => 'icon']); ?>
-                            <span class="name"><?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? __('Edit project permissions') : __('Show project permissions'); ?></span>
-                        </a>
-                        <a class="list-item" href="javascript:void(0);" id="project_<?= $project->getID(); ?>_unarchive" style="<?php if (!$project->isArchived()) echo 'display: none;'; ?>" onclick="Pachno.Project.unarchive('<?= make_url('configure_project_unarchive', array('project_id' => $project->getID())); ?>', <?php print $project->getID(); ?>)">
-                            <span class="name"><?= __('Unarchive project');?></span>
-                        </a>
-                        <a class="list-item" href="javascript:void(0);" id="project_<?= $project->getID(); ?>_archive" style="<?php if ($project->isArchived()) echo 'display: none;'; ?>" onclick="Pachno.UI.Dialog.show('<?= __('Archive this project?'); ?>', '<?= __('If you archive a project, it is placed into a read only mode, where the project and its issues can no longer be edited. This will also prevent you from creating new issues, and will hide it from project lists (it can be viewed from an Archived Projects list). This will not, however, affect any subprojects this one has.').'<br>'.__('If you need to reactivate this subproject, you can do this from projects configuration.'); ?>', {yes: {click: function() {Pachno.Project.archive('<?= make_url('configure_project_archive', array('project_id' => $project->getID())); ?>', <?php print $project->getID(); ?>);}}, no: {click: Pachno.UI.Dialog.dismiss}});">
-                            <span class="name"><?= __('Archive project');?></span>
-                        </a>
                         <div class="list-item separator"></div>
-                        <a class="list-item danger" href="javascript:void(0)" onclick="Pachno.UI.Dialog.show('<?= __('Really delete project?'); ?>', '<?= __('Deleting this project will prevent users from accessing it or any associated data, such as issues.'); ?>', {yes: {click: function() {Pachno.Project.remove('<?= make_url('configure_project_delete', array('project_id' => $project->getID())); ?>', <?= $project->getID(); ?>); }}, no: { click: Pachno.UI.Dialog.dismiss }});">
+                        <a class="list-item danger" href="javascript:void(0)" onclick="Pachno.UI.Dialog.show('<?= __('Really delete project?'); ?>', '<?= __('Deleting this project will prevent users from accessing it or any associated data such as issues, boards, milestones or releases. If you just wish to hide this project or make it read-only, consider archiving it instead.'); ?>', {yes: {click: function() {Pachno.Project.remove('<?= make_url('configure_project_delete', array('project_id' => $project->getID())); ?>', <?= $project->getID(); ?>); }}, no: { click: Pachno.UI.Dialog.dismiss }});">
                             <?= fa_image_tag('times', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Delete');?></span>
                         </a>
@@ -60,17 +69,6 @@
             </div>
         </div>
     <?php endif; ?>
-    <div class="fullpage_backdrop" style="display: none;" id="project_<?= $project->getID(); ?>_permissions">
-        <div class="fullpage_backdrop_content backdrop_box large">
-            <div class="backdrop_detail_header">
-                <span><?= __('Edit project permissions'); ?></span>
-                <a href="javascript:void(0);" class="closer" onclick="$('#project_<?= $project->getID(); ?>_permissions').hide();"><?= fa_image_tag('times'); ?></a>
-            </div>
-            <div class="backdrop_detail_content">
-                <?php include_component('project/projectpermissions', array('access_level' => $access_level, 'project' => $project)); ?>
-            </div>
-        </div>
-    </div>
 </div>
 <?php if ($project->hasChildren()): ?>
     <div class="body" id="project_<?= $project->getID(); ?>_children">

@@ -200,17 +200,31 @@
         {
             $this->project = framework\Context::getCurrentProject();
             $builds = $this->project->getBuilds();
-            $active_builds = [];
+            $active_builds = [0 => []];
+            $num_releases = 0;
 
             foreach ($this->project->getEditions() as $edition_id => $edition) {
                 $active_builds[$edition_id] = [];
             }
 
             foreach ($builds as $build) {
-                if ($build->isReleased() && $build->hasFiles())
-                    $active_builds[$build->getEditionID()][] = $build;
+                if ($build->isInternal() && (!$this->getUser()->canManageProjectReleases($build->getProject()) || !$build->getProject()->canSeeInternalBuilds())) {
+                    continue;
+                }
+                
+                if ($build->isPlanned()) {
+                    continue;
+                }
+                
+                if ($build->isArchived()) {
+                    continue;
+                }
+                
+                $active_builds[$build->getEditionID()][] = $build;
+                $num_releases += 1;
             }
 
+            $this->num_releases = $num_releases;
             $this->editions = $active_builds;
         }
 
