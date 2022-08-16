@@ -3,8 +3,11 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\Query;
+    use b2db\Saveable;
     use b2db\Update;
     use pachno\core\entities\WorkflowStep;
+    use pachno\core\entities\WorkflowStepTransition;
     use pachno\core\entities\WorkflowTransition;
     use pachno\core\framework;
 
@@ -21,10 +24,13 @@
     /**
      * Workflow step transitions table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static WorkflowStepTransitions getTable()
+     * @method WorkflowStepTransition selectById($id, Query $query = null, $join = 'all')
+     * @method WorkflowStepTransition selectOne(Query $query, $join = 'all')
+     * @method WorkflowStepTransition[] select(Query $query, $join = 'all')
      *
      * @Table(name="workflow_step_transitions")
+     * @Entity(class="\pachno\core\entities\WorkflowStepTransition")
      */
     class WorkflowStepTransitions extends ScopedTable
     {
@@ -42,6 +48,8 @@
         public const TRANSITION_ID = 'workflow_step_transitions.transition_id';
 
         public const WORKFLOW_ID = 'workflow_step_transitions.workflow_id';
+        
+        public const SORT_ORDER = 'workflow_step_transitions.sort_order';
 
         public function countByStepID($step_id)
         {
@@ -62,11 +70,22 @@
             return $this->_getByTypeID('step', $step_id);
         }
 
+        public function getByStepIdAndTransitionId($step_id, $transition_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where(self::FROM_STEP_ID, $step_id);
+            $query->where(self::TRANSITION_ID, $transition_id);
+            
+            return $this->selectOne($query);
+        }
+
         protected function _getByTypeID($type, $id)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where((($type == 'step') ? self::FROM_STEP_ID : self::TRANSITION_ID), $id);
+            $query->addOrderBy(self::SORT_ORDER);
             $query->join(WorkflowTransitions::getTable(), WorkflowTransitions::ID, self::TRANSITION_ID);
 
             $return_array = [];

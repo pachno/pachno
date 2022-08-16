@@ -1654,7 +1654,42 @@
                 }
             }
         }
-    
+        
+        /**
+         * @Route(name="workflow_step_order", url="/configure/workflows/:workflow_id/order/:csrf_token", methods="POST")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runConfigureWorkflowStepsOrder(framework\Request $request): framework\JsonOutput
+        {
+            $workflow = Workflows::getTable()->selectById($request['workflow_id']);
+            if (!$workflow instanceof entities\Workflow) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Invalid workflow')]);
+            }
+            
+            $steps = [];
+            foreach ($workflow->getSteps() as $step) {
+                $steps[$step->getID()] = $step;
+            }
+            $order = 0;
+            $step_orders = explode(',', $request['sortable_elements']);
+            foreach ($step_orders as $step_id) {
+                if (!isset($steps[$step_id])) {
+                    continue;
+                }
+                
+                $step = $steps[$step_id];
+                $step->setSortOrder($order);
+                $step->save();
+                $order += 1;
+            }
+            
+            return $this->renderJSON(['message' => $this->getI18n()->__('Workflow order saved')]);
+        }
+        
         /**
          * @Route(name="workflow_step", url="/configure/workflows/:workflow_id/steps/:step_id/:csrf_token", methods="GET|POST|DELETE")
          * @CsrfProtected
@@ -1707,6 +1742,47 @@
             return $this->renderJSON([
                 'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $this->step])
             ]);
+        }
+    
+        /**
+         * @Route(name="workflow_step_transition_order", url="/configure/workflows/:workflow_id/steps/:step_id/order/:csrf_token", methods="POST")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runConfigureWorkflowStepTransitionsOrder(framework\Request $request): framework\JsonOutput
+        {
+            $workflow = Workflows::getTable()->selectById($request['workflow_id']);
+            if (!$workflow instanceof entities\Workflow) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Invalid workflow')]);
+            }
+
+            $step = WorkflowSteps::getTable()->selectById($request['step_id']);
+            if (!$step instanceof entities\WorkflowStep) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Invalid workflow step')]);
+            }
+        
+            $transitions = [];
+            foreach ($step->getOutgoingTransitions() as $transition) {
+                $transitions[$transition->getID()] = $transition;
+            }
+            $order = 0;
+            $transition_orders = explode(',', $request['sortable_elements']);
+            foreach ($transition_orders as $transition_id) {
+                if (!isset($transitions[$transition_id])) {
+                    continue;
+                }
+            
+                $step_transition = tables\WorkflowStepTransitions::getTable()->getByStepIdAndTransitionId($step->getID(), $transition_id);
+                $step_transition->setSortOrder($order);
+                $step_transition->save();
+                $order += 1;
+            }
+        
+            return $this->renderJSON(['message' => $this->getI18n()->__('Transition order saved')]);
         }
     
         /**

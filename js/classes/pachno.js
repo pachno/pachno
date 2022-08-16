@@ -61,7 +61,9 @@ class PachnoApplication {
             },
             configuration: {
                 deleteComponent: 'configuration-delete-component',
-                generatePassword: 'configuration-generate-password'
+                generatePassword: 'configuration-generate-password',
+                archiveProject: 'configuration-archive-project',
+                unarchiveProject: 'configuration-unarchive-project'
             },
             profile: {
                 suggestPassword: 'profile-suggest-password',

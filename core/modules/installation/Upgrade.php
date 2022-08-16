@@ -10,6 +10,8 @@
     use pachno\core\modules\installation\entities\upgrade_1_0_0\tables\LivelinkImports;
     use pachno\core\modules\installation\entities\upgrade_1_0_2\tables\Users;
     use pachno\core\modules\installation\entities\upgrade_1_0_4\tables\AgileBoards;
+    use pachno\core\modules\installation\entities\upgrade_1_0_5\tables\WorkflowSteps;
+    use pachno\core\modules\installation\entities\upgrade_1_0_5\tables\WorkflowStepTransitions;
 
     class Upgrade
     {
@@ -50,6 +52,18 @@
             return true;
         }
 
+        protected function _upgradeFrom1_0_5(framework\Request $request = null): bool
+        {
+            $this->cliEchoUpgradeTable(WorkflowStepTransitions::getTable());
+            \pachno\core\entities\tables\WorkflowStepTransitions::getTable()->upgrade(WorkflowStepTransitions::getTable());
+            $this->cliEchoUpgradeTable(WorkflowSteps::getTable());
+            \pachno\core\entities\tables\WorkflowSteps::getTable()->upgrade(WorkflowSteps::getTable());
+
+            $this->current_version = '1.0.6';
+
+            return true;
+        }
+
         /**
          * Perform the actual upgrade
          *
@@ -85,6 +99,8 @@
                     $this->_upgradeFrom1_0_2($request);
                 case '1.0.4':
                     $this->_upgradeFrom1_0_4($request);
+                case '1.0.5':
+                    $this->_upgradeFrom1_0_5($request);
             }
 
             framework\Context::loadModules();

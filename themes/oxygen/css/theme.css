@@ -9050,6 +9050,8 @@ nav.sidebar {
     .flexible-table .column .button ~ input[type=search],
     .flexible-table .column .button ~ input[type=password] {
       margin-left: .35em; }
+  .flexible-table + h1, .flexible-table + h2, .flexible-table + h3, .flexible-table + h4, .flexible-table + h5, .flexible-table + h6 {
+    margin-top: 2em; }
 
 header {
   display: flex;

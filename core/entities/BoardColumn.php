@@ -48,7 +48,7 @@
          * @Relates(class="\pachno\core\entities\AgileBoard")
          */
         protected $_board_id;
-
+        
         /**
          * @var integer
          * @Column(type="integer", length=10)

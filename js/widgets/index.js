@@ -12,6 +12,7 @@ import 'simplebar/dist/simplebar.css';
 import AirDatepicker from "air-datepicker";
 import localeEn from 'air-datepicker/locale/en';
 import hljs from 'highlight.js';
+import Sortable from "sortablejs";
 
 export const EVENTS = {
     update: 'widgets-update'
@@ -25,6 +26,35 @@ const updateWidgets = function () {
         $("img[data-src]:not([data-src-processed])").each(function() {
             let $img = $(this);
             $img.attr('src', $img.data('src')).data('src-processed', true);
+        });
+
+        $('[data-auto-sortable]:not([data-processed])').each(function () {
+            const element = $(this)[0];
+            const draggable_class = $(this).data('draggable-class');
+            const url = $(this).data('sortable-url');
+
+            const saveWorkflowOrder = () => {
+                const sortable_elements = [];
+                for (const sortable_element of element.children) {
+                    sortable_elements.push(sortable_element.dataset.id);
+                }
+
+                Pachno.fetch(url, {
+                    method: 'POST',
+                    data: {
+                        sortable_elements
+                    }
+                });
+            };
+
+            Sortable.create(element, {
+                sort: true,
+                handle: '.handle',
+                draggable: '.' + draggable_class,
+                onEnd: saveWorkflowOrder
+            });
+
+            $(this).data('processed', true);
         });
 
         $('.auto-calendar:not([data-processed])').each(function () {

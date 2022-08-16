@@ -1,5 +1,6 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
+import Sortable from 'sortablejs';
 
 const setClientContact = function (url, field, $link, $container) {
     const user_id = $link.data('identifiable-value');

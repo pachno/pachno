@@ -4,6 +4,7 @@
 
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\WorkflowStepTransitions;
 
     /**
      * Workflow step class
@@ -58,6 +59,12 @@
          * @Relates(class="\pachno\core\entities\Status")
          */
         protected $_status_id = null;
+
+        /**
+         * @var int
+         * @Column(type="integer", length=10)
+         */
+        protected $_sort_order = 0;
 
         protected $_incoming_transitions = null;
 
@@ -537,6 +544,34 @@
         public function setName($name)
         {
             $this->_name = $name;
+        }
+    
+        public function getSortOrder()
+        {
+            return $this->_sort_order;
+        }
+    
+        public function setSortOrder($sort_order)
+        {
+            $this->_sort_order = $sort_order;
+        }
+    
+        /**
+         * @param int[] $transition_orders
+         */
+        public function setTransitionOrder($transition_orders): void
+        {
+            $order = 0;
+            foreach ($transition_orders as $id) {
+                $step_transition = WorkflowStepTransitions::getTable()->selectById($id);
+                if (!$step_transition instanceof WorkflowStepTransition) {
+                    continue;
+                }
+
+                $step_transition->setSortOrder($order);
+                $step_transition->save();
+                $order += 1;
+            }
         }
 
     }

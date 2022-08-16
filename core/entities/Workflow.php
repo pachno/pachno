@@ -276,6 +276,9 @@
         {
             if ($this->_steps === null) {
                 $this->_b2dbLazyLoad('_steps');
+                usort($this->_steps, function ($a, $b) {
+                    return $a->getSortOrder() <=> $b->getSortOrder();
+                });
             }
         }
 

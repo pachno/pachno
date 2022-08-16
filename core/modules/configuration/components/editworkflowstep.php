@@ -78,8 +78,8 @@
                 <span class="list-item filter-container">
                     <input type="search" placeholder="<?= __('Filter values'); ?>">
                 </span>
+                <span class="list-item header"><?= __('Add existing transition'); ?></span>
                 <span class="filter-values-container" id="add-transition-list">
-                    <span class="list-item header"><?= __('Add existing transition'); ?></span>
                     <?php foreach ($step->getWorkflow()->getTransitions() as $transition): ?>
                         <?php if ($transition->getOutgoingStep() instanceof WorkflowStep && $transition->getOutgoingStep()->getID() == $step->getID()) continue; ?>
                         <?php include_component('configuration/workflowtransition', ['transition' => $transition, 'step' => $step]); ?>
@@ -98,4 +98,4 @@
         </span>
     </span>
 </h5>
-<div class="configurable-components-list" data-placeholder="<?= __('This step does not transition to any other steps'); ?>" id="outgoing-transitions-list"><?php foreach ($step->getOutgoingTransitions() as $transition) include_component('configuration/editworkflowtransition', ['transition' => $transition, 'step' => $step]); ?></div>
+<div class="configurable-components-list" data-placeholder="<?= __('This step does not transition to any other steps'); ?>" id="outgoing-transitions-list" data-auto-sortable data-sortable-url="<?= make_url('configure_workflow_step_transition_order', ['workflow_id' => $step->getWorkflow()->getId(), 'step_id' => $step->getID()]); ?>" data-draggable-class="workflow-transition"><?php foreach ($step->getOutgoingTransitions() as $transition) include_component('configuration/editworkflowtransition', ['transition' => $transition, 'step' => $step]); ?></div>

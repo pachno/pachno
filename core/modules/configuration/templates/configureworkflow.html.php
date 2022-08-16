@@ -31,7 +31,7 @@
             <div class="configurable-components-container" id="workflow-steps-container">
                 <div class="configurable-components-list-container">
                     <h3><?php echo __('Workflow steps'); ?></h3>
-                    <div class="configurable-components-list" id="workflow-steps-list">
+                    <div class="configurable-components-list" id="workflow-steps-list" data-auto-sortable data-draggable-class="workflow-step" data-sortable-url="<?= make_url('configure_workflow_step_order', ['workflow_id' => $workflow->getID()]); ?>">
                         <?php foreach ($workflow->getSteps() as $step): ?>
                             <?php include_component('configuration/workflowstep', ['step' => $step]); ?>
                         <?php endforeach; ?>
