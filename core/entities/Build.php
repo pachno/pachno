@@ -352,7 +352,7 @@
         public function getFileDownloadHost()
         {
             $url_info = parse_url($this->_file_url);
-            return $url_info['hostname'] ?? $this->_file_url;
+            return $url_info['host'] ?? $this->_file_url;
         }
 
         /**
@@ -519,6 +519,20 @@
         public function setName($name)
         {
             $this->_name = $name;
+        }
+    
+        /**
+         * Checks to see if this build is planned released or unreleased
+         *
+         * @return bool
+         */
+        public function isPlanned(): bool
+        {
+            if ((!$this->hasReleaseDate() || $this->getReleaseDate() > NOW) && !$this->isReleased()) {
+                return true;
+            }
+            
+            return false;
         }
 
         public function getPercentComplete()

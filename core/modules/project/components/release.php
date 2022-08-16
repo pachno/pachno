@@ -46,7 +46,7 @@
                         <?php if ($build->hasFileURL()): ?>
                             <a href="<?= $build->getFileURL(); ?>" class="list-item">
                                 <?= fa_image_tag('download', ['class' => 'icon']); ?>
-                                <span class="name"><?= __('Download from %hostname', ['hostname' => $build->getFileDownloadHost()]); ?></span>
+                                <span class="name"><?= __('Download from %hostname', ['%hostname' => $build->getFileDownloadHost()]); ?></span>
                             </a>
                         <?php endif; ?>
                     </div>

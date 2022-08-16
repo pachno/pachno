@@ -1,22 +1,15 @@
 <?php
-
-    $found = false;
     
-    foreach ($editions as $releases)
-    {
-        if (array_key_exists(0, $releases))
-        {
-            $found = true;
-            
-            if ($releases[0]->getEdition() instanceof \pachno\core\entities\Edition)
-                echo '<div class="tab_header">'.$releases[0]->getEdition()->getName().'</div>';
-
-            echo '<ul class="simple-list">'.get_component_html('project/release', array('build' => $releases[0])).'</ul>';
-        }
-    }
-
+    use pachno\core\entities\Build;
+    use pachno\core\entities\Edition;
+    
+    /**
+     * @var array<int, array<Build>> $editions
+     * @var int $num_releases
+     */
+    
 ?>
-<?php if (!$found): ?>
+<?php if (!$num_releases): ?>
     <div class="onboarding medium">
         <div class="image-container">
             <?= image_tag('/unthemed/project-no-releases.png', [], true); ?>
@@ -25,5 +18,13 @@
             <?= __("There are no downloadable releases"); ?><br>
             <?= __('But check back later.'); ?>
         </div>
+    </div>
+<?php else: ?>
+    <div class="flexible-table">
+        <?php foreach ($editions as $releases): ?>
+            <?php foreach ($releases as $build): ?>
+                <?php include_component('project/release', ['build' => $build]); ?>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
     </div>
 <?php endif; ?>

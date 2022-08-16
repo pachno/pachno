@@ -239,6 +239,8 @@ const tabSwitchFromHash = function (menu) {
     }
 };
 
+let sortable_ref;
+
 const loadComponentOptions = function ($item) {
     new Promise(function (resolve, reject) {
         const $container = $item.parents('.configurable-components-container'),
@@ -252,7 +254,11 @@ const loadComponentOptions = function ($item) {
 
         fetchHelper(url, {
             success: { update: '#' + $optionsContainer.attr('id') }
-        }).then(resolve);
+        })
+          .then(() => {
+
+          })
+          .then(resolve);
     });
 };
 

@@ -808,7 +808,7 @@
                     continue;
                 }
 
-                if ((!$build->hasReleaseDate() || $build->getReleaseDate() > NOW) && !$build->isReleased()) {
+                if ($build->isPlanned()) {
                     $upcoming_builds[$build->getEditionID()][$build->getID()] = $build;
                     $upcoming_builds_count++;
                 } elseif ($build->isArchived()) {
