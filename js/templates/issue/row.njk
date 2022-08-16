@@ -1,4 +1,4 @@
-<div id="issue_{{ issue.id }}" class="trigger-backdrop milestone-issue {% if issue.closed %}issue_closed{% endif %} {% if issue.blocking %}issue_blocking{% endif %} draggable" data-url="{{ issue.card_url }}" data-issue-id="{{ issue.id }}">
+<div id="issue_{{ issue.id }}" class="trigger-backdrop milestone-issue {% if issue.closed %}issue_closed{% endif %} {% if issue.blocking %}issue_blocking{% endif %} draggable" data-url="{{ issue.card_url }}" data-issue data-issue-id="{{ issue.id }}">
     <div class="issue-link-container">
         <a href="{{ issue.url }}" target="_blank">
             <span class="issue-number">{{ issue.issue_no }}</span>

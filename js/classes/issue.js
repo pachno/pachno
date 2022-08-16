@@ -409,11 +409,12 @@ class Issue {
         });
 
         Pachno.on(Pachno.EVENTS.issue.updateJson, function (PachnoApplication, data) {
-            if (data.json.id != issue.id) {
+            const issue_json = (data.json.issue !== undefined) ? data.json.issue : data.json;
+
+            // debugger;
+            if (issue_json.id != issue.id) {
                 return
             }
-
-            const issue_json = (data.json.issue !== undefined) ? data.json.issue : data.json;
 
             if (issue.clone_element !== undefined) {
                 const id = issue.element.id;
@@ -423,7 +424,9 @@ class Issue {
                 issue.clone_element = undefined;
             }
 
-            issue.element.removeClass('loading');
+            if (issue.element !== undefined) {
+                issue.element.removeClass('loading');
+            }
             issue.updateFromJson(issue_json);
             issue.updateVisibleValues(issue_json);
             Pachno.trigger(Pachno.EVENTS.issue.updateJsonComplete, issue);

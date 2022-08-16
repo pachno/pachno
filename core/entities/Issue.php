@@ -6,9 +6,11 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\Ownable;
+    use pachno\core\entities\tables\IssueRelations;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\IssueTypes;
     use pachno\core\entities\tables\Permissions;
+    use pachno\core\entities\tables\UserIssues;
     use pachno\core\entities\traits\Commentable;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -538,6 +540,11 @@
          * @var ?array
          */
         protected $_child_issues;
+    
+        /**
+         * @var ?int
+         */
+        protected $_number_of_child_issues = null;
 
         /**
          * List of issues which are duplicates of this one
@@ -608,6 +615,11 @@
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserIssues")
          */
         protected $_subscribers = null;
+    
+        /**
+         * @var ?int
+         */
+        protected $_number_of_subscribers = null;
 
         /**
          * Array of tags attached to this issue
@@ -2970,6 +2982,22 @@
 
             return $this->_child_issues;
         }
+    
+        /**
+         * @return ?int
+         */
+        public function getNumberOfChildIssues()
+        {
+            if ($this->_number_of_child_issues === null) {
+                if ($this->_child_issues !== null) {
+                    $this->_number_of_child_issues = count($this->_child_issues);
+                } else {
+                    $this->_number_of_child_issues = IssueRelations::getTable()->countChildIssues($this->getID());
+                }
+            }
+            
+            return $this->_number_of_child_issues;
+        }
 
         /**
          * Returns an array with the estimated time
@@ -4568,8 +4596,8 @@
                 'milestone' => ($this->getMilestone() instanceof Milestone) ? $this->getMilestone()->toSimpleJSON() : null,
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
-                'number_of_subscribers' => 0, // count($this->getSubscribers()),
-                'number_of_child_issues' => 0, //count($this->getChildIssues()),
+                'number_of_subscribers' => $this->getNumberOfSubscribers(),
+                'number_of_child_issues' => $this->getNumberOfChildIssues(),
                 'number_of_affected_items' => 0, //$this->getNumberOfAffectedItems(),
                 'tags' => [],
                 'transitions' => [],
@@ -5130,9 +5158,9 @@
          *   field that gets changed.
          *
          *
-         * @return array Array of related issues that have been affected in some way and need to be saved.
+         * @return Issue[] Array of related issues that have been affected in some way and need to be saved.
          */
-        protected function _processChanges()
+        protected function _processChanges(): array
         {
             $related_issues_to_save = [];
             $changed_properties = $this->_getChangedProperties();
@@ -5495,6 +5523,7 @@
 
             }
 
+            $this->_changed_items = [];
             return $related_issues_to_save;
         }
 
@@ -5779,6 +5808,19 @@
             $this->_b2dbLazyLoad('_subscribers');
 
             return $this->_subscribers;
+        }
+        
+        public function getNumberOfSubscribers()
+        {
+            if ($this->_number_of_subscribers === null) {
+                if ($this->_subscribers !== null) {
+                    $this->_number_of_subscribers = count($this->_subscribers);
+                } else {
+                    $this->_number_of_subscribers = UserIssues::getTable()->getNumberOfSubscribersByIssueId($this->getID());
+                }
+            }
+            
+            return $this->_number_of_subscribers;
         }
 
         protected function _addNotificationIfNotNotified($type, $user, $updated_by)

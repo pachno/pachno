@@ -18,8 +18,7 @@
     /**
      * User issues table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static UserIssues getTable()
      *
      * @Table(name="userissues")
      */
@@ -113,6 +112,18 @@
             $this->rawDelete($query);
 
             return true;
+        }
+    
+        /**
+         * @param $issue_id
+         * @return int
+         */
+        public function getNumberOfSubscribersByIssueId($issue_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ISSUE_ID, $issue_id);
+
+            return $this->count($query);
         }
 
         protected function initialize(): void
