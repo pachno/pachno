@@ -301,6 +301,30 @@
             return $this->_target;
         }
 
+        /**
+         * @return Issue
+         */
+        public function getTargetIssue()
+        {
+            return $this->getTarget();
+        }
+
+        /**
+         * @return Article
+         */
+        public function getTargetArticle()
+        {
+            return $this->getTarget();
+        }
+
+        /**
+         * @return Commit
+         */
+        public function getTargetCommit()
+        {
+            return $this->getTarget();
+        }
+
         public function getTargetType()
         {
             return $this->_target_type;
@@ -320,126 +344,7 @@
          */
         public function canUserDelete(User $user)
         {
-            $can_delete = false;
-
-            try {
-                // Delete comment if valid user and...
-                if ($user instanceof User) {
-                    if (($this->postedByUser($user->getID()) && $this->canUserDeleteOwnComment()) // the user posted the comment AND the user can delete own comments
-                        || $this->canUserDeleteComment()) // OR the user can delete all comments
-                    {
-                        $can_delete = true;
-                    }//endif
-                }//endif
-            }//endtry
-            catch (Exception $e) {
-            }
-
-            return $can_delete;
-        }
-
-/**
-         * Return the whether or not the user owns this comment
-         *
-         * @param int $user_id A user's ID
-         *
-         * @return bool
-         */
-        public function postedByUser($user_id)
-        {
-            $posted_by_id = null;
-
-            try {
-                $posted_by_id = $this->getPostedByID();
-
-                if (!empty($posted_by_id) && !empty($user_id)) {
-                    if ($posted_by_id == $user_id) {
-                        return true;
-                    }//endif
-                }//endif
-                else {
-                    return false;
-                }//endelse
-            }//endtry
-            catch (Exception $e) {
-            }
-
-            return false;
-        }
-
-        /**
-         * Return if the user can delete own comment
-         *
-         * @return boolean
-         */
-        public function canUserDeleteOwnComment()
-        {
-            $allowed = $this->_canPermissionOrSeeAndEditComments('candeletecommentsown');
-
-            return ($allowed !== null) ? $allowed : false;
-        }
-
-        protected function _canPermissionOrSeeAndEditComments($permission)
-        {
-            $allowed = $this->_permissionCheck($permission);
-            $allowed = ($allowed === null) ? $this->_permissionCheck('canpostandeditcomments', true) : $allowed;
-
-            return $allowed;
-        }
-
-        /**
-         * Perform a permission check based on a key, and whether or not to
-         * check for the equivalent "*own" permission if the comment is posted
-         * by the same user
-         *
-         * @param string $key The permission key to check for
-         * @param boolean $exclusive Whether to perform a similar check for "own"
-         *
-         * @return boolean
-         */
-        protected function _permissionCheck($key, $exclusive = false)
-        {
-            $allowed = ($this->getPostedByID() == framework\Context::getUser()->getID() && !$exclusive) ? $this->_permissionCheckWithID($key . 'own') : null;
-            $allowed = ($allowed !== null) ? $allowed : $this->_permissionCheckWithID($key);
-
-            return ($allowed !== null) ? $allowed : null;
-        }
-
-        /**
-         * Perform a permission check based on a key, and whether or not to
-         * check if the permission is explicitly set
-         *
-         * @param string $key The permission key to check for
-         *
-         * @return boolean
-         */
-        protected function _permissionCheckWithID($key)
-        {
-            $allowed = framework\Context::getUser()->hasPermission($key, $this->getID(), 'core');
-            $allowed = ($allowed !== null) ? $allowed : framework\Context::getUser()->hasPermission($key, 0, 'core');
-
-            return $allowed;
-        }
-
-        /**
-         * Return if the user can delete this comment
-         *
-         * @return boolean
-         */
-        public function canUserDeleteComment()
-        {
-            if ($this->isSystemComment()) return false;
-            $allowed = $this->_canPermissionOrSeeAndEditAllComments('candeletecomments');
-
-            return ($allowed !== null) ? $allowed : false;
-        }
-
-        protected function _canPermissionOrSeeAndEditAllComments($permission)
-        {
-            $allowed = $this->_permissionCheck($permission);
-            $allowed = ($allowed === null) ? $this->_permissionCheck('canpostseeandeditallcomments', true) : $allowed;
-
-            return $allowed;
+            return $this->canUserEdit($user);
         }
 
         /**
@@ -451,47 +356,62 @@
          */
         public function canUserEdit(User $user)
         {
-            $can_edit = false;
+            switch ($this->getTargetType()) {
+                case self::TYPE_ISSUE:
+                    $project = $this->getTargetIssue()->getProject();
+                    if (!$project instanceof Project) {
+                        return false;
+                    }
 
-            try {
-                // Edit comment if valid user and...
-                if ($user instanceof User) {
-                    if (($this->postedByUser($user->getID()) && $this->canUserEditOwnComment()) // the user posted the comment AND the user can edit own comments
-                        || $this->canUserEditComment()) // OR the user can edit all comments
-                    {
-                        $can_edit = true;
-                    }//endif
-                }//endif
-            }//endtry
-            catch (Exception $e) {
+                    $allowed = $user->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project);
+                    if ($allowed) {
+                        return true;
+                    }
+
+                    if ($this->getPostedByID() != $user->getID()) {
+                        return false;
+                    }
+
+                    return $user->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project);
+                case self::TYPE_ARTICLE:
+                    $project = $this->getTargetArticle()->getProject();
+                    if ($project instanceof Project) {
+                        $allowed = $user->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project);
+                        if ($allowed) {
+                            return true;
+                        }
+
+                        if ($this->getPostedByID() != $user->getID()) {
+                            return false;
+                        }
+
+                        return $user->hasProjectPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project);
+                    }
+
+                    $allowed = $user->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+                    if ($allowed) {
+                        return true;
+                    }
+
+                    return ($this->getPostedByID() == $user->getID());
+                case self::TYPE_COMMIT:
+                    $project = $this->getTargetCommit()->getProject();
+                    if (!$project instanceof Project) {
+                        return false;
+                    }
+
+                    $allowed = $user->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project);
+                    if ($allowed) {
+                        return true;
+                    }
+
+                    return ($this->getPostedByID() == $user->getID());
+                default:
+                    $event = Event::createNew('core', 'pachno\core\entities\Comment::canUserEdit', $this, ['user' => $user], [], false);
+                    $event->triggerUntilProcessed();
+
+                    return (bool) $event->getReturnValue();
             }
-
-            return $can_edit;
-        }
-
-        /**
-         * Return if the user can edit own comment
-         *
-         * @return boolean
-         */
-        public function canUserEditOwnComment()
-        {
-            $allowed = $this->_canPermissionOrSeeAndEditComments('caneditcommentsown');
-
-            return ($allowed !== null) ? $allowed : false;
-        }
-
-        /**
-         * Return if the user can edit this comment
-         *
-         * @return boolean
-         */
-        public function canUserEditComment()
-        {
-            if ($this->isSystemComment()) return false;
-            $allowed = $this->_canPermissionOrSeeAndEditAllComments('caneditcomments');
-
-            return ($allowed !== null) ? $allowed : false;
         }
 
         /**
@@ -516,7 +436,7 @@
             return true;
         }
 
-        public function isPublic()
+        public function isPublic(): bool
         {
             return $this->_is_public;
         }
@@ -524,17 +444,17 @@
         /**
          * Returns the user who last updated the comment
          *
-         * @return User
+         * @return ?User
          */
-        public function getUpdatedBy()
+        public function getUpdatedBy(): ?User
         {
             return ($this->_updated_by instanceof User) ? $this->_updated_by : User::getB2DBTable()->selectById($this->_updated_by);
         }
 
-        public function setUpdatedBy($var)
+        public function setUpdatedBy($user)
         {
             $this->_updated = NOW;
-            $this->_updated_by = $var;
+            $this->_updated_by = $user;
         }
 
         public function getName()
