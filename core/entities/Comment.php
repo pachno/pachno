@@ -1,19 +1,20 @@
 <?php
-
+    
     namespace pachno\core\entities;
-
+    
     use b2db\QueryColumnSort;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\UserCommits;
+    use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\helpers\ContentParser;
     use pachno\core\helpers\MentionableProvider;
     use pachno\core\helpers\TextParser;
     use pachno\core\helpers\TextParserMarkdown;
-
+    
     /**
      * Class used for comments
      *
@@ -23,7 +24,7 @@
      * @package pachno
      * @subpackage main
      */
-
+    
     /**
      * Class used for comments
      *
@@ -34,29 +35,29 @@
      */
     class Comment extends IdentifiableScoped implements MentionableProvider
     {
-
+        
         /**
          * Issue comment
          */
         public const TYPE_ISSUE = 1;
-
+        
         /**
          * Article comment
          */
         public const TYPE_ARTICLE = 2;
-
+        
         /**
          * Commit comment
          */
         public const TYPE_COMMIT = 3;
-
+        
         protected static $_comment_count = [];
-
+        
         /**
          * @Column(type="text")
          */
         protected $_content;
-
+        
         /**
          * Who posted the comment
          *
@@ -65,7 +66,7 @@
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_posted_by;
-
+        
         /**
          * Who last updated the comment
          *
@@ -74,73 +75,73 @@
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_updated_by;
-
+        
         /**
          * @Column(type="integer", length=10)
          */
         protected $_posted;
-
+        
         /**
          * @Column(type="integer", length=10)
          */
         protected $_updated;
-
+        
         /**
          * @Column(type="integer", length=10)
          */
         protected $_target_id;
-
+        
         /**
          * @var IdentifiableScoped
          */
         protected $_target;
-
+        
         /**
          * @Column(type="integer", length=5)
          */
         protected $_target_type = self::TYPE_ISSUE;
-
+        
         /**
          * @Column(type="boolean")
          */
         protected $_is_public = true;
-
+        
         /**
          * @Column(type="string", length=100)
          */
         protected $_module = 'core';
-
+        
         /**
          * @Column(type="boolean")
          */
         protected $_deleted = false;
-
+        
         /**
          * @Column(type="boolean")
          */
         protected $_system_comment = false;
-
+        
         /**
          * @Column(type="boolean")
          */
         protected $_has_associated_changes = false;
-
+        
         /**
          * @Column(type="integer", length=10)
          */
         protected $_comment_number = 0;
-
+        
         /**
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Comment")
          */
         protected $_reply_to_comment = 0;
-
+        
         /**
          * @Column(type="integer", length=10, default=1)
          */
         protected $_syntax = framework\Settings::SYNTAX_MW;
-
+        
         /**
          * List of replies linked to this comment
          *
@@ -148,11 +149,11 @@
          * @Relates(class="\pachno\core\entities\Comment", collection=true, foreign_column="reply_to_comment")
          */
         protected $_replies;
-
+        
         protected $_replies_count;
-
+        
         protected $_is_clone = false;
-
+        
         /**
          * List of log items linked to this comment
          *
@@ -160,15 +161,15 @@
          * @Relates(class="\pachno\core\entities\LogItem", collection=true, foreign_column="comment_id")
          */
         protected $_log_items;
-
+        
         protected $_log_item_count = null;
-
+        
         protected $_parser = null;
-
+        
         public static function getPlaceholderTextForType($target_type)
         {
             $i18n = framework\Context::getI18n();
-
+            
             switch ($target_type) {
                 case self::TYPE_ISSUE:
                     return $i18n->__('Issue created');
@@ -178,7 +179,7 @@
                     return $i18n->__('Article created');
             }
         }
-
+        
         /**
          * Returns all comments for a given item
          *
@@ -191,10 +192,10 @@
         public static function getComments($target_id, $target_type, $sort_order = QueryColumnSort::SORT_ASC)
         {
             $comments = tables\Comments::getTable()->getComments($target_id, $target_type, $sort_order);
-
+            
             return $comments;
         }
-
+        
         /**
          * Returns all recent comments for a given item
          *
@@ -207,36 +208,36 @@
         public static function getRecentCommentsByAuthor($user_id, $target_type = self::TYPE_ISSUE, $limit = 10)
         {
             $comments = tables\Comments::getTable()->getRecentCommentsByUserIDandTargetType($user_id, $target_type, $limit);
-
+            
             return $comments;
         }
-
+        
         public static function countComments($target_id, $target_type)
         {
             if (!array_key_exists($target_type, self::$_comment_count))
                 self::$_comment_count[$target_type] = [];
-
+            
             if (!array_key_exists($target_id, self::$_comment_count[$target_type]))
                 self::$_comment_count[$target_type][$target_id] = (int)tables\Comments::getTable()->countComments($target_id, $target_type);
-
+            
             return (int)self::$_comment_count[$target_type][$target_id];
         }
-
+        
         public function setPublic($var)
         {
             $this->_is_public = (bool)$var;
         }
-
+        
         public function setIsPublic($var)
         {
             $this->_is_public = (bool)$var;
         }
-
+        
         public function hasMentions()
         {
             return $this->_getParser()->hasMentions();
         }
-
+        
         /**
          * Returns the associated parser object
          *
@@ -247,10 +248,10 @@
             if (is_null($this->_parser)) {
                 $this->_parseContent();
             }
-
+            
             return $this->_parser;
         }
-
+        
         protected function _parseContent($options = [])
         {
             switch ($this->_syntax) {
@@ -270,20 +271,20 @@
                     $text = $parser->getParsedText();
                     break;
             }
-
+            
             if (isset($parser)) {
                 $this->_parser = $parser;
             }
-
+            
             return $text;
         }
-
+        
         public function getTarget()
         {
             if ($this->_target === null) {
                 switch ($this->getTargetType()) {
                     case self::TYPE_ISSUE:
-                        $this->_target = Issue::getB2DBTable()->selectById($this->_target_id);
+                        $this->_target = tables\Issues::getTable()->selectById($this->_target_id);
                         break;
                     case self::TYPE_ARTICLE:
                         $this->_target = tables\Articles::getTable()->selectById($this->_target_id);
@@ -297,10 +298,10 @@
                         $this->_target = $event->getReturnValue();
                 }
             }
-
+            
             return $this->_target;
         }
-
+        
         /**
          * @return Issue
          */
@@ -308,7 +309,7 @@
         {
             return $this->getTarget();
         }
-
+        
         /**
          * @return Article
          */
@@ -316,7 +317,7 @@
         {
             return $this->getTarget();
         }
-
+        
         /**
          * @return Commit
          */
@@ -324,17 +325,17 @@
         {
             return $this->getTarget();
         }
-
+        
         public function getTargetType()
         {
             return $this->_target_type;
         }
-
+        
         public function setTargetType($var)
         {
             $this->_target_type = $var;
         }
-
+        
         /**
          * Return if the user can delete comment
          *
@@ -346,7 +347,7 @@
         {
             return $this->canUserEdit($user);
         }
-
+        
         /**
          * Return if the user can edit comment
          *
@@ -362,16 +363,16 @@
                     if (!$project instanceof Project) {
                         return false;
                     }
-
+                    
                     $allowed = $user->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project);
                     if ($allowed) {
                         return true;
                     }
-
+                    
                     if ($this->getPostedByID() != $user->getID()) {
                         return false;
                     }
-
+                    
                     return $user->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project);
                 case self::TYPE_ARTICLE:
                     $project = $this->getTargetArticle()->getProject();
@@ -380,40 +381,40 @@
                         if ($allowed) {
                             return true;
                         }
-
+                        
                         if ($this->getPostedByID() != $user->getID()) {
                             return false;
                         }
-
+                        
                         return $user->hasProjectPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project);
                     }
-
+                    
                     $allowed = $user->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
                     if ($allowed) {
                         return true;
                     }
-
+                    
                     return ($this->getPostedByID() == $user->getID());
                 case self::TYPE_COMMIT:
                     $project = $this->getTargetCommit()->getProject();
                     if (!$project instanceof Project) {
                         return false;
                     }
-
+                    
                     $allowed = $user->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project);
                     if ($allowed) {
                         return true;
                     }
-
+                    
                     return ($this->getPostedByID() == $user->getID());
                 default:
                     $event = Event::createNew('core', 'pachno\core\entities\Comment::canUserEdit', $this, ['user' => $user], [], false);
                     $event->triggerUntilProcessed();
-
-                    return (bool) $event->getReturnValue();
+                    
+                    return (bool)$event->getReturnValue();
             }
         }
-
+        
         /**
          * Return if the specified user can view this comment
          *
@@ -426,21 +427,21 @@
             if ($this->getPostedByID() == $user->getID()) {
                 return true;
             }
-
+            
             $project = $this->getTarget()->getProject();
-
+            
             if (!$this->isPublic()) {
                 return $user->canSeeInternalComments($project);
             }
-
+            
             return true;
         }
-
+        
         public function isPublic(): bool
         {
             return $this->_is_public;
         }
-
+        
         /**
          * Returns the user who last updated the comment
          *
@@ -448,41 +449,41 @@
          */
         public function getUpdatedBy(): ?User
         {
-            return ($this->_updated_by instanceof User) ? $this->_updated_by : User::getB2DBTable()->selectById($this->_updated_by);
+            return ($this->_updated_by instanceof User) ? $this->_updated_by : Users::getTable()->selectById($this->_updated_by);
         }
-
+        
         public function setUpdatedBy($user)
         {
             $this->_updated = NOW;
             $this->_updated_by = $user;
         }
-
+        
         public function getName()
         {
             return '';
         }
-
+        
         public function getParsedContent($options = [])
         {
             return $this->_parseContent($options);
         }
-
+        
         public function getUpdated()
         {
             return $this->_updated;
         }
-
+        
         public function getModuleName()
         {
             return $this->_module;
         }
-
+        
         public function setModuleName($var)
         {
             $this->_module = $var;
         }
-
-                public function toJSON($detailed = true)
+        
+        public function toJSON($detailed = true)
         {
             $return_values = [
                 'id' => $this->getID(),
@@ -492,111 +493,111 @@
                 'content' => $this->getContent(),
                 'system_comment' => $this->isSystemComment(),
             ];
-
+            
             return $return_values;
         }//end postedByUser
-
+        
         public function getPosted()
         {
             return $this->_posted;
         }
-
+        
         public function setPosted($timestamp)
         {
             $this->_posted = $timestamp;
         }
-
+        
         public function getCommentNumber()
         {
             return (int)$this->_comment_number;
         }
-
+        
         public function getContent()
         {
             return $this->_content;
         }
-
+        
         public function setContent($var)
         {
             $this->_content = $var;
         }
-
+        
         public function isReply()
         {
             return (bool)($this->getReplyToComment() instanceof Comment);
         }
-
+        
         public function getReplyToComment()
         {
             if (!is_object($this->_reply_to_comment) && $this->_reply_to_comment) {
                 $this->_b2dbLazyLoad('_reply_to_comment');
             }
-
+            
             return $this->_reply_to_comment;
         }
-
+        
         public function setReplyToComment($reply_to_comment_id)
         {
             $this->_reply_to_comment = $reply_to_comment_id;
         }
-
+        
         public function hasAssociatedChanges()
         {
             return $this->_has_associated_changes;
         }
-
+        
         public function setHasAssociatedChanges($value = true)
         {
             $this->_has_associated_changes = $value;
         }
-
+        
         public function getAssociatedChanges()
         {
             return $this->getLogItems();
         }
-
+        
         public function getLogItems()
         {
             return $this->_b2dbLazyLoad('_log_items');
         }
-
+        
         public function getReplies()
         {
             return $this->_b2dbLazyLoad('_replies');
         }
-
+        
         public function getSyntax()
         {
             return $this->_syntax;
         }
-
+        
         public function setSyntax($syntax)
         {
             if (!is_numeric($syntax)) $syntax = framework\Settings::getSyntaxValue($syntax);
-
+            
             $this->_syntax = (int)$syntax;
         }
-
+        
         public function getMentionableUsers()
         {
             $users = [$this->getPostedByID() => $this->getPostedBy()];
             foreach ($this->getMentions() as $user) {
                 $users[$user->getID()] = $user;
             }
-
+            
             return $users;
         }
-
+        
         public function getMentions()
         {
             return $this->_getParser()->getMentions();
         }
-
+        
         protected function _clone(): void
         {
             $this->_is_clone = true;
         }
-
+        
         protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
@@ -610,7 +611,7 @@
             }
             $this->_updated = time();
         }
-
+        
         protected function _postSave(bool $is_new): void
         {
             if (!$this->_is_clone && $is_new) {
@@ -618,12 +619,12 @@
                 $tid = $this->getTargetID();
                 if (array_key_exists($tty, self::$_comment_count) && array_key_exists($tid, self::$_comment_count[$tty]) && array_key_exists((int)$this->isSystemComment(), self::$_comment_count[$tty][$tid]))
                     self::$_comment_count[$tty][$tid][(int)$this->isSystemComment()]++;
-
+                
                 if (!$this->isSystemComment()) {
                     if ($this->_getParser()->hasMentions()) {
                         foreach ($this->_getParser()->getMentions() as $user) {
                             if ($user->getID() == framework\Context::getUser()->getID()) continue;
-
+                            
                             if (($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_MENTIONED, false)->isOn())) $this->_addNotificationIfNotNotified(Notification::TYPE_COMMENT_MENTIONED, $user, $this->getPostedBy());
                         }
                     }
@@ -644,18 +645,18 @@
                     }
                     $this->_addTargetNotifications();
                 }
-
+                
                 $target_type_name = $this->getTargetTypeName();
                 Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, [$target_type_name => $this->getTarget()])->trigger();
             }
             $this->touchTargetIfItsIssue();
         }
-
+        
         public function getTargetTypeName()
         {
             return self::getTargetTypeNameForType($this->_target_type);
         }
-
+        
         public static function getTargetTypeNameForType($type)
         {
             switch ($type) {
@@ -671,42 +672,42 @@
                     return $event->getReturnValue();
             }
         }
-
+        
         public function getTargetID()
         {
             return $this->_target_id;
         }
-
+        
         public function setTargetID($var)
         {
             $this->_target_id = $var;
         }
-
+        
         public function isSystemComment()
         {
             return $this->_system_comment;
         }
-
+        
         public function setSystemComment($val = true)
         {
             $this->_system_comment = $val;
         }
-
+        
         protected function _addNotificationIfNotNotified($type, $user, $updated_by)
         {
             if (!$this->shouldUserBeNotified($user, $updated_by)) return;
-
+            
             $this->_addNotification($type, $user);
         }
-
+        
         public function shouldUserBeNotified($user, $updated_by)
         {
             if (!$this->getTarget()->hasAccess($user)) return false;
-
+            
             if ($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_UPDATED_SELF, false)->isOff() && $user->getID() === $updated_by->getID()) return false;
-
+            
             if ($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE, false)->isOff()) return true;
-
+            
             switch ($this->getTargetType()) {
                 case self::TYPE_ISSUE:
                     $target_type_string = '_issue_';
@@ -718,16 +719,16 @@
                     $target_type_string = '_commit_';
                     break;
             }
-
+            
             if ($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . $target_type_string . $this->getTargetID(), false)->isOff()) {
                 $user->setNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . $target_type_string . $this->getTargetID(), true);
-
+                
                 return true;
             }
-
+            
             return false;
         }
-
+        
         protected function _addNotification($type, $user)
         {
             $notification = new Notification();
@@ -737,7 +738,7 @@
             $notification->setNotificationType($type);
             $notification->save();
         }
-
+        
         /**
          * Return the poster id
          *
@@ -750,10 +751,10 @@
                 $poster = $this->getPostedBy();
             } catch (Exception $e) {
             }
-
+            
             return ($poster instanceof Identifiable) ? $poster->getID() : null;
         }
-
+        
         /**
          * Returns the user who posted the comment
          *
@@ -762,12 +763,12 @@
         public function getPostedBy()
         {
             try {
-                return ($this->_posted_by instanceof User) ? $this->_posted_by : User::getB2DBTable()->selectById($this->_posted_by);
+                return ($this->_posted_by instanceof User) ? $this->_posted_by : Users::getTable()->selectById($this->_posted_by);
             } catch (Exception $e) {
                 return null;
             }
         }
-
+        
         protected function _addTargetNotifications()
         {
             foreach ($this->getTarget()->getSubscribers() as $user) {
@@ -790,12 +791,12 @@
                 }
             }
         }
-
+        
         protected function touchTargetIfItsIssue()
         {
             if ($this->getTargetType() === self::TYPE_ISSUE) $this->getTarget()->touch();
         }
-
+        
         public function setPostedBy($var)
         {
             if (is_object($var)) {
@@ -803,10 +804,10 @@
             }
             $this->_posted_by = $var;
         }
-
+        
         protected function _postDelete(): void
         {
             $this->touchTargetIfItsIssue();
         }
-
+        
     }

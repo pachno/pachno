@@ -446,8 +446,8 @@
          */
         public function runConfigureToggleIssuetypeForScheme(framework\Request $request)
         {
-            if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issue_type_id'])) instanceof entities\Issuetype) {
-                $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int)$request['scheme_id']);
+            if (($issuetype = tables\IssueTypes::getTable()->selectById($request['issue_type_id'])) instanceof entities\Issuetype) {
+                $this->scheme = tables\IssuetypeSchemes::getTable()->selectById((int)$request['scheme_id']);
                 if ($this->scheme instanceof entities\IssuetypeScheme) {
                     $new_value = !$this->scheme->isSchemeAssociatedWithIssuetype($issuetype);
                     $this->scheme->setIssuetypeEnabled($issuetype, $new_value);
@@ -482,7 +482,7 @@
 
                     return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')]);
                 case 'update':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
+                    if (($issuetype = tables\IssueTypes::getTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         if ($this->scheme instanceof entities\IssuetypeScheme) {
                             $this->scheme->setIssuetypeRedirectedAfterReporting($issuetype, $request['redirect_after_reporting']);
                             $this->scheme->setIssuetypeReportable($issuetype, $request['reportable']);
@@ -505,7 +505,7 @@
 
                     return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type')]);
                 case 'updatechoices':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
+                    if (($issuetype = tables\IssueTypes::getTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         $this->scheme->clearAvailableFieldsForIssuetype($issuetype);
                         foreach ($request->getParameter('field', []) as $key => $details) {
                             $this->scheme->setFieldAvailableForIssuetype($issuetype, $key, $details);
@@ -518,7 +518,7 @@
                         return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type')]);
                     }
                 case 'delete':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
+                    if (($issuetype = tables\IssueTypes::getTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         $issuetype->delete();
 
                         return $this->renderJSON(['message' => framework\Context::getI18n()->__('Issue type deleted')]);
@@ -528,7 +528,7 @@
                         return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type')]);
                     }
                 case 'toggletype':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
+                    if (($issuetype = tables\IssueTypes::getTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         if ($this->scheme instanceof entities\IssuetypeScheme) {
                             $this->scheme->setIssuetypeEnabled($issuetype, !$this->scheme->isSchemeAssociatedWithIssuetype($issuetype));
 
@@ -579,7 +579,6 @@
                     }
 
                     return $this->renderJSON('ok');
-                    break;
                 case 'add':
                     if ($request['name']) {
                         if (array_key_exists($request['type'], $types)) {
@@ -606,11 +605,10 @@
                     if ($request['name']) {
                         $type = $request['type'];
                         if (array_key_exists($type, $types)) {
-                            $classname = $types[$type];
-                            $item = $classname::getB2DBTable()->selectByID($request['id']);
+                            $item = ListTypes::getTable()->selectByID($request['id']);
                         } else {
                             $customtype = CustomDatatype::getByKey($type);
-                            $item = entities\CustomDatatypeOption::getB2DBTable()->selectById($request['id']);
+                            $item = tables\CustomFieldOptions::getTable()->selectById($request['id']);
                         }
 
                         if ($item instanceof entities\DatatypeBase) {
@@ -638,8 +636,7 @@
                 case 'delete':
                     if ($request->hasParameter('id')) {
                         if (array_key_exists($request['type'], $types)) {
-                            $classname = $types[$request['type']];
-                            $item = $classname::getB2DBTable()->rawDeleteById($request['id']);
+                            $item = ListTypes::getTable()->rawDeleteById($request['id']);
 
                             return $this->renderJSON(['title' => $i18n->__('The option was deleted')]);
                         } else {
@@ -842,7 +839,7 @@
 
             if ($this->access_level == framework\Settings::ACCESS_FULL) {
                 try {
-                    $theProject = entities\Project::getB2DBTable()->selectByID($request['project_id']);
+                    $theProject = tables\Projects::getTable()->selectByID($request['project_id']);
                     $theProject->setArchived($archived);
                     $theProject->save();
 
@@ -1159,7 +1156,7 @@
                 }
 
                 try {
-                    $group = entities\Group::getB2DBTable()->selectById($request['group_id']);
+                    $group = tables\Groups::getTable()->selectById($request['group_id']);
                 } catch (Exception $e) {
 
                 }
@@ -1186,7 +1183,7 @@
                 if ($group_name = $request['group_name']) {
                     if ($mode == 'clone') {
                         try {
-                            $old_group = entities\Group::getB2DBTable()->selectById($request['group_id']);
+                            $old_group = tables\Groups::getTable()->selectById($request['group_id']);
                         } catch (Exception $e) {
 
                         }
@@ -1567,7 +1564,7 @@
                     foreach ($request->getParameter('workflow_id', []) as $issue_type_id => $workflow_id) {
                         $issue_type = entities\tables\IssueTypes::getTable()->selectById($issue_type_id);
                         if ($workflow_id) {
-                            $workflow = entities\Workflow::getB2DBTable()->selectById($workflow_id);
+                            $workflow = Workflows::getTable()->selectById($workflow_id);
                             $workflow_scheme->associateIssuetypeWithWorkflow($issue_type, $workflow);
                         } elseif ($workflow_scheme->getID()) {
                             $workflow_scheme->unassociateIssuetype($issue_type);

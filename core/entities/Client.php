@@ -6,6 +6,7 @@
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\common\Permissible;
+    use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\framework\Context;
 
@@ -240,7 +241,7 @@
             if ($this->_members === null) {
                 $this->_members = [];
                 foreach (tables\ClientMembers::getTable()->getUIDsForClientID($this->getID()) as $uid) {
-                    $this->_members[$uid] = User::getB2DBTable()->selectById($uid);
+                    $this->_members[$uid] = Users::getTable()->selectById($uid);
                 }
             }
 

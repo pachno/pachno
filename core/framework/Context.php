@@ -15,6 +15,7 @@
     use pachno\core\entities\tables\Modules;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Scopes;
+    use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
     use pachno\core\framework\cli;
     use pachno\core\framework\exceptions\ActionNotAllowedException;
@@ -2002,7 +2003,7 @@
                     self::setMessage('login_message_err', $e->getMessage());
                     self::$_redirect_login = 'login';
                 } else {
-                    self::$_user = User::getB2DBTable()->selectById(Settings::getDefaultUserID());
+                    self::$_user = Users::getTable()->selectById(Settings::getDefaultUserID());
                 }
             }
             Logging::log('...done');

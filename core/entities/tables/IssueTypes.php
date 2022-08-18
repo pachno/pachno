@@ -3,6 +3,9 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\Query;
+    use b2db\Saveable;
+    use pachno\core\entities\Issuetype;
     use pachno\core\framework;
 
     /**
@@ -18,8 +21,11 @@
     /**
      * Issue types table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static IssueTypes getTable()
+     * @method Issuetype[] select(Query $query, $join = 'all')
+     * @method Issuetype[] selectAll()
+     * @method Issuetype selectOne(Query $query, $join = 'all')
+     * @method Issuetype selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="issuetypes")
      * @Entity(class="\pachno\core\entities\Issuetype")
@@ -42,7 +48,10 @@
         public const ICON = 'issuetypes.icon';
 
         public const TASK = 'issuetypes.task';
-
+    
+        /**
+         * @return Issuetype[]
+         */
         public function getAll()
         {
             $query = $this->getQuery();
@@ -50,7 +59,11 @@
 
             return $this->select($query);
         }
-
+    
+        /**
+         * @param $ids
+         * @return Issuetype[]
+         */
         public function getByIds($ids)
         {
             $query = $this->getQuery();

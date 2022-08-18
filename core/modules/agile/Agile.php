@@ -66,7 +66,7 @@
          */
         public function projectHeaderLinks(Event $event)
         {
-            $board = AgileBoard::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('board_id'));
+            $board = AgileBoards::getTable()->selectById(framework\Context::getRequest()->getParameter('board_id'));
             if ($board instanceof AgileBoard) {
                 framework\ActionComponent::includeComponent('agile/projectheaderstriplinks', ['project' => $event->getSubject(), 'board' => $board]);
             }
@@ -81,7 +81,7 @@
          */
         public function milestoneSave(Event $event)
         {
-            $board = AgileBoard::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('board_id'));
+            $board = AgileBoards::getTable()->selectById(framework\Context::getRequest()->getParameter('board_id'));
             if ($board instanceof AgileBoard) {
                 $component = framework\Action::returnComponentHTML('agile/milestonelistitem', ['milestone' => $event->getSubject(), 'board' => $board, 'selected_milestone' => $event->getSubject()]);
                 $event->setReturnValue($component);
@@ -114,7 +114,7 @@
         public function headerMenuProjectLinks(Event $event)
         {
             if ($event->getSubject() instanceof Project) {
-                $boards = AgileBoard::getB2DBTable()->getAvailableProjectBoards(framework\Context::getUser()->getID(), $event->getSubject()->getID());
+                $boards = AgileBoards::getTable()->getAvailableProjectBoards(framework\Context::getUser()->getID(), $event->getSubject()->getID());
                 framework\ActionComponent::includeComponent('agile/headermenuprojectlinks', ['project' => $event->getSubject(), 'boards' => $boards]);
             }
         }
@@ -182,7 +182,7 @@
          */
         public function dashboardProjectLinks(Event $event)
         {
-            $boards = AgileBoard::getB2DBTable()->getAvailableProjectBoards(framework\Context::getUser()->getID(), $event->getSubject()->getID());
+            $boards = AgileBoards::getTable()->getAvailableProjectBoards(framework\Context::getUser()->getID(), $event->getSubject()->getID());
             framework\ActionComponent::includeComponent('agile/projectlinks', ['project' => $event->getSubject(), 'boards' => $boards]);
         }
 

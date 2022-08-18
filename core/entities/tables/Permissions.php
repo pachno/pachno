@@ -6,14 +6,12 @@
     use b2db\Insertion;
     use b2db\Query;
     use pachno\core\entities\common\Identifiable;
-    use pachno\core\entities\Group;
     use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\Role;
     use pachno\core\entities\RolePermission;
     use pachno\core\entities\Scope;
-    use pachno\core\entities\Team;
-    use pachno\core\entities\User;
+    use pachno\core\entities\tables;
     use pachno\core\framework;
 
     /**
@@ -404,13 +402,13 @@
                 while ($row = $res->getNextRow()) {
                     $target = null;
                     if ($uid = $row->get(self::USER_ID)) {
-                        $target = User::getB2DBTable()->selectById($uid);
+                        $target = tables\Users::getTable()->selectById($uid);
                     }
                     if ($tid = $row->get(self::TEAM_ID)) {
-                        $target = Team::getB2DBTable()->selectById($tid);
+                        $target = tables\Teams::getTable()->selectById($tid);
                     }
                     if ($gid = $row->get(self::GROUP_ID)) {
-                        $target = Group::getB2DBTable()->selectById($gid);
+                        $target = tables\Groups::getTable()->selectById($gid);
                     }
                     if ($target instanceof Identifiable) {
                         $permissions[] = ['target' => $target, 'allowed' => (boolean)$row->get(self::ALLOWED), 'user_id' => $row->get(self::USER_ID), 'team_id' => $row->get(self::TEAM_ID), 'group_id' => $row->get(self::GROUP_ID)];

@@ -9,6 +9,7 @@
     use pachno\core\entities\tables\IssueRelations;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\IssueTypes;
+    use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\UserIssues;
     use pachno\core\entities\traits\Commentable;
@@ -1286,7 +1287,7 @@
             }
             if ($rows = tables\IssueCustomFields::getTable()->getAllValuesByIssueID($this->getID())) {
                 foreach ($rows as $row) {
-                    $datatype = CustomDatatype::getB2DBTable()->selectById($row->get(tables\IssueCustomFields::CUSTOMFIELDS_ID));
+                    $datatype = tables\CustomFields::getTable()->selectById($row->get(tables\IssueCustomFields::CUSTOMFIELDS_ID));
                     if ($datatype instanceof CustomDatatype) {
                         $var_name = "_customfield" . $datatype->getKey();
 
@@ -2204,7 +2205,7 @@
                                 $status_id = $row->get(tables\IssueAffectsEdition::STATUS);
                                 $this->_editions[$row->get(tables\IssueAffectsEdition::ID)] = [
                                     'edition' => $edition,
-                                    'status' => ($status_id) ? Status::getB2DBTable()->selectById((int)$status_id) : null,
+                                    'status' => ($status_id) ? tables\ListTypes::getTable()->selectById((int)$status_id) : null,
                                     'confirmed' => (bool)$row->get(tables\IssueAffectsEdition::CONFIRMED),
                                     'a_id' => $row->get(tables\IssueAffectsEdition::ID)];
                             }
@@ -2225,7 +2226,7 @@
                                 $status_id = $row->get(tables\IssueAffectsBuild::STATUS);
                                 $this->_builds[$row->get(tables\IssueAffectsBuild::ID)] = [
                                     'build' => $build,
-                                    'status' => ($status_id) ? Status::getB2DBTable()->selectById((int)$status_id) : null,
+                                    'status' => ($status_id) ? tables\ListTypes::getTable()->selectById((int)$status_id) : null,
                                     'confirmed' => (bool)$row->get(tables\IssueAffectsBuild::CONFIRMED),
                                     'a_id' => $row->get(tables\IssueAffectsBuild::ID)];
                             }
@@ -2246,7 +2247,7 @@
                                 $status_id = $row->get(tables\IssueAffectsComponent::STATUS);
                                 $this->_components[$row->get(tables\IssueAffectsComponent::ID)] = [
                                     'component' => $component,
-                                    'status' => ($status_id) ? Status::getB2DBTable()->selectById((int)$status_id) : null,
+                                    'status' => ($status_id) ? tables\ListTypes::getTable()->selectById((int)$status_id) : null,
                                     'confirmed' => (bool)$row->get(tables\IssueAffectsComponent::CONFIRMED),
                                     'a_id' => $row->get(tables\IssueAffectsComponent::ID)];
                             }
@@ -2798,7 +2799,7 @@
                                 $this->$var_name = tables\Teams::getTable()->selectById($this->$var_name);
                                 break;
                             case DatatypeBase::STATUS_CHOICE:
-                                $this->$var_name = Status::getB2DBTable()->selectById($this->$var_name);
+                                $this->$var_name = tables\ListTypes::getTable()->selectById($this->$var_name);
                                 break;
                         }
                     } catch (Exception $e) {
@@ -5189,7 +5190,7 @@
                                 break;
                             case '_category':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Category::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Not determined');
+                                    $old_name = ($old_item = ListTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Not determined');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not determined');
                                 }
@@ -5232,7 +5233,7 @@
                                 break;
                             case '_status':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Status::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = tables\ListTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not determined');
                                 }
@@ -5242,7 +5243,7 @@
                                 break;
                             case '_reproducability':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Reproducability::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = tables\ListTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not determined');
                                 }
@@ -5252,7 +5253,7 @@
                                 break;
                             case '_priority':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Priority::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = tables\ListTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not determined');
                                 }
@@ -5275,7 +5276,7 @@
                                 }
                                 break;
                             case '_posted_by':
-                                $old_identifiable = ($original_value) ? User::getB2DBTable()->selectById($original_value) : Context::getI18n()->__('Unknown');
+                                $old_identifiable = ($original_value) ? tables\Users::getTable()->selectById($original_value) : Context::getI18n()->__('Unknown');
                                 $old_name = ($old_identifiable instanceof User) ? $old_identifiable->getNameWithUsername() : Context::getI18n()->__('Unknown');
                                 $new_name = $this->getPostedBy()->getNameWithUsername();
 
@@ -5283,7 +5284,7 @@
                                 break;
                             case '_being_worked_on_by_user':
                                 if ($original_value != 0) {
-                                    $old_identifiable = User::getB2DBTable()->selectById($original_value);
+                                    $old_identifiable = tables\Users::getTable()->selectById($original_value);
                                     $old_name = ($old_identifiable instanceof User) ? $old_identifiable->getNameWithUsername() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not being worked on');
@@ -5306,7 +5307,7 @@
                                 break;
                             case '_resolution':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Resolution::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = tables\ListTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not determined');
                                 }
@@ -5316,7 +5317,7 @@
                                 break;
                             case '_severity':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Severity::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = tables\ListTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Not determined');
                                 }
@@ -5326,7 +5327,7 @@
                                 break;
                             case '_milestone':
                                 if ($original_value != 0) {
-                                    $old_milestone = Milestone::getB2DBTable()->selectById($original_value);
+                                    $old_milestone = tables\Milestones::getTable()->selectById($original_value);
                                     $old_milestone->updateStatus();
                                     $old_milestone->save();
                                     $old_name = $old_milestone ? $old_milestone->getName() : Context::getI18n()->__('Not determined');
@@ -5455,28 +5456,28 @@
                                             try {
                                                 switch ($customdatatype->getType()) {
                                                     case DatatypeBase::EDITIONS_CHOICE:
-                                                        $old_object = Edition::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Editions::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::COMPONENTS_CHOICE:
-                                                        $old_object = Component::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Components::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::RELEASES_CHOICE:
-                                                        $old_object = Build::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Builds::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::MILESTONE_CHOICE:
-                                                        $old_object = Milestone::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Milestones::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::STATUS_CHOICE:
-                                                        $old_object = Status::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\ListTypes::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::TEAM_CHOICE:
-                                                        $old_object = Team::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Teams::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::USER_CHOICE:
-                                                        $old_object = User::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Users::getTable()->selectById($original_value);
                                                         break;
                                                     case DatatypeBase::CLIENT_CHOICE:
-                                                        $old_object = Client::getB2DBTable()->selectById($original_value);
+                                                        $old_object = tables\Clients::getTable()->selectById($original_value);
                                                         break;
                                                 }
                                             } catch (Exception $e) {

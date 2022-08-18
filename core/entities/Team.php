@@ -6,7 +6,9 @@
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\common\Permissible;
+    use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Teams;
+    use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\framework\Context;
 
@@ -100,7 +102,7 @@
 
         public static function doesIDExist($id)
         {
-            return (bool)static::getB2DBTable()->doesIDExist($id);
+            return (bool) tables\Teams::getTable()->doesIDExist($id);
         }
 
         public static function loadFixtures(Scope $scope)
@@ -216,7 +218,7 @@
 
                 $project_ids = tables\ProjectAssignedTeams::getTable()->getProjectsByTeamID($this->getID());
                 foreach ($project_ids as $project_id) {
-                    $this->_associated_projects[$project_id] = Project::getB2DBTable()->selectById($project_id);
+                    $this->_associated_projects[$project_id] = Projects::getTable()->selectById($project_id);
                 }
                 $assigned_projects = tables\Projects::getTable()->getByTeamID($this->getID());
                 foreach ($assigned_projects as $project) {
@@ -319,7 +321,7 @@
             if ($this->_members === null) {
                 $this->_members = [];
                 foreach (tables\TeamMembers::getTable()->getUIDsForTeamID($this->getID()) as $uid) {
-                    $this->_members[$uid] = User::getB2DBTable()->selectById($uid);
+                    $this->_members[$uid] = Users::getTable()->selectById($uid);
                 }
             }
 

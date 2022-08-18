@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\Keyable;
+    use pachno\core\entities\tables\IssueTypes;
     use pachno\core\framework;
 
     /**
@@ -163,7 +164,7 @@
         public static function getAll()
         {
             if (self::$_issuetypes === null) {
-                self::$_issuetypes = self::getB2DBTable()->getAll();
+                self::$_issuetypes = IssueTypes::getTable()->getAll();
             }
 
             return self::$_issuetypes;

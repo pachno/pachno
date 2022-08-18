@@ -3,8 +3,16 @@
     namespace pachno\core\modules\configuration;
 
     use Exception;
+    use GuzzleHttp\Client;
     use Net_Http_Client;
     use pachno\core\entities;
+    use pachno\core\entities\ActivityType;
+    use pachno\core\entities\Category;
+    use pachno\core\entities\Priority;
+    use pachno\core\entities\Reproducability;
+    use pachno\core\entities\Resolution;
+    use pachno\core\entities\Severity;
+    use pachno\core\entities\Status;
     use pachno\core\framework;
     use pachno\core\framework\I18n;
     use pachno\core\entities\tables;
@@ -41,7 +49,7 @@
         {
             $modules = [];
             try {
-                $client = new \GuzzleHttp\Client([
+                $client = new Client([
                     'base_uri' => framework\Context::getBaseOnlineUrl(),
                     'verify' => framework\Context::getOnlineVerifySsl(),
                     'http_errors' => false
@@ -151,7 +159,7 @@
 
         public function componentTransitionStatusBadges()
         {
-            $this->statuses = entities\Status::getAll();
+            $this->statuses = Status::getAll();
         }
 
         public function componentEditWorkflowScheme()
@@ -171,20 +179,41 @@
         {
             $this->showitems = false;
             $this->iscustom = false;
-            $types = entities\Datatype::getTypes();
-            $this->access_level = framework\Settings::getConfigurationAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
+            $this->access_level = framework\Settings::getConfigurationAccessLevel();
+            $this->showitems = true;
 
-            if (array_key_exists($this->type, $types)) {
-                $this->items = call_user_func([$types[$this->type], 'getAll']);
-                $this->showitems = true;
-            } elseif (!array_key_exists($this->type, entities\DatatypeBase::getAvailableFields(true))) {
-                $customtype = entities\CustomDatatype::getByKey($this->type);
-                $this->showitems = $customtype->hasCustomOptions();
-                $this->iscustom = true;
-                if ($this->showitems) {
-                    $this->items = $customtype->getOptions();
-                }
-                $this->customtype = $customtype;
+            switch ($this->type) {
+                case Datatype::STATUS:
+                    $this->items = Status::getAll();
+                    break;
+                case Datatype::PRIORITY:
+                    $this->items = Priority::getAll();
+                    break;
+                case Datatype::CATEGORY:
+                    $this->items = Category::getAll();
+                    break;
+                case Datatype::SEVERITY:
+                    $this->items = Severity::getAll();
+                    break;
+                case Datatype::REPRODUCABILITY:
+                    $this->items = Reproducability::getAll();
+                    break;
+                case Datatype::RESOLUTION:
+                    $this->items = Resolution::getAll();
+                    break;
+                case Datatype::ACTIVITYTYPE:
+                    $this->items = ActivityType::getAll();
+                    break;
+                default:
+                    if (!array_key_exists($this->type, entities\DatatypeBase::getAvailableFields(true))) {
+                        $customtype = entities\CustomDatatype::getByKey($this->type);
+                        $this->showitems = $customtype->hasCustomOptions();
+                        $this->iscustom = true;
+                        if ($this->showitems) {
+                            $this->items = $customtype->getOptions();
+                        }
+                        $this->customtype = $customtype;
+                    }
             }
         }
 

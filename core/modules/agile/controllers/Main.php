@@ -539,7 +539,7 @@
             $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
 
             try {
-                $issue = Issue::getB2DBTable()->selectById((int)$request['issue_id']);
+                $issue = Issues::getTable()->selectById((int)$request['issue_id']);
                 $milestone = Milestones::getTable()->selectById($request['milestone_id']);
 
                 if (!$issue instanceof Issue)
@@ -573,7 +573,7 @@
         public function runAssignRelease(Request $request)
         {
             try {
-                $issue = Issue::getB2DBTable()->selectById((int)$request['issue_id']);
+                $issue = Issues::getTable()->selectById((int)$request['issue_id']);
                 $release = Builds::getTable()->selectById((int)$request['release_id']);
 
                 $issue->addAffectedBuild($release);
@@ -596,8 +596,8 @@
         public function runAssignEpic(Request $request)
         {
             try {
-                $epic = Issue::getB2DBTable()->selectById((int)$request['epic_id']);
-                $issue = Issue::getB2DBTable()->selectById((int)$request['issue_id']);
+                $epic = Issues::getTable()->selectById((int)$request['epic_id']);
+                $issue = Issues::getTable()->selectById((int)$request['issue_id']);
 
                 $epic->addChildIssue($issue, true);
 

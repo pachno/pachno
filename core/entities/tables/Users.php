@@ -315,7 +315,7 @@
                     $user_id = (int)$row->get(self::ID);
                     $details = UserScopes::getTable()->getUserDetailsByScope($user_id, framework\Context::getScope()->getID());
                     if (!$details) continue;
-                    $users[$user_id] = User::getB2DBTable()->selectById($user_id);
+                    $users[$user_id] = $this->selectById($user_id);
                     $users[$user_id]->setScopeConfirmed($details['confirmed']);
                 }
             }

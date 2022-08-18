@@ -1980,14 +1980,19 @@
                                     break;
                             }
                         } else {
-                            $classname = "\\pachno\\core\\entities\\" . ucfirst($parameter_name);
-                            $lab_function_name = $classname;
+                            if ($request['field'] == 'milestone') {
+                                $table = Milestones::getTable();
+                            } elseif ($request['field'] == 'issuetype') {
+                                $table = tables\IssueTypes::getTable();
+                            } else {
+                                $table = tables\ListTypes::getTable();
+                            }
                             $set_function_name = 'set' . ucfirst($parameter_name);
                         }
 
                         $parameter_id = $request->getParameter('value');
                         if ($parameter_id !== 0) {
-                            $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $lab_function_name::getB2DBTable()->selectByID($parameter_id)) instanceof $classname));
+                            $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $table->selectByID($parameter_id)) instanceof entities\common\Identifiable));
                         }
                         if ($parameter_id == 0 || $is_valid) {
                             $issue->$set_function_name($parameter_id);

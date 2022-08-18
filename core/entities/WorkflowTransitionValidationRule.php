@@ -309,45 +309,40 @@
                     $valid_items = explode(',', $this->getRuleValue());
                     $valid = false;
                     if ($this->_name == self::RULE_STATUS_VALID) {
-                        $fieldname = 'Status';
-                        $fieldname_small = 'status';
+                        $getter = 'getStatus';
+                        $field_id = 'status';
                     } elseif ($this->_name == self::RULE_RESOLUTION_VALID) {
-                        $fieldname = 'Resolution';
-                        $fieldname_small = 'resolution';
+                        $getter = 'getResolution';
+                        $field_id = 'resolution';
                     } elseif ($this->_name == self::RULE_REPRODUCABILITY_VALID) {
-                        $fieldname = 'Reproducability';
-                        $fieldname_small = 'reproducability';
+                        $getter = 'getReproducability';
+                        $field_id = 'reproducability';
                     } elseif ($this->_name == self::RULE_PRIORITY_VALID) {
-                        $fieldname = 'Priority';
-                        $fieldname_small = 'priority';
+                        $getter = 'getPriority';
+                        $field_id = 'priority';
                     } else {
                         throw new framework\exceptions\ConfigurationException(framework\Context::getI18n()->__('Invalid workflow validation rule: %rule_name', ['%rule_name' => $this->_name]));
                     }
 
                     if (!$this->getRuleValue()) {
                         if ($input instanceof Issue) {
-                            $getter = "get{$fieldname}";
-
                             if (is_object($input->$getter())) {
                                 $valid = true;
                             }
                         } elseif ($input instanceof framework\Request) {
-                            if ($input->getParameter("{$fieldname_small}_id") && Status::has($input->getParameter("{$fieldname_small}_id"))) {
+                            if ($input->getParameter("{$field_id}_id") && Status::has($input->getParameter("{$field_id}_id"))) {
                                 $valid = true;
                             }
                         }
                     } else {
                         foreach ($valid_items as $item) {
                             if ($input instanceof Issue) {
-                                $type = "\\pachno\\core\\entities\\{$fieldname}";
-                                $getter = "get{$fieldname}";
-
-                                if (is_object($input->$getter()) && $type::getB2DBTable()->selectByID((int)$item)->getID() == $input->$getter()->getID()) {
+                                if (is_object($input->$getter()) && ListTypes::getTable()->selectByID((int)$item)->getID() == $input->$getter()->getID()) {
                                     $valid = true;
                                     break;
                                 }
                             } elseif ($input instanceof framework\Request) {
-                                if ($input->getParameter("{$fieldname_small}_id") == $item) {
+                                if ($input->getParameter("{$field_id}_id") == $item) {
                                     $valid = true;
                                     break;
                                 }
@@ -439,17 +434,17 @@
             $customtype = $this->getCustomType();
 
             if ($this->_name == self::RULE_STATUS_VALID) {
-                $fieldname = '\pachno\core\entities\Status';
+                $table = ListTypes::getTable();
             } elseif ($this->_name == self::RULE_RESOLUTION_VALID) {
-                $fieldname = '\pachno\core\entities\Resolution';
+                $table = ListTypes::getTable();
             } elseif ($this->_name == self::RULE_REPRODUCABILITY_VALID) {
-                $fieldname = '\pachno\core\entities\Reproducability';
+                $table = ListTypes::getTable();
             } elseif ($this->_name == self::RULE_PRIORITY_VALID) {
-                $fieldname = '\pachno\core\entities\Priority';
+                $table = ListTypes::getTable();
             } elseif ($this->_name == self::RULE_TEAM_MEMBERSHIP_VALID) {
-                $fieldname = '\pachno\core\entities\Team';
+                $table = Teams::getTable();
             } elseif ($this->_name == self::RULE_ISSUE_IN_MILESTONE_VALID) {
-                $fieldname = '\pachno\core\entities\Milestone';
+                $table = Milestones::getTable();
             }
 
             if ($is_core || $is_custom) {
@@ -462,7 +457,7 @@
                 foreach ($values as $value) {
                     try {
                         if ($is_core) {
-                            $field = $fieldname::getB2DBTable()->selectByID((int)$value);
+                            $field = $table->selectByID((int)$value);
                         } elseif ($is_custom) {
                             switch ($customtype) {
                                 case DatatypeBase::RADIO_CHOICE:

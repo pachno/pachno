@@ -523,7 +523,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_PROJECT_CLIENT, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Client::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_CLIENT]);
+                                            tables\Clients::getTable()->selectById($activerow[self::CSV_PROJECT_CLIENT]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: client does not exist', ['%col' => self::CSV_PROJECT_CLIENT, '%row' => $i + 1]);
                                         }
@@ -536,7 +536,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_PROJECT_WORKFLOW_ID, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\WorkflowScheme::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_WORKFLOW_ID]);
+                                            tables\WorkflowSchemes::getTable()->selectById($activerow[self::CSV_PROJECT_WORKFLOW_ID]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: workflow scheme does not exist', ['%col' => self::CSV_PROJECT_WORKFLOW_ID, '%row' => $i + 1]);
                                         }
@@ -549,7 +549,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_PROJECT_ISSUETYPE_SCHEME, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\IssuetypeScheme::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]);
+                                            tables\IssuetypeSchemes::getTable()->selectById($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: issuetype scheme does not exist', ['%col' => self::CSV_PROJECT_ISSUETYPE_SCHEME, '%row' => $i + 1]);
                                         }
@@ -570,7 +570,7 @@
 
                                 // Check if project exists
                                 try {
-                                    $prjtmp = entities\Project::getB2DBTable()->selectByID($activerow[self::CSV_ISSUE_PROJECT]);
+                                    $prjtmp = tables\Projects::getTable()->selectByID($activerow[self::CSV_ISSUE_PROJECT]);
                                 } catch (Exception $e) {
                                     $errors[] = $this->getI18n()->__('Row %row column %col: Project does not exist', ['%col' => self::CSV_ISSUE_PROJECT, '%row' => $i + 1]);
                                     break;
@@ -662,7 +662,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_MILESTONE, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            $milestonetmp = entities\Milestone::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_MILESTONE]);
+                                            $milestonetmp = tables\Milestones::getTable()->selectById($activerow[self::CSV_ISSUE_MILESTONE]);
                                             if ($milestonetmp->getProject()->getID() != $activerow[self::CSV_ISSUE_PROJECT]) {
                                                 $errors[] = $this->getI18n()->__('Row %row column %col: milestone does not apply to the specified project', ['%col' => self::CSV_ISSUE_MILESTONE, '%row' => $i + 1]);
                                             }
@@ -678,7 +678,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_STATUS, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Status::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_STATUS]);
+                                            tables\ListTypes::getTable()->selectById($activerow[self::CSV_ISSUE_STATUS]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: status does not exist', ['%col' => self::CSV_ISSUE_STATUS, '%row' => $i + 1]);
                                         }
@@ -691,7 +691,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_RESOLUTION, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Resolution::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_RESOLUTION]);
+                                            tables\ListTypes::getTable()->selectById($activerow[self::CSV_ISSUE_RESOLUTION]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: resolution does not exist', ['%col' => self::CSV_ISSUE_RESOLUTION, '%row' => $i + 1]);
                                         }
@@ -704,7 +704,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_PRIORITY, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Priority::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_PRIORITY]);
+                                            tables\ListTypes::getTable()->selectById($activerow[self::CSV_ISSUE_PRIORITY]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: priority does not exist', ['%col' => self::CSV_ISSUE_PRIORITY, '%row' => $i + 1]);
                                         }
@@ -717,7 +717,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_CATEGORY, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Category::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_CATEGORY]);
+                                            tables\ListTypes::getTable()->selectById($activerow[self::CSV_ISSUE_CATEGORY]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: category does not exist', ['%col' => self::CSV_ISSUE_CATEGORY, '%row' => $i + 1]);
                                         }
@@ -730,7 +730,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_SEVERITY, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Severity::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_SEVERITY]);
+                                            tables\ListTypes::getTable()->selectById($activerow[self::CSV_ISSUE_SEVERITY]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: severity does not exist', ['%col' => self::CSV_ISSUE_SEVERITY, '%row' => $i + 1]);
                                         }
@@ -743,7 +743,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_REPRODUCIBILITY, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            entities\Reproducability::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_REPRODUCIBILITY]);
+                                            tables\ListTypes::getTable()->selectById($activerow[self::CSV_ISSUE_REPRODUCIBILITY]);
                                         } catch (Exception $e) {
                                             $errors[] = $this->getI18n()->__('Row %row column %col: reproducability does not exist', ['%col' => self::CSV_ISSUE_REPRODUCIBILITY, '%row' => $i + 1]);
                                         }
@@ -756,7 +756,7 @@
                                         $errors[] = $this->getI18n()->__('Row %row column %col: invalid value (must be a number)', ['%col' => self::CSV_ISSUE_ISSUE_TYPE, '%row' => $i + 1]);
                                     } else {
                                         try {
-                                            $typetmp = entities\Issuetype::getB2DBTable()->selectById($activerow[self::CSV_ISSUE_ISSUE_TYPE]);
+                                            $typetmp = tables\IssueTypes::getTable()->selectById($activerow[self::CSV_ISSUE_ISSUE_TYPE]);
                                             if (!($prjtmp->getIssuetypeScheme()->isSchemeAssociatedWithIssuetype($typetmp)))
                                                 $errors[] = $this->getI18n()->__('Row %row column %col: this project does not support issues of this type (%type)', ['%type' => $typetmp->getName(), '%col' => self::CSV_ISSUE_ISSUE_TYPE, '%row' => $i + 1]);
                                         } catch (Exception $e) {
@@ -900,17 +900,17 @@
                                 }
 
                                 if (isset($activerow[self::CSV_PROJECT_CLIENT]))
-                                    $project->setClient(entities\Client::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_CLIENT]));
+                                    $project->setClient(tables\Clients::getTable()->selectById($activerow[self::CSV_PROJECT_CLIENT]));
 
                                 if (isset($activerow[self::CSV_PROJECT_ALLOW_REPORTING]))
                                     $project->setLocked($activerow[self::CSV_PROJECT_ALLOW_REPORTING]);
 
                                 if (isset($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]))
-                                    $project->setIssuetypeScheme(entities\IssuetypeScheme::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]));
+                                    $project->setIssuetypeScheme(tables\IssuetypeSchemes::getTable()->selectById($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]));
 
                                 if (isset($activerow[self::CSV_PROJECT_WORKFLOW_ID]))
                                     ;
-                                $project->setWorkflowScheme(entities\WorkflowScheme::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_WORKFLOW_ID]));
+                                $project->setWorkflowScheme(tables\WorkflowSchemes::getTable()->selectById($activerow[self::CSV_PROJECT_WORKFLOW_ID]));
 
                                 $project->save();
                             } catch (Exception $e) {

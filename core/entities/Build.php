@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\Releaseable;
     use pachno\core\entities\tables\BuildFiles;
+    use pachno\core\entities\tables\Builds;
     use pachno\core\entities\tables\LogItems;
     use pachno\core\framework;
 
@@ -150,7 +151,7 @@
         public static function listen_pachno_core_entities_File_hasAccess(framework\Event $event)
         {
             $file = $event->getSubject();
-            $builds = self::getB2DBTable()->getByFileID($file->getID());
+            $builds = Builds::getTable()->getByFileID($file->getID());
             foreach ($builds as $build) {
                 if ($build->hasAccess()) {
                     $event->setReturnValue(true);

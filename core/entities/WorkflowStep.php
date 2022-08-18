@@ -4,6 +4,7 @@
 
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\WorkflowStepTransitions;
 
     /**
@@ -496,15 +497,7 @@
          */
         public function getLinkedStatus()
         {
-            if (is_numeric($this->_status_id)) {
-                try {
-                    $this->_status_id = Status::getB2DBTable()->selectById($this->_status_id);
-                } catch (Exception $e) {
-                    $this->_status_id = null;
-                }
-            }
-
-            return $this->_status_id;
+            return $this->_b2dbLazyLoad('_status_id');
         }
 
         public function getLinkedStatusID()

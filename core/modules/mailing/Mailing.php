@@ -14,8 +14,10 @@
     use pachno\core\entities\Project;
     use pachno\core\entities\Resolution;
     use pachno\core\entities\Status;
+    use pachno\core\entities\tables\IncomingEmailAccounts;
     use pachno\core\entities\tables\MailQueueTable;
     use pachno\core\entities\tables\Settings;
+    use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use pachno\core\framework\CoreModule;
@@ -360,7 +362,7 @@
             $langs = [];
             foreach ($users as $user) {
                 if (is_numeric($user))
-                    $user = User::getB2DBTable()->selectById($user);
+                    $user = Users::getTable()->selectById($user);
 
                 if ($user instanceof User && $user->getEmail() != '') {
                     $user_language = $user->getLanguage();
@@ -647,7 +649,7 @@ EOT;
             $change_reason = $event->getParameter('reason');
             $revision = $event->getParameter('revision');
             $subject = 'Wiki article updated: %article_name';
-            $user = User::getB2DBTable()->selectById((int)$event->getParameter('user_id'));
+            $user = Users::getTable()->selectById((int)$event->getParameter('user_id'));
             $parameters = compact('article', 'change_reason', 'user', 'revision');
             $to_users = $this->_getArticleRelatedUsers($article, $user);
 
@@ -1416,12 +1418,6 @@ EOT;
 
         protected function _upgrade()
         {
-            switch ($this->_version) {
-                case '1.0':
-                    IncomingEmailAccount::getB2DBTable()->upgrade(PachnoIncomingEmailAccountTable::getTable());
-                    Settings::getTable()->deleteAllUserModuleSettings('mailing');
-                    break;
-            }
         }
 
     }

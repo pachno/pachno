@@ -2,6 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
+    use b2db\Saveable;
+    use pachno\core\entities\Userstate;
     use pachno\core\framework;
 
     /**
@@ -17,8 +20,11 @@
     /**
      * Userstate table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method static UserStates getTable()
+     * @method Userstate[] select(Query $query, $join = 'all')
+     * @method Userstate[] selectAll()
+     * @method Userstate selectOne(Query $query, $join = 'all')
+     * @method Userstate selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="userstate")
      * @Entity(class="\pachno\core\entities\Userstate")
@@ -47,7 +53,10 @@
         public const COLOR = 'userstate.itemdata';
 
         public const ABSENT = 'userstate.is_absent';
-
+    
+        /**
+         * @return Userstate[]
+         */
         public function getAll()
         {
             $query = $this->getQuery();

@@ -448,7 +448,7 @@
          */
         public static function getAdminGroup()
         {
-            return Group::getB2DBTable()->selectByID((int)self::get(self::SETTING_ADMIN_GROUP));
+            return tables\Groups::getTable()->selectByID((int)self::get(self::SETTING_ADMIN_GROUP));
         }
 
         public static function getUserDisplaynameFormat()
@@ -642,7 +642,7 @@
         public static function getDefaultGroup()
         {
             try {
-                return Group::getB2DBTable()->selectByID(self::get(self::SETTING_USER_GROUP));
+                return tables\Groups::getTable()->selectByID(self::get(self::SETTING_USER_GROUP));
             } catch (Exception $e) {
                 return null;
             }
@@ -679,12 +679,12 @@
 
         /**
          * Return the "online" userstate object
-         * @return Userstate
+         * @return ?Userstate
          */
         public static function getOnlineState()
         {
             try {
-                return Userstate::getB2DBTable()->selectByID(self::get(self::SETTING_ONLINESTATE));
+                return tables\UserStates::getTable()->selectByID(self::get(self::SETTING_ONLINESTATE));
             } catch (Exception $e) {
                 return null;
             }
@@ -692,12 +692,12 @@
 
         /**
          * Return the "offline" userstate object
-         * @return Userstate
+         * @return ?Userstate
          */
         public static function getOfflineState()
         {
             try {
-                return Userstate::getB2DBTable()->selectByID(self::get(self::SETTING_OFFLINESTATE));
+                return tables\UserStates::getTable()->selectByID(self::get(self::SETTING_OFFLINESTATE));
             } catch (Exception $e) {
                 return null;
             }
@@ -705,12 +705,12 @@
 
         /**
          * Return the "away" userstate object
-         * @return Userstate
+         * @return ?Userstate
          */
         public static function getAwayState()
         {
             try {
-                return Userstate::getB2DBTable()->selectByID(self::get(self::SETTING_AWAYSTATE));
+                return tables\UserStates::getTable()->selectByID(self::get(self::SETTING_AWAYSTATE));
             } catch (Exception $e) {
                 return null;
             }
