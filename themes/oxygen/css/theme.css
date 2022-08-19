@@ -9819,12 +9819,18 @@ textarea.markItUpEditor:focus {
         color: #FFF;
         padding: .5em 1em;
         background: transparent; }
-        .quicksearch-container .quicksearch-content .quicksearch-results .result-item.selected, .quicksearch-container .quicksearch-content .quicksearch-results .result-item:hover {
+        .quicksearch-container .quicksearch-content .quicksearch-results .result-item:not(.header).selected, .quicksearch-container .quicksearch-content .quicksearch-results .result-item:not(.header):hover {
           cursor: pointer;
           background-color: rgba(255, 255, 255, 0.1); }
+        .quicksearch-container .quicksearch-content .quicksearch-results .result-item.header {
+          font-size: .8em;
+          font-weight: 500;
+          text-transform: uppercase; }
         .quicksearch-container .quicksearch-content .quicksearch-results .result-item .icon {
           flex: 0 0 24px;
           font-size: 1.2em; }
+          .quicksearch-container .quicksearch-content .quicksearch-results .result-item .icon img {
+            width: 1.5em; }
         .quicksearch-container .quicksearch-content .quicksearch-results .result-item .count-badge {
           color: #FFF;
           margin: 0; }

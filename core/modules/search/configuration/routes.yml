@@ -104,15 +104,6 @@ search:
     parameters: [ ]
     csrf_enabled: false
 
-quicksearch:
-    route: '/quicksearch/*'
-    module: search
-    action: findIssues
-    parameters:
-      quicksearch: true
-      issues_per_page: 6
-    csrf_enabled: false
-
 opensearch:
     route: /opensearch.xml
     module: search
@@ -257,15 +248,6 @@ project_issues:
     module: search
     action: findIssues
     parameters: [ ]
-    csrf_enabled: false
-
-project_quicksearch:
-    route: '/:project_key/quicksearch/*'
-    module: search
-    action: findIssues
-    parameters:
-      quicksearch: true
-      issues_per_page: 6
     csrf_enabled: false
 
 project_opensearch:

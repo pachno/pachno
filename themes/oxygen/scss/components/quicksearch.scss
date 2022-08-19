@@ -86,15 +86,27 @@
         padding: .5em 1em;
         background: transparent;
 
-        &.selected,
-        &:hover {
-          cursor: pointer;
-          background-color: rgba(255, 255, 255, .1);
+        &:not(.header) {
+          &.selected,
+          &:hover {
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, .1);
+          }
+        }
+
+        &.header {
+          font-size: .8em;
+          font-weight: $theme-font-weight-bold;
+          text-transform: uppercase;
         }
 
         .icon {
           flex: 0 0 24px;
           font-size: 1.2em;
+
+          img {
+            width: 1.5em;
+          }
         }
 
         .count-badge {

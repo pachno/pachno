@@ -198,6 +198,7 @@
             $criteria->where(self::NAME, "%{$projectname}%", Criterion::LIKE);
             $criteria->or(self::KEY, strtolower("%{$projectname}%"), Criterion::LIKE);
             $query->and($criteria);
+            $query->setLimit(5);
 
             return $this->select($query);
         }

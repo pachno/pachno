@@ -7,11 +7,13 @@
     use pachno\core\entities\tables;
     use pachno\core\framework;
     use pachno\core\framework\Context;
+    use pachno\core\modules\search\Search;
 
     /**
      * actions for the search module
      *
      * @property entities\SavedSearch $search_object
+     * @property entities\Project $selected_project
      */
     class Main extends framework\Action
     {
@@ -227,28 +229,62 @@
         }
 
         /**
-         * Performs quicksearch
+         * Performs project quicksearch
+         *
+         * @Route(name="project_quicksearch", url="/quicksearch/:project_key")
+         * @Parameters(quicksearch=1)
          *
          * @param framework\Request $request The request object
          */
-        public function runQuickSearch(framework\Request $request)
+        public function runProjectQuicksearch(framework\Request $request): framework\JsonOutput
         {
-            if ($this->getUser()->canAccessConfigurationPage()) {
-                $this->found_users = tables\Users::getTable()->findInConfig($this->searchterm, 10, false);
-                $this->found_teams = tables\Teams::getTable()->quickfind($this->searchterm);
-                $this->found_clients = tables\Clients::getTable()->quickfind($this->searchterm);
-                $this->num_users = count($this->found_users);
-                $this->num_teams = count($this->found_teams);
-                $this->num_clients = count($this->found_clients);
+            $this->selected_project = entities\Project::getByKey($request['project_key']);
+            return $this->redirect('quicksearch');
+        }
+
+        /**
+         * Performs quicksearch
+         *
+         * @Route(name="quicksearch", url="/quicksearch")
+         * @Parameters(quicksearch=1)
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runQuicksearch(framework\Request $request): framework\JsonOutput
+        {
+            $searchterm = $request['value'];
+            $results_json = [];
+            
+            if ($this->selected_project instanceof entities\Project) {
+                $this->search_object->setIssuesPerPage(7);
+                $num_issues = $this->search_object->getNumberOfIssues();
+                if ($num_issues) {
+                    $results_json[] = [
+                        'name' => $this->getI18n()->__('Issues (%count of %total)', ['%count' => $num_issues, '%total' => $this->search_object->getTotalNumberOfIssues()]),
+                        'type' => 'is-header'
+                    ];
+                    
+                    foreach ($this->search_object->getIssues() as $issue) {
+                        $results_json[] = Search::getQuicksearchJsonFromIssue($issue);
+                    }
+                }
             }
-            $found_projects = tables\Projects::getTable()->quickfind($this->searchterm);
-            $projects = [];
-            foreach ($found_projects as $project) {
-                if ($project->hasAccess())
-                    $projects[$project->getID()] = $project;
+            
+            $projects = tables\Projects::getTable()->quickfind($searchterm);
+            if (count($projects)) {
+                $results_json[] = [
+                    'name' => $this->getI18n()->__('Projects (%count)', ['%count' => count($projects)]),
+                    'type' => 'is-header'
+                ];
+                
+                foreach ($projects as $project) {
+                    if ($project->hasAccess()) {
+                        $results_json[] = Search::getQuicksearchJsonFromProject($project);
+                    }
+                }
             }
-            $this->found_projects = $projects;
-            $this->num_projects = count($projects);
+            
+            return $this->renderJSON(['data' => ['choices' => $results_json]]);
         }
 
         public function runSaveSearch(framework\Request $request)

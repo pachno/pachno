@@ -60,12 +60,22 @@ class Quicksearch {
                 console.error(choice);
             }
             const choice_description = (choice.description !== undefined) ? `<span class="description">${choice.description}</span>` : '';
-            const choice_icon = (choice.icon !== undefined) ? `<span class="icon">${UI.fa_image_tag(choice.icon.name, {}, choice.icon.type)}</span>` : '';
+            let choice_icon;
+            if (choice.icon_url !== undefined) {
+                choice_icon = `<span class="icon"><img src="${choice.icon_url}"></span>`;
+            } else if (choice.icon !== undefined && choice.icon.fa_icon !== undefined) {
+                choice_icon = `<span class="icon">${UI.fa_image_tag(choice.icon.fa_icon, { classes: `issuetype-icon issuetype-${choice.icon.icon}` })}</span>`;
+            } else {
+                choice_icon = (choice.icon !== undefined) ? `<span class="icon">${UI.fa_image_tag(choice.icon.name, {}, choice.icon.type)}</span>` : '';
+            }
+            const shortcut = (choice.shortcut !== undefined) ? `<span class="count-badge">${choice.shortcut}</span>` : '';
+            const header_class = (choice.type === TYPES.header) ? 'header' : '';
+
             const html = `
-            <div class="result-item" data-shortcut="${choice.shortcut}">
+            <div class="result-item ${header_class}" data-shortcut="${choice.shortcut}">
                 ${choice_icon}
                 <span class="name">
-                    <span class="title"><span class="count-badge">${choice.shortcut}</span><span>${choice.name}</span></span>
+                    <span class="title">${shortcut}<span>${choice.name}</span></span>
                     ${choice_description}
                 </span>
             </div>
@@ -127,22 +137,45 @@ class Quicksearch {
         Pachno.trigger(event, event_value);
     }
 
-    navigateNextChoice() {
+    navigateNextChoice(start_index) {
+        if (start_index === undefined) {
+            start_index = this.highlighted_choice;
+        }
         if (this.highlighted_choice === undefined || this.highlighted_choice == this.visible_choices.length - 1) {
             this.highlighted_choice = 0;
         } else {
             this.highlighted_choice += 1;
         }
+        const choice = this.visible_choices[this.highlighted_choice];
+        if (this.highlighted_choice !== start_index) {
+            if (choice.type === TYPES.header || choice.type === TYPES.disabled) {
+                this.navigateNextChoice(start_index);
+            }
+        } else {
+            this.highlighted_choice = undefined;
+        }
         this.updateHighlightedChoice();
     }
 
-    navigatePreviousChoice() {
+    navigatePreviousChoice(start_index) {
+        if (start_index === undefined) {
+            start_index = this.highlighted_choice;
+        }
         if (this.highlighted_choice === undefined) {
             this.highlighted_choice = this.visible_choices.length - 1;
         } else if (this.highlighted_choice == 0) {
             this.highlighted_choice = undefined;
         } else {
             this.highlighted_choice -= 1;
+        }
+
+        if (this.highlighted_choice !== undefined) {
+            const choice = this.visible_choices[this.highlighted_choice];
+            if (this.highlighted_choice !== start_index) {
+                if (choice.type === TYPES.header || choice.type === TYPES.disabled) {
+                    this.navigatePreviousChoice(start_index);
+                }
+            }
         }
         this.updateHighlightedChoice();
     }
@@ -176,6 +209,10 @@ class Quicksearch {
 
             const choice = this.visible_choices[index];
 
+            if (choice.shortcut === undefined) {
+                continue;
+            }
+
             if (value.startsWith(choice.shortcut)) {
                 this.highlighted_choice = parseInt(index);
                 found = true;
@@ -189,6 +226,9 @@ class Quicksearch {
                     this.selected_choice = choice.previous_choice;
                     this.highlighted_choice = undefined;
                     found = true;
+                    if (this.selected_choice.action.type === TYPES.dynamic_search && value.substring(this.selected_choice.shortcut.length).trim() != '') {
+                        this.loadDynamicChoicesFromInput();
+                    }
                     break;
                 }
             }
@@ -196,7 +236,18 @@ class Quicksearch {
 
         if (!found) {
             this.highlighted_choice = undefined;
-            this.selected_choice = (this.selected_choice !== undefined) ? this.selected_choice.previous_choice : undefined;
+            if (this.selected_choice !== undefined && this.selected_choice.action.type === TYPES.dynamic_search) {
+                if (remove) {
+                    if (value.startsWith(this.selected_choice.shortcut)) {
+                        this.loadDynamicChoicesFromInput();
+                    } else {
+                        this.selected_choice.choices = [];
+                        this.selected_choice = undefined;
+                    }
+                }
+            } else {
+                this.selected_choice = (this.selected_choice !== undefined) ? this.selected_choice.previous_choice : undefined;
+            }
             if (remove) {
                 if (this.selected_choice !== undefined && this.selected_choice.choices) {
                     this.visible_choices = this.selected_choice.choices;
@@ -223,7 +274,7 @@ class Quicksearch {
 
         let value = this.$input.val();
         if (this.$input.val().startsWith(this.selected_choice.shortcut)) {
-            value = value.substr(this.selected_choice.shortcut.length - 1);
+            value = value.substring(this.selected_choice.shortcut.length);
         }
         let quicksearch = this;
 
@@ -250,6 +301,21 @@ class Quicksearch {
         }
     }
 
+    loadDynamicChoicesFromInput() {
+        const url = this.selected_choice.action.url;
+        const val = this.$input.val().substring(this.selected_choice.shortcut.length).trim();
+        return new Promise((resolve, reject) => {
+            Pachno.fetch(url, {
+                data: `value=${val}`
+            }).then((json) => {
+                Pachno.trigger(Pachno.EVENTS.quicksearchUpdateDynamicSearchChoices, json.data.choices);
+            }).catch((e) => {
+                console.error('Quicksearch error', e);
+                reject(e);
+            })
+        });
+    }
+
     getHighlightedChoice() {
         if (this.highlighted_choice === undefined)
             return;
@@ -264,7 +330,7 @@ class Quicksearch {
         if (highlightedChoice !== undefined && (this.selected_choice === undefined || this.selected_choice.shortcut !== highlightedChoice.shortcut)) {
             const value = this.$input.val().trim();
             if (this.selected_choice !== undefined && value !== this.selected_choice.shortcut && value.startsWith(this.selected_choice.shortcut)) {
-                this.$input.val(this.$input.val().substr(this.selected_choice.shortcut.length));
+                this.$input.val(this.$input.val().substring(this.selected_choice.shortcut.length));
             }
             this.selected_choice = highlightedChoice;
             changed = true;
@@ -276,7 +342,7 @@ class Quicksearch {
     selectHighlightedChoiceOrExecute() {
         const changed = this.selectHighlightedChoice(true);
 
-        if ([TYPES.navigate, TYPES.event].includes(this.selected_choice.type) || !changed) {
+        if ([TYPES.navigate, TYPES.event, TYPES.dynamic_search].includes(this.selected_choice.type) || !changed) {
             this.execute();
         } else {
             this.updateSelectedChoice();
@@ -355,6 +421,11 @@ class Quicksearch {
                 default:
                     quicksearch.updateHighlightedChoiceFromInput();
                     console.log(event.key);
+                    if (quicksearch.selected_choice !== undefined) {
+                        if (quicksearch.selected_choice.action.type == TYPES.dynamic_search) {
+                            quicksearch.loadDynamicChoicesFromInput();
+                        }
+                    }
                     // case ''
             }
         });
@@ -373,6 +444,17 @@ class Quicksearch {
 
         Pachno.on(Pachno.EVENTS.quicksearchTrigger, function (Pachno, data) {
             quicksearch.show(data.default_value, data.choices);
+        });
+        Pachno.on(Pachno.EVENTS.quicksearchUpdateDynamicSearchChoices, function (Pachno, choices) {
+            quicksearch.highlighted_choice = undefined;
+            quicksearch.selected_choice.choices = choices;
+            for (const index in quicksearch.selected_choice.choices) {
+                if (quicksearch.selected_choice.choices.hasOwnProperty(index)) {
+                    quicksearch.selected_choice.choices[index].previous_choice = quicksearch.selected_choice;
+                }
+            }
+            quicksearch.visible_choices = quicksearch.selected_choice.choices;
+            quicksearch.showChoices();
         });
         Pachno.on(Pachno.EVENTS.quicksearchUpdateChoices, function (Pachno, choices) {
             quicksearch.highlighted_choice = undefined;
@@ -405,5 +487,8 @@ export const TYPES = {
     navigate: 'navigate',
     event: 'event',
     backdrop: 'trigger-backdrop',
-    dynamic_choices: 'dynamic-choices'
+    header: 'is-header',
+    disabled: 'is-disabled',
+    dynamic_choices: 'dynamic-choices',
+    dynamic_search: 'dynamic-search'
 };

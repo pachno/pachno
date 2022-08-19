@@ -102,6 +102,7 @@ class PachnoApplication {
             quicksearchTrigger: 'quicksearch-trigger',
             quicksearchAddDefaultChoice: 'quicksearch-add-default-choice',
             quicksearchUpdateChoices: 'quicksearch-update-choices',
+            quicksearchUpdateDynamicSearchChoices: 'quicksearch-update-dynamic-search-choices',
             comment: {
                 remove: 'comment-remove'
             }
@@ -166,8 +167,8 @@ class PachnoApplication {
             name: 'Find something',
             description: 'Search through issues, projects, documentation and people',
             action: {
-                type: QuicksearchTypes.navigate,
-                url: '/account'
+                type: QuicksearchTypes.dynamic_search,
+                url: options.autocompleterUrl
             }
         });
         this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
@@ -176,8 +177,8 @@ class PachnoApplication {
             name: 'Show an issue',
             description: 'Go directly to an issue',
             action: {
-                type: QuicksearchTypes.event,
-                event: '/find'
+                type: QuicksearchTypes.dynamic_search,
+                url: '/find'
             }
         });
 

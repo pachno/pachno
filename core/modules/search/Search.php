@@ -2,10 +2,40 @@
 
     namespace pachno\core\modules\search;
 
+    use pachno\core\entities\Issue;
+    use pachno\core\entities\Project;
     use pachno\core\framework;
 
     class Search extends framework\CoreModule
     {
+    
+        /**
+         * @param Project $project
+         * @return array
+         */
+        public static function getQuicksearchJsonFromProject(Project $project)
+        {
+            return [
+                'icon_url' => $project->getIconName(),
+                'name' => $project->getName(),
+                'type' => 'navigate',
+                'url' => framework\Context::getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()])
+            ];
+        }
+
+        /**
+         * @param Issue $issue
+         * @return array
+         */
+        public static function getQuicksearchJsonFromIssue(Issue $issue)
+        {
+            return [
+                'icon' => $issue->getIssueType()->toJSON(false),
+                'name' => $issue->getFormattedTitle(true),
+                'type' => 'navigate',
+                'url' => $issue->getUrl()
+            ];
+        }
 
         /**
          * Header "Publish" page names

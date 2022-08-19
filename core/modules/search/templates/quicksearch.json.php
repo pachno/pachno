@@ -1,11 +1,15 @@
 <?php
-
-    $issues_array = array();
-    if ($issues)
-    {
-        foreach ($issues as $issue)
-        {
-            $issues_array[] = $issue->getFormattedTitle(true);
+    
+    use pachno\core\entities\Project;
+    
+    /**
+     * @var Project[] $projects
+     */
+    
+    $results_json = [];
+    if ($projects) {
+        foreach ($projects as $project) {
+            $results_json[] = \pachno\core\modules\search\Search::getQuicksearchJsonFromProject($project);
         }
     }
-    echo json_encode(array($searchterm, $issues_array));
+    echo json_encode($results_json);

@@ -264,7 +264,7 @@
          *
          * @return SavedSearch
          */
-        public static function getFromRequest(framework\Request $request)
+        public static function getFromRequest(framework\Request $request, $is_quicksearch = false)
         {
             $search = null;
             $search_id = ($request['saved_search_id']) ? $request['saved_search_id'] : $request['saved_search'];
@@ -272,13 +272,13 @@
                 $search = tables\SavedSearches::getTable()->selectById($search_id);
             } else {
                 $search = new SavedSearch();
-                $search->setValuesFromRequest($request);
+                $search->setValuesFromRequest($request, $is_quicksearch);
             }
 
             return $search;
         }
 
-        public function setValuesFromRequest(framework\Request $request)
+        public function setValuesFromRequest(framework\Request $request, $is_quicksearch = false)
         {
             if ($request->hasParameter('predefined_search')) {
                 $this->setPredefinedVariables($request['predefined_search']);
@@ -289,11 +289,13 @@
                 $this->_issues_per_page = (in_array($request->getRequestedFormat(), ['csv', 'xlsx', 'ods'])) ? 0 : $request->getParameter('issues_per_page', 50);
                 $this->_offset = $request->getParameter('offset', 0);
 
-                if ($request['quicksearch']) {
+                if ($request['quicksearch'] || $is_quicksearch) {
                     $this->setSortFields([tables\Issues::LAST_UPDATED => 'desc']);
 
                     if ($request['term']) {
                         $request->setParameter('fs', ['text' => ['v' => $request['term'], 'o' => '=']]);
+                    } elseif ($request['value']) {
+                        $request->setParameter('fs', ['text' => ['v' => $request['value'], 'o' => '=']]);
                     }
                 }
 
