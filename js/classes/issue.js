@@ -268,7 +268,10 @@ class Issue {
         });
 
         $body.off('click', `.editable[data-editable-field][data-issue-id="${this.id}"]`);
-        $body.on('click', `.editable[data-editable-field][data-issue-id="${this.id}"]`, function () {
+        $body.on('click', `.editable[data-editable-field][data-issue-id="${this.id}"]`, function (event) {
+            if (event.target.tagName.toLowerCase() === 'a') {
+                return;
+            }
             const $element = $(this);
             issue.triggerEditField($element.data('field'));
         });
