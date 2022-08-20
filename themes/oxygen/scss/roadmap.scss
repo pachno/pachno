@@ -220,17 +220,25 @@
           }
 
           .attachments {
-            padding: .25em .5em;
             border-radius: .25em;
             align-items: center;
             justify-content: flex-start;
             display: flex;
             flex-direction: row;
-            background: rgba(200, 200, 200, .2);
+
+            &:not(.issuetype-icon-container) {
+              padding: .25em .5em;
+              background: rgba(200, 200, 200, .2);
+              margin-right: .5em;
+            }
+            &.issuetype-icon-container {
+              padding: .25em 0;
+              margin-right: 0;
+            }
+
             color: $theme-text-color-lighter;
             font-size: .9em;
             font-weight: $theme-font-weight-regular;
-            margin-right: .5em;
 
             &.hidden {
               display: none;
@@ -240,6 +248,10 @@
             .far {
               + span {
                 margin-left: .25em;
+              }
+
+              &.issuetype-icon {
+                margin-right: 0;
               }
             }
           }

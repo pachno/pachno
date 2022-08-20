@@ -1,6 +1,7 @@
 <div id="issue_{{ issue.id }}" class="trigger-backdrop milestone-issue {% if issue.closed %}issue_closed{% endif %} {% if issue.blocking %}issue_blocking{% endif %} draggable" data-url="{{ issue.card_url }}" data-issue data-issue-id="{{ issue.id }}">
     <div class="issue-link-container">
         <a href="{{ issue.url }}" target="_blank">
+            {{ UI.fa_image_tag(issue.issue_type.fa_icon, {'classes': 'icon issuetype-icon issuetype-' + issue.issue_type.type }) | safe }}
             <span class="issue-number">{{ issue.issue_no }}</span>
             <span class="issue-title" data-dynamic-field-value data-field="title" data-issue-id="{{ issue.id }}">{{ issue.title }}</span>
         </a>

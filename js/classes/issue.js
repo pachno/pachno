@@ -949,7 +949,9 @@ class Issue {
         let priority_icon = (this.priority) ? UI.fa_image_tag(this.priority.icon.name, { classes: 'priority-icon' }, this.priority.icon.style) : '';
         let priority_class = (this.priority) ? `priority priority_${this.priority.itemdata}` : '';
         let priority_span = (this.priority) ? `<span class="${priority_class}" title="${this.priority.name}">${priority_icon}</span>` : '';
+        let issuetype_span = `${UI.fa_image_tag(this.issue_type.fa_icon, {classes: `icon issuetype-icon issuetype-${this.issue_type.type}`})}`;
 
+        $info.append(`<span class="attachments issuetype-icon-container" data-dynamic-field-value data-field="issuetype-icon" title="${this.issue_type.name}" data-issue-id="${this.id}"><span class="value">${issuetype_span}</span></span>`);
         $info.append(`<span class="attachments ${child_issues_hidden_class}" data-dynamic-field-value data-field="number_of_child_issues" data-issue-id="${this.id}">${UI.fa_image_tag('tasks')}<span class="value">${this.number_of_child_issues}</span></span>`);
         $info.append(`<span class="attachments ${files_hidden_class}" data-dynamic-field-value data-field="number_of_files" data-issue-id="${this.id}">${UI.fa_image_tag('paperclip')}<span class="value">${this.number_of_files}</span></span>`);
         $info.append(`<span class="attachments ${comments_hidden_class}" data-dynamic-field-value data-field="number_of_comments" data-issue-id="${this.id}">${UI.fa_image_tag('comments', [], 'far')}<span class="value">${this.number_of_comments}</span></span>`);

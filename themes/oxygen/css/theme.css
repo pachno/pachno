@@ -10596,8 +10596,8 @@ textarea.markItUpEditor:focus {
     .whiteboard-issue .issue-info .fas,
     .whiteboard-issue .issue-info .far {
       font-size: .9em; }
-      .whiteboard-issue .issue-info .fas:not(.priority-icon),
-      .whiteboard-issue .issue-info .far:not(.priority-icon) {
+      .whiteboard-issue .issue-info .fas:not(.priority-icon):not(.issuetype-icon),
+      .whiteboard-issue .issue-info .far:not(.priority-icon):not(.issuetype-icon) {
         color: #ABABAB;
         margin-right: .25em; }
     .whiteboard-issue .issue-info > span {
@@ -10925,8 +10925,8 @@ textarea.markItUpEditor:focus {
   .milestone-issue .issue-info .fas,
   .milestone-issue .issue-info .far {
     font-size: .9em; }
-    .milestone-issue .issue-info .fas:not(.priority-icon),
-    .milestone-issue .issue-info .far:not(.priority-icon) {
+    .milestone-issue .issue-info .fas:not(.priority-icon):not(.issuetype-icon),
+    .milestone-issue .issue-info .far:not(.priority-icon):not(.issuetype-icon) {
       color: #ABABAB;
       margin-right: .25em; }
   .milestone-issue .issue-info .attachments {
@@ -10936,11 +10936,12 @@ textarea.markItUpEditor:focus {
     justify-content: flex-start;
     display: flex;
     flex-direction: row;
-    background: rgba(200, 200, 200, 0.2);
     color: #676767;
     font-size: .9em;
     font-weight: 400;
     margin-right: .5em; }
+    .milestone-issue .issue-info .attachments:not(.issuetype-icon-container) {
+      background: rgba(200, 200, 200, 0.2); }
     .milestone-issue .issue-info .attachments.hidden {
       display: none; }
     .milestone-issue .issue-info .attachments .fas + span,
@@ -11127,22 +11128,29 @@ textarea.markItUpEditor:focus {
           .milestone-container .milestone-card .issues .milestone-issue .issue-info:empty {
             padding: 0; }
           .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments {
-            padding: .25em .5em;
             border-radius: .25em;
             align-items: center;
             justify-content: flex-start;
             display: flex;
             flex-direction: row;
-            background: rgba(200, 200, 200, 0.2);
             color: #676767;
             font-size: .9em;
-            font-weight: 400;
-            margin-right: .5em; }
+            font-weight: 400; }
+            .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments:not(.issuetype-icon-container) {
+              padding: .25em .5em;
+              background: rgba(200, 200, 200, 0.2);
+              margin-right: .5em; }
+            .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments.issuetype-icon-container {
+              padding: .25em 0;
+              margin-right: 0; }
             .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments.hidden {
               display: none; }
             .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments .fas + span,
             .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments .far + span {
               margin-left: .25em; }
+            .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments .fas.issuetype-icon,
+            .milestone-container .milestone-card .issues .milestone-issue .issue-info .attachments .far.issuetype-icon {
+              margin-right: 0; }
           .milestone-container .milestone-card .issues .milestone-issue .issue-info .status-badge {
             padding: .3em .5em; }
           .milestone-container .milestone-card .issues .milestone-issue .issue-info .assignee {
