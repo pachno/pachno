@@ -2199,20 +2199,19 @@ li.milestone_issue.included
   line-height: 1em; }
 
 .priority.priority_1 {
-  color: #bf0303;
+  color: #C30000;
   font-style: normal;
-  font-weight: 400; }
+  font-weight: 500; }
 
-.priority.priority_2,
-.priority.priority_3 {
-  color: #c39500;
-  font-weight: 400; }
+.priority.priority_2 {
+  color: #FA0;
+  font-weight: 500; }
 
-.priority.priority_4 {
-  color: #00892c;
-  font-weight: 400; }
+.priority.priority_4,
+.priority.priority_5 {
+  color: #070;
+  font-weight: 500; }
 
-.priority.priority_5,
 .priority.priority_6 {
   color: #888;
   font-weight: 400; }
@@ -8490,6 +8489,9 @@ nav.sidebar {
   .search-results h5.priority_4,
   .search-results h5.priority_5 {
     font-weight: 500; }
+  .search-results h5.priority_6 {
+    color: #888;
+    font-weight: 400; }
   .search-results .yellow_borderless .user_pain {
     color: #B6aC6D; }
   .search-results .user_pain,
@@ -10959,6 +10961,8 @@ textarea.markItUpEditor:focus {
       margin-left: 1em; }
   .milestone-issue .issue-info .assignee {
     margin-left: auto; }
+    .milestone-issue .issue-info .assignee.no-value {
+      display: none; }
 
 .board-backlog-container {
   flex: 1 1 auto;
@@ -11806,6 +11810,9 @@ textarea.markItUpEditor:focus {
     .viewissue-container .issue-card .issue-fields .affected-list {
       padding: 0 .25em .75em .75em;
       box-sizing: border-box; }
+    .viewissue-container .issue-card .issue-fields .commits-list {
+      padding: 0 .25em .75em .75em;
+      box-sizing: border-box; }
   .viewissue-container .issue-card .fancy-tabs {
     flex: 0 0 auto;
     align-self: flex-end; }
@@ -12482,7 +12489,8 @@ dl.info {
     display: flex;
     align-items: flex-start;
     margin-left: 2rem;
-    position: relative; }
+    position: relative;
+    border-radius: .5em; }
     .recent-activities .log-item::before {
       content: '';
       display: block;
@@ -12492,27 +12500,33 @@ dl.info {
       position: absolute;
       top: 0;
       left: -17px; }
+    .recent-activities .log-item:hover {
+      background-color: rgba(225, 225, 225, 0.2); }
+      .recent-activities .log-item:hover::before {
+        background-color: #0cd8b6; }
     .recent-activities .log-item .user-icon {
       padding-top: .5rem;
       flex: 0 0 40px;
       display: flex;
       align-items: flex-start;
       justify-content: flex-start; }
-    .recent-activities .log-item.without-title .time {
-      display: none; }
     .recent-activities .log-item.without-title .user-icon img {
       display: none; }
-    .recent-activities .log-item.without-title + .log-item:not(.without-title) {
-      padding-top: 1.5rem; }
+    .recent-activities .log-item.without-title + .log-item:not(.without-title) .user-icon,
+    .recent-activities .log-item.without-title + .log-item:not(.without-title) .content {
+      margin-top: 1.5rem; }
     .recent-activities .log-item .content {
       display: flex;
-      flex-direction: column; }
+      flex-direction: column;
+      align-items: stretch;
+      flex: 1 1 auto; }
       .recent-activities .log-item .content .title-container {
         display: flex;
         align-items: center; }
         .recent-activities .log-item .content .title-container .issue-link,
         .recent-activities .log-item .content .title-container .issue-link:hover {
           display: flex;
+          flex: 1 1 auto;
           align-items: center;
           color: #141823;
           border: none;
