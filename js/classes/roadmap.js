@@ -33,7 +33,7 @@ class Roadmap {
 
         Pachno.on(Pachno.EVENTS.formSubmitResponse, (Pachno, data) => {
             const found_milestone = this.milestones.find(milestone => milestone.id == data.json.milestone.id);
-            debugger;
+            // debugger;
             if (found_milestone === undefined) {
                 const milestone = new Milestone(data.json.milestone);
                 roadmap.milestones.push(milestone);

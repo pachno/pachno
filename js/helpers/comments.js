@@ -102,7 +102,7 @@ const setupListeners = function() {
     Pachno.on(Pachno.EVENTS.issue.updateJson, function (PachnoApplication, data) {
         const issue_json = (data.json.issue !== undefined) ? data.json.issue : data.json;
 
-        debugger;
+        // debugger;
         if ($('#comments_box[data-target-type=' + TARGET_TYPES.issue + '][data-target-id=' + issue_json.id + ']').length == 0) {
             return;
         }
