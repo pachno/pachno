@@ -207,6 +207,9 @@ const initializeEasyMde = function () {
         }],
         uploadImage: true,
         imageUploadEndpoint: $editor_element.data('upload-url'),
+        insertTexts: {
+            image: ["![](http://", ")"],
+        },
         toolbar: [
             "heading", "bold", "italic",
             "|",

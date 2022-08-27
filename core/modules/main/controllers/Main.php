@@ -2341,7 +2341,10 @@
 
                     $json = [
                         'success' => 1,
-                        'file' => $saved_file->toJSON()
+                        'file' => $saved_file->toJSON(),
+                        'data' => [
+                            'filePath' => $saved_file->getURL()
+                        ]
                     ];
                     if ($request['issue_id']) {
                         $issue = Issues::getTable()->selectById($request['issue_id']);
