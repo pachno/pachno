@@ -171,16 +171,16 @@ class PachnoApplication {
                 url: options.autocompleterUrl
             }
         });
-        this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
-            icon: { name: 'search', type: 'fas'},
-            shortcut: 'show',
-            name: 'Show an issue',
-            description: 'Go directly to an issue',
-            action: {
-                type: QuicksearchTypes.dynamic_search,
-                url: '/find'
-            }
-        });
+        // this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
+        //     icon: { name: 'search', type: 'fas'},
+        //     shortcut: 'show',
+        //     name: 'Show an issue',
+        //     description: 'Go directly to an issue',
+        //     action: {
+        //         type: QuicksearchTypes.dynamic_search,
+        //         url: '/find'
+        //     }
+        // });
 
         if (this.debug) {
             this.debugger = new Debugger(options.debugUrl);
