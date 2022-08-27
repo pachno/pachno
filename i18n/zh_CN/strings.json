@@ -1,0 +1,93 @@
+{
+  "ui": {
+    "yes": "是",
+    "no": "否",
+    "cancel": "取消"
+  },
+  "common": {
+    "mentions": {
+      "user_search_placeholder": "請輸入以搜尋"
+    },
+    "editorjs": {
+      "tools": {
+        "code": "Code block (auto-detect language)",
+        "codeMirror": "Code block (specify language)",
+        "alert": {
+          "title": "Highlighted message",
+          "placeholder": "Enter a message here to highlight it"
+        }
+      }
+    }
+  },
+  "agile": {
+    "add_card": "新增看板",
+    "add_card_here": "於這裡新增看板",
+    "add_swimlane": "Add a swimlane",
+    "delete_column": {
+      "title": "Delete column?",
+      "message": "Issues will not be removed, but may no longer appear on the board. Add a new column to the board with the statuses of this column to make these issues appear again.",
+      "button": "Yes, delete column"
+    },
+    "no_milestone_label": "Issues not assigned to a milestone",
+    "choose_sprint_label": "Choose a sprint",
+    "backlog": {
+      "generic": {
+        "no_issues": "No issues are assigned to this milestone",
+        "no_issues_filtered": "No issues assigned to this milestone matches selected filters",
+        "milestone": {
+          "delete_title": "Do you really want to delete this milestone?",
+          "delete_message": "Removing this milestone will unassign all issues from this milestone and remove it from all available lists. This action cannot be undone."
+        }
+      },
+      "kanban": {
+        "no_issues": "No issues are assigned to this milestone",
+        "no_issues_filtered": "No issues assigned to this milestone matches selected filters",
+        "milestone": {
+          "delete_title": "Do you really want to delete this milestone?",
+          "delete_message": "Removing this milestone will unassign all issues from this milestone and remove it from all available lists. This action cannot be undone."
+        }
+      },
+      "scrum": {
+        "no_issues": "There are no issues in this sprint",
+        "no_issues_filtered": "No issues in this sprint matches selected filters",
+        "milestone": {
+          "delete_title": "Do you really want to delete this sprint?",
+          "delete_message": "Deleting this sprint will remove all issues in this sprint and put them in the backlog. This action cannot be undone."
+        }
+      },
+      "milestone_unscheduled": "Unscheduled",
+      "milestone_header_issues": "Issues",
+      "milestone_header_points": "Points",
+      "milestone_header_hours": "Hours",
+      "milestone_header_show_issues": "Show issues",
+      "milestone_show_overview": "Show overview",
+      "milestone_mark_as_finished": "Mark as finished",
+      "milestone_edit": "Edit",
+      "milestone_delete": "Delete",
+      "milestone_issues_error": "The list of issues could not be loaded"
+    }
+  },
+  "issue": {
+    "value_not_set": "未設定值",
+    "unknown_value": "未知的值",
+    "time_spent_none": "No time spent",
+    "time_estimated_none": "Not estimated",
+    "go_to_converted_issue": {
+      "title": "Go to the new issue?",
+      "message": "Do you want to navigate to the issue that you just converted?"
+    }
+  },
+  "roadmap": {
+    "percent_complete": "已完成百份比",
+    "number_of_issues": "%count issue(s)"
+  },
+  "configuration": {
+    "update_available": {
+      "header": "Pachno %version is available",
+      "content": "An updated version of Pachno is available! Do you want to open the pach.no website to read more about version %version"
+    },
+    "up_to_date": {
+      "message": "Pachno is up to date"
+    }
+  }
+}
