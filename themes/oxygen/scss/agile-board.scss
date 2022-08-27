@@ -1296,6 +1296,10 @@
 
     .assignee {
       margin-left: auto;
+
+      &.no-value {
+        display: none;
+      }
     }
   }
 }

@@ -1,47 +1,40 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
 
+const loadComments = function(target_type, target_id) {
+    Pachno.fetch(Pachno.data_url + '&say=loadcomments&target_type='+target_type+'&target_id='+target_id, {
+        method: 'GET',
+        loading: {
+            indicator: '#comments_loading_indicator'
+        }}).then((json) => {
+            $('#comments_box[data-target-type=' + target_type + '][data-target-id=' + target_id + ']').html(json.comments);
+        });
+};
+
 const toggleOrder = function (event) {
     const $element = $(this);
     const target_type = $element.data('target-type');
     const target_id = $element.data('target-id');
     Pachno.fetch(Pachno.data_url, {
-        method: 'POST',
-        loading: {
-            indicator: '#comments_loading_indicator'
-        },
-        params: '&say=togglecommentsorder'
+            method: 'POST',
+            data: { say: 'togglecommentsorder' }
         })
-        .then(() => {
-            Pachno.fetch(Pachno.data_url, {
-                method: 'GET',
-                loading: {
-                    indicator: '#comments_loading_indicator'
-                },
-                params: '&say=loadcomments&target_type='+target_type+'&target_id='+target_id,
-                success: {
-                    callback: function (json) {
-                        $('#comments_box').html(json.comments);
-                    }
-                }
-            });
-        });
+        .then(() => loadComments(target_type, target_id));
 };
 
 const removeComment = function (PachnoApplication, data) {
-    const { url, comment_id, commentcount_span } = data;
-    $('#dialog_indicator').show();
+    const { url, id, count_element } = data;
+    Pachno.UI.Dialog.setSubmitting();
     Pachno.fetch(url, {
         method: 'DELETE'
     })
     .then(function (json) {
-        $('#comment_' + comment_id).remove();
+        $('#comment_' + id).remove();
         Pachno.UI.Dialog.dismiss();
         $('#dialog_indicator').hide();
         if ($('#comments_box').children().length == 0) {
             $('#comments-list-none').show();
         }
-        $(commentcount_span).html($('#comments_box').children().length);
     });
 };
 
@@ -106,6 +99,37 @@ const setupListeners = function() {
 
     Pachno.on(Pachno.EVENTS.formSubmitResponse, addOrUpdateComment);
     Pachno.on(Pachno.EVENTS.comment.remove, removeComment);
+    Pachno.on(Pachno.EVENTS.issue.updateJson, function (PachnoApplication, data) {
+        const issue_json = (data.json.issue !== undefined) ? data.json.issue : data.json;
+
+        debugger;
+        if ($('#comments_box[data-target-type=' + TARGET_TYPES.issue + '][data-target-id=' + issue_json.id + ']').length == 0) {
+            return;
+        }
+
+        let missing = false;
+        for (const comment_id in issue_json.comments) {
+            if (!issue_json.comments.hasOwnProperty(comment_id)) {
+                continue;
+            }
+
+            const comment = issue_json.comments[comment_id];
+            if ($('#comment_view_' + comment.id).length == 0) {
+                missing = true;
+                break;
+            }
+        }
+
+        if (missing) {
+            $('#comments-list-none').remove();
+            loadComments(TARGET_TYPES.issue, issue_json.id);
+        }
+    });
+}
+
+export const TARGET_TYPES = {
+    issue: 1,
+    article: 2
 }
 
 export {

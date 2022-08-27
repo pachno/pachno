@@ -61,6 +61,6 @@
         <?= __('Post a comment and get things done'); ?>
     </div>
 </div>
-<div id="comments_box">
+<div id="comments_box" data-target-type="<?= $target_type; ?>" data-target-id="<?= $target_id; ?>">
     <?php include_component('main/commentlist', $comment_options); ?>
 </div>
