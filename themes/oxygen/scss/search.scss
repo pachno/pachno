@@ -326,13 +326,13 @@
 
   .priority_1 .column.sc_priority,
   h5.priority_1 {
-    color: #C30000;
+    color: $theme-color-priority-1;
     font-weight: $theme-font-weight-bold;
   }
 
   .priority_2 .column.sc_priority,
   h5.priority_2 {
-    color: #FA0;
+    color: $theme-color-priority-2;
     font-weight: $theme-font-weight-bold;
   }
 
@@ -340,13 +340,18 @@
   h5.priority_4,
   .priority_5 .column.sc_priority,
   h5.priority_5 {
-    color: #070;
+    color: $theme-color-priority-4;
     font-weight: $theme-font-weight-regular;
   }
 
   h5.priority_4,
   h5.priority_5 {
     font-weight: $theme-font-weight-bold;
+  }
+
+  h5.priority_6 {
+    color: $theme-color-priority-6;
+    font-weight: $theme-font-weight-regular;
   }
 
   .yellow_borderless {

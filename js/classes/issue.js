@@ -963,7 +963,7 @@ class Issue {
 
         if (this.assigned_to !== undefined && this.assigned_to !== null) {
             if (this.assigned_to.type == 'user') {
-                $info.append(`<span class="assignee" data-dynamic-field-value data-field="assigned_to" data-issue-id="${this.id}"><span class="avatar medium"><img src="${this.assigned_to.avatar_url_small}"></span></span>`)
+                $info.append(`<span class="assignee" data-dynamic-field-value data-field="assigned_to" data-issue-id="${this.id}"><span class="userlink trigger-backdrop" data-url="${this.assigned_to.card_url}"><span class="avatar medium"><img src="${this.assigned_to.avatar_url_small}"></span><span class="name">${this.assigned_to.name}</span></span></span>`)
             }
         }
         return $html;

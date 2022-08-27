@@ -2382,23 +2382,22 @@ table.issue_affects td img {
 }
 
 .priority.priority_1 {
-  color: #bf0303;
+  color: $theme-color-priority-1;
   font-style: normal;
-  font-weight: $theme-font-weight-regular;
+  font-weight: $theme-font-weight-bold;
 }
 
-.priority.priority_2,
-.priority.priority_3 {
-  color: #c39500;
-  font-weight: $theme-font-weight-regular;
+.priority.priority_2 {
+  color: $theme-color-priority-2;
+  font-weight: $theme-font-weight-bold;
 }
 
-.priority.priority_4 {
-  color: #00892c;
-  font-weight: $theme-font-weight-regular;
+.priority.priority_4,
+.priority.priority_5 {
+  color: $theme-color-priority-4;
+  font-weight: $theme-font-weight-bold;
 }
 
-.priority.priority_5,
 .priority.priority_6 {
   color: #888;
   font-weight: $theme-font-weight-regular;

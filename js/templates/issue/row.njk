@@ -13,7 +13,7 @@
                 <div class="issue_component">{{ component.version }}</div>
             {% endfor %}
             <div class="assignee-container">
-                <span class="assignee" data-dynamic-field-value data-field="assigned_to" data-issue-id="{{ issue.id }}">{% if (issue.assigned_to and issue.assigned_to.type == "user") %}<span class="avatar medium"><img src="{{ issue.assigned_to.avatar_url_small }}"></span>{% endif %}</span>
+                <span class="assignee" data-dynamic-field-value data-field="assigned_to" data-issue-id="{{ issue.id }}">{% if (issue.assigned_to and issue.assigned_to.type == "user") %}<span class="avatar medium"><img src="{{ issue.assigned_to.avatar_url_small }}"></span><span class="name">{{ issue.assigned_to.name }}</span>{% endif %}</span>
             </div>
             <span class="attachments {% if issue.number_of_child_issues == 0 %}hidden{% endif %}" data-dynamic-field-value data-field="number_of_child_issues" data-issue-id="{{ issue.id }}">{{ UI.fa_image_tag('tasks') | safe }}<span class="value">{{ issue.number_of_child_issues }}</span></span>
             <span class="attachments {% if issue.number_of_files == 0 %}hidden{% endif %}" data-dynamic-field-value data-field="number_of_files" data-issue-id="{{ issue.id }}">{{ UI.fa_image_tag('paperclip') | safe }}<span class="value">{{ issue.number_of_files }}</span></span>
