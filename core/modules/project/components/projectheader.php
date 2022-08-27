@@ -49,10 +49,13 @@
     </div>
 <?php endif; ?>
 <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader/after-spacer', $project)->trigger(); ?>
-<div class="action-container">
+<div class="action-container tooltip-container">
     <?php if ($pachno_response->getPage() === 'project_dashboard'): ?>
         <?php if ($pachno_user->canEditProjectDetails($project)): ?>
-            <button class="button disabled secondary" disabled data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'dashboard_id' => $project->getDefaultDashboard()->getID(), 'target_type' => DashboardView::TYPE_PROJECT]); ?>"><?= fa_image_tag('edit', ['class' => 'icon']); ?><span><?= __('Customize dashboard'); ?></span></button>
+            <button class="button disabled secondary" disabled data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'dashboard_id' => $project->getDefaultDashboard()->getID(), 'target_type' => DashboardView::TYPE_PROJECT]); ?>"><?= fa_image_tag('edit', ['class' => 'icon']); ?><span><?= __('Customize dashboard'); ?></span>        <span class="tooltip from-above">
+            <?= __('Disabled in this release'); ?>
+        </span>
+            </button>
             <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary">
                 <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Settings'); ?></span>
