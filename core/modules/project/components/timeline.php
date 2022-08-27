@@ -15,9 +15,15 @@
             <?php endif; ?>
             <?php $prev_issue = isset($prev_issue) ? $prev_issue : null; ?>
             <?php foreach ($activities_array as $log_item): ?>
-                <?php include_component('main/logitem', array('item' => $log_item, 'include_time' => true, 'include_user' => true, 'include_details' => true, 'include_issue_title' => !($prev_timestamp == $log_item->getTime() && $log_item->getTarget() && $prev_issue == $log_item->getTarget()))); ?>
+                <?php include_component('main/logitem', [
+                    'item' => $log_item,
+                    'include_time' => true,
+                    'include_user' => true,
+                    'include_details' => true,
+                    'include_issue_title' => $prev_issue != $log_item->getTarget()
+                ]); ?>
                 <?php $prev_timestamp = $timestamp; ?>
-                <?php $prev_issue = ($log_item->getTarget()) ? $log_item->getTarget() : null; ?>
+                <?php $prev_issue = $log_item->getTarget() ?: null; ?>
             <?php endforeach; ?>
             <?php $prev_date = $date; ?>
         <?php endforeach; ?>

@@ -88,15 +88,19 @@
                         <span class="faded_out smaller"><?php echo image_tag($item->getIssue()->getProject()->getIconName(), array('class' => 'issuelog-project-logo'), true); ?></span>
                     <?php endif; ?>
                     <a href="<?= $item->getIssue()->getUrl(); ?>" class="issue-link <?= (($item->getChangeType() == LogItem::ACTION_ISSUE_CLOSE) ? 'issue_closed' : 'issue_open'); ?>">
-                        <?php if ($include_time): ?>
-                            <span class="time count-badge"><?php echo Context::getI18n()->formatTime($item->getTime(), 19); ?></span>
-                        <?php endif; ?>
                         <span><?= Context::getI18n()->decodeUTF8($item->getIssue()->getFormattedTitle(true)); ?></span>
                     </a>
+                    <div class="issue_more_actions_link_container dropper-container" style="display: none;">
+                        <button title="<?php echo __('Show more actions'); ?>" class="button icon secondary dropper dynamic_menu_link" data-id="log_item_<?= $item->getId(); ?>_<?= $item->getIssue()->getID(); ?>" id="log_item_<?= $item->getID(); ?>_more_actions_<?= $item->getIssue()->getID(); ?>_button" href="javascript:void(0);"><?php echo fa_image_tag('ellipsis-v'); ?></button>
+                        <?php include_component('main/issuemoreactions', array('issue' => $item->getIssue(), 'multi' => true, 'dynamic' => true)); ?>
+                    </div>
                 </div>
             <?php endif; ?>
             <div class="description">
-                <?php include_component('main/logitemtext', ['item' => $item]); ?>
+                <?php if ($include_time): ?>
+                    <span class="time count-badge"><?php echo Context::getI18n()->formatTime($item->getTime(), 19); ?></span>
+                <?php endif; ?>
+                <span><?php include_component('main/logitemtext', ['item' => $item]); ?></span>
             </div>
         </div>
     </div>

@@ -21,16 +21,25 @@
     align-items: flex-start;
     margin-left: 2rem;
     position: relative;
+    border-radius: .5em;
 
     &::before {
       content: '';
       display: block;
       width: 2px;
-      background-color: #0c8990;
+      background-color: $theme-primary;
       height: 100%;
       position: absolute;
       top: 0;
       left: -17px;
+    }
+
+    &:hover {
+      background-color: $theme-highlight-color;
+
+      &::before {
+        background-color: $theme-secondary-color;
+      }
     }
 
     .user-icon {
@@ -43,7 +52,7 @@
 
     &.without-title {
       .time {
-        display: none;
+        //display: none;
       }
       .user-icon {
         img {
@@ -52,13 +61,18 @@
       }
 
       & + .log-item:not(.without-title) {
-        padding-top: 1.5rem;
+        .user-icon,
+        .content {
+          margin-top: 1.5rem;
+        }
       }
     }
 
     .content {
       display: flex;
       flex-direction: column;
+      align-items: stretch;
+      flex: 1 1 auto;
 
       .title-container {
         display: flex;
@@ -67,6 +81,7 @@
         .issue-link,
         .issue-link:hover {
           display: flex;
+          flex: 1 1 auto;
           align-items: center;
           color: #141823;
           border: none;

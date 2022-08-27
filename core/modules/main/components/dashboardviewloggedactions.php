@@ -27,7 +27,7 @@
                 <?php include_component('main/logitem', [
                         'item' => $log_item,
                         'include_project' => true,
-                        'include_issue_title' => !($prev_timestamp == $log_item->getTime() && $prev_issue == $log_item->getTarget()),
+                        'include_issue_title' => $prev_issue != $log_item->getTarget(),
                         'include_time' => true
                     ]); ?>
                 <?php $prev_date = $date; ?>
