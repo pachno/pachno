@@ -84,7 +84,7 @@
         /**
          * Array of files attached to this issue
          *
-         * @var array
+         * @var File[]
          */
         protected $_files = null;
 
@@ -94,6 +94,20 @@
          * @var integer
          */
         protected $_num_files = null;
+
+        /**
+         * Array of commits attached to this issue
+         *
+         * @var IssueCommit[]
+         */
+        protected $_commits = null;
+
+        /**
+         * Number of attached commits
+         *
+         * @var integer
+         */
+        protected $_num_commits = null;
 
         /**
          * The issue number
@@ -3889,6 +3903,46 @@
             }
         }
 
+        public function countCommits(): int
+        {
+            return $this->getNumberOfCommits();
+        }
+
+        public function getNumberOfCommits(): int
+        {
+            if ($this->_num_commits === null) {
+                if ($this->_commits !== null) {
+                    $this->_num_commits = count($this->_commits);
+                } else {
+                    $this->_num_commits = tables\IssueCommits::getTable()->countByIssueID($this->getID());
+                }
+            }
+
+            return $this->_num_commits;
+        }
+    
+        /**
+         * Populate the commits array
+         */
+        protected function _populateCommits(): void
+        {
+            if ($this->_commits === null) {
+                $this->_commits = tables\IssueCommits::getTable()->getByIssueID($this->getID());
+            }
+        }
+    
+        /**
+         * Return an array with all commits attached to this issue
+         *
+         * @return IssueCommit[]
+         */
+        public function getCommits()
+        {
+            $this->_populateCommits();
+        
+            return $this->_commits;
+        }
+
         public function countAttachments()
         {
             return $this->getNumberOfFiles();
@@ -3926,6 +3980,16 @@
         }
 
         /**
+         * Populate the files array
+         */
+        protected function _populateFiles()
+        {
+            if ($this->_files === null) {
+                $this->_files = tables\IssueFiles::getTable()->getByIssueID($this->getID());
+            }
+        }
+
+        /**
          * Return an array with all files attached to this issue
          *
          * @return File[]
@@ -3935,16 +3999,6 @@
             $this->_populateFiles();
 
             return $this->_files;
-        }
-
-        /**
-         * Populate the files array
-         */
-        protected function _populateFiles()
-        {
-            if ($this->_files === null) {
-                $this->_files = tables\IssueFiles::getTable()->getByIssueID($this->getID());
-            }
         }
 
         /**

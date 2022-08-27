@@ -2,7 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
     use b2db\QueryColumnSort;
+    use b2db\Saveable;
     use pachno\core\entities\IssueCommit;
     use pachno\core\framework;
 
@@ -10,6 +12,9 @@
      * Issue commits table
      *
      * @method static IssueCommits getTable()
+     * @method IssueCommit[] select(Query $query, $join = 'all')
+     * @method IssueCommit selectById($id, Query $query = null, $join = 'all')
+     * @method IssueCommit selectOne(Query $query, $join = 'all')
      *
      * @Entity(class="\pachno\core\entities\IssueCommit")
      * @Table(name="issuecommits")
@@ -54,7 +59,7 @@
          * @param integer $limit
          * @param integer $offset
          *
-         * @return IssueCommit
+         * @return IssueCommit[]
          */
         public function getByIssueID($id, $limit = null, $offset = null, $scope = null)
         {

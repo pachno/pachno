@@ -26,7 +26,7 @@
         "kriswallsmith/assetic": "~1.2",
         "lib-pcre": "8.*|10.*",
         "net/http": "^1.1",
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "7.*",
         "scrivo/highlight.php": "^9.0",
         "ramsey/uuid": "^4.2",
         "erusev/parsedown": "^1.7",

@@ -1,9 +1,16 @@
-<?php $first = true; ?>
-<?php foreach ($commits as $issue_commit): ?>
-    <?php $commit = $issue_commit->getCommit(); ?>
-    <?php if ($first || !$commit->getPreviousCommit() instanceof \pachno\core\entities\Commit || date('ymd', $commit->getDate()) != date('ymd', $commit->getPreviousCommit()->getDate())): ?>
-        <?php include_component('livelink/commitrowheader', ['commit' => $commit]); ?>
-    <?php endif; ?>
-    <?php include_component('livelink/commitrow', array('project' => $project, 'commit' => $commit)); ?>
-    <?php $first = false; ?>
-<?php endforeach; ?>
+<?php
+    
+    use pachno\core\entities\IssueCommit;
+    use pachno\core\entities\Project;
+    
+    /**
+     * @var Project $project
+     * @var IssueCommit[] $commits
+     */
+    
+?>
+<div class="configurable-components-list affected-list" id="affected_list">
+    <?php foreach ($commits as $issue_commit): ?>
+        <?php include_component('livelink/issuecommit', array('project' => $project, 'commit' => $issue_commit->getCommit())); ?>
+    <?php endforeach; ?>
+</div>

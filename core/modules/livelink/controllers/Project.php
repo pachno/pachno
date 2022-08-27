@@ -205,20 +205,5 @@
             return $this->renderJSON(['content' => $this->getComponentHTML('livelink/projectcommits', ['commits' => $this->commits, 'selected_project' => $this->selected_project]), 'last_commit' => $last_commit_hash]);
         }
 
-        /**
-         * @Route(name="livelink_project_issue_commits_more", url="/:project_key/issues/:issue_no/commits/more", methods="POST")
-         *
-         * @param framework\Request $request
-         *
-         * @return bool
-         */
-        public function runProjectIssueCommitsMore(framework\Request $request)
-        {
-            $issue = Issues::getTable()->getByProjectIDAndIssueNo($this->selected_project->getID(), $request['issue_no']);
-            $links = IssueCommits::getTable()->getByIssueID($issue->getID(), $request->getParameter('limit', 0), $request->getParameter('offset', 0));
-
-            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/issuecommits', ["projectId" => $this->selected_project->getID(), "links" => $links])]);
-        }
-
     }
 

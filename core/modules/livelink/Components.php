@@ -89,6 +89,11 @@
             $this->selected_project = framework\Context::getCurrentProject();
         }
 
+        public function componentIssueCommits()
+        {
+            $this->first = true;
+        }
+
         public function componentProjectCommit()
         {
             $this->comment_count = Comment::countComments($this->commit->getID(), Comment::TYPE_COMMIT);

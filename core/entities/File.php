@@ -343,7 +343,7 @@
                 'content_type' => $this->getContentType(),
                 'is_image' => $this->isImage(),
                 'icon' => $this->getIcon(),
-                'url' => $this->getUrl(false)
+                'url' => $this->getUrl(false),
             ];
         }
 

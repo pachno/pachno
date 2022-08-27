@@ -1,12 +1,28 @@
 <?php
 
-    /** @var \pachno\core\entities\Branch $branch */
-    /** @var \pachno\core\entities\Commit $commit */
-    /** @var \pachno\core\entities\Project $project */
+    use pachno\core\entities\Commit;
+    
+    /**
+     * @var Commit $commit
+     */
 
 ?>
-<div class="comment" id="commit_<?php echo $commit->getID(); ?>">
-    <div id="commit_view_<?php echo $commit->getID(); ?>" class="comment_main">
+<a class="configurable-component trigger-backdrop" data-commit data-commit-id="<?= $commit->getID(); ?>" data-url="<?php echo make_url('get_partial_for_backdrop', array('key' => 'livelink-getcommit', 'commit_id' => $commit->getID())); ?>">
+    <div class="row">
+        <div class="icon">
+            <?php echo fa_image_tag('code'); ?>
+        </div>
+        <div class="information">
+            <span class="count-badge"><?= $commit->getRevisionString(); ?></span>
+        </div>
+        <div class="name">
+            <div class="title">
+                <?php echo $commit->getTitle(); ?>
+            </div>
+        </div>
+    </div>
+    
+    <?php /*<div id="commit_view_<?php echo $commit->getID(); ?>" class="comment_main">
         <div id="commit_<?php echo $commit->getID(); ?>_header" class="commentheader">
             <div class="commenttitle">
                 <?php include_component('main/userdropdown', array('user' => $commit->getAuthor(), 'size' => 'large')); ?>
@@ -22,5 +38,5 @@
         <div class="commentbody article commit_main" id="commit_<?php echo $commit->getID(); ?>_body">
             <?php echo \pachno\core\helpers\TextParser::parseText(trim($commit->getLog()), false, null, array('target' => $commit)); ?>
         </div>
-    </div>
-</div>
+    </div> */ ?>
+</a>

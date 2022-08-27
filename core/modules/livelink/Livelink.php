@@ -79,36 +79,47 @@
         public function listen_get_backdrop_partial(Event $event)
         {
             $request = framework\Context::getRequest();
-            $connector = $request['connector'];
-            $connector_module = $this->getConnectorModule($connector);
-            $options = ['connector' => $this->getConnector($connector)];
-
-            if ($this->hasConnector($connector)) {
+            if ($request['connector']) {
+                $connector = $request['connector'];
+                $connector_module = $this->getConnectorModule($connector);
+                $options = ['connector' => $this->getConnector($connector)];
+        
+                if ($this->hasConnector($connector)) {
+                    switch ($event->getSubject()) {
+                        case 'livelink-import_project':
+                            $template_name = $connector_module->getName() . "/import_project";
+                            $options['project'] = null;
+                            if ($request['project_id']) {
+                                $options['project'] = Projects::getTable()->selectById($request['project_id']);
+                            }
+    
+                            if (!$options['project'] instanceof Project) {
+                                $options['project'] = new Project();
+                            }
+    
+                            break;
+                        case 'livelink-configure_connector':
+                            $template_name = $connector_module->getName() . "/configureconnector";
+                            break;
+                        default:
+                            return;
+                    }
+    
+                    foreach ($options as $key => $value) {
+                        $event->addToReturnList($value, $key);
+                    }
+                    $event->setReturnValue($template_name);
+                    $event->setProcessed();
+                }
+            } else {
                 switch ($event->getSubject()) {
-                    case 'livelink-import_project':
-                        $template_name = $connector_module->getName() . "/import_project";
-                        $options['project'] = null;
-                        if ($request['project_id']) {
-                            $options['project'] = Projects::getTable()->selectById($request['project_id']);
-                        }
-
-                        if (!$options['project'] instanceof Project) {
-                            $options['project'] = new Project();
-                        }
-
+                    case 'livelink-getcommit':
+                        $commit = Commits::getTable()->selectById($request['commit_id']);
+                        $event->setReturnValue('livelink/commitbackdrop');
+                        $event->setProcessed();
+                        $event->addToReturnList($commit, 'commit');
                         break;
-                    case 'livelink-configure_connector':
-                        $template_name = $connector_module->getName() . "/configureconnector";
-                        break;
-                    default:
-                        return;
                 }
-
-                foreach ($options as $key => $value) {
-                    $event->addToReturnList($value, $key);
-                }
-                $event->setReturnValue($template_name);
-                $event->setProcessed();
             }
         }
 
@@ -323,20 +334,6 @@
 
             $commits_count = IssueCommits::getTable()->countByIssueID($event->getSubject()->getID());
             include_component('livelink/viewissue_activities_tab', ['count' => $commits_count]);
-        }
-
-        /**
-         * @Listener(module='core', identifier='viewissue_after_tabs')
-         * @param Event $event
-         */
-        public function listen_viewissue_panel(Event $event)
-        {
-            if (!$this->getProjectConnector($event->getSubject()->getProject()))
-                return;
-
-            $commits = IssueCommits::getTable()->getByIssueID($event->getSubject()->getID());
-            $commits_count = IssueCommits::getTable()->countByIssueID($event->getSubject()->getID());
-            include_component('livelink/viewissue_commits', ['issue' => $event->getSubject(), 'commits' => $commits, 'commits_count' => $commits_count, 'selected_project' => $event->getSubject()->getProject()]);
         }
 
         /**

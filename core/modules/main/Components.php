@@ -380,7 +380,7 @@
                 $this->include_issue_title = true;
             }
             if (!isset($this->include_time)) {
-                $this->include_time = $this->include_issue_title;
+                $this->include_time = true;
             }
             if (!isset($this->include_project)) {
                 $this->include_project = false;

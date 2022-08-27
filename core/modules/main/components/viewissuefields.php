@@ -312,14 +312,25 @@ use pachno\core\framework\Context;
         </ul>
     </div>
 <?php endif; ?>
-<?php Event::createNew('core', 'viewissue_left_after_attachments', $issue)->trigger(); ?>
+<?php Event::createNew('core', 'viewissue_left_before_commits', $issue)->trigger(); ?>
+<?php if ($issue->getNumberOfCommits()): ?>
+    <div class="fields-list-container" id="viewissue_commits_issues_container">
+        <div class="header">
+            <span class="name"><?= __('Related commits %count', ['%count' => '']); ?><span id="viewissue_commits_count" class="count-badge"><?= $issue->getNumberOfCommits(); ?></span></span>
+        </div>
+        <div id="viewissue_commits">
+            <?php include_component('livelink/issuecommits', ["project" => $issue->getProject(), "commits" => $issue->getCommits()]); ?>
+        </div>
+    </div>
+<?php endif; ?>
+<?php Event::createNew('core', 'viewissue_left_before_duplicate_issues', $issue)->trigger(); ?>
 <?php if ($issue->getNumberOfDuplicateIssues()): ?>
     <div class="fields-list-container" id="viewissue_duplicate_issues_container">
         <div class="header">
             <span class="name"><?= __('Duplicate issues %count', ['%count' => '']); ?><span id="viewissue_duplicate_issues_count" class="count-badge"><?= $issue->getNumberOfDuplicateIssues(); ?></span></span>
         </div>
         <div id="viewissue_duplicate_issues">
-            <?php include_component('main/duplicateissues', array('issue' => $issue)); ?>
+            <?php include_component('main/duplicateissues', ['issue' => $issue]); ?>
         </div>
     </div>
 <?php endif; ?>
