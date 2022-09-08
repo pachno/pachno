@@ -97,6 +97,7 @@
                     $this->_upgradeFrom1_0_0($request);
                 case '1.0.2':
                     $this->_upgradeFrom1_0_2($request);
+                case '1.0.3':
                 case '1.0.4':
                     $this->_upgradeFrom1_0_4($request);
                 case '1.0.5':
