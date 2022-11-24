@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.0.2-apache
 
 RUN apt update
 RUN apt install -y zip git libicu-dev libmariadb-dev libsqlite3-dev build-essential libzip-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libpq-dev
@@ -31,7 +31,7 @@ RUN docker-php-ext-enable apcu
 RUN docker-php-ext-configure pdo_pgsql 
 RUN docker-php-ext-install -j$(nproc) pdo_pgsql
 RUN docker-php-ext-enable pdo_pgsql
-           
+
 # run the dependancy installation
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
