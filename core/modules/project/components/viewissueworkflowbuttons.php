@@ -33,7 +33,7 @@
             <button class="button secondary icon highlight trigger-stop-time-tracking" data-issue-id="<?= $issue->getID(); ?>">
                 <?= fa_image_tag('stop', ['class' => 'icon']); ?>
             </button>
-            <button class="button secondary icon highlight danger trigger-cancel-time-tracking" onclick="Pachno.UI.Dialog.show('<?= __('Stop time tracking and discard tracked time?'); ?>', '<?= __('Please confirm that you want to disacrd the time automatically tracked so far.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.issue.removeSpentTime, { auto: true, issue_id: <?= $issue->getID(); ?> })}}, no: { click: Pachno.UI.Dialog.dismiss }});">
+            <button class="button secondary icon highlight danger trigger-cancel-time-tracking" onclick="Pachno.UI.Dialog.show('<?= __('Stop time tracking and discard tracked time?'); ?>', '<?= __('Please confirm that you want to discard the time automatically tracked so far.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.issue.removeSpentTime, { auto: true, issue_id: <?= $issue->getID(); ?> })}}, no: { click: Pachno.UI.Dialog.dismiss }});">
                 <?= fa_image_tag('times', ['class' => 'icon']); ?>
             </button>
         <?php endif; ?>
