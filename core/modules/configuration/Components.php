@@ -8,6 +8,7 @@
     use pachno\core\entities;
     use pachno\core\entities\ActivityType;
     use pachno\core\entities\Category;
+    use pachno\core\entities\Datatype;
     use pachno\core\entities\Priority;
     use pachno\core\entities\Reproducability;
     use pachno\core\entities\Resolution;
